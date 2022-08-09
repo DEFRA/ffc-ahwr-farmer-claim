@@ -10,8 +10,8 @@ services:
     image: ffc-ahwr-farmer-claim-development
     container_name: ffc-ahwr-farmer-claim-development
     ports:
-      - "3000:3000"
-      - "9229:9229"
+      - "3003:3000"
+      - "9232:9229"
     volumes:
       - ./app:/home/node/app
       - ./package.json:/home/node/package.json
