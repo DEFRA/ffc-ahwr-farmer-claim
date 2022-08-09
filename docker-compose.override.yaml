@@ -1,12 +1,14 @@
+version: '3.8'
+
 # This override file should be used when running this service in isolation
 # to provide dependencies and expose ports for local testing
 
 services:
-  ffc-template-node:
+  ffc-ahwr-farmer-claim:
     build:
       target: development
-    image: ffc-template-node-development
-    container_name: ffc-template-node-development
+    image: ffc-ahwr-farmer-claim-development
+    container_name: ffc-ahwr-farmer-claim-development
     ports:
       - "3000:3000"
       - "9229:9229"

@@ -1,12 +1,14 @@
+version: '3.8'
+
 # This override file should be used when running automated tests so
 # that test output is saved to the host
 
 services:
-  ffc-template-node:
+  ffc-ahwr-farmer-claim:
     build:
       target: development
-    image: ffc-template-node-development
-    container_name: ffc-template-node-test
+    image: ffc-ahwr-farmer-claim-development
+    container_name: ffc-ahwr-farmer-claim-test
     command: npm run test
     volumes:
       - ./app:/home/node/app

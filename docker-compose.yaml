@@ -1,10 +1,12 @@
+version: '3.8'
+
 services:
-  ffc-template-node:
+  ffc-ahwr-farmer-claim:
     build:
       context: .
       target: production
-    image: ffc-template-node
-    container_name: ffc-template-node
+    image: ffc-ahwr-farmer-claim
+    container_name: ffc-ahwr-farmer-claim
     environment:
-      APPINSIGHTS_CLOUDROLE: ffc-template-node-local
+      APPINSIGHTS_CLOUDROLE: ffc-ahwr-farmer-claim-local
       APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
