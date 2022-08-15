@@ -23,7 +23,7 @@ containerSecret:
   type: Opaque
 
 deployment:
-  cpuThreshold: 40
+  cpuThreshold: 80
   memoryThreshold: 80
   minReadySeconds: 0
   minReplicas: 1
@@ -36,10 +36,10 @@ container:
   cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
   googleTagManagerKey:
   imagePullPolicy: IfNotPresent
-  requestMemory: 10Mi
-  requestCpu: 10m
-  limitMemory: 40Mi
-  limitCpu: 40m
+  requestMemory: 100Mi
+  requestCpu: 40m
+  limitMemory: 100Mi
+  limitCpu: 100m
   port: 3000
   redisHostname: redis-hostname.default
   redisPartition: ffc-ahwr-farmer-claim
