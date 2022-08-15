@@ -10,3 +10,10 @@ services:
     environment:
       APPINSIGHTS_CLOUDROLE: ffc-ahwr-farmer-claim-local
       APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+      COOKIE_PASSWORD: who-likes-cookies-i-like-cookies-everybody-likes-cookies
+      GOOGLE_TAG_MANAGER_KEY: ${GOOGLE_TAG_MANAGER_KEY}
+      REDIS_HOSTNAME: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      SERVICE_URI: http://localhost:3000
+
