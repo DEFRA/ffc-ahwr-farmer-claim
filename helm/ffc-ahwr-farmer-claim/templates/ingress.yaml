@@ -1,0 +1,3 @@
+{{- include "ffc-helm-library.azure-ingress" (list . "ffc-ahwr-farmer-claim.ingress") -}}
+{{- define "ffc-ahwr-farmer-claim.ingress" -}}
+{{- end -}}

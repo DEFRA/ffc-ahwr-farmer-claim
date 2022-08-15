@@ -6,8 +6,14 @@ image: ffc-ahwr-farmer-claim
 
 labels: {}
 
+aadPodIdentity: true
+
 appInsights:
   key:
+
+azureIdentity:
+  clientID:
+  resourceID:
 
 containerConfigMap:
   name: ffc-ahwr-farmer-claim-config-map
@@ -23,12 +29,24 @@ deployment:
   minReadySeconds: 0
 
 container:
+  cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
+  googleTagManagerKey:
   imagePullPolicy: IfNotPresent
   requestMemory: 10Mi
   requestCpu: 10m
   limitMemory: 40Mi
   limitCpu: 40m
   port: 3000
+  redisHostname: redis-hostname.default
+  redisPartition: ffc-ahwr-farmer-claim
+  redisPassword: redis
+  redisPort: 6379
+  serviceUri:
+
+ingress:
+  class: nginx
+  endpoint: ffc-ahwr-farmer-apply
+  server: value.replaced.from.app.config
 
 livenessProbe:
   path: /healthz
@@ -43,3 +61,7 @@ readinessProbe:
   initialDelaySeconds: 10
   periodSeconds: 10
   failureThreshold: 3
+
+service:
+  port: 80
+  type: ClusterIP
