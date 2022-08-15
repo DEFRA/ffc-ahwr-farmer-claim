@@ -1,76 +1,96 @@
-# FFC Template Node
+# FFC AHWR Farmer Claim
 
-Template to support rapid delivery of microservices for FFC Platform. It contains the configuration needed to deploy a simple Hapi Node server to the Azure Kubernetes Platform.
-
-## Usage
-
-Create a new repository from this template and run `./rename.js` specifying the new name of the project and the description to use e.g.
-```
-./rename.js ffc-demo-web "Web frontend for demo workstream"
-```
-
-The script will update the following:
-
-* `package.json`: update `name`, `description`, `homepage`
-* `docker-compose.yaml`: update the service name, `image` and `container_name`
-* `docker-compose.test.yaml`: update the service name, `image` and `container_name`
-* `docker-compose.override.yaml`: update the service name, `image` and `container_name`
-* Rename `helm/ffc-template-node`
-* `helm/ffc-template-node/Chart.yaml`: update `description` and `name`
-* `helm/ffc-template-node/values.yaml`: update  `name`, `namespace`, `workstream`, `image`, `containerConfigMap.name`
-* `helm/ffc-template-node/templates/_container.yaml`: update the template name
-* `helm/ffc-template-node/templates/cluster-ip-service.yaml`: update the template name and list parameter of include
-* `helm/ffc-template-node/templates/config-map.yaml`: update the template name and list parameter of include
-* `helm/ffc-template-node/templates/deployment.yaml`: update the template name, list parameter of deployment and container includes
-
-### Notes on automated rename
-
-* The Helm chart deployment values in `helm/ffc-template-node/values.yaml` may need updating depending on the resource needs of your microservice
-* The rename is a one-way operation i.e. currently it doesn't allow the name being changed from to be specified
-* There is some validation on the input to try and ensure the rename is successful, however, it is unlikely to stand up to malicious entry
-* Once the rename has been performed the script can be removed from the repo
-* Should the rename go awry the changes can be reverted via `git clean -df && git checkout -- .`
+> Web frontend for the farmer claim journey
 
 ## Prerequisites
 
+- Access to an instance of an
+[Azure Service Bus](https://docs.microsoft.com/en-us/azure/service-bus-messaging/).
+- Access to an instance of an
+[Azure Storage Account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-overview).
+  This could be an actual account or
+  [Azurite](https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azurite),
+  a storage emulator
 - Docker
 - Docker Compose
 
 Optional:
+
 - Kubernetes
 - Helm
 
+### Environment variables
+
+The following environment variables are required by the application.
+Values for development are set in the Docker Compose configuration. Default
+values for production-like deployments are set in the Helm chart and may be
+overridden by build and release pipelines.
+
+| Name                                  | Description                                                                                      |
+| ----                                  | -----------                                                                                      |
+| APPLICATIONREQUEST_QUEUE_ADDRESS      | Name of message queue used to send application requests                                          |
+| APPLICATIONRESPONSE_QUEUE_ADDRESS     | Name of session enabled message queue used to receive application responses                      |
+| AZURE_STORAGE_CONNECTION_STRING       | Azure Storage connection string                                                                  |
+| MESSAGE_QUEUE_HOST                    | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net`                           |
+| MESSAGE_QUEUE_PASSWORD                | Azure Service Bus SAS policy key                                                                 |
+| MESSAGE_QUEUE_SUFFIX                  | Developer initials                                                                               |
+| MESSAGE_QUEUE_USER                    | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey`                              |
+| NOTIFY_API_KEY                        | GOV.UK Notify API Key                                                                            |
+| NOTIFY_TEMPLATE_ID_FARMER_APPLY_LOGIN | Id of email template used for farmer apply login email                                           |
+| NOTIFY_TEMPLATE_ID_FARMER_CLAIM_LOGIN | Id of email template used for farmer claim login email                                           |
+| NOTIFY_TEMPLATE_ID_VET_LOGIN          | Id of email template used for vet login email                                                    |
+| SERVICE_URI                           | URI of service (used in links, in emails) e.g. `http://localhost:3000` or `https://defra.gov.uk` |
+| TEST_TOKEN                            | Test Token for Magic link for getting access to test access                                      |
+| AZURE_STORAGE_CREATE_CONTAINERS       | Set true to use connection string, false to connect using azure credentials for blobstorage      |
+| AZURE_STORAGE_ACCOUNT_NAME            | Blob storage account name example strageaccountxyz                                               |
+
 ## Running the application
 
-The application is designed to run in containerised environments, using Docker Compose in development and Kubernetes in production.
+The application is designed to run in containerised environments, using Docker
+Compose in development and Kubernetes in production (a Helm chart is provided
+for production deployments to Kubernetes).
 
-- A Helm chart is provided for production deployments to Kubernetes.
+Configuration and secret data are held in Azure Key Vault and populated during
+the deployment to non-local environments.
+
+*NOTE:*
+User data is currently loaded from a file in Azure Storage, an example file is
+available ([users.json](./data/users.json)) where the structure of the data can
+be seen along with examples. If user record has isTest property set to true and
+TEST_TOKEN is valid UUID, then magic link with same token will be generated.
+
+TEST_TOKEN and isTest property should be used for only test environment to enable
+automation test.
+
+When running the application locally this file (or one matching the format)
+needs to be uploaded to Azurite container that starts with the application. The
+storage container the file resides in also needs to be created. The container
+name is `users` and the file name is `users.json`.
 
 ### Build container image
 
-Container images are built using Docker Compose, with the same images used to run the service with either Docker Compose or Kubernetes.
+Container images are built using Docker Compose, with the same images used to
+run the service with either Docker Compose or Kubernetes.
 
 When using the Docker Compose files in development the local `app` folder will
-be mounted on top of the `app` folder within the Docker container, hiding the CSS files that were generated during the Docker build.  For the site to render correctly locally `npm run build` must be run on the host system.
-
+be mounted on top of the `app` folder within the Docker container, hiding the
+CSS files that were generated during the Docker build. For the site to render
+correctly locally `npm run build` must be run on the host system.
 
 By default, the start script will build (or rebuild) images so there will
 rarely be a need to build images manually. However, this can be achieved
 through the Docker Compose
 [build](https://docs.docker.com/compose/reference/build/) command:
 
-```
+```sh
 # Build container images
 docker-compose build
 ```
 
 ### Start
 
-Use Docker Compose to run service locally.
-
-```
-docker-compose up
-```
+Use the [start script](./scripts/start) to run the service locally which in
+turn uses Docker Compose.
 
 ## Test structure
 
@@ -87,7 +107,7 @@ arguments to the test script.
 
 Examples:
 
-```
+```sh
 # Run all tests
 scripts/test
 
@@ -97,20 +117,5 @@ scripts/test -w
 
 ## CI pipeline
 
-This service uses the [FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)
-
-## Licence
-
-THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:
-
-<http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3>
-
-The following attribution statement MUST be cited in your products and applications when using this information.
-
-> Contains public sector information licensed under the Open Government license v3
-
-### About the licence
-
-The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable information providers in the public sector to license the use and re-use of their information under a common open licence.
-
-It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
+This service uses the
+[FFC CI pipeline](https://github.com/DEFRA/ffc-jenkins-pipeline-library)

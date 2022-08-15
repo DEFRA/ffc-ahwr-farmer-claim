@@ -1,8 +1,8 @@
 environment: development
-name: ffc-template-node
-namespace: ffc-demo
-workstream: ffc-demo
-image: ffc-template-node
+name: ffc-ahwr-farmer-claim
+namespace: ffc-ahwr
+workstream: ffc-ahwr
+image: ffc-ahwr-farmer-claim
 
 labels: {}
 
@@ -10,10 +10,10 @@ appInsights:
   key:
 
 containerConfigMap:
-  name: ffc-template-node-config-map
+  name: ffc-ahwr-farmer-claim-config-map
 
 containerSecret:
-  name: ffc-template-node-container-secret
+  name: ffc-ahwr-farmer-claim-container-secret
   type: Opaque
 
 deployment:

@@ -1,4 +1,9 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.19.0
-ignore: {}
+version: v1.22.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-HAPISTATEHOOD-2769251:
+    - '@hapi/hapi > @hapi/statehood':
+        reason: None given
+        expires: '2022-09-08T14:49:44.317Z'
 patch: {}

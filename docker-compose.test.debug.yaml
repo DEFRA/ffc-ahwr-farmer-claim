@@ -1,5 +1,7 @@
+version: '3.8'
+
 services:
-  ffc-template-node:
+  ffc-ahwr-farmer-claim:
     command: npm run test:debug
     ports:
       - "9229:9229"
