@@ -9,9 +9,17 @@ services:
     container_name: ffc-ahwr-farmer-claim
     environment:
       APPINSIGHTS_CLOUDROLE: ffc-ahwr-farmer-claim-local
-      APPINSIGHTS_INSTRUMENTATIONKEY: ${APPINSIGHTS_INSTRUMENTATIONKEY}
+      APPLICATIONINSIGHTS_CONNECTION_STRING: ${APPLICATIONINSIGHTS_CONNECTION_STRING}
+      APPLICATIONREQUEST_QUEUE_ADDRESS: ${APPLICATIONREQUEST_QUEUE_ADDRESS:-ffc-ahwr-application-request}${MESSAGE_QUEUE_SUFFIX}
+      APPLICATIONRESPONSE_QUEUE_ADDRESS: ${APPLICATIONRESPONSE_QUEUE_ADDRESS:-ffc-ahwr-application-response}${MESSAGE_QUEUE_SUFFIX}
+      AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME:-devstoreaccount1}
+      AZURE_STORAGE_CONNECTION_STRING: ${AZURE_STORAGE_CONNECTION_STRING:-AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;DefaultEndpointsProtocol=http;BlobEndpoint=http://127.0.0.1:10000/devstoreaccount1;QueueEndpoint=http://127.0.0.1:10001/devstoreaccount1;TableEndpoint=http://127.0.0.1:10002/devstoreaccount1;}
+      AZURE_STORAGE_USE_CONNECTION_STRING: "true"
       COOKIE_PASSWORD: who-likes-cookies-i-like-cookies-everybody-likes-cookies
       GOOGLE_TAG_MANAGER_KEY: ${GOOGLE_TAG_MANAGER_KEY}
+      MESSAGE_QUEUE_HOST: ${MESSAGE_QUEUE_HOST:-notset}
+      MESSAGE_QUEUE_PASSWORD: ${MESSAGE_QUEUE_PASSWORD:-notset}
+      MESSAGE_QUEUE_USER: ${MESSAGE_QUEUE_USER:-notset}
       REDIS_HOSTNAME: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""

@@ -3,7 +3,11 @@ const routes = [].concat(
   require('../routes/cookies'),
   require('../routes/healthy'),
   require('../routes/healthz'),
-  require('../routes/index')
+  require('../routes/index'),
+  require('../routes/login'),
+  require('../routes/visit-review'),
+  require('../routes/details-incorrect'),
+  require('../routes/submit-claim')
 )
 
 module.exports = {

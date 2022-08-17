@@ -1,0 +1,18 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Funding claim complete - {{ serviceName }}{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    {{ govukPanel({
+      titleText: "Funding claim complete",
+      html: "Your reference number<br><strong>" + reference + "</strong>"
+    }) }}
+
+    <h2 class="govuk-heading-m">What happens next</h2>
+    <p>We've sent you a confirmation email.</p>
+    <p>You'll receive a payment within 28 days.</p>
+  </div>
+</div>
+{% endblock %}
