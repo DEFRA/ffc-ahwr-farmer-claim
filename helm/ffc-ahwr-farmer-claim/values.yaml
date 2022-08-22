@@ -9,7 +9,7 @@ labels: {}
 aadPodIdentity: true
 
 appInsights:
-  key:
+  connectionString:
 
 azureIdentity:
   clientID:
@@ -33,6 +33,11 @@ deployment:
   restartPolicy: Always
 
 container:
+  applicationRequestQueueAddress: ffc-ahwr-application-request
+  applicationResponseQueueAddress: ffc-ahwr-application-response
+  azureStorageConnectionString:
+  azureStorageUseConnectionString: true
+  azureStorageAccountName:
   cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
   googleTagManagerKey:
   imagePullPolicy: IfNotPresent
@@ -40,6 +45,7 @@ container:
   requestCpu: 40m
   limitMemory: 100Mi
   limitCpu: 100m
+  messageQueueHost: namespace.servicebus.windows.net
   port: 3000
   redisHostname: redis-hostname.default
   redisPartition: ffc-ahwr-farmer-claim

@@ -33,6 +33,7 @@ async function createServer () {
   await server.register(require('./plugins/error-pages'))
   await server.register(require('./plugins/logging'))
   await server.register(require('./plugins/router'))
+  await server.register(require('./plugins/session'))
   await server.register(require('./plugins/view-context'))
   await server.register(require('./plugins/views'))
 
