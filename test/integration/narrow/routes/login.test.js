@@ -16,7 +16,7 @@ describe('FarmerClaim application login page test', () => {
 
   beforeAll(async () => {
     jest.resetAllMocks()
-
+    jest.setTimeout(10000)
     sendEmail = require('../../../../app/lib/email/send-email')
     jest.mock('../../../../app/lib/email/send-email')
     const orgs = require('../../../../app/api-requests/users')
