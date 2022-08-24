@@ -10,6 +10,7 @@ data:
   AZURE_STORAGE_ACCOUNT_NAME: {{ quote .Values.container.azureStorageAccountName }}
   GOOGLE_TAG_MANAGER_KEY: {{ quote .Values.container.googleTagManagerKey}}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  NOTIFY_TEMPLATE_ID_FARMER_CLAIM_LOGIN: {{ quote .Values.container.notifyTemplateIdFarmerClaimLogin }}
   {{- if .Values.container.redisHostname }}
   REDIS_HOSTNAME: {{ quote .Values.container.redisHostname }}
   {{- end }}

@@ -19,5 +19,19 @@ describe('Farmer claim - review details incorrect page test', () => {
       expect($('.govuk-heading-l').text()).toEqual('Claim details incorrect')
       expectPhaseBanner.ok($)
     })
+
+    describe(`GET ${url} route when not logged in`, () => {
+      test('redirects to /login', async () => {
+        const options = {
+          method: 'GET',
+          url
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location).toEqual('/login')
+      })
+    })
   })
 })
