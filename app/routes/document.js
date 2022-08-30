@@ -23,15 +23,22 @@ module.exports = [{
       handler: async (request, h) => {        
         const fileDetails = request.payload.file.hapi
         const contentBuffer = request.payload.file._data
+        const fileExtension =fileDetails.filename.split('.').pop().toLowerCase()
+        
         //validate
-        if( allowedFileExtensions.indexOf(fileDetails.filename.split('.').pop().toLowerCase() === -1)){          
-          return h.view('document', { errorMessage: { text: "Invalid file type.", success: false } }).code(400).takeover()
+        if( allowedFileExtensions.indexOf(fileExtension) === -1){          
+          return h.view('document', { errorMessage: { text: `Invalid file type .${fileExtension}.`, success: false } })
         }
-        //upload
-        connect();
-        writeFile(fileDetails.filename,contentBuffer)
-        //return success        
-        return h.view('document', { errorMessage: { text: "File Uploaded successfully", success: true } })
+        try {
+          //upload
+          connect();
+          writeFile(fileDetails.filename,contentBuffer)
+          //return success        
+          return h.view('document', { errorMessage: { text: "File Uploaded successfully", success: true } })
+        }
+        catch(err) {
+          return h.view('document', { errorMessage: { text: `Something went wrong while uploading file ${fileDetails.filename}.`, success: false } })
+        }
       }
     }
   }]
