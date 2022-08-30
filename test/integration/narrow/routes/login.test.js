@@ -1,26 +1,12 @@
 const cheerio = require('cheerio')
-const { v4: uuid } = require('uuid')
 const getCrumbs = require('../../../utils/get-crumbs')
 const expectLoginPage = require('../../../utils/login-page-expect')
 const pageExpects = require('../../../utils/page-expects')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
-const { serviceUri } = require('../../../../app/config')
-const { templateIdFarmerClaimLogin } = require('../../../../app/config').notifyConfig
-const { farmerClaim } = require('../../../../app/constants/user-types')
-const uuidRegex = require('../../../../app/config/uuid-regex')
 
 describe('FarmerClaim application login page test', () => {
-  let sendEmail
-  let getByEmail
-  const org = { name: 'my-org' }
-
   beforeAll(async () => {
     jest.resetAllMocks()
-    sendEmail = require('../../../../app/lib/email/send-email')
-    jest.mock('../../../../app/lib/email/send-email')
-    const orgs = require('../../../../app/api-requests/users')
-    getByEmail = orgs.getByEmail
-    jest.mock('../../../../app/api-requests/users')
   })
 
   const url = '/login'
