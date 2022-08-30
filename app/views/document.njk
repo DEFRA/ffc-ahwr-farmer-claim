@@ -1,0 +1,28 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}File Upload - {{ serviceName }}{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">File upload</h1>
+    <form method="POST" enctype="multipart/form-data" autocomplete="on" novalidate>
+        {{ crumbToken(crumb)}}      
+        {% if model.errorMessage %}
+        <span id="error-message" class="govuk-error-message">{{model.errorMessage.text}}</span>
+        {% endif %}
+        {{ govukFileUpload({
+          id: "file",
+          name: "file",
+          label: {
+            text: "Upload a file"
+          }
+        }) }}
+        {{ govukButton({
+          text: "Submit",
+          attributes: {id: "btnSubmit"}
+        }) }}
+      </form>
+  </div>
+</div>
+{% endblock %}

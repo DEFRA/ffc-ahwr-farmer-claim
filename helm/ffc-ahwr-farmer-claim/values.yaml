@@ -38,6 +38,7 @@ container:
   azureStorageConnectionString:
   azureStorageUseConnectionString: true
   azureStorageAccountName:
+  azureStorageAppDocsContainerName:
   cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
   googleTagManagerKey:
   imagePullPolicy: IfNotPresent
