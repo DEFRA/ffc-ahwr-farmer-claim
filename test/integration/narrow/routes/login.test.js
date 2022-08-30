@@ -46,8 +46,7 @@ describe('FarmerClaim application login page test', () => {
       { email: 'not-an-email', errorMessage: 'Enter an email address in the correct format, like name@example.com' },
       { email: '', errorMessage: 'Enter an email address' },
       { email: null, errorMessage: 'Enter an email address' },
-      { email: undefined, errorMessage: 'Enter an email address' },
-      { email: 'missing@email.com', errorMessage: 'No user found with email address "missing@email.com"' }
+      { email: undefined, errorMessage: 'Enter an email address' }
     ])('returns 400 when request contains incorrect email - %p', async ({ email, errorMessage }) => {
       const crumb = await getCrumbs(global.__SERVER__)
       const options = {
