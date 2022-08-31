@@ -3,6 +3,7 @@ const Joi = require('joi')
 const storageSchema = Joi.object({
   connectionString: Joi.string().required(),
   usersContainer: Joi.string().default('users'),
+  appDocumentsContainer: Joi.string().default('docs'),
   usersFile: Joi.string().default('users.json'),
   storageAccount: Joi.string().required(),
   useConnectionString: Joi.bool().default(true)
@@ -11,7 +12,8 @@ const storageSchema = Joi.object({
 const storageConfig = {
   connectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
   storageAccount: process.env.AZURE_STORAGE_ACCOUNT_NAME,
-  usersContainer: process.env.AZURE_STORAGE_USERS_CONTAINER
+  usersContainer: process.env.AZURE_STORAGE_USERS_CONTAINER,
+  appDocumentsContainer: process.env.AZURE_STORAGE_APPLICATION_DOCUMENTS_CONTAINER
 }
 
 const storageResult = storageSchema.validate(storageConfig, {
