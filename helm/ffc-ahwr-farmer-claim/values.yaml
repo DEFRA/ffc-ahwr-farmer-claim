@@ -47,6 +47,8 @@ container:
   limitMemory: 100Mi
   limitCpu: 100m
   messageQueueHost: namespace.servicebus.windows.net
+  notifyApiKey:
+  notifyTemplateIdFarmerClaimLogin:
   port: 3000
   redisHostname: redis-hostname.default
   redisPartition: ffc-ahwr-farmer-claim

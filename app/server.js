@@ -26,9 +26,16 @@ async function createServer () {
     }
   })
 
+  const magiclinkCache = server.cache({
+    expiresIn: 1000 * 60 * 15,
+    segment: 'magiclinks'
+  }) // 15 mins
+  server.app.magiclinkCache = magiclinkCache
+
   await server.register(require('@hapi/cookie'))
   await server.register(require('@hapi/crumb'))
   await server.register(require('@hapi/inert'))
+  await server.register(require('./plugins/magic-link-auth'))
   await server.register(require('./plugins/cookies'))
   await server.register(require('./plugins/error-pages'))
   await server.register(require('./plugins/logging'))

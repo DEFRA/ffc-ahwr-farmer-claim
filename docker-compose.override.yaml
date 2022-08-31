@@ -30,7 +30,7 @@ services:
     volumes:
       - redis_data:/data
     ports:
-      - "6381:6379"
+      - "6384:6379"
 
 volumes:
   azurite_data:

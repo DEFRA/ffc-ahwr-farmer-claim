@@ -1,0 +1,31 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Check your email - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: "/",
+        attributes: {
+          id: "back"
+        }
+      })
+    }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Check your email</h1>
+
+    <p>We've sent an email to <a id="email" href="mailto:{{email}}">{{email}}</a>.</p>
+    <p id="activity">{{activityText}}</p>
+
+    <p>If you do not get an email:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>check your spam or junk folders</li>
+      <li><a href="">enter your email</a> again</li>
+    </ul>
+  </div>
+</div>
+{% endblock %}

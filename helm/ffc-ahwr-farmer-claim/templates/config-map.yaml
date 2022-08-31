@@ -11,6 +11,7 @@ data:
   AZURE_STORAGE_APPLICATION_DOCUMENTS_CONTAINER: {{ quote .Values.container.azureStorageAppDocsContainerName }}
   GOOGLE_TAG_MANAGER_KEY: {{ quote .Values.container.googleTagManagerKey}}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  NOTIFY_TEMPLATE_ID_FARMER_CLAIM_LOGIN: {{ quote .Values.container.notifyTemplateIdFarmerClaimLogin }}
   {{- if .Values.container.redisHostname }}
   REDIS_HOSTNAME: {{ quote .Values.container.redisHostname }}
   {{- end }}
