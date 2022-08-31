@@ -1,5 +1,5 @@
 const { connect, writeFile } = require('../lib/storage/document-store')
-const fileExtensionRegEx = /\^.*\.(docx|DOCX|doc|DOC)$/
+const fileExtensionRegEx = /\.(docx|DOCX|doc|DOC)$/
 module.exports = [{
   method: 'GET',
   path: '/file-upload',
@@ -17,7 +17,7 @@ module.exports = [{
       output: 'stream',
       parse: true,
       failAction: async (request, h, _error) => {
-        return h.view('file-upload', { ...request.payload, errorMessage: { text: `${request.payload.file.hapi.filename} file size is greater than 2MB.` }, hintText: 'Oh dear!!' }).code(400).takeover()
+        return h.view('file-upload', { ...request.payload, errorMessage: { text: 'file size is greater than 2MB.' } }).code(400).takeover()
       },
       multipart: true,
       allow: 'multipart/form-data',
