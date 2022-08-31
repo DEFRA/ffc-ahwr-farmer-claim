@@ -22,7 +22,7 @@ jest.mock('@azure/storage-blob', () => {
 })
 const blobServiceClientMock = storageBlobMock.BlobServiceClient
 
-downloadBlob = require('../../../../app/lib/storage/download-blob')
+downloadBlob = require('../../../../../app/lib/storage/download-blob')
 
 describe('Download blob tests', () => {
   beforeEach(() => {
@@ -64,7 +64,7 @@ describe('Download blob tests', () => {
         }
       }
     })
-    downloadBlob = require('../../../../app/lib/storage/download-blob')
+    downloadBlob = require('../../../../../app/lib/storage/download-blob')
     const response = await downloadBlob(container, file)
     expect(storageBlobMock.BlobServiceClient.fromConnectionString).toHaveBeenCalledTimes(1)
     expect(response).toBe('contents of file')
