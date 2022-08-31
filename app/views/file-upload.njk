@@ -9,7 +9,7 @@
     <form method="POST" enctype="multipart/form-data" autocomplete="on" novalidate>        
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         {% if errorMessage %}
-                <sapn id="error-message" class="govuk-error-message">{{errorMessage.text}}</span>  
+            <sapn id="error-message" class="govuk-error-message">{{errorMessage.text}}</span>  
         {% endif %}  
         {{ govukFileUpload({
           id: "file",
