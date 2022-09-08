@@ -1,0 +1,43 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}What is the name of the vet who did the review? - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/vet/rcvs",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <h1 class="govuk-heading-l">What is the name of the vet who did the review?</h1>
+
+        {{ govukInput({
+          label: {
+            text: "Vet's full name"
+          },
+          classes: "govuk-input-!-width-full",
+          id: "name",
+          name: "name",
+          value: name,
+          errorMessage: errorMessage
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          }
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

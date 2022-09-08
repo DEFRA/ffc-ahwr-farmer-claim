@@ -1,0 +1,46 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/vet/reference",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <h1 class="govuk-heading-l">What is the vet's Royal College of Veterinary Surgeons (RCVS) number?</h1>
+
+        {{ govukInput({
+          label: {
+            text: "RCVS number"
+          },
+          hint: {
+            text: "It's a 7 digit number. You can find it on the RCVS website"
+          },
+          classes: "govuk-input--width-10",
+          id: "rcvs",
+          name: "rcvs",
+          value: rcvs,
+          errorMessage: errorMessage
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          }
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}
