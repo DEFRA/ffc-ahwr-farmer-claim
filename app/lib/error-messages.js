@@ -14,5 +14,5 @@ module.exports = {
   rcvs: {
     enterRCVS: 'Enter the RCVS number',
     validRCVS: 'Enter a valid RCVS number'
-  },
+  }
 }
