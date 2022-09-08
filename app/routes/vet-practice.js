@@ -9,7 +9,7 @@ module.exports = [{
   options: {
     auth: false,
     handler: async (request, h) => {
-      const practice = session.getVetSignup(request, practiceKey)
+      const practice = session.getClaim(request, practiceKey)
       return h.view('vet-practice', { practice })
     }
   }
@@ -34,7 +34,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { practice } = request.payload
-      session.setVetSignup(request, practiceKey, practice)
+      session.setClaim(request, practiceKey, practice)
       return h.redirect('/submit-claim')
     }
   }
