@@ -11,7 +11,10 @@ module.exports = {
     organisation: 'organisation',
     whichReview: 'whichReview',
     confirmCheckDetails: 'confirmCheckDetails',
-    reference: 'reference'
+    reference: 'reference',
+    vetName: 'vetName',
+    vetPractice: 'vetPractice',
+    vetRcvs: 'vetRcvs'
   },
   claim: {
     detailsCorrect: 'detailsCorrect'
