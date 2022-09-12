@@ -26,4 +26,5 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3004
+      APPLICATION_API_URI: http://host.docker.internal:3001/api
 

@@ -3,6 +3,9 @@ const boom = require('@hapi/boom')
 const { getClaim, setClaim } = require('../session')
 const getClaimViewData = require('./models/claim')
 const { detailsCorrect } = require('../session/keys').claim
+const { farmerApplyData } = require('../session/keys')
+const { setApplication } = require('../session')
+const { getApplication } = require('../api-requests/applications')
 
 const errorMessage = 'Select yes if these details are correct'
 
@@ -38,7 +41,10 @@ module.exports = [{
       const answer = request.payload[detailsCorrect]
       setClaim(request, detailsCorrect, answer)
       if (answer === 'yes') {
-        return h.redirect('/submit-claim')
+        const reference = 'VV-7279-0CF6'
+        const application = await getApplication(reference)
+        setApplication(request, farmerApplyData.whichReview, application.data.whichReview)
+        return h.redirect(`/vaccination-status`)
       }
       return h.redirect('/details-incorrect')
     }

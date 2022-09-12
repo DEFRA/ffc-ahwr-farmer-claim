@@ -15,5 +15,10 @@ module.exports = {
   },
   claim: {
     detailsCorrect: 'detailsCorrect'
+  },
+  speciesData:{
+    vaccinated: 'vaccinated',
+    lastVaccinated: 'lastVaccinated',
+    vaccinationUpToDate: 'vaccinationUpToDate'
   }
 }

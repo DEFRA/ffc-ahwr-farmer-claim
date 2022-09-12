@@ -41,7 +41,8 @@ const schema = Joi.object({
   port: Joi.number().default(3000),
   serviceName: Joi.string().default('Annual health and welfare review of livestock'),
   serviceUri: Joi.string().uri(),
-  useRedis: Joi.boolean().default(false)
+  useRedis: Joi.boolean().default(false),
+  applicationApiUri: Joi.string().uri()
 })
 
 const config = {
@@ -74,7 +75,8 @@ const config = {
   isDev: process.env.NODE_ENV === 'development',
   port: process.env.PORT,
   serviceUri: process.env.SERVICE_URI,
-  useRedis: process.env.NODE_ENV !== 'test'
+  useRedis: process.env.NODE_ENV !== 'test',
+  applicationApiUri: process.env.APPLICATION_API_URI
 }
 
 const result = schema.validate(config, {

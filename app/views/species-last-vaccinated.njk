@@ -1,0 +1,56 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Last vaccination date - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+	  attributes: {id: "back"}
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form method="POST">
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+      <div class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
+    <fieldset class="govuk-fieldset" role="group" aria-describedby="passport-issued-hint">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+        <h1 class="govuk-fieldset__heading">When was the herd last vaccinated for BVD?</h1>
+        </legend>
+        {% if errorMessage %}
+        <p id="date-issued-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
+        </p>
+        {% endif %}
+      <div class="govuk-date-input" id="date">
+        <div class="govuk-date-input__item">
+          <div class="govuk-form-group">
+            <label class="govuk-label govuk-date-input__label" for="month">Month</label>
+            <input class="govuk-input govuk-date-input__input govuk-input--width-2 {% if errorMessage %}govuk-input--error{% endif %}" id="month" name="month" type="text" inputmode="numeric" value="{{month}}"/>
+          </div>
+        </div>
+        <div class="govuk-date-input__item">
+          <div class="govuk-form-group">
+            <label class="govuk-label govuk-date-input__label" for="year">Year</label>
+            <input class="govuk-input govuk-date-input__input govuk-input--width-4 {% if errorMessage %}govuk-input--error{% endif %}" id="year" name="year" type="text" inputmode="numeric" value="{{year}}"/>
+          </div>
+        </div>
+      </div>
+      </fieldset>
+    </div>
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          }
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}
