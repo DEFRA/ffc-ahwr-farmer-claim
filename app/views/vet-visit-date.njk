@@ -1,0 +1,38 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Date of visit - {{ serviceName }}{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        {{ govukDateInput({
+          id: "visit-date",
+          namePrefix: "visit-date",
+          fieldset: {
+            legend: {
+              text: "When was the review completed?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
+          },
+          hint: {
+            html: "This is the date of the last visit to the farm for the review<br>For example, 27 3 2022"
+          },
+          errorMessage: errorMessage,
+          items: items
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          }
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}
