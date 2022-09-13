@@ -7,7 +7,6 @@ module.exports = [{
   method: 'GET',
   path: '/vet-rcvs',
   options: {
-    auth: false,
     handler: async (request, h) => {
       const rcvs = session.getClaim(request, rcvsKey)
       return h.view('vet-rcvs', { rcvs })
@@ -17,7 +16,6 @@ module.exports = [{
   method: 'POST',
   path: '/vet-rcvs',
   options: {
-    auth: false,
     validate: {
       payload: Joi.object({
         rcvs: Joi.string().trim().pattern(/^\d{6}[\dX]{1}$/i).required()
@@ -35,7 +33,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { rcvs } = request.payload
       session.setClaim(request, rcvsKey, rcvs)
-      return h.redirect('/vet-name')
+      return h.redirect('/submit-claim')
     }
   }
 }]

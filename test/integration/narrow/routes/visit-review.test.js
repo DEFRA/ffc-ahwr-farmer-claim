@@ -139,7 +139,7 @@ describe('Vet visit review page test', () => {
 
     test.each([
       { answer: 'no', redirect: '/details-incorrect' },
-      { answer: 'yes', redirect: '/vet-rcvs' }
+      { answer: 'yes', redirect: '/vet-visit-date' }
     ])('redirects to correct page based on answer', async ({ answer, redirect }) => {
       const crumb = await getCrumbs(global.__SERVER__)
       const options = {

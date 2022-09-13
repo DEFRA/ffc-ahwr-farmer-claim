@@ -21,16 +21,30 @@ jest.mock('../../../../app/session')
 
 describe('Vet, enter practice name test', () => {
   const url = '/vet-practice'
+  const auth = { credentials: {}, strategy: 'cookie' }
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200 when not logged in', async () => {
+    test('returns 302 and redirects to /login when not logged in', async () => {
       const options = {
         method: 'GET',
         url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/login')
+    })
+
+    test('returns 200 when logged in', async () => {
+      const options = {
+        method: 'GET',
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
@@ -45,7 +59,8 @@ describe('Vet, enter practice name test', () => {
       const practiceName = 'practice name'
       const options = {
         method: 'GET',
-        url
+        url,
+        auth
       }
       session.getClaim.mockReturnValue(practiceName)
 
@@ -60,18 +75,39 @@ describe('Vet, enter practice name test', () => {
   })
 
   describe(`POST to ${url} route`, () => {
+    const method = 'POST'
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
+
+    test('when not logged in redirects to /login', async () => {
+      const options = {
+        method,
+        url,
+        payload: { crumb, practice: 'vetpracticename' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/login')
+    })
+
     test.each([
       { practice: undefined, errorMessage: practiceErrorMessages.enterName, expectedVal: undefined },
       { practice: null, errorMessage: practiceErrorMessages.enterName, expectedVal: undefined },
       { practice: '', errorMessage: practiceErrorMessages.enterName, expectedVal: undefined },
       { practice: 'a'.repeat(101), errorMessage: practiceErrorMessages.nameLength, expectedVal: 'a'.repeat(101) }
     ])('returns 400 when payload is invalid - %p', async ({ practice, errorMessage, expectedVal }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, practice },
-        url
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
@@ -89,12 +125,12 @@ describe('Vet, enter practice name test', () => {
       { practice: 'a'.repeat(100) },
       { practice: `  ${'a'.repeat(100)}  ` }
     ])('returns 200 when payload is valid and stores in session (practice = $practice)', async ({ practice }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, practice },
-        url
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)

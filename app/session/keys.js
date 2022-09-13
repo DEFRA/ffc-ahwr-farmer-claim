@@ -14,7 +14,8 @@ module.exports = {
     reference: 'reference',
     vetName: 'vetName',
     vetPractice: 'vetPractice',
-    vetRcvs: 'vetRcvs'
+    vetRcvs: 'vetRcvs',
+    visitDate: 'visitDate'
   },
   claim: {
     detailsCorrect: 'detailsCorrect'

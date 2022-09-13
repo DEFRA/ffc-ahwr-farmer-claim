@@ -13,7 +13,7 @@ function expectPageContentOk ($) {
   expect($('title').text()).toEqual(`What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/visit-review')
+  expect(backLink.attr('href')).toMatch('/vet-name')
 }
 
 const session = require('../../../../app/session')
@@ -21,16 +21,30 @@ jest.mock('../../../../app/session')
 
 describe('Vet, enter rcvs test', () => {
   const url = '/vet-rcvs'
+  const auth = { credentials: {}, strategy: 'cookie' }
 
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200 when not logged in', async () => {
+    test('returns 302 and redirects to /login when not logged in', async () => {
       const options = {
         method: 'GET',
         url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/login')
+    })
+
+    test('returns 200 when logged in', async () => {
+      const options = {
+        method: 'GET',
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
@@ -45,7 +59,8 @@ describe('Vet, enter rcvs test', () => {
       const rcvs = '1234567'
       const options = {
         method: 'GET',
-        url
+        url,
+        auth
       }
       session.getClaim.mockReturnValue(rcvs)
 
@@ -60,6 +75,27 @@ describe('Vet, enter rcvs test', () => {
   })
 
   describe(`POST to ${url} route`, () => {
+    const method = 'POST'
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
+
+    test('when not logged in redirects to /login', async () => {
+      const options = {
+        method,
+        url,
+        payload: { crumb, rcvs: '1234567' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/login')
+    })
+
     test.each([
       { rcvs: undefined, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
       { rcvs: null, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
@@ -68,12 +104,12 @@ describe('Vet, enter rcvs test', () => {
       { rcvs: '123456A', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '123456A' },
       { rcvs: '12345678', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '12345678' }
     ])('returns 400 when payload is invalid - %p', async ({ rcvs, errorMessage, expectedVal }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, rcvs },
-        url
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
@@ -91,18 +127,18 @@ describe('Vet, enter rcvs test', () => {
       { rcvs: '123456X' },
       { rcvs: '  123456X  ' }
     ])('returns 200 when payload is valid and stores in session (rcvs = $rcvs)', async ({ rcvs }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, rcvs },
-        url
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/vet-name')
+      expect(res.headers.location).toEqual('/submit-claim')
       expect(session.setClaim).toHaveBeenCalledTimes(1)
       expect(session.setClaim).toHaveBeenCalledWith(res.request, rcvsKey, rcvs.trim())
     })

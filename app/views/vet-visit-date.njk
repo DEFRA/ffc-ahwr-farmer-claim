@@ -1,11 +1,11 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - {{ serviceName }}{% endblock %}
+{% block pageTitle %}Date of visit - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/vet-name",
+    href: "/visit-review",
     attributes: {
       id: "back"
     }
@@ -17,20 +17,22 @@
     <div class="govuk-grid-column-two-thirds">
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <h1 class="govuk-heading-l">What is the vet's Royal College of Veterinary Surgeons (RCVS) number?</h1>
 
-        {{ govukInput({
-          label: {
-            text: "RCVS number"
+        {{ govukDateInput({
+          id: "visit-date",
+          namePrefix: "visit-date",
+          fieldset: {
+            legend: {
+              text: "When was the review completed?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--l"
+            }
           },
           hint: {
-            text: "It's a 7 digit number. You can find it on the RCVS website"
+            html: "This is the date of the last visit to the farm for the review<br>For example, 27 3 2022"
           },
-          classes: "govuk-input--width-10",
-          id: "rcvs",
-          name: "rcvs",
-          value: rcvs,
-          errorMessage: errorMessage
+          errorMessage: errorMessage,
+          items: items
         }) }}
 
         {{ govukButton({
