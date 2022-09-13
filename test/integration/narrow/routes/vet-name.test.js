@@ -20,6 +20,7 @@ const session = require('../../../../app/session')
 jest.mock('../../../../app/session')
 
 describe('Vet, enter name test', () => {
+  const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/vet-name'
 
   beforeEach(() => {
@@ -27,10 +28,23 @@ describe('Vet, enter name test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200 when not logged in', async () => {
+    test('returns 302 and redirects to /login when not logged in', async () => {
       const options = {
         method: 'GET',
         url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/login')
+    })
+
+    test('returns 200 when logged in', async () => {
+      const options = {
+        method: 'GET',
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
@@ -45,7 +59,8 @@ describe('Vet, enter name test', () => {
       const name = 'vet name'
       const options = {
         method: 'GET',
-        url
+        url,
+        auth
       }
       session.getClaim.mockReturnValue(name)
 
@@ -60,6 +75,21 @@ describe('Vet, enter name test', () => {
   })
 
   describe(`POST to ${url} route`, () => {
+
+    test('when not logged in redirects to /login', async () => {
+      const options = {
+        method,
+        url,
+        payload: { crumb, name: 'vetname' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/login')
+    })
+
     test.each([
       { name: undefined, errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
       { name: null, errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
@@ -71,7 +101,8 @@ describe('Vet, enter name test', () => {
         headers: { cookie: `crumb=${crumb}` },
         method: 'POST',
         payload: { crumb, name },
-        url
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)
@@ -94,7 +125,8 @@ describe('Vet, enter name test', () => {
         headers: { cookie: `crumb=${crumb}` },
         method: 'POST',
         payload: { crumb, name },
-        url
+        url,
+        auth
       }
 
       const res = await global.__SERVER__.inject(options)

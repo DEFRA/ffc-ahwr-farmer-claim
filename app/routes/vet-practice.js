@@ -7,7 +7,6 @@ module.exports = [{
   method: 'GET',
   path: '/vet-practice',
   options: {
-    auth: false,
     handler: async (request, h) => {
       const practice = session.getClaim(request, practiceKey)
       return h.view('vet-practice', { practice })
@@ -17,7 +16,6 @@ module.exports = [{
   method: 'POST',
   path: '/vet-practice',
   options: {
-    auth: false,
     validate: {
       payload: Joi.object({
         practice: Joi.string().trim().max(100).required()
