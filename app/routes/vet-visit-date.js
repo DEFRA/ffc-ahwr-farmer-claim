@@ -4,7 +4,7 @@ const getDateInputErrors = require('../lib/visit-date/date-input-errors')
 const { createItemsFromDate, createItemsFromPayload } = require('../lib/visit-date/date-input-items')
 const { isDateInFutureOrBeforeFirstValidDate } = require('../lib/visit-date/validation')
 const session = require('../session')
-const { farmerApplyData: { farmerApplication, visitDate } } = require('../session/keys')
+const { farmerApplyData: { visitDate } } = require('../session/keys')
 
 const templatePath = 'vet-visit-date'
 const path = `/${templatePath}`
@@ -62,8 +62,7 @@ module.exports = [{
         return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
       }
       session.setClaim(request, visitDate, date)
-      const eligibilityPath = `/vet-name`
-      return h.redirect(eligibilityPath)
+      return h.redirect('/vet-name')
     }
   }
 }]
