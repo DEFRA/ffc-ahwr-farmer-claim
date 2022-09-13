@@ -75,6 +75,12 @@ describe('Vet, enter practice name test', () => {
   })
 
   describe(`POST to ${url} route`, () => {
+    const method = 'POST'
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
 
     test('when not logged in redirects to /login', async () => {
       const options = {
@@ -96,10 +102,9 @@ describe('Vet, enter practice name test', () => {
       { practice: '', errorMessage: practiceErrorMessages.enterName, expectedVal: undefined },
       { practice: 'a'.repeat(101), errorMessage: practiceErrorMessages.nameLength, expectedVal: 'a'.repeat(101) }
     ])('returns 400 when payload is invalid - %p', async ({ practice, errorMessage, expectedVal }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, practice },
         url,
         auth
@@ -120,10 +125,9 @@ describe('Vet, enter practice name test', () => {
       { practice: 'a'.repeat(100) },
       { practice: `  ${'a'.repeat(100)}  ` }
     ])('returns 200 when payload is valid and stores in session (practice = $practice)', async ({ practice }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, practice },
         url,
         auth

@@ -75,6 +75,12 @@ describe('Vet, enter rcvs test', () => {
   })
 
   describe(`POST to ${url} route`, () => {
+    const method = 'POST'
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
 
     test('when not logged in redirects to /login', async () => {
       const options = {
@@ -98,10 +104,9 @@ describe('Vet, enter rcvs test', () => {
       { rcvs: '123456A', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '123456A' },
       { rcvs: '12345678', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '12345678' }
     ])('returns 400 when payload is invalid - %p', async ({ rcvs, errorMessage, expectedVal }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, rcvs },
         url,
         auth
@@ -122,10 +127,9 @@ describe('Vet, enter rcvs test', () => {
       { rcvs: '123456X' },
       { rcvs: '  123456X  ' }
     ])('returns 200 when payload is valid and stores in session (rcvs = $rcvs)', async ({ rcvs }) => {
-      const crumb = await getCrumbs(global.__SERVER__)
       const options = {
         headers: { cookie: `crumb=${crumb}` },
-        method: 'POST',
+        method,
         payload: { crumb, rcvs },
         url,
         auth
