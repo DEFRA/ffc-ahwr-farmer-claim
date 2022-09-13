@@ -44,13 +44,13 @@ module.exports = [{
         [labels.year]: Joi.number().min(2022).max(2024).required()
       }),
       failAction: async (request, h, error) => {
-        const { createdAt } = session.getClaim(request, farmerApplication)
+        const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(error.details, request.payload, createdAt)
         return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
-      const application = session.getClaim(request, farmerApplication)
+      const application = session.getClaim(request)
 
       const date = getDateFromPayload(request.payload)
       const { isDateValid, errorMessage } = isDateInFutureOrBeforeFirstValidDate(date, application.createdAt)

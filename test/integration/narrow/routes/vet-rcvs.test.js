@@ -13,7 +13,7 @@ function expectPageContentOk ($) {
   expect($('title').text()).toEqual(`What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/visit-review')
+  expect(backLink.attr('href')).toMatch('/vet-name')
 }
 
 const session = require('../../../../app/session')
@@ -102,7 +102,7 @@ describe('Vet, enter rcvs test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/vet-name')
+      expect(res.headers.location).toEqual('/submit-claim')
       expect(session.setClaim).toHaveBeenCalledTimes(1)
       expect(session.setClaim).toHaveBeenCalledWith(res.request, rcvsKey, rcvs.trim())
     })

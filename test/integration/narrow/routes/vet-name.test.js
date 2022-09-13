@@ -13,7 +13,7 @@ function expectPageContentOk ($) {
   expect($('title').text()).toEqual(`What is the name of the vet who did the review? - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/vet-rcvs')
+  expect(backLink.attr('href')).toMatch('/vet-visit-date')
 }
 
 const session = require('../../../../app/session')
@@ -100,7 +100,7 @@ describe('Vet, enter name test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/vet-practice')
+      expect(res.headers.location).toEqual('/vet-rcvs')
       expect(session.setClaim).toHaveBeenCalledTimes(1)
       expect(session.setClaim).toHaveBeenCalledWith(res.request, nameKey, name.trim())
     })

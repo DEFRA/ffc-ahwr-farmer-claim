@@ -14,5 +14,12 @@ module.exports = {
   rcvs: {
     enterRCVS: 'Enter the RCVS number',
     validRCVS: 'Enter a valid RCVS number'
+  },
+  visitDate: {
+    emptyValues: (val1, val2) => `Date must include a ${val1}${val2 ? ' and a ' + val2 : ''}`,
+    enterDate: 'Enter the date of the visit',
+    realDate: 'Date must be a real date',
+    startDateOrAfter: (createdAt) => `Date must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when the application was made`,
+    todayOrPast: 'The date the review was completed must be in the past'
   }
 }

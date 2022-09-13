@@ -11,7 +11,8 @@ const routes = [].concat(
   require('../routes/vet-name'),
   require('../routes/vet-practice'),
   require('../routes/vet-rcvs'),
-  require('../routes/verify-login')
+  require('../routes/verify-login'),
+  require('../routes/vet-visit-date'),
 )
 
 module.exports = {

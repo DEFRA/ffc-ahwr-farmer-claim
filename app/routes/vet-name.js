@@ -35,7 +35,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { name } = request.payload
       session.setClaim(request, nameKey, name)
-      return h.redirect('/vet-practice')
+      return h.redirect('/vet-rcvs')
     }
   }
 }]
