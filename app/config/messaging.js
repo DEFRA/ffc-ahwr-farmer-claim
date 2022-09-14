@@ -19,6 +19,10 @@ const mqSchema = Joi.object({
     address: process.env.APPLICATIONRESPONSE_QUEUE_ADDRESS,
     type: 'queue'
   },
+  eventQueue: {
+    address: process.env.EVENT_QUEUE_ADDRESS,
+    type: 'queue'
+  },
   fetchApplicationRequestMsgType: `${msgTypePrefix}.fetch.app.request`,
   fetchClaimRequestMsgType: `${msgTypePrefix}.fetch.claim.request`,
   submitClaimRequestMsgType: `${msgTypePrefix}.submit.claim.request`
@@ -41,6 +45,10 @@ const mqConfig = {
     address: process.env.APPLICATIONRESPONSE_QUEUE_ADDRESS,
     type: 'queue'
   },
+  eventQueue: {
+    address: process.env.EVENT_QUEUE_ADDRESS,
+    type: 'queue'
+  },
   fetchApplicationRequestMsgType: `${msgTypePrefix}.fetch.app.request`,
   fetchClaimRequestMsgType: `${msgTypePrefix}.fetch.claim.request`,
   submitClaimRequestMsgType: `${msgTypePrefix}.submit.claim.request`
@@ -56,6 +64,7 @@ if (mqResult.error) {
 
 const applicationRequestQueue = { ...mqResult.value.messageQueue, ...mqResult.value.applicationRequestQueue }
 const applicationResponseQueue = { ...mqResult.value.messageQueue, ...mqResult.value.applicationResponseQueue }
+const eventQueue = { ...mqResult.value.messageQueue, ...mqResult.value.eventQueue }
 const fetchApplicationRequestQueue = { ...mqResult.value.messageQueue, ...mqResult.value.fetchApplicationRequestQueue }
 const applicationRequestMsgType = mqResult.value.applicationRequestMsgType
 const fetchApplicationRequestMsgType = mqResult.value.fetchApplicationRequestMsgType
@@ -66,6 +75,7 @@ module.exports = {
   applicationRequestQueue,
   applicationResponseQueue,
   applicationRequestMsgType,
+  eventQueue,
   fetchApplicationRequestQueue,
   fetchApplicationRequestMsgType,
   fetchClaimRequestMsgType,

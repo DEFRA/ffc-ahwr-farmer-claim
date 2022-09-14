@@ -47,7 +47,7 @@ describe('session', () => {
 
       session[func](requestSetMock, key, value)
 
-      expect(requestSetMock.yar.get).toHaveBeenCalledTimes(1)
+      expect(requestSetMock.yar.get).toHaveBeenCalledTimes(2)
       expect(requestSetMock.yar.get).toHaveBeenCalledWith(expectedSectionKey)
       expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
       expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { [key]: value })
@@ -65,7 +65,7 @@ describe('session', () => {
 
       session[func](requestSetMock, key, value)
 
-      expect(requestSetMock.yar.get).toHaveBeenCalledTimes(1)
+      expect(requestSetMock.yar.get).toHaveBeenCalledTimes(2)
       expect(requestSetMock.yar.get).toHaveBeenCalledWith(expectedSectionKey)
       expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
       expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { ...{ [key]: value }, ...existingValue })
@@ -83,7 +83,7 @@ describe('session', () => {
 
     session[func](requestSetMock, key, valueToBeTrimmed)
 
-    expect(requestSetMock.yar.get).toHaveBeenCalledTimes(1)
+    expect(requestSetMock.yar.get).toHaveBeenCalledTimes(2)
     expect(requestSetMock.yar.get).toHaveBeenCalledWith(expectedSectionKey)
     expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
     expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { [key]: valueToBeTrimmed.trim() })
@@ -99,7 +99,7 @@ describe('session', () => {
 
     session[func](requestSetMock, key, objectValue)
 
-    expect(requestSetMock.yar.get).toHaveBeenCalledTimes(1)
+    expect(requestSetMock.yar.get).toHaveBeenCalledTimes(2)
     expect(requestSetMock.yar.get).toHaveBeenCalledWith(expectedSectionKey)
     expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
     expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { [key]: objectValue })

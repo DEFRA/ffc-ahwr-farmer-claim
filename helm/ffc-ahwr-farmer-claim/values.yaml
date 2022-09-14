@@ -39,6 +39,7 @@ container:
   azureStorageUseConnectionString: true
   azureStorageAccountName:
   cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
+  eventQueueAddress: ffc-ahwr-event
   googleTagManagerKey:
   imagePullPolicy: IfNotPresent
   requestMemory: 100Mi
