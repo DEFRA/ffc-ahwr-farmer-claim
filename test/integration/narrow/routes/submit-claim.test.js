@@ -56,7 +56,7 @@ describe('Farmer claim - submit claim page test', () => {
     })
 
     test.each([
-      { heading: 'Funding claim complete', state: states.success },
+      { heading: 'Claim complete', state: states.success },
       { heading: 'Funding claim failed', state: states.failed },
       { heading: 'Funding already claimed', state: states.alreadyClaimed },
       { heading: 'Funding claim not found', state: states.notFound }
