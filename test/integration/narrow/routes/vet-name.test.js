@@ -7,10 +7,10 @@ const { farmerApplyData: { vetName: nameKey } } = require('../../../../app/sessi
 const { serviceName } = require('../../../../app/config')
 
 function expectPageContentOk ($) {
-  expect($('.govuk-heading-l').text()).toEqual('What is the name of the vet who did the review?')
+  expect($('.govuk-heading-l').text()).toEqual('What is the name of the vet?')
   expect($('label[for=name]').text()).toMatch('Vet\'s full name')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual(`What is the name of the vet who did the review? - ${serviceName}`)
+  expect($('title').text()).toEqual(`What is the name of the vet? - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/vet-visit-date')
