@@ -18,6 +18,7 @@ module.exports = {
     visitDate: 'visitDate'
   },
   claim: {
-    detailsCorrect: 'detailsCorrect'
+    detailsCorrect: 'detailsCorrect',
+    claimed: 'claimed'
   }
 }
