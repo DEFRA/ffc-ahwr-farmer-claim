@@ -1,18 +1,27 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Funding claim complete - {{ serviceName }}{% endblock %}
+{% block pageTitle %}Claim complete - {{ serviceName }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     {{ govukPanel({
-      titleText: "Funding claim complete",
+      titleText: "Claim complete",
       html: "Your reference number<br><strong>" + reference + "</strong>"
     }) }}
-
-    <h2 class="govuk-heading-m">What happens next</h2>
+    <p>Your claim has been successfully submitted.</p>
     <p>We've sent you a confirmation email.</p>
+    <p>You'll be asked to provide evidence that the review has taken place. This can be an invoice or a declaration from the vet.</p>
     <p>You'll receive a payment within 28 days.</p>
+    <h2 class="govuk-heading-m">Get help with your application</h2>
+    <p>If you cannot claim online or have a question about your claim, contact the Rural Payments Agency</p>
+    <p>If you have your reference number, have it with you when you call or include it in your email.</p>
+    <p>Telephone: 01900 508 622<br/>
+    Monday to Friday, 8:30am to 5pm (expect public holidays)<br/>
+    <a href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></p>
+    <p>Find out about <a href="#">call charges</a></p>
+    <br/>
+    <p><a href="#">What did you think of this service?</a>(takes 30 seconds)</p>
   </div>
 </div>
 {% endblock %}

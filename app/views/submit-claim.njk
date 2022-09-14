@@ -7,12 +7,15 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Submit your claim for funding</h1>
 
-    <p>By submitting your claim you confirm that:</p>
+    <p>By submitting your claim, you confirm that:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>the review has taken place</li>
+      <li>you had the eligible number of animals on the date of the farm visit</li>
+      <li>disease and endemic condition testing was carried out to recommended standards</li>
+      <li>the vet gave you a written report</li>
+      <li>the vet has completed and signed a cover sheet</li>
+      <li>all the information you've provided is complete and correct to the best of your knowledge</li>
       <li>the information given is correct</li>
     </ul>
-    <p>Keep paperwork, such as invoices, from the review as the RPA may ask for these.</p>
 
     <form method="POST" action="/submit-claim">
       <input type="hidden" name="crumb" value="{{crumb}}"/>
