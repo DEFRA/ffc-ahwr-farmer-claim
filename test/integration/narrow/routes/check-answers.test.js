@@ -20,7 +20,7 @@ describe('Check Answers test', () => {
         auth
       }
 
-      sessionMock.getClaim.mockReturnValue('XYZ').mockReturnValue('2015-03-25').mockReturnValue('1234567')
+      sessionMock.getClaim.mockReturnValue('XYZ').mockReturnValue('2015-03-25').mockReturnValue('1234567').mockReturnValue('URNREF')
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(200)
