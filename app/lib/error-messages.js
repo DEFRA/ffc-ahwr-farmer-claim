@@ -11,6 +11,10 @@ module.exports = {
     enterName: 'Enter the vet practice name',
     nameLength: 'Practice name must be 100 characters or fewer'
   },
+  urn: {
+    enterUrn: 'Enter the URN of the test result',
+    urnLength: 'URN must be 100 characters or fewer'
+  },
   rcvs: {
     enterRCVS: 'Enter the RCVS number',
     validRCVS: 'Enter a valid RCVS number'

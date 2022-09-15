@@ -2,26 +2,26 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const pageExpects = require('../../../utils/page-expects')
-const { rcvs: rcvsErrorMessages } = require('../../../../app/lib/error-messages')
-const { farmerApplyData: { vetRcvs: rcvsKey } } = require('../../../../app/session/keys')
+const { urn: urnErrorMessages } = require('../../../../app/lib/error-messages')
+const { farmerApplyData: { urnResult: urnResultKey } } = require('../../../../app/session/keys')
 const { serviceName } = require('../../../../app/config')
 
 function expectPageContentOk ($) {
-  expect($('.govuk-heading-l').text()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
-  expect($('label[for=rcvs]').text()).toMatch('RCVS number')
+  expect($('.govuk-heading-l').text()).toEqual('Enter the Unique Reference Number (URN) of the test result')
+  expect($('label[for=urn]').text()).toMatch('Unique reference number')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual(`What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - ${serviceName}`)
+  expect($('title').text()).toEqual(`Enter the Unique Reference Number (URN) of the test result - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/vet-name')
+  expect(backLink.attr('href')).toMatch('/vet-visit-date')
 }
 
 const session = require('../../../../app/session')
 jest.mock('../../../../app/session')
 
-describe('Vet, enter rcvs test', () => {
-  const url = '/vet-rcvs'
+describe('Enter URN test result test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
+  const url = '/urn-result'
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -55,14 +55,14 @@ describe('Vet, enter rcvs test', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('loads rcvs number if in session', async () => {
-      const rcvs = '1234567'
+    test('loads urn if in session', async () => {
+      const urn = 'fekeurn'
       const options = {
         method: 'GET',
         url,
         auth
       }
-      session.getClaim.mockReturnValue(rcvs)
+      session.getClaim.mockReturnValue(urn)
 
       const res = await global.__SERVER__.inject(options)
 
@@ -70,7 +70,7 @@ describe('Vet, enter rcvs test', () => {
       const $ = cheerio.load(res.payload)
       expectPageContentOk($)
       expectPhaseBanner.ok($)
-      expect($('#rcvs').val()).toEqual(rcvs)
+      expect($('#urn').val()).toEqual(urn)
     })
   })
 
@@ -86,7 +86,7 @@ describe('Vet, enter rcvs test', () => {
       const options = {
         method,
         url,
-        payload: { crumb, rcvs: '1234567' },
+        payload: { crumb, urn: 'urnfake' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -97,17 +97,15 @@ describe('Vet, enter rcvs test', () => {
     })
 
     test.each([
-      { rcvs: undefined, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
-      { rcvs: null, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
-      { rcvs: '', errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
-      { rcvs: 'not-valid-ref', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: 'not-valid-ref' },
-      { rcvs: '123456A', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '123456A' },
-      { rcvs: '12345678', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '12345678' }
-    ])('returns 400 when payload is invalid - %p', async ({ rcvs, errorMessage, expectedVal }) => {
+      { urn: undefined, errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
+      { urn: null, errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
+      { urn: '', errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
+      { urn: 'a'.repeat(101), errorMessage: urnErrorMessages.urnLength, expectedVal: 'a'.repeat(101) }
+    ])('returns 400 when payload is invalid - %p', async ({ urn, errorMessage, expectedVal }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
         method,
-        payload: { crumb, rcvs },
+        payload: { crumb, urn },
         url,
         auth
       }
@@ -119,18 +117,18 @@ describe('Vet, enter rcvs test', () => {
       expectPageContentOk($)
       expectPhaseBanner.ok($)
       pageExpects.errors($, errorMessage)
-      expect($('#rcvs').val()).toEqual(expectedVal)
+      expect($('#urn').val()).toEqual(expectedVal)
     })
 
     test.each([
-      { rcvs: '1234567' },
-      { rcvs: '123456X' },
-      { rcvs: '  123456X  ' }
-    ])('returns 200 when payload is valid and stores in session (rcvs = $rcvs)', async ({ rcvs }) => {
+      { urn: 'a' },
+      { urn: 'a'.repeat(100) },
+      { urn: `  ${'a'.repeat(100)}  ` }
+    ])('returns 200 when payload is valid and stores in session (urn = $urn)', async ({ urn }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
         method,
-        payload: { crumb, rcvs },
+        payload: { crumb, urn },
         url,
         auth
       }
@@ -138,9 +136,9 @@ describe('Vet, enter rcvs test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/urn-result')
+      expect(res.headers.location).toEqual('/submit-claim')
       expect(session.setClaim).toHaveBeenCalledTimes(1)
-      expect(session.setClaim).toHaveBeenCalledWith(res.request, rcvsKey, rcvs.trim())
+      expect(session.setClaim).toHaveBeenCalledWith(res.request, urnResultKey, urn.trim())
     })
   })
 })

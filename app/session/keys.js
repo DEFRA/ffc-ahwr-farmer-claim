@@ -12,6 +12,7 @@ module.exports = {
     whichReview: 'whichReview',
     confirmCheckDetails: 'confirmCheckDetails',
     reference: 'reference',
+    urnResult: 'urnResult',
     vetName: 'vetName',
     vetPractice: 'vetPractice',
     vetRcvs: 'vetRcvs',
