@@ -14,7 +14,6 @@ module.exports = {
     reference: 'reference',
     urnResult: 'urnResult',
     vetName: 'vetName',
-    vetPractice: 'vetPractice',
     vetRcvs: 'vetRcvs',
     visitDate: 'visitDate'
   },

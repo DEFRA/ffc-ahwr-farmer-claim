@@ -33,7 +33,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { urn } = request.payload
       session.setClaim(request, urnResultKey, urn)
-      return h.redirect('/submit-claim')
+      return h.redirect('/check-answers')
     }
   }
 }]
