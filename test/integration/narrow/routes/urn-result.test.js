@@ -136,7 +136,7 @@ describe('Enter URN test result test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/submit-claim')
+      expect(res.headers.location).toEqual('/check-answers')
       expect(session.setClaim).toHaveBeenCalledTimes(1)
       expect(session.setClaim).toHaveBeenCalledWith(res.request, urnResultKey, urn.trim())
     })
