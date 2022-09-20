@@ -24,6 +24,7 @@ module.exports = {
     enterDate: 'Enter the date of the visit',
     realDate: 'Date must be a real date',
     startDateOrAfter: (createdAt) => `Date must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when the application was made`,
-    todayOrPast: 'The date the review was completed must be in the past'
+    todayOrPast: 'The date the review was completed must be in the past',
+    shouldBeLessThan6MonthAfterAgreement: 'The date the review was completed must be within six months of agreement date.'
   }
 }

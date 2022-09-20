@@ -89,6 +89,8 @@ describe('Vet, enter date of visit', () => {
     yesterday.setDate(yesterday.getDate() - 1)
     const tomorrow = new Date(today)
     tomorrow.setDate(tomorrow.getDate() + 1)
+    // const after6Months = new Date(today)
+    // new Date(endDate.setMonth(endDate.getMonth() + 6))
 
     beforeEach(async () => {
       crumb = await getCrumbs(global.__SERVER__)
@@ -111,9 +113,6 @@ describe('Vet, enter date of visit', () => {
     const allErrorHighlights = [labels.day, labels.month, labels.year]
 
     test.each([
-      { description: 'visit 366 days after application created', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), errorMessage: `Date must be the same or after ${yearPastMinusOneApplicationDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`, errorHighlights: allErrorHighlights, applicationCreationDate: yearPastMinusOneApplicationDate },
-      { description: 'visit in future - application created yesterday, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 1, year: tomorrow.getFullYear(), errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: yesterday },
-      { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() + 1, year: yesterday.getFullYear(), errorMessage: `Date must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
       { description: 'missing day and month and year', day: '', month: '', year: '', errorMessage: 'Enter the date of the visit', errorHighlights: allErrorHighlights, applicationCreationDate: today },
       { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), errorMessage: 'Date must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
       { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), errorMessage: 'Date must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
@@ -145,8 +144,7 @@ describe('Vet, enter date of visit', () => {
 
     test.each([
       { description: 'application created today, visit date today', applicationCreationDate: today },
-      { description: 'application created 365 days ago, visit date today', applicationCreationDate: yearPast },
-      { description: 'application created yesterday, visit date today', applicationCreationDate: yesterday }
+      { description: 'visit in future - application created yesterday, visit date tomorrow', applicationCreationDate: yesterday }
     ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate }) => {
       session.getClaim.mockReturnValueOnce({ data: { whichReview: 'pigs' }, createdAt: applicationCreationDate })
       const options = {
