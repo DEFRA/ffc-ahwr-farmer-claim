@@ -55,7 +55,6 @@ module.exports = [{
       let endDate = new Date(application.createdAt)
       endDate = new Date(endDate.setMonth(endDate.getMonth() + 6))
       const date = getDateFromPayload(request.payload)
-      console.log(date >= endDate, date < startDate, startDate, endDate, date)
       if (date >= endDate || date < startDate) {
         const dateInputErrors = {
           errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
