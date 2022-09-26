@@ -2,9 +2,9 @@ const Joi = require('joi')
 const { labels } = require('../config/visit-date')
 const getDateInputErrors = require('../lib/visit-date/date-input-errors')
 const { createItemsFromDate, createItemsFromPayload } = require('../lib/visit-date/date-input-items')
+const { isDateInFutureOrBeforeFirstValidDate } = require('../lib/visit-date/validation')
 const session = require('../session')
 const { farmerApplyData: { visitDate } } = require('../session/keys')
-const errorMessages = require('../lib/error-messages')
 
 const templatePath = 'vet-visit-date'
 const path = `/${templatePath}`
@@ -51,13 +51,12 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const application = session.getClaim(request)
-      const startDate = new Date(application.createdAt)
-      let endDate = new Date(application.createdAt)
-      endDate = new Date(endDate.setMonth(endDate.getMonth() + 6))
+
       const date = getDateFromPayload(request.payload)
-      if (date >= endDate || date < startDate) {
+      const { isDateValid, errorMessage } = isDateInFutureOrBeforeFirstValidDate(date, application.createdAt)
+      if (!isDateValid) {
         const dateInputErrors = {
-          errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
+          errorMessage,
           items: createItemsFromPayload(request.payload, true)
         }
         return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
