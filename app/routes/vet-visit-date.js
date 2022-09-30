@@ -51,8 +51,8 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const application = session.getClaim(request)
-      const applicationDate = new Date(new Date(application.createdAt).toDateString());
-      let endDate = new Date(new Date(application.createdAt).toDateString());
+      const applicationDate = new Date(new Date(application.createdAt).toDateString())
+      let endDate = new Date(new Date(application.createdAt).toDateString())
       endDate = new Date(endDate.setMonth(endDate.getMonth() + 6))
       const date = getDateFromPayload(request.payload)
       if (date > endDate || date < applicationDate) {
