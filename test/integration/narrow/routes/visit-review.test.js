@@ -5,7 +5,6 @@ const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const { claim: { detailsCorrect } } = require('../../../../app/session/keys')
 const { serviceName } = require('../../../../app/config')
 
-const { getClaimAmount } = require('../../../../app/lib/get-claim-amount')
 const { getTypeOfReviewRowForDisplay, getEligibleNumberRowForDisplay } = require('../../../../app/lib/display-helpers')
 
 function expectPageContentOk ($, application) {
