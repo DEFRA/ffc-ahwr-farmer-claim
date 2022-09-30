@@ -27,7 +27,7 @@ describe('Farmer claim - submit claim page test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toEqual('Submit your claim for funding')
+      expect($('.govuk-heading-l').text()).toEqual('Submit your claim')
       expectPhaseBanner.ok($)
     })
   })

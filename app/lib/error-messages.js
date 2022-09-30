@@ -4,7 +4,7 @@ module.exports = {
     validEmail: 'Enter an email address in the correct format, like name@example.com'
   },
   name: {
-    enterName: 'Enter the vet\'s full name',
+    enterName: 'Enter the vet\'s name',
     nameLength: 'Name must be 100 characters or fewer'
   },
   practice: {
@@ -12,7 +12,7 @@ module.exports = {
     nameLength: 'Practice name must be 100 characters or fewer'
   },
   urn: {
-    enterUrn: 'Enter the URN of the test result',
+    enterUrn: 'Enter the URN',
     urnLength: 'URN must be 100 characters or fewer'
   },
   rcvs: {

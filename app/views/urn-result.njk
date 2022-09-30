@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Enter the Unique Reference Number (URN) of the test result - {{ serviceName }}{% endblock %}
+{% block pageTitle %}What is the laboratory unique reference number for the test results? - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -17,11 +17,11 @@
     <div class="govuk-grid-column-two-thirds">
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <h1 class="govuk-heading-l">Enter the Unique Reference Number (URN) of the test result</h1>
+        <h1 class="govuk-heading-l">What is the laboratory unique reference number for the test results?</h1>
 
         {{ govukInput({
           label: {
-            text: "Unique reference number"
+            text: "What is the laboratory unique reference number for the test results?"
           },
           classes: "govuk-input-!-width-full",
           id: "urn",

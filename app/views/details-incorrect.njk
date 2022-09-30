@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Claim details incorrect - {{ serviceName }}{% endblock %}
+{% block pageTitle %}Review details incorrect - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -15,15 +15,17 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Claim details incorrect</h1>
+    <h1 class="govuk-heading-l">Review details incorrect</h1>
 
-    <p>You have identified the claim details are incorrect, contact the Rural Payments Agency:</p>
+    <p>If you need to correct any details about the review, contact the Rural Payments Agency:</p>
     <ul class="govuk-list">
-        <li>Telephone: 01900 508622</li>
-        <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
-        <li><a class="govuk-link" href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></li>
-      </ul>
-      <p class="govuk-body"><a class="govuk-link" href="https://www.gov.uk/call-charges">Find out about call charges</a>.</p>
+      <li>Rural Payments Agency</li>
+      <li>Telephone: 01900 508 622</li>
+      <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
+      <li><a class="govuk-link" href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></li>
+    </ul>
+
+    <p class="govuk-body"><a class="govuk-link" href="https://www.gov.uk/call-charges">Find out about call charges</a>.</p>
   </div>
 </div>
 {% endblock %}

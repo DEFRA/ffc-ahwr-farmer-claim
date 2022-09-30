@@ -10,7 +10,7 @@ const { getTypeOfReviewRowForDisplay } = require('../../../../app/lib/display-he
 
 function expectPageContentOk ($, application) {
   const typeOfReviewRow = getTypeOfReviewRowForDisplay(application.data)
-  expect($('.govuk-heading-l').text()).toEqual('Confirm the details of your annual health and welfare review')
+  expect($('.govuk-heading-l').text()).toEqual('Check review details')
   const keys = $('.govuk-summary-list__key')
   const values = $('.govuk-summary-list__value')
   expect(keys.eq(0).text()).toMatch('Business name')

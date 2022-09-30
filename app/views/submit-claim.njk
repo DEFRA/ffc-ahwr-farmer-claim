@@ -1,20 +1,19 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Submit your claim for funding - {{ serviceName }}{% endblock %}
+{% block pageTitle %}Submit your claim - {{ serviceName }}{% endblock %}
 
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Submit your claim for funding</h1>
+    <h1 class="govuk-heading-l">Submit your claim</h1>
 
-    <p>By submitting your claim, you confirm that:</p>
+    <p>By submitting this claim, you confirm that:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>you had the eligible number of animals on the date of the farm visit</li>
+      <li>all the information you've provided in this claim is and correct to the best of your knowledge</li>
       <li>disease and endemic condition testing was carried out to recommended standards</li>
-      <li>the vet gave you a written report</li>
-      <li>the vet has completed and signed a cover sheet</li>
-      <li>all the information you've provided is complete and correct to the best of your knowledge</li>
-      <li>the information given is correct</li>
+      <li>the vet has given you a written report</li>
+      <li>the vet has given you a signed and dated review summary</li>
+      <li>the review was carried out in accordance with the terms and conditions</li>
     </ul>
 
     <form method="POST" action="/submit-claim">

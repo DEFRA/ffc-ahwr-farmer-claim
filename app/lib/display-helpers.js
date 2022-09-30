@@ -9,8 +9,21 @@ function getTypeOfReviewForDisplay (claimData) {
   }[getClaimType(claimData)]
 }
 
+function getSpeciesEligbileNumberForDisplay (claimData) {
+  return {
+    beef: 'More than 10 beef cattle ',
+    dairy: 'More than 10 dairy cattle',
+    pigs: 'More than 50 pigs ',
+    sheep: 'More than 20 sheep '
+  }[getClaimType(claimData)]
+}
+
 function getTypeOfReviewRowForDisplay (claimData) {
   return { key: { text: 'Type of review' }, value: { text: getTypeOfReviewForDisplay(claimData) } }
+}
+
+function getEligibleNumberRowForDisplay (claimData) {
+  return { key: { text: getSpeciesEligbileNumberForDisplay(claimData) }, value: { text: claimData.eligibleSpecies } }
 }
 
 function upperFirstLetter (str) {
@@ -19,5 +32,6 @@ function upperFirstLetter (str) {
 
 module.exports = {
   getTypeOfReviewRowForDisplay,
+  getEligibleNumberRowForDisplay,
   upperFirstLetter
 }
