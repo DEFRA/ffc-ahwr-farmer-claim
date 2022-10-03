@@ -5,20 +5,22 @@ const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const { claim: { detailsCorrect } } = require('../../../../app/session/keys')
 const { serviceName } = require('../../../../app/config')
 
-const { getClaimAmount } = require('../../../../app/lib/get-claim-amount')
-const { getTypeOfReviewRowForDisplay } = require('../../../../app/lib/display-helpers')
+const { getTypeOfReviewRowForDisplay, getEligibleNumberRowForDisplay } = require('../../../../app/lib/display-helpers')
 
 function expectPageContentOk ($, application) {
   const typeOfReviewRow = getTypeOfReviewRowForDisplay(application.data)
-  expect($('.govuk-heading-l').text()).toEqual('Confirm the details of your annual health and welfare review')
+  const eligibleSpeciesRow = getEligibleNumberRowForDisplay(application.data)
+  expect($('.govuk-heading-l').text()).toEqual('Check review details')
   const keys = $('.govuk-summary-list__key')
   const values = $('.govuk-summary-list__value')
-  expect(keys.eq(0).text()).toMatch('Business name')
-  expect(values.eq(0).text()).toMatch(application.data.organisation.name)
-  expect(keys.eq(1).text()).toMatch(typeOfReviewRow.key.text)
-  expect(values.eq(1).text()).toMatch(typeOfReviewRow.value.text)
-  expect(keys.eq(keys.length - 1).text()).toMatch('Payment amount')
-  expect(values.eq(keys.length - 1).text()).toMatch(`£${getClaimAmount(application.data)}`)
+  expect(keys.eq(0).text()).toMatch('Agreement number')
+  expect(values.eq(0).text()).toMatch(application.reference)
+  expect(keys.eq(1).text()).toMatch('Business name')
+  expect(values.eq(1).text()).toMatch(application.data.organisation.name)
+  expect(keys.eq(2).text()).toMatch(typeOfReviewRow.key.text)
+  expect(values.eq(2).text()).toMatch(typeOfReviewRow.value.text)
+  expect(keys.eq(3).text()).toMatch(eligibleSpeciesRow.key.text)
+  expect(values.eq(3).text()).toMatch('yes')
   expect($('title').text()).toEqual(`Confirm the details - ${serviceName}`)
   expectPhaseBanner.ok($)
 }
@@ -31,11 +33,13 @@ describe('Vet visit review page test', () => {
   function setupSessionMock (speciesToTest) {
     let vvData
     const application = {
+      reference: 'AWHR-TEST',
       data: {
         organisation: {
           name: 'org-name'
         },
-        whichReview: speciesToTest
+        whichReview: speciesToTest,
+        eligibleSpecies: 'yes'
       },
       vetVisit: {
         data: {

@@ -1,20 +1,18 @@
 const { getYesNoRadios } = require('./form-component/yes-no-radios')
-const { getClaimAmount } = require('../../lib/get-claim-amount')
-const { getTypeOfReviewRowForDisplay } = require('../../lib/display-helpers')
+const { getTypeOfReviewRowForDisplay, getEligibleNumberRowForDisplay } = require('../../lib/display-helpers')
 const { detailsCorrect } = require('../../session/keys').claim
 
 const legendText = 'Are these details correct?'
 
 const getRows = (claim) => {
   const claimData = claim.data
-  const paymentAmount = getClaimAmount(claimData)
 
   const rows = [
+    { key: { text: 'Agreement number' }, value: { text: claim.reference } },
     { key: { text: 'Business name' }, value: { text: claimData.organisation.name } },
-    getTypeOfReviewRowForDisplay(claimData)
+    getTypeOfReviewRowForDisplay(claimData),
+    getEligibleNumberRowForDisplay(claimData)
   ]
-
-  rows.push({ key: { text: 'Payment amount' }, value: { text: `£${paymentAmount}` } })
 
   return rows
 }

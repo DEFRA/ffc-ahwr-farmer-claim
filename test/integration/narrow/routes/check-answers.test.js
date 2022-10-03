@@ -20,7 +20,22 @@ describe('Check Answers test', () => {
         auth
       }
 
-      sessionMock.getClaim.mockReturnValue('XYZ').mockReturnValue('2015-03-25').mockReturnValue('1234567').mockReturnValue('URNREF')
+      const organisation = {
+        name: 'org-name',
+        sbi: '1324243'
+      }
+      const claim = {
+        data: {
+          whichReview: 'beef'
+        }
+      }
+      sessionMock.getClaim.mockReturnValueOnce('XYZ')
+        .mockReturnValueOnce('2015-03-25')
+        .mockReturnValueOnce('1234567')
+        .mockReturnValueOnce('URNREF')
+        .mockReturnValueOnce(organisation)
+        .mockReturnValueOnce(claim)
+
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(200)

@@ -7,10 +7,10 @@ const { farmerApplyData: { urnResult: urnResultKey } } = require('../../../../ap
 const { serviceName } = require('../../../../app/config')
 
 function expectPageContentOk ($) {
-  expect($('.govuk-heading-l').text()).toEqual('Enter the Unique Reference Number (URN) of the test result')
-  expect($('label[for=urn]').text()).toMatch('Unique reference number')
+  expect($('.govuk-heading-l').text()).toEqual('What is the laboratory unique reference number for the test results?')
+  expect($('label[for=urn]').text()).toMatch('What is the laboratory unique reference number for the test results?')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual(`Enter the Unique Reference Number (URN) of the test result - ${serviceName}`)
+  expect($('title').text()).toEqual(`What is the laboratory unique reference number for the test results? - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/vet-visit-date')
