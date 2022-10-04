@@ -116,6 +116,7 @@ describe('Vet, enter date of visit', () => {
 
     test.each([
       { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth(), year: yesterday.getFullYear(), errorMessage: 'The date the review was completed must be within six months of agreement date.', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+      { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
       { description: 'missing day and month and year', day: '', month: '', year: '', errorMessage: 'Enter the date of the visit', errorHighlights: allErrorHighlights, applicationCreationDate: today },
       { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), errorMessage: 'Date must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
       { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), errorMessage: 'Date must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
