@@ -55,6 +55,13 @@ module.exports = [{
       let endDate = new Date(new Date(application.createdAt).toDateString())
       endDate = new Date(endDate.setMonth(endDate.getMonth() + 6))
       const date = getDateFromPayload(request.payload)
+      if (date > new Date()) {
+        const dateInputErrors = {
+          errorMessage: { text: errorMessages.visitDate.todayOrPast },
+          items: createItemsFromPayload(request.payload, true)
+        }
+        return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
+      }
       if (date > endDate || date < applicationDate) {
         const dateInputErrors = {
           errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
