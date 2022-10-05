@@ -1,4 +1,4 @@
-const { serviceName } = require('../config')
+const { serviceName, applyServiceUri } = require('../config')
 
 module.exports = {
   plugin: {
@@ -19,6 +19,7 @@ module.exports = {
           }
           ctx.serviceName = serviceName
           ctx.serviceUrl = serviceUrl
+          ctx.applyServiceUri = applyServiceUri
 
           response.source.context = ctx
         }

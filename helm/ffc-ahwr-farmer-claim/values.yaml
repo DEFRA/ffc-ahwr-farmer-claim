@@ -55,6 +55,7 @@ container:
   redisPassword: redis
   redisPort: 6379
   serviceUri:
+  applyServiceUri:
 
 ingress:
   class: nginx

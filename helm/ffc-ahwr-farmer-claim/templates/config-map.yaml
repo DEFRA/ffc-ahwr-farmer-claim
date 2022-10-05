@@ -22,4 +22,5 @@ data:
   {{- end }}
   REDIS_PORT: {{ quote .Values.container.redisPort }}
   SERVICE_URI: {{ quote .Values.container.serviceUri }}
+  APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
 {{- end -}}
