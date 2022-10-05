@@ -8,7 +8,7 @@ const { serviceName } = require('../../../../app/config')
 
 function expectPageContentOk ($) {
   expect($('.govuk-heading-l').text()).toEqual('What is the laboratory unique reference number for the test results?')
-  expect($('label[for=urn]').text()).toMatch('What is the laboratory unique reference number for the test results?')
+  expect($('label[for=urn]').text()).toMatch('Enter the unique reference number (URN) for the laboratory test results.')
   expect($('.govuk-button').text()).toMatch('Continue')
   expect($('title').text()).toEqual(`What is the laboratory unique reference number for the test results? - ${serviceName}`)
   const backLink = $('.govuk-back-link')
