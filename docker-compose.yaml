@@ -27,4 +27,5 @@ services:
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3004
+      APPLY_SERVICE_URI: http://localhost:3000
 

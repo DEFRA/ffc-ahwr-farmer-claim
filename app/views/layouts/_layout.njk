@@ -63,27 +63,36 @@
   {% endif %}
 {% endblock %}
 
+{% set footerHtml %}
+<h2>Data Protection</h2>
+<p class="data-entry">For information on how we handle personal data go to GOV.UK and search for <a href="https://www.gov.uk/government/organisations/rural-payments-agency/about/personal-information-charter" target="_blank" rel="noopener noreferrer" ga-click ga-category="Footer" ga-action="Link clicked: Rural Payments Agency personal information charter">Rural Payments Agency personal information charter</a>.</p>
+<ul class="govuk-footer__inline-list">
+
+  <li class="govuk-footer__inline-list-item">
+    <a class="govuk-footer__link" href="{{applyServiceUri}}/accessibility">
+      Accessibility
+    </a>
+  </li>
+
+  <li class="govuk-footer__inline-list-item">
+    <a class="govuk-footer__link" href="/cookies">
+      Cookies
+    </a>
+  </li>
+
+  <li class="govuk-footer__inline-list-item">
+    <a class="govuk-footer__link" href="{{applyServiceUri}}/privacy-policy">
+      Privacy
+    </a>
+  </li>
+
+</ul>
+{% endset -%}
+
 {% block footer %}
   {{ govukFooter({
     meta: {
-      items: [
-        {
-          href: applyServiceUri + "accessibility",
-          text: "Accessibility"
-        },
-        {
-          href: "/cookies",
-          text: "Cookies"
-        },
-        {
-          href: applyServiceUri + "privacy-policy",
-          text: "Privacy"
-        },
-        {
-          href: applyServiceUri + "terms",
-          text: "Terms and conditions"
-        }
-      ]
+      html: footerHtml
     }
   }) }}
 {% endblock %}
