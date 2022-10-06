@@ -9,6 +9,7 @@ describe('FarmerClaim application login page test', () => {
     jest.resetAllMocks()
     jest.mock('../../../../app/lib/email/send-email')
     jest.mock('../../../../app/api-requests/users')
+    jest.mock('ffc-ahwr-event-publisher')
   })
 
   const url = '/login'
