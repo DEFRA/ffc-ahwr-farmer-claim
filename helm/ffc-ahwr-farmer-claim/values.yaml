@@ -59,8 +59,10 @@ container:
 
 ingress:
   class: nginx
-  endpoint: ffc-ahwr-farmer-claim
+  endpoint: ffc-ahwr-farmer-apply
   server: value.replaced.from.app.config
+  path: /claim
+  type: minion
 
 livenessProbe:
   path: /healthz
