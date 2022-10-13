@@ -29,17 +29,17 @@ module.exports = {
         {
           key: { text: 'Date of visit' },
           value: { html: (new Date(visitDate)).toLocaleDateString('en-GB') },
-          actions: { items: [{ href: '/vet-visit-date', text: 'Change', visuallyHiddenText: 'change date of visit' }] }
+          actions: { items: [{ href: '/claim/vet-visit-date', text: 'Change', visuallyHiddenText: 'change date of visit' }] }
         },
         {
           key: { text: 'Vet name' },
           value: { html: name },
-          actions: { items: [{ href: '/vet-name', text: 'Change', visuallyHiddenText: 'change vet name' }] }
+          actions: { items: [{ href: '/claim/vet-name', text: 'Change', visuallyHiddenText: 'change vet name' }] }
         },
         {
           key: { text: 'Vet RCVS' },
           value: { html: rcvsNumber },
-          actions: { items: [{ href: './vet-rcvs', text: 'Change', visuallyHiddenText: 'change vet rcvs' }] }
+          actions: { items: [{ href: '/claim/vet-rcvs', text: 'Change', visuallyHiddenText: 'change vet rcvs' }] }
         },
         {
           key: { text: 'Test results URN' },

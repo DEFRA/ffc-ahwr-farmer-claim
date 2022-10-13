@@ -38,9 +38,9 @@ module.exports = [{
       const answer = request.payload[detailsCorrect]
       setClaim(request, detailsCorrect, answer)
       if (answer === 'yes') {
-        return h.redirect('/vet-visit-date')
+        return h.redirect('/claim/vet-visit-date')
       }
-      return h.redirect('/details-incorrect')
+      return h.redirect('/claim/details-incorrect')
     }
   }
 }]

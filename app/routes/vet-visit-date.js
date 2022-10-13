@@ -70,7 +70,7 @@ module.exports = [{
         return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
       }
       session.setClaim(request, visitDate, date)
-      return h.redirect('/vet-name')
+      return h.redirect('/claim/vet-name')
     }
   }
 }]

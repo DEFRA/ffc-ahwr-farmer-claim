@@ -161,7 +161,7 @@ describe('Vet, enter date of visit', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/vet-name')
+      expect(res.headers.location).toEqual('/claim/vet-name')
       expect(session.getClaim).toHaveBeenCalledTimes(1)
       expect(session.getClaim).toHaveBeenCalledWith(res.request)
     })
