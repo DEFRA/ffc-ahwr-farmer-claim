@@ -32,7 +32,7 @@ describe('Auth plugin test', () => {
       const token = uuid()
       const options = {
         method: 'GET',
-        url: `/verify-login?email=${email}&token=${token}`
+        url: `/claim/verify-login?email=${email}&token=${token}`
       }
 
       await global.__SERVER__.app.magiclinkCache.set(email, [token])

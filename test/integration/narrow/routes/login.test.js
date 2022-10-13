@@ -40,7 +40,7 @@ describe('FarmerClaim application login page test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/visit-review')
+      expect(res.headers.location).toEqual('/claim/visit-review')
     })
   })
 

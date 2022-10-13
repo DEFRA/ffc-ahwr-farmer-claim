@@ -13,7 +13,7 @@ function expectPageContentOk ($) {
   expect($('title').text()).toEqual(`Date of visit - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/visit-review')
+  expect(backLink.attr('href')).toMatch('/claim/visit-review')
 }
 
 const session = require('../../../../app/session')
