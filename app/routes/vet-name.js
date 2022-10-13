@@ -5,7 +5,7 @@ const { name: nameErrorMessages } = require('../../app/lib/error-messages')
 
 module.exports = [{
   method: 'GET',
-  path: '/vet-name',
+  path: '/claim/vet-name',
   options: {
     handler: async (request, h) => {
       const name = session.getClaim(request, nameKey)
@@ -14,7 +14,7 @@ module.exports = [{
   }
 }, {
   method: 'POST',
-  path: '/vet-name',
+  path: '/claim/vet-name',
   options: {
     validate: {
       payload: Joi.object({
@@ -33,7 +33,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { name } = request.payload
       session.setClaim(request, nameKey, name)
-      return h.redirect('/vet-rcvs')
+      return h.redirect('/claim/vet-rcvs')
     }
   }
 }]

@@ -5,7 +5,7 @@ const { cookie: { cookieNameCookiePolicy } } = require('../config')
 
 module.exports = [{
   method: 'GET',
-  path: '/cookies',
+  path: '/claim/cookies',
   options: {
     auth: false,
     handler: async (request, h) => {
@@ -14,7 +14,7 @@ module.exports = [{
   }
 }, {
   method: 'POST',
-  path: '/cookies',
+  path: '/claim/cookies',
   options: {
     auth: false,
     plugins: {
@@ -31,7 +31,7 @@ module.exports = [{
       if (request.payload.async) {
         return h.response('ok')
       }
-      return h.redirect('/cookies?updated=true')
+      return h.redirect('/claim/cookies?updated=true')
     }
   }
 }]

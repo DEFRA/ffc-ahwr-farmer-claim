@@ -15,7 +15,7 @@ function cacheClaim (claim, request) {
 
 module.exports = [{
   method: 'GET',
-  path: '/login',
+  path: '/claim/login',
   options: {
     auth: {
       mode: 'try'
@@ -27,7 +27,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       if (request.auth.isAuthenticated) {
-        return h.redirect(request.query?.next || '/visit-review')
+        return h.redirect(request.query?.next || '/claim/visit-review')
       }
 
       return h.view('login', { hintText })
@@ -36,7 +36,7 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: '/login',
+  path: '/claim/login',
   options: {
     auth: {
       mode: 'try'

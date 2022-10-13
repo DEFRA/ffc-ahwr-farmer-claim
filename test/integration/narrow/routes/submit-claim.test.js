@@ -12,7 +12,7 @@ const reference = 'VV-1234-5678'
 sessionMock.getClaim.mockReturnValue({ reference })
 
 describe('Farmer claim - submit claim page test', () => {
-  const url = '/submit-claim'
+  const url = '/claim/submit-claim'
   const auth = { credentials: { reference: '1111', sbi: '111111111' }, strategy: 'cookie' }
 
   describe(`GET ${url} route when logged in`, () => {

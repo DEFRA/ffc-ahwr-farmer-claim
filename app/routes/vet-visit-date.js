@@ -7,7 +7,7 @@ const { farmerApplyData: { visitDate } } = require('../session/keys')
 const errorMessages = require('../lib/error-messages')
 
 const templatePath = 'vet-visit-date'
-const path = `/${templatePath}`
+const path = `/claim/${templatePath}`
 
 function getDateFromPayload (payload) {
   const day = payload[labels.day]
@@ -70,7 +70,7 @@ module.exports = [{
         return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
       }
       session.setClaim(request, visitDate, date)
-      return h.redirect('/vet-name')
+      return h.redirect('/claim/vet-name')
     }
   }
 }]

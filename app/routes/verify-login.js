@@ -8,7 +8,7 @@ function isRequestInvalid (cachedEmail, email) {
 
 module.exports = [{
   method: 'GET',
-  path: '/verify-login',
+  path: '/claim/verify-login',
   options: {
     auth: false,
     validate: {

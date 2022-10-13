@@ -24,15 +24,15 @@ describe('Auth plugin test', () => {
   const validEmail = 'dairy@ltd.com'
 
   describe('GET requests to /login', () => {
-    const url = '/login'
-    const redirectTo = '/visit-review'
+    const url = '/claim/login'
+    const redirectTo = '/claim/visit-review'
 
     async function login () {
       const email = uuid() + validEmail
       const token = uuid()
       const options = {
         method: 'GET',
-        url: `/verify-login?email=${email}&token=${token}`
+        url: `/claim/verify-login?email=${email}&token=${token}`
       }
 
       await global.__SERVER__.app.magiclinkCache.set(email, [token])

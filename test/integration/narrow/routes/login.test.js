@@ -12,7 +12,7 @@ describe('FarmerClaim application login page test', () => {
     jest.mock('ffc-ahwr-event-publisher')
   })
 
-  const url = '/login'
+  const url = '/claim/login'
   const validEmail = 'dairy@ltd.com'
 
   describe(`GET requests to '${url}'`, () => {
@@ -40,7 +40,7 @@ describe('FarmerClaim application login page test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/visit-review')
+      expect(res.headers.location).toEqual('/claim/visit-review')
     })
   })
 

@@ -33,7 +33,7 @@ module.exports = {
     isCached: !isLocal,
     context: {
       appVersion: version,
-      assetPath: '/assets',
+      assetpath: '/claim/assets',
       pageTitle: serviceName,
       googleTagManagerKey
     }

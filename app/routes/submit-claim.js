@@ -5,7 +5,7 @@ const states = require('../constants/states')
 
 module.exports = [{
   method: 'GET',
-  path: '/submit-claim',
+  path: '/claim/submit-claim',
   options: {
     handler: async (_, h) => {
       return h.view('submit-claim')
@@ -14,7 +14,7 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: '/submit-claim',
+  path: '/claim/submit-claim',
   options: {
     handler: async (request, h) => {
       const claim = session.getClaim(request)

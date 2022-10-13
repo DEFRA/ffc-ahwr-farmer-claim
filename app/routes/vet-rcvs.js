@@ -5,7 +5,7 @@ const { rcvs: rcvsErrorMessages } = require('../../app/lib/error-messages')
 
 module.exports = [{
   method: 'GET',
-  path: '/vet-rcvs',
+  path: '/claim/vet-rcvs',
   options: {
     handler: async (request, h) => {
       const rcvs = session.getClaim(request, rcvsKey)
@@ -14,7 +14,7 @@ module.exports = [{
   }
 }, {
   method: 'POST',
-  path: '/vet-rcvs',
+  path: '/claim/vet-rcvs',
   options: {
     validate: {
       payload: Joi.object({
@@ -33,7 +33,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { rcvs } = request.payload
       session.setClaim(request, rcvsKey, rcvs)
-      return h.redirect('/urn-result')
+      return h.redirect('/claim/urn-result')
     }
   }
 }]

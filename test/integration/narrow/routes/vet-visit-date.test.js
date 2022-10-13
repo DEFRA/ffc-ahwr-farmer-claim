@@ -13,7 +13,7 @@ function expectPageContentOk ($) {
   expect($('title').text()).toEqual(`Date of visit - ${serviceName}`)
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/visit-review')
+  expect(backLink.attr('href')).toMatch('/claim/visit-review')
 }
 
 const session = require('../../../../app/session')
@@ -21,7 +21,7 @@ jest.mock('../../../../app/session')
 
 describe('Vet, enter date of visit', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/vet-visit-date'
+  const url = '/claim/vet-visit-date'
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -161,7 +161,7 @@ describe('Vet, enter date of visit', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/vet-name')
+      expect(res.headers.location).toEqual('/claim/vet-name')
       expect(session.getClaim).toHaveBeenCalledTimes(1)
       expect(session.getClaim).toHaveBeenCalledWith(res.request)
     })
