@@ -1,6 +1,6 @@
 module.exports = {
   method: 'GET',
-  path: '/details-incorrect',
+  path: '/claim/details-incorrect',
   options: {
     handler: async (_, h) => {
       return h.view('details-incorrect')

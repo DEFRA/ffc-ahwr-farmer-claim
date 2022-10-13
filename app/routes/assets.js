@@ -1,6 +1,6 @@
 module.exports = {
   method: 'GET',
-  path: '/assets/{path*}',
+  path: '/claim/assets/{path*}',
   options: {
     auth: false,
     handler: {

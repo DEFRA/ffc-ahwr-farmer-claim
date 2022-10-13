@@ -8,7 +8,7 @@ const errorMessage = 'Select yes if these details are correct'
 
 module.exports = [{
   method: 'GET',
-  path: '/visit-review',
+  path: '/claim/visit-review',
   options: {
     handler: async (request, h) => {
       const claim = getClaim(request)
@@ -23,7 +23,7 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: '/visit-review',
+  path: '/claim/visit-review',
   options: {
     validate: {
       payload: Joi.object({

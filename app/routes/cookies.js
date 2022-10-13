@@ -5,7 +5,7 @@ const { cookie: { cookieNameCookiePolicy } } = require('../config')
 
 module.exports = [{
   method: 'GET',
-  path: '/cookies',
+  path: '/claim/cookies',
   options: {
     auth: false,
     handler: async (request, h) => {
@@ -14,7 +14,7 @@ module.exports = [{
   }
 }, {
   method: 'POST',
-  path: '/cookies',
+  path: '/claim/cookies',
   options: {
     auth: false,
     plugins: {

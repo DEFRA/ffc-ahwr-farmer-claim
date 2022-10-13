@@ -20,7 +20,7 @@ const session = require('../../../../app/session')
 jest.mock('../../../../app/session')
 
 describe('Vet, enter rcvs test', () => {
-  const url = '/vet-rcvs'
+  const url = '/claim/vet-rcvs'
   const auth = { credentials: {}, strategy: 'cookie' }
 
   beforeEach(() => {

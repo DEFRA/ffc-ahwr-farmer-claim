@@ -7,7 +7,7 @@ const { farmerApplyData: { visitDate } } = require('../session/keys')
 const errorMessages = require('../lib/error-messages')
 
 const templatePath = 'vet-visit-date'
-const path = `/${templatePath}`
+const path = `/claim/${templatePath}`
 
 function getDateFromPayload (payload) {
   const day = payload[labels.day]

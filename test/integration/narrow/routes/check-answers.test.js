@@ -6,7 +6,7 @@ jest.mock('../../../../app/session')
 
 describe('Check Answers test', () => {
   const auth = { credentials: { reference: '1111', sbi: '111111111' }, strategy: 'cookie' }
-  const url = '/check-answers'
+  const url = '/claim/check-answers'
 
   afterAll(() => {
     jest.resetAllMocks()

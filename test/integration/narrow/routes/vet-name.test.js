@@ -21,7 +21,7 @@ jest.mock('../../../../app/session')
 
 describe('Vet, enter name test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/vet-name'
+  const url = '/claim/vet-name'
 
   beforeEach(() => {
     jest.clearAllMocks()

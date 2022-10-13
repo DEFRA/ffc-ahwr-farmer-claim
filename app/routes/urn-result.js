@@ -5,7 +5,7 @@ const { urn: urnErrorMessages } = require('../../app/lib/error-messages')
 
 module.exports = [{
   method: 'GET',
-  path: '/urn-result',
+  path: '/claim/urn-result',
   options: {
     handler: async (request, h) => {
       const urn = session.getClaim(request, urnResultKey)
@@ -14,7 +14,7 @@ module.exports = [{
   }
 }, {
   method: 'POST',
-  path: '/urn-result',
+  path: '/claim/urn-result',
   options: {
     validate: {
       payload: Joi.object({

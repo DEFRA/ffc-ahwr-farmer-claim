@@ -15,7 +15,7 @@ function cacheClaim (claim, request) {
 
 module.exports = [{
   method: 'GET',
-  path: '/login',
+  path: '/claim/login',
   options: {
     auth: {
       mode: 'try'
@@ -36,7 +36,7 @@ module.exports = [{
 },
 {
   method: 'POST',
-  path: '/login',
+  path: '/claim/login',
   options: {
     auth: {
       mode: 'try'

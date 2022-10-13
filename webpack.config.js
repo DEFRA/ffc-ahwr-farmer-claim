@@ -55,7 +55,7 @@ module.exports = {
   output: {
     filename: 'js/[contenthash].js',
     path: path.resolve(__dirname, 'app/frontend/dist'),
-    publicPath: '/assets/'
+    publicPath: '/claim/assets/'
   },
   plugins: [
     new CleanWebpackPlugin(),

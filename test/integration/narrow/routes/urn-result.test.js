@@ -21,7 +21,7 @@ jest.mock('../../../../app/session')
 
 describe('Enter URN test result test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/urn-result'
+  const url = '/claim/urn-result'
 
   beforeEach(() => {
     jest.clearAllMocks()

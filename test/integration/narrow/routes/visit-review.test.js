@@ -27,7 +27,7 @@ function expectPageContentOk ($, application) {
 
 describe('Vet visit review page test', () => {
   let session
-  const url = '/visit-review'
+  const url = '/claim/visit-review'
   const auth = { credentials: { reference: '1111', sbi: '111111111' }, strategy: 'cookie' }
 
   function setupSessionMock (speciesToTest) {

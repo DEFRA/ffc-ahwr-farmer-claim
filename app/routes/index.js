@@ -2,7 +2,7 @@ const { clear } = require('../session')
 
 module.exports = {
   method: 'GET',
-  path: '/',
+  path: '/claim',
   options: {
     auth: false,
     handler: async (request, h) => {

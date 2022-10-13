@@ -1,11 +1,11 @@
 const session = require('../session')
 const { farmerApplyData } = require('../session/keys')
-const backLink = '/urn-result'
+const backLink = '/claim/urn-result'
 const { getEligibleNumberRowForDisplay, getTypeOfReviewRowForDisplay } = require('../lib/display-helpers')
 
 module.exports = {
   method: 'GET',
-  path: '/check-answers',
+  path: '/claim/check-answers',
   options: {
     handler: async (request, h) => {
       const name = session.getClaim(request, farmerApplyData.vetName)
