@@ -24,8 +24,8 @@ describe('Auth plugin test', () => {
   const validEmail = 'dairy@ltd.com'
 
   describe('GET requests to /login', () => {
-    const url = '/login'
-    const redirectTo = '/visit-review'
+    const url = '/claim/login'
+    const redirectTo = '/claim/visit-review'
 
     async function login () {
       const email = uuid() + validEmail
