@@ -43,7 +43,7 @@ if (cookieContainer) {
 
   function submitPreference (accepted) {
   const xhr = new XMLHttpRequest() // eslint-disable-line
-    xhr.open('POST', '/cookies', true)
+    xhr.open('POST', '/claim/cookies', true)
     xhr.setRequestHeader('Content-Type', 'application/json')
     xhr.send(JSON.stringify({
       analytics: accepted,

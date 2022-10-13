@@ -31,7 +31,7 @@ module.exports = [{
       if (request.payload.async) {
         return h.response('ok')
       }
-      return h.redirect('/cookies?updated=true')
+      return h.redirect('/claim/cookies?updated=true')
     }
   }
 }]
