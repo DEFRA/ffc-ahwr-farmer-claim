@@ -5,6 +5,15 @@ const catbox = config.useRedis
   : require('@hapi/catbox-memory')
 const cacheConfig = config.useRedis ? config.cache.options : {}
 
+const getSecurityPolicy = () => "default-src 'self';" +
+"object-src 'none';" +
+"script-src  'unsafe-hashes' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com/ https://www.google-analytics.com https://www.googletagmanager.com/gtm.js" +
+"form-action 'self';" +
+"base-uri 'self';" +
+"connect-src 'self' https://www.google-analytics.com;" +
+"style-src 'self' 'unsafe-inline' https://tagmanager.google.com https://fonts.googleapis.com;" +
+"img-src 'self' data: ssl.gstatic.com www.gstatic.com www.google-analytics.com"
+
 async function createServer () {
   const server = Hapi.server({
     cache: [{
@@ -43,6 +52,27 @@ async function createServer () {
   await server.register(require('./plugins/session'))
   await server.register(require('./plugins/view-context'))
   await server.register(require('./plugins/views'))
+  await server.register({
+    plugin: require('./plugins/header'),
+    options: {
+      keys: [
+        { key: 'X-Frame-Options', value: 'deny' },
+        { key: 'X-Content-Type-Options', value: 'nosniff' },
+        { key: 'Access-Control-Allow-Origin', value: server.info.uri },
+        { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+        { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
+        { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+        { key: 'X-XSS-Protection', value: '1; mode=block' },
+        { key: 'Strict-Transport-Security', value: 'max-age=31536000;' },
+        { key: 'Cache-Control', value: 'no-cache' },
+        { key: 'Referrer-Policy', value: 'no-referrer' },
+        {
+          key: 'Content-Security-Policy',
+          value: getSecurityPolicy()
+        }
+      ]
+    }
+  })
 
   if (config.isDev) {
     await server.register(require('blipp'))
