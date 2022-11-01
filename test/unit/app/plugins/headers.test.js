@@ -11,7 +11,7 @@ describe('headers plugin tests', () => {
     { key: 'Referrer-Policy', value: 'no-referrer' },
     {
       key: 'Content-Security-Policy',
-      value: "default-src 'self';object-src 'none';script-src  'unsafe-hashes' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com/ https://www.google-analytics.com https://www.googletagmanager.com/gtm.jsform-action 'self';base-uri 'self';connect-src 'self' https://www.google-analytics.com;style-src 'self' 'unsafe-inline' https://tagmanager.google.com https://fonts.googleapis.com;img-src 'self' data: ssl.gstatic.com www.gstatic.com www.google-analytics.com"
+      value: "default-src 'self';object-src 'none';script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes';form-action 'self';base-uri 'self';connect-src *.google-analytics.com *.analytics.google.com *.googletagmanager.comstyle-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;img-src 'self' *.google-analytics.com *.googletagmanager.com;"
     }
   ])('returns IT healcheck', async ({ key, value }) => {
     const url = '/claim'
