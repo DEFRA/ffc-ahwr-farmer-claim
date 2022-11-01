@@ -10,7 +10,7 @@ const getSecurityPolicy = () => "default-src 'self';" +
 "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes';" +
 "form-action 'self';" +
 "base-uri 'self';" +
-"connect-src *.google-analytics.com *.analytics.google.com *.googletagmanager.com" +
+"connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com" +
 "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;" +
 "img-src 'self' *.google-analytics.com *.googletagmanager.com;"
 
