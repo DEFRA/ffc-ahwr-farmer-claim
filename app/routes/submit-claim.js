@@ -20,8 +20,15 @@ module.exports = [{
       const claim = session.getClaim(request)
       const { reference } = claim
 
-      const submission = { reference }
+      claim.data.detailsCorrect = claim.detailsCorrect
+      claim.data.visitDate = claim.visitDate
+      claim.data.vetName = claim.vetName
+      claim.data.vetRcvs = claim.vetRcvs
+      claim.data.urnResult = claim.urnResult
+      const submission = { reference, data: claim.data }
       const state = await submitClaim(submission, request.yar.id)
+
+      console.log(state)
 
       switch (state) {
         case states.alreadyClaimed:
