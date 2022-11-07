@@ -28,8 +28,6 @@ module.exports = [{
       const submission = { reference, data: claim.data }
       const state = await submitClaim(submission, request.yar.id)
 
-      console.log(state)
-
       switch (state) {
         case states.alreadyClaimed:
           session.setClaim(request, claimed, states.alreadyClaimed)
