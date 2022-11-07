@@ -28,4 +28,4 @@ services:
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3004/claim
       APPLY_SERVICE_URI: http://localhost:3000/apply
-
+      TEST_TOKEN:
