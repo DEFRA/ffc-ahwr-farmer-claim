@@ -9,7 +9,11 @@ const messagingMock = require('../../../../app/messaging')
 jest.mock('../../../../app/messaging')
 
 const reference = 'VV-1234-5678'
-sessionMock.getClaim.mockReturnValue({ reference })
+const data = {
+  offerStatus: 'accepted'
+}
+
+sessionMock.getClaim.mockReturnValue({ reference, data, visitDate: '2022-11-07T00:00:00.000Z', vetName: 'testvetname', vetRcvs: '1234234', detailsCorrect: 'yes', urnResult: '134242' })
 
 describe('Farmer claim - submit claim page test', () => {
   const url = '/claim/submit-claim'

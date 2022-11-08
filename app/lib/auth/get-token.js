@@ -1,5 +1,5 @@
 const { v4: uuid } = require('uuid')
-const { testToken } = require('../../config')
+const { testToken } = require('../../config').notifyConfig
 const { getByEmail } = require('../../api-requests/users')
 
 module.exports = async function getToken (email) {
