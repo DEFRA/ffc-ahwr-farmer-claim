@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment="create new acceptance test for claims">
+      <change afterPath="$PROJECT_DIR$/../ffc-ahwr-farmer-apply/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/babel.config.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/docker-compose.debug.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/docker-compose.override.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/docker-compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/run/features/login.feature" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/run/features/pageobjects/login.page.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/run/features/pageobjects/page.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/run/features/pageobjects/secure.page.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/run/features/step-definitions/steps.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/run/wdio.conf.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../ffc-ahwr-farmer-apply/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../ffc-ahwr-farmer-apply/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/package.json" afterDir="false" />
+    </list>
+    <list id="20fb568c-a91b-4992-929f-0c19f5697436" name="Changes by justinemina" comment="">
+      <change beforePath="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+  </component>
+  <component name="LineStatusTrackerManager">
+    <file path="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature">
+      <ranges>
+        <range start1="0" end1="1" start2="0" end2="1" changelist="20fb568c-a91b-4992-929f-0c19f5697436" />
+        <range start1="4" end1="9" start2="4" end2="9" changelist="4e140ddd-912d-4d23-8d9b-01a8109a389d" />
+        <range start1="17" end1="18" start2="17" end2="18" changelist="4e140ddd-912d-4d23-8d9b-01a8109a389d" />
+      </ranges>
+    </file>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2HDqveXumMzhoGTqhUgoMB9KMiy" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "C:/Users/livwilli/ffc-ahwr-farmer-apply",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.standard": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.standard": "C:\\Users\\livwilli\\ffc-ahwr-farmer-claim\\node_modules\\standard",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.cucumber.cucumber_node_package_dir": "C:/Program Files/nodejs/node_modules/cucumber",
+    "nodejs.wdio.wdio_node_package_dir": "C:/Users/livwilli/ffc-ahwr-farmer-apply/test/acceptance/node_modules/@wdio/cli",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\livwilli\ffc-ahwr-farmer-claim\test\acceptance" />
+      <recent name="C:\Users\livwilli\ffc-ahwr-farmer-claim\scripts" />
+      <recent name="C:\Users\livwilli\ffc-ahwr-farmer-claim1\test" />
+      <recent name="C:\Users\livwilli\ffc-ahwr-farmer-claim1\test\acceptance" />
+      <recent name="C:\Users\livwilli\ffc-ahwr-farmer-claim\test" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Scenario: Farmer completes applicatio..." type="cucumber.js" factoryName="Cucumber.js" temporary="true">
+      <option name="myFilePath" value="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature" />
+      <option name="myNameFilter" value="^Farmer completes application for Beef Cattle$" />
+      <option name="cucumberJsArguments" value="" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Cucumber.js.Scenario: Farmer completes applicatio..." />
+        <item itemvalue="Cucumber.js.Scenario: Farmer completes applicatio..." />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment="" />
+      <created>1667830233346</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1667830233346</updated>
+      <workItem from="1667830235847" duration="4501000" />
+      <workItem from="1667837174091" duration="1560000" />
+      <workItem from="1667901996624" duration="37000" />
+      <workItem from="1667902053761" duration="1483000" />
+      <workItem from="1667904342200" duration="2129000" />
+      <workItem from="1667908583063" duration="1793000" />
+      <workItem from="1667930201196" duration="7000" />
+      <workItem from="1668018053978" duration="5096000" />
+      <workItem from="1668024118513" duration="795000" />
+      <workItem from="1668030309813" duration="5062000" />
+      <workItem from="1668113091904" duration="1180000" />
+      <workItem from="1668170500800" duration="1143000" />
+    </task>
+    <task id="LOCAL-00001" summary="added Test token to docker.compose">
+      <created>1667830594239</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1667830594239</updated>
+    </task>
+    <task id="LOCAL-00002" summary="create new acceptance test for claims">
+      <created>1667909541663</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1667909541663</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+    <option name="exactExcludedFiles">
+      <list>
+        <option value="$PROJECT_DIR$/test/acceptance/node_modules/edge-paths/example.js" />
+      </list>
+    </option>
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="added Test token to docker.compose" />
+    <MESSAGE value="create new acceptance test for claims" />
+    <option name="LAST_COMMIT_MESSAGE" value="create new acceptance test for claims" />
+  </component>
+</project>
