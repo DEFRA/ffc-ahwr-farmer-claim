@@ -2,11 +2,11 @@
 Feature: Farmer claim
 
 
-#  Scenario: Farmer apply for claim with wrong email.
-#    Given I am on the landing page
-#    Then I click on startNow
-#    When I enter my invalid "livsey.willaism@rpa.com"
-#    Then I should see an error "livsey.willaism@rpa.com"
+  Scenario: Farmer apply for claim with wrong email.
+    Given I am on the landing page
+    Then I click on startNow
+    When I enter my invalid "livsey.willaism@rpa.com"
+    Then I should see an error "livsey.willaism@rpa.com"
 
 
   Scenario: Farmer apply for claim with correct email
@@ -15,7 +15,7 @@ Feature: Farmer claim
     When I enter my valid "livsey-erubamie.williams@capgemini.com"
 
   Scenario:  Farmer completes application for Beef Cattle
-    Given farmer clicks on email link "afc64e3c-ee87-4509-a582-382b01ddfb4f" "livsey-erubamie.williams@capgemini.com"
+    Given farmer clicks on email link "667ad3ff-9e9d-4c2f-9d17-332d9a749b18" "livsey-erubamie.williams@capgemini.com"
     When I select yes my details are correct on farmer review page
     Then I enter day month and year on vet visit date page
     Then I enter my vet's "livsey erubamie williams"
