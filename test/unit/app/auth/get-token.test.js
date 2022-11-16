@@ -18,7 +18,7 @@ describe('Get Token test', () => {
   })
 
   test('when test token exists and user is test user, return test token', async () => {
-    config.testToken = testToken
+    config.notifyConfig.testToken = testToken
     users.getByEmail.mockResolvedValue({ email: testEmail, isTest: true })
     const getToken = require('../../../../app/lib/auth/get-token')
 
@@ -30,7 +30,7 @@ describe('Get Token test', () => {
   })
 
   test('when test token exists and user is not test user, return uuid token', async () => {
-    config.testToken = testToken
+    config.notifyConfig.testToken = testToken
     users.getByEmail.mockResolvedValue({ email: testEmail })
     const getToken = require('../../../../app/lib/auth/get-token')
 
@@ -42,7 +42,7 @@ describe('Get Token test', () => {
   })
 
   test('when test token does not exist, return uuid token', async () => {
-    config.testToken = null
+    config.notifyConfig.testToken = null
     const getToken = require('../../../../app/lib/auth/get-token')
     const response = await getToken('email@test.com')
 
