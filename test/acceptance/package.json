@@ -1,90 +1,62 @@
 {
+  "author": "Defra",
+  "license": "OGL-UK-3.0",
   "name": "ffc-ahwr-farmer-claim",
   "version": "0.13.0",
   "description": "Web frontend for farmer claim journey",
   "homepage": "https://github.com/DEFRA/ffc-ahwr-farmer-claim",
-  "main": "app/index.js",
-  "scripts": {
-    "build": "webpack",
-    "build:watch": "webpack --watch",
-    "pretest": "npm run test:lint",
-    "test": "jest --runInBand",
-    "test:watch": "jest --coverage=false --onlyChanged --watch --runInBand",
-    "test:watch:all": "npm-run-all --parallel test:watch build:watch",
-    "test:lint": "standard",
-    "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/jest/bin/jest.js --coverage=false --onlyChanged --watch --runInBand --no-cache",
-    "start:watch": "npm-run-all --parallel build:watch start:nodemon",
-    "start:debug": "nodemon --inspect-brk=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js",
-    "start:nodemon": "nodemon --inspect=0.0.0.0 --ext css,js,njk --legacy-watch app/index.js"
-  },
-  "author": "Defra",
-  "contributors": [
-    "Steve Dickinson steve.dickinson@defra.gov.uk"
+  "contributors": [],
+  "keywords": [
+    "wdio",
+    "webdriver",
+    "webdriverio",
+    "cucumber",
+    "test",
+    "selenium"
   ],
-  "license": "OGL-UK-3.0",
+  "scripts": {
+    "test": "wdio wdio.bs.conf.js",
+    "test:local": "wdio wdio.local.conf.js",
+    "test:browserstack": "wdio wdio.bs.conf.js",
+    "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/@wdio/cli/bin/wdio.js wdio.conf.js"
+  },
   "dependencies": {
-    "@azure/storage-blob": "^12.9.0",
-    "@hapi/boom": "^9.1.4",
-    "@hapi/catbox-redis": "^6.0.2",
-    "@hapi/cookie": "^11.0.2",
-    "@hapi/crumb": "^8.0.1",
-    "@hapi/hapi": "^20.1.5",
-    "@hapi/inert": "^6.0.5",
-    "@hapi/vision": "^6.1.0",
-    "@hapi/yar": "^10.1.1",
-    "applicationinsights": "^2.1.6",
-    "ffc-ahwr-event-publisher": "1.0.0",
-    "ffc-messaging": "^2.3.4",
-    "govuk-frontend": "4.0.1",
-    "hapi-pino": "^9.1.2",
-    "joi": "^17.6.0",
-    "notifications-node-client": "^5.1.1",
-    "nunjucks": "^3.2.3",
-    "uuid": "^8.3.2"
+    "@log4js-node/log4js-api": "^1.0.2",
+    "@wdio/cli": "^7.2.3",
+    "@wdio/local-runner": "^7.2.3",
+    "moment": "^2.29.1"
   },
   "devDependencies": {
-    "@hapi/catbox-memory": "^5.0.1",
-    "@types/cheerio": "^0.22.31",
-    "@types/hapi__hapi": "^20.0.10",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^17.0.19",
-    "blipp": "^4.0.2",
-    "cheerio": "^1.0.0-rc.10",
-    "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^6.6.0",
-    "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^5.5.0",
-    "jest": "^27.0.6",
-    "jest-junit": "^13.0.0",
-    "mini-css-extract-plugin": "^2.5.3",
-    "nodemon": "^2.0.12",
+    "@babel/cli": "^7.16.0",
+    "@babel/core": "^7.16.5",
+    "@babel/plugin-proposal-export-default-from": "^7.16.7",
+    "@babel/plugin-syntax-export-default-from": "^7.8.3",
+    "@babel/preset-env": "^7.16.5",
+    "@babel/register": "^7.16.5",
+    "@wdio/browserstack-service": "^7.16.13",
+    "@wdio/config": "^7.16.11",
+    "@wdio/cucumber-framework": "^7.16.12",
+    "@wdio/spec-reporter": "^7.16.11",
+    "chai": "^4.3.6",
+    "chromedriver": "^96.0.0",
+    "eslint": "^7.22.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-wdio": "^7.4.2",
+    "ffc-messaging": "^2.3.3",
     "npm-run-all": "^4.1.5",
-    "pino-pretty": "^7.5.1",
-    "resolve-url-loader": "^5.0.0",
-    "sass": "^1.49.7",
-    "sass-loader": "^12.4.0",
-    "standard": "^16.0.4",
-    "webpack": "^5.68.0",
-    "webpack-cli": "^4.9.2"
+    "pngjs": "^6.0.0",
+    "standard": "16.0.4",
+    "wdio-chromedriver-service": "^7.2.2",
+    "wdio-html-nice-reporter": "^7.9.1",
+    "webdriverio": "^7.16.12",
+    "expect-webdriverio": "^3.4.0"
   },
   "standard": {
-    "env": {
-      "jest": true
-    },
     "globals": [
       "$",
-      "browser"
-    ],
-    "ignore": [
-      "app/frontend/dist/**/*.js",
-      "test/acceptance/**/*.js",
-      "test/acceptance/**/*.mjs",
-      "test/acceptance/**/*.cjs"
-    ]
-  },
-  "nodemonConfig": {
-    "ignore": [
-      "**/test-output/**"
+      "assert",
+      "browser",
+      "expect"
     ]
   }
 }
