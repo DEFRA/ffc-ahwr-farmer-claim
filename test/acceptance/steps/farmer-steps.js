@@ -17,9 +17,9 @@ const pages = {
   landing: LandingPage
 }
 
-Given(/^I am on the (\w+) page$/, async (page) => {
-  await pages[page].open()
-})
+//Given(/^I am on the (\w+) page$/, async (page) => {
+ // await pages[page].open()
+//})
 Given('farmer clicks on email link {string} {string}', async (token, email) => {
   await VisitReview.open(token, email)
   await browser.pause(5000)
@@ -30,8 +30,8 @@ Then('I click on farmer Apply', async () => {
 })
 Then('I click on startNow', async () => {
   await browser.pause(5000)
-  await FarmerApply.open()
-  await FarmerApply.clickStartNow()
+  await FarmerClaim.open()
+  await FarmerClaim.clickStartNow()
 })
 
 When('I enter my valid {string}', async function (email) {
@@ -107,7 +107,7 @@ Given('I go back to start page', async () => {
   await DeclarationPage.backToStart()
 })
 Then('I click startNow', async () => {
-  await FarmerApply.clickStartNow()
+  await FarmerClaim.clickStartNow()
 })
 
 
@@ -118,8 +118,6 @@ When('I enter my invalid {string}', async (email) => {
 })
 When('I should see an error {string}', async (email) => {
   await browser.pause(5000)
-  const errorText = 'Error:\\n' +
-    'No user found with email address "' + email + '"'
   await wdioExpect(await FarmerLogin.errorField).toHaveTextContaining(email)
 })
 
