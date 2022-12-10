@@ -17,9 +17,10 @@ const pages = {
   landing: LandingPage
 }
 
-//Given(/^I am on the (\w+) page$/, async (page) => {
- // await pages[page].open()
-//})
+Given('I am on the landing page', async () => {
+ await LandingPage.open()
+})
+
 Given('farmer clicks on email link {string} {string}', async (token, email) => {
   await VisitReview.open(token, email)
   await browser.pause(5000)

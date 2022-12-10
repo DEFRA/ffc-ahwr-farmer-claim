@@ -15,7 +15,7 @@ Feature: Farmer claim
     When I enter my valid "livsey-erubamie.williams@capgemini.com"
 
   Scenario:  Farmer completes application for Beef Cattle
-    Given farmer clicks on email link "667ad3ff-9e9d-4c2f-9d17-332d9a749b18" "livsey-erubamie.williams@capgemini.com"
+    Given farmer clicks on email link "0f9ecf32-da18-4e17-8a94-c37732d97489" "livsey-erubamie.williams@capgemini.com"
     When I select yes my details are correct on farmer review page
     Then I enter day month and year on vet visit date page
     Then I enter my vet's "livsey erubamie williams"

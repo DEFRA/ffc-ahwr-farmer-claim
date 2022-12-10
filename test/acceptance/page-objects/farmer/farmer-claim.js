@@ -1,6 +1,6 @@
 import Pages from '../page'
 
-class FarmerApply extends Pages {
+class FarmerClaim extends Pages {
   get startNow () { return browser.$('//a[contains(.,\'Start now\')]') }
   get title () { return browser.$('//h1[@class=\'govuk-heading-l\'][contains(.,\'Claim funding for an annual health and welfare review of your livestock\')]') }
 
@@ -17,4 +17,4 @@ class FarmerApply extends Pages {
   }
 }
 
-module.exports = new FarmerApply()
+module.exports = new FarmerClaim()

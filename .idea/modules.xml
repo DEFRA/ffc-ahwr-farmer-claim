@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../ffc-ahwr-farmer-apply/.idea/ffc-ahwr-farmer-apply.iml" filepath="$PROJECT_DIR$/../ffc-ahwr-farmer-apply/.idea/ffc-ahwr-farmer-apply.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/ffc-ahwr-farmer-claim.iml" filepath="$PROJECT_DIR$/.idea/ffc-ahwr-farmer-claim.iml" />
     </modules>
   </component>
