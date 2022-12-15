@@ -1,3 +1,4 @@
+const Wreck = require('@hapi/wreck')
 const config = require('../config')
 
 async function getEligibleUserByEmail (emailAddress) {
@@ -14,7 +15,7 @@ async function getEligibleUserByEmail (emailAddress) {
   } catch (err) {
     console.error(`eligiblityApiUri.getEligibility failed: ${err.message}`)
     return null
-  }  
+  }
 }
 
 module.exports = {
