@@ -78,14 +78,18 @@ describe('Eligibility API', () => {
       const options = {
         json: true
       }
-      const businessEmailAddress = 'name@email.com'
+      const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
 
-      const response = await eligibilityApi.getEligibleUserByEmail(businessEmailAddress)
+      const response = await eligibilityApi.getEligibleUserByEmail(BUSINESS_EMAIL_ADDRESS)
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
       expect(consoleLogSpy).toHaveBeenCalledWith(`Bad response: ${statusCode} - ${statusMessage}`)
       expect(response).toBeNull()
+      expect(Wreck.get).toHaveBeenCalledWith(
+        `${mockEligibilityApiUri}/eligibility?emailAddress=${BUSINESS_EMAIL_ADDRESS}`,
+        options
+      )
     })
 
     test('given Wreck.get throws an error it logs the error and returns null', async () => {
@@ -101,6 +105,10 @@ describe('Eligibility API', () => {
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
       expect(consoleErrorSpy).toHaveBeenCalledWith(`eligiblityApiUri.getEligibleUserByEmail failed: ${expectedError.message}`)
       expect(response).toBeNull()
+      expect(Wreck.get).toHaveBeenCalledWith(
+        `${mockEligibilityApiUri}/eligibility?emailAddress=${BUSINESS_EMAIL_ADDRESS}`,
+        options
+      )
     })
   })
 })
