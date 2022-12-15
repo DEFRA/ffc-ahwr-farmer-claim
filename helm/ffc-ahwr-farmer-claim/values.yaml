@@ -56,6 +56,8 @@ container:
   redisPort: 6379
   serviceUri:
   applyServiceUri:
+  eligibilityApiEnabled:
+  eligibilityApiUri:
 
 ingress:
   class: nginx
