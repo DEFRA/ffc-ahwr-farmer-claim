@@ -1,0 +1,17 @@
+Index: ../ffc-ahwr-farmer-apply/.idea/workspace.xml
+===================================================================
+diff --git a/../ffc-ahwr-farmer-apply/.idea/workspace.xml b/../ffc-ahwr-farmer-apply/.idea/workspace.xml
+--- a/../ffc-ahwr-farmer-apply/.idea/workspace.xml	
++++ b/../ffc-ahwr-farmer-apply/.idea/workspace.xml	
+@@ -4,10 +4,7 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="2e4cc317-cf08-46c8-b2e6-4deeda50086a" name="Changes" comment="Testing my signed signature">
+-      <change beforePath="$PROJECT_DIR$/test/acceptance/features/farmer-apply/farmer-apply.feature" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/features/farmer-apply/farmer-apply.feature" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/test/acceptance/wdio.conf.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/wdio.conf.js" afterDir="false" />
+-    </list>
++    <list default="true" id="2e4cc317-cf08-46c8-b2e6-4deeda50086a" name="Changes" comment="remove duplicate of apply feature file" />
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

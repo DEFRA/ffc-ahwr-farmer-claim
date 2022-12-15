@@ -1,0 +1,35 @@
+#!/usr/bin/env sh
+
+set -e
+projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
+
+cd "${projectRoot}"
+
+# start web application
+./scripts/start -d
+
+# run acceptance tests
+cd test/acceptance
+
+if [ "$1" = "debug" ];
+then
+  echo "=============================="
+  echo "| Running Test in Debug mode |"
+  echo "=============================="
+
+  docker-compose down -v
+  docker-compose -f docker-compose.yaml -f docker-compose.override.yaml -f docker-compose.debug.yaml up --build --abort-on-container-exit
+elif [ "$1" = "local" ];
+then
+  echo "================================"
+  echo "| Running Test on your machine |"
+  echo "================================"
+  npm run test:local
+else
+  echo "==================================="
+  echo "| Running Test using Docker Image |"
+  echo "==================================="
+
+  docker-compose down -v
+  docker-compose up --build --abort-on-container-exit
+fi
