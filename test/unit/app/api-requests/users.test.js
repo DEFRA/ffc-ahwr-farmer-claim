@@ -80,6 +80,7 @@ describe('Get users from blob storage', () => {
 describe('Get users from eligibility service', () => {
   let downloadBlobMock
   let getByEmail
+  let eligibilityApi
   const email = 'hit@email.com'
 
   beforeEach(() => {
