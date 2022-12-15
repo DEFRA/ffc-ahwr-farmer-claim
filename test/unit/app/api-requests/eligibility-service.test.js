@@ -1,4 +1,3 @@
-const { when, resetAllWhenMocks } = require('jest-when')
 const Wreck = require('@hapi/wreck')
 const mockConfig = require('../../../../app/config')
 
@@ -15,9 +14,7 @@ describe('Eligibility API', () => {
   beforeAll(() => {
     jest.mock('../../../../app/config', () => ({
       ...mockConfig,
-      eligibilityApi: {
-        uri: mockEligibilityApiUri
-      }
+      eligibilityApiUri: mockEligibilityApiUri
     }))
     eligibilityApi = require('../../../../app/api-requests/eligibility-service')
   })
@@ -25,7 +22,6 @@ describe('Eligibility API', () => {
   afterAll(() => {
     jest.resetAllMocks()
     jest.resetModules()
-    resetAllWhenMocks()
   })
 
   describe('getEligibleUserByEmail', () => {
@@ -47,12 +43,7 @@ describe('Eligibility API', () => {
         json: true
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
-      when(Wreck.get)
-        .calledWith(
-          `${mockEligibilityApiUri}/eligibility?emailAddress=${BUSINESS_EMAIL_ADDRESS}`,
-          options
-        )
-        .mockResolvedValue(expectedResponse)
+      Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
 
       const response = await eligibilityApi.getEligibleUserByEmail(BUSINESS_EMAIL_ADDRESS)
 
@@ -88,12 +79,7 @@ describe('Eligibility API', () => {
         json: true
       }
       const businessEmailAddress = 'name@email.com'
-      when(Wreck.get)
-        .calledWith(
-          `${mockEligibilityApiUri}/eligibility?emailAddress=${businessEmailAddress}`,
-          options
-        )
-        .mockResolvedValue(expectedResponse)
+      Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
 
       const response = await eligibilityApi.getEligibleUserByEmail(businessEmailAddress)
 
@@ -108,12 +94,7 @@ describe('Eligibility API', () => {
         json: true
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
-      when(Wreck.get)
-        .calledWith(
-          `${mockEligibilityApiUri}/eligibility?emailAddress=${BUSINESS_EMAIL_ADDRESS}`,
-          options
-        )
-        .mockRejectedValue(expectedError)
+      Wreck.get = jest.fn().mockRejectedValue(expectedError)
 
       const response = await eligibilityApi.getEligibleUserByEmail(BUSINESS_EMAIL_ADDRESS)
 

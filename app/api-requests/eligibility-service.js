@@ -13,7 +13,7 @@ async function getEligibleUserByEmail (emailAddress) {
     }
     return response.payload
   } catch (err) {
-    console.error(`eligiblityApiUri.getEligibility failed: ${err.message}`)
+    console.error(`eligiblityApiUri.getEligibleUserByEmail failed: ${err.message}`)
     return null
   }
 }
