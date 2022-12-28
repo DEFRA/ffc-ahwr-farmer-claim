@@ -39,7 +39,7 @@ describe('Send event on session set', () => {
       ...event,
       sbi: organisation.sbi,
       email: organisation.email,
-      cph: organisation.cph,
+      cph: 'n/a',
       id: sessionId,
       data: { [key]: value }
     }

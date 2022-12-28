@@ -12,12 +12,14 @@ const notifyClient = require('./notify-client')
  * not.
  */
 module.exports = async (templateId, email, options) => {
-  let success = true
   try {
+    console.log(`Attempting to send email with template ID ${templateId} to email ${email}`)
     await notifyClient.sendEmail(templateId, email, options)
+    console.log(`Successfully sent email with template ID ${templateId} to email ${email}.`)
+    return true
   } catch (e) {
-    success = false
-    console.error('Error occurred during sending email', e.response.data)
+    const error = e?.response?.data ? e.response.data : e.message
+    console.error(`Error ${JSON.stringify(error)} occurred during sending of email to address ${email} with template ID ${templateId}.`)
+    return false
   }
-  return success
 }

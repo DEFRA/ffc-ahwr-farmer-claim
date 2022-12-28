@@ -5,7 +5,7 @@ const sendSessionEvent = async (organisation, sessionId, entryKey, key, value) =
     const event = {
       id: sessionId,
       sbi: organisation.sbi,
-      cph: organisation.cph,
+      cph: 'n/a',
       email: organisation.email,
       name: 'send-session-event',
       type: `${entryKey}-${key}`,
