@@ -79,7 +79,8 @@ const config = {
   serviceUri: process.env.SERVICE_URI,
   applyServiceUri: process.env.APPLY_SERVICE_URI,
   useRedis: process.env.NODE_ENV !== 'test',
-  eligibilityApiEnabled: process.env.ELIGIBILITY_API_ENABLED
+  eligibilityApiEnabled: process.env.ELIGIBILITY_API_ENABLED,
+  eligibilityApiUri: process.env.ELIGIBILITY_API_URI
 }
 
 const result = schema.validate(config, {
