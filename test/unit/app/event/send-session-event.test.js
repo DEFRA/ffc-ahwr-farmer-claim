@@ -42,6 +42,7 @@ describe('Send event on session set', () => {
       email: organisation.email,
       cph: 'n/a',
       id: sessionId,
+      ip,
       data: { [key]: value }
     }
 
