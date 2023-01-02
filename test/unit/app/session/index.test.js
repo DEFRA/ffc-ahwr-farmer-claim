@@ -43,7 +43,7 @@ describe('session', () => {
         get: jest.fn(),
         set: jest.fn()
       }
-      const requestSetMock = { yar: yarMock }
+      const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
 
       session[func](requestSetMock, key, value)
 
@@ -61,7 +61,7 @@ describe('session', () => {
         get: jest.fn(() => existingValue),
         set: jest.fn()
       }
-      const requestSetMock = { yar: yarMock }
+      const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
 
       session[func](requestSetMock, key, value)
 
@@ -79,7 +79,7 @@ describe('session', () => {
       get: jest.fn(),
       set: jest.fn()
     }
-    const requestSetMock = { yar: yarMock }
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
 
     session[func](requestSetMock, key, valueToBeTrimmed)
 
@@ -95,7 +95,7 @@ describe('session', () => {
       get: jest.fn(),
       set: jest.fn()
     }
-    const requestSetMock = { yar: yarMock }
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
 
     session[func](requestSetMock, key, objectValue)
 
