@@ -16,7 +16,7 @@ describe('date input error message', () => {
   const fullPayload = {}
   fullPayload[labels.day] = 31
   fullPayload[labels.month] = 12
-  fullPayload[labels.year] = 2022
+  fullPayload[labels.year] = 2029
 
   test('returns message to enter value when no values have been entered', () => {
     const errorDetails = [...emptyErrorDetails]
