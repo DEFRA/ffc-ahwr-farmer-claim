@@ -11,7 +11,9 @@ function set (request, entryKey, key, value) {
   entryValue[key] = typeof (value) === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
   const claim = getClaim(request)
-  claim && sendSessionEvent(claim.organisation, request.yar.id, entryKey, key, value)
+  const xForwardedForHeader = request.headers['x-forwarded-for']
+  const ip = xForwardedForHeader ? xForwardedForHeader.split(',')[0] : request.info.remoteAddress
+  claim && sendSessionEvent(claim.organisation, request.yar.id, entryKey, key, value, ip)
 }
 
 function get (request, entryKey, key) {

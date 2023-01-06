@@ -1,6 +1,6 @@
 const raiseEvent = require('./raise-event')
 
-const sendSessionEvent = async (organisation, sessionId, entryKey, key, value) => {
+const sendSessionEvent = async (organisation, sessionId, entryKey, key, value, ip) => {
   if (sessionId && organisation) {
     const event = {
       id: sessionId,
@@ -10,7 +10,8 @@ const sendSessionEvent = async (organisation, sessionId, entryKey, key, value) =
       name: 'send-session-event',
       type: `${entryKey}-${key}`,
       message: `Session set for ${entryKey} and ${key}.`,
-      data: { [key]: value }
+      data: { [key]: value },
+      ip
     }
     await raiseEvent(event)
   }
