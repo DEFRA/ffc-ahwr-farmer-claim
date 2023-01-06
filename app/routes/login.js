@@ -7,7 +7,7 @@ const { sendFarmerClaimLoginMagicLink } = require('../lib/email/send-magic-link-
 const { setClaim, clear } = require('../session')
 const { sendMonitoringEvent } = require('../event')
 
-const hintText = 'We\'ll use this to send you a link to claim funding for a review'
+const hintText = 'We\'ll use this to send you a link to claim funding for a review. This must be the business email address linked to the business claiming for a review.'
 
 function cacheClaim (claim, request) {
   Object.entries(claim).forEach(([k, v]) => setClaim(request, k, v))
