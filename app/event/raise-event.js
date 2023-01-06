@@ -12,6 +12,7 @@ const raiseEvent = async (event, status = 'success') => {
       cph: event.cph,
       checkpoint: process.env.APPINSIGHTS_CLOUDROLE,
       status,
+      ip: event.ip,
       action: {
         type: event.type,
         message: event.message,

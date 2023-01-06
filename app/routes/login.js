@@ -13,6 +13,11 @@ function cacheClaim (claim, request) {
   Object.entries(claim).forEach(([k, v]) => setClaim(request, k, v))
 }
 
+const getIp = (request) => {
+  const xForwardedForHeader = request.headers['x-forwarded-for']
+  return xForwardedForHeader ? xForwardedForHeader.split(',')[0] : request.info.remoteAddress
+}
+
 module.exports = [{
   method: 'GET',
   path: '/claim/login',
@@ -47,7 +52,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { email } = request.payload
-        sendMonitoringEvent(request.yar.id, error.details[0].message, email)
+        sendMonitoringEvent(request.yar.id, error.details[0].message, email, getIp(request))
         return h.view('login', { ...request.payload, errorMessage: { text: error.details[0].message }, hintText }).code(400).takeover()
       }
     },
@@ -56,14 +61,14 @@ module.exports = [{
       const organisation = await getByEmail(email)
 
       if (!organisation) {
-        sendMonitoringEvent(request.yar.id, `No user found with email address "${email}"`, email)
+        sendMonitoringEvent(request.yar.id, `No user found with email address "${email}"`, email, getIp(request))
         return h.view('login', { ...request.payload, errorMessage: { text: `No user found with email address "${email}"` }, hintText }).code(400).takeover()
       }
 
       const claim = await getClaim(email, request.yar.id)
 
       if (!claim) {
-        sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email)
+        sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email, getIp(request))
         return h.view('login', { ...request.payload, errorMessage: { text: `No application found for ${email}. Please call the Rural Payments Agency on 03000 200 301 if you believe this is an error.`, hintText } }).code(400).takeover()
       }
 
