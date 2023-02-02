@@ -1,0 +1,23 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}No Eligible Businesses - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/apply/start",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">No Eligible Businesses</h1>
+
+    <p>No eligible businesses found.</p>
+  </div>
+</div>
+{% endblock %}

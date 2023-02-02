@@ -1,5 +1,6 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
+const { selectYourBusiness } = require('../config')
 const { getByEmail } = require('../api-requests/users')
 const { getClaim } = require('../messaging/application')
 const { email: emailValidation } = require('../lib/validation/email')
@@ -65,15 +66,18 @@ module.exports = [{
         return h.view('login', { ...request.payload, errorMessage: { text: `No user found with email address "${email}"` }, hintText }).code(400).takeover()
       }
 
-      const claim = await getClaim(email, request.yar.id)
+      if (selectYourBusiness.enaabled === false) {
+        const claim = await getClaim(email, request.yar.id)
 
-      if (!claim) {
-        sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email, getIp(request))
-        return h.view('login', { ...request.payload, errorMessage: { text: `No application found for ${email}. Please call the Rural Payments Agency on 03000 200 301 if you believe this is an error.`, hintText } }).code(400).takeover()
+        if (!claim) {
+          sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email, getIp(request))
+          return h.view('login', { ...request.payload, errorMessage: { text: `No application found for ${email}. Please call the Rural Payments Agency on 03000 200 301 if you believe this is an error.`, hintText } }).code(400).takeover()
+        }
+
+        clear(request)
+        cacheClaim(claim, request)
       }
 
-      clear(request)
-      cacheClaim(claim, request)
       const result = await sendFarmerClaimLoginMagicLink(request, email)
 
       if (!result) {
