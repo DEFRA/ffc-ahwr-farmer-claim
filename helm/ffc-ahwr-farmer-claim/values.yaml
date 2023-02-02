@@ -58,6 +58,7 @@ container:
   applyServiceUri:
   eligibilityApiEnabled:
   eligibilityApiUri:
+  selectYourBusinessEnabled:
 
 ingress:
   class: nginx
