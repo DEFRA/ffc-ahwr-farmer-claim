@@ -25,6 +25,7 @@ function clear (request) {
   request.yar.clear(entries.claim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
+  request.yar.clear(entries.selectYourBusiness)
 }
 
 function setApplication (request, key, value) {

@@ -5,8 +5,8 @@ module.exports = {
     pigs: 'pigs',
     sheep: 'sheep'
   },
-  selectYourBusiness: { 
-    whichBusiness: 'whichBusiness', 
+  selectYourBusiness: {
+    whichBusiness: 'whichBusiness',
     eligibleBusinesses: 'eligibleBusinesses'
   },
   farmerApplyData: {

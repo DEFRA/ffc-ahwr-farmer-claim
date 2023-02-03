@@ -18,7 +18,7 @@ module.exports = {
         },
         keepAlive: true,
         redirectTo: (request) => {
-          return '/login'
+          return '/claim/login'
         },
         validateFunc: async (request, session) => {
           const result = { valid: false }
