@@ -30,7 +30,7 @@ describe('Farmer claim - review details incorrect page test', () => {
         const res = await global.__SERVER__.inject(options)
 
         expect(res.statusCode).toBe(302)
-        expect(res.headers.location).toEqual('/login')
+        expect(res.headers.location).toEqual('/claim/login')
       })
     })
   })

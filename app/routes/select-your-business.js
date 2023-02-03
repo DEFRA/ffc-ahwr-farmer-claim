@@ -35,9 +35,9 @@ module.exports = [{
             undefined,
             RADIO_OPTIONS
           )(businesses.map(business => ({
-            value: business.sbi,
-            text: `${business.sbi} - ${business.businessName}`,
-            checked: checkedBusiness === business.sbi
+            value: business.data.organisation.sbi,
+            text: `${business.data.organisation.sbi} - ${business.data.organisation.name}`,
+            checked: checkedBusiness === business.data.organisation.sbi
           })))
         )
     }
@@ -68,9 +68,9 @@ module.exports = [{
               ERROR_TEXT,
               RADIO_OPTIONS
             )(businesses.map(business => ({
-              value: business.sbi,
-              text: `${business.sbi} - ${business.name}`,
-              checked: checkedBusiness === business.sbi
+              value: business.data.organisation.sbi,
+              text: `${business.data.organisation.sbi} - ${business.data.organisation.name}`,
+              checked: checkedBusiness === business.data.organisation.sbi
             })))
           )
           .code(400)
@@ -84,54 +84,13 @@ module.exports = [{
           request,
           sessionKeys.selectYourBusiness.eligibleBusinesses
         )
-        .find(business => business.sbi === request.payload[sessionKeys.selectYourBusiness.whichBusiness])
+        .find(business => business.data.organisation.sbi === request.payload[sessionKeys.selectYourBusiness.whichBusiness])
 
       console.log(`${new Date().toISOString()} Selected business: ${JSON.stringify({
-        ...selectedBusiness
+        sbi: selectedBusiness.data.organisation.sbi
       })}`)
 
-      const applicationReference = selectedBusiness.reference
-      console.log(`${new Date().toISOString()} Selected application reference: ${JSON.stringify({
-        applicationReference
-      })}`)
-      // get application from /api/application/get/{ref} instead of hard coding
-      const application = {
-        id: '48d2f147-614e-40df-9ba8-9961e7974e83',
-        reference: 'AHWR-48D2-F147',
-        data: {
-          reference: null,
-          declaration: true,
-          offerStatus: 'accepted',
-          whichReview: 'sheep',
-          organisation: {
-            crn: '112222',
-            sbi: '122333',
-            name: 'My Amazing Farm',
-            email: 'liam.wilson@kainos.com',
-            address: '1 Some Road',
-            farmerName: 'Mr Farmer'
-          },
-          eligibleSpecies: 'yes',
-          confirmCheckDetails: 'yes'
-        },
-        claimed: false,
-        createdAt: '2023-02-01T13:52:14.176Z',
-        updatedAt: '2023-02-01T13:52:14.207Z',
-        createdBy: 'admin',
-        updatedBy: null,
-        statusId: 1,
-        vetVisit: null,
-        organisation: {
-          farmerName: 'Liam Wilson',
-          name: 'Liams Farm',
-          sbi: '106335269',
-          crn: '1100000002',
-          address: 'Towne Road, Royston, SG8 9ES',
-          email: 'liam.wilson@kainos.com'
-        }
-      }
-      // get claim from /api/application/get/{ref}
-      Object.entries(application).forEach(([k, v]) => session.setClaim(request, k, v))
+      Object.entries(selectedBusiness).forEach(([k, v]) => session.setClaim(request, k, v))
       return h.redirect('visit-review')
     }
   }

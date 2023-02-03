@@ -1,71 +1,71 @@
-const uniqueApplicationsForSbi = [
+const latestApplicationForSbi = [
   {
-    sbi: '122333',
-    businessName: 'My farm',
-    applications: [
-      {
-        reference: 'AHWR-5C1C-DD6A',
-        status: 'AGREED',
-        updatedAt: '2022-10-04 13:58:55'
+    id: '48d2f147-614e-40df-9ba8-9961e7974e83',
+    reference: 'AHWR-48D2-F147',
+    data: {
+      reference: null,
+      declaration: true,
+      offerStatus: 'accepted',
+      whichReview: 'sheep',
+      organisation: {
+        crn: '112222',
+        sbi: '122333',
+        name: 'My Amazing Farm',
+        email: 'liam.wilson@kainos.com',
+        address: '1 Some Road',
+        farmerName: 'Mr Farmer'
       },
-      {
-        reference: 'AHWR-5C1C-DD6B',
-        status: 'WITHDRAWN',
-        updatedAt: '2022-10-05 13:58:55'
-      },
-      {
-        reference: 'AHWR-5C1C-DD6C',
-        status: 'AGREED',
-        updatedAt: '2022-10-06 13:58:55'
-      }
-    ]
+      eligibleSpecies: 'yes',
+      confirmCheckDetails: 'yes'
+    },
+    claimed: false,
+    createdAt: '2023-02-01T13: 52: 14.176Z',
+    updatedAt: '2023-02-01T13: 52: 14.207Z',
+    createdBy: 'admin',
+    updatedBy: null,
+    statusId: 1
   },
   {
-    sbi: '122334',
-    businessName: 'My farm',
-    applications: [
-      {
-        reference: 'AHWR-4FFF-1530',
-        status: 'IN CHECK',
-        updatedAt: '2022-10-06 13:58:55'
-      }
-    ]
-  },
-  {
-    sbi: '122335',
-    businessName: 'My farm',
-    applications: [
-      {
-        reference: 'AHWR-4FFF-1531',
-        status: 'AGREED',
-        updatedAt: '2022-10-06 13:58:55'
-      }
-    ]
+    id: '48d2f147-614e-40df-9ba8-9961e7974e82',
+    reference: 'AHWR-48D2-F148',
+    data: {
+      reference: null,
+      declaration: true,
+      offerStatus: 'accepted',
+      whichReview: 'pigs',
+      organisation: {
+        crn: '112222',
+        sbi: '123456789',
+        name: 'My Beautiful Farm',
+        email: 'liam.wilson@kainos.com',
+        address: '1 Some Road',
+        farmerName: 'Mr Farmer'
+      },
+      eligibleSpecies: 'yes',
+      confirmCheckDetails: 'yes'
+    },
+    claimed: false,
+    createdAt: '2023-02-01T13: 52: 14.176Z',
+    updatedAt: '2023-02-01T13: 52: 14.207Z',
+    createdBy: 'admin',
+    updatedBy: null,
+    statusId: 1
   }
 ]
 
 function processEligibleBusinesses () {
   // todo get uniqueApplicationsForSbi from API
   const businesses = []
-  uniqueApplicationsForSbi.forEach(applicationForSbi => {
-    const applications = applicationForSbi.applications
-    applications.sort(function (a, b) {
-      return new Date(b.updatedAt) - new Date(a.updatedAt)
-    })
-    const latestApplication = applications[0]
-    if (latestApplication.status === 'AGREED') {
+  latestApplicationForSbi.forEach(latestApplication => {
+    if (latestApplication.statusId === 1) {
       console.log(`${new Date().toISOString()} Latest application is eligible to claim : ${JSON.stringify({
-          sbi: applicationForSbi.sbi,
-          businessName: applicationForSbi.businessName,
-          ...latestApplication
+          sbi: latestApplication.data.organisation.sbi
         })}`)
-      businesses.push({ sbi: applicationForSbi.sbi, businessName: applicationForSbi.businessName, reference: latestApplication.reference })
+      businesses.push(latestApplication)
     } else {
       console.log(`${new Date().toISOString()} Latest application is not eligible to claim : ${JSON.stringify({
-          sbi: applicationForSbi.sbi,
-          businessName: applicationForSbi.businessName,
-          ...latestApplication
-        })}`)
+          sbi: latestApplication.data.organisation.sbi
+      })}`)
     }
   })
   return businesses
