@@ -15,7 +15,7 @@ module.exports = [{
       const businesses = await processEligibleBusinesses(request.query.businessEmail)
 
       if (!Array.isArray(businesses) || businesses.length === 0) {
-        console.log(`${new Date().toISOString()} No eligble businesses found`)
+        console.log(`${new Date().toISOString()} No eligible businesses found`)
         return h.redirect('no-eligible-businesses')
       }
 

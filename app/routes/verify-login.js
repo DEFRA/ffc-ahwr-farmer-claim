@@ -38,7 +38,7 @@ module.exports = [{
 
       setAuthCookie(request, email, userType)
 
-      return h.redirect(redirectTo, { email })
+      return h.redirect(redirectTo)
     }
   }
 }]
