@@ -1,5 +1,4 @@
 const sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
-const { serviceUri } = require('../../../../../app/config')
 const { templateIdFarmerClaimLogin } = require('../../../../../app/config').notifyConfig
 const { farmerClaim } = require('../../../../../app/constants/user-types')
 
@@ -25,6 +24,17 @@ const requestGetMock = {
           }
       }
 }
+
+const config = require('../../../../../app/config')
+jest.mock('../../../../../app/config', () => ({
+  ...jest.requireActual('../../../../../app/config'),
+  serviceName: 'Annual health and welfare review of livestock',
+  serviceUri: 'http://localhost:3004',
+  selectYourBusiness: {
+    enabled: false
+  }
+}))
+const serviceUri = config.serviceUri
 
 describe('Send Magic Link test', () => {
   const email = 'test@unit-test.com'

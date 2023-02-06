@@ -62,6 +62,7 @@ module.exports = [{
       const organisation = await getByEmail(email)
 
       if (!organisation) {
+        console.error(`No user found with email address ${email}`)
         sendMonitoringEvent(request.yar.id, `No user found with email address "${email}"`, email, getIp(request))
         return h.view('login', { ...request.payload, errorMessage: { text: `No user found with email address "${email}"` }, hintText }).code(400).takeover()
       }
