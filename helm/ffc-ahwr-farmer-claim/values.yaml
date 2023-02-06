@@ -59,7 +59,7 @@ container:
   eligibilityApiEnabled:
   eligibilityApiUri:
   selectYourBusinessEnabled:
-  applicationApiUrl:
+  applicationApiUri:
   
 ingress:
   class: nginx
