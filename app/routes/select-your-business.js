@@ -12,9 +12,10 @@ module.exports = [{
   path: '/claim/select-your-business',
   options: {
     handler: async (request, h) => {
-      const businesses = processEligibleBusinesses()
+      const businesses = await processEligibleBusinesses()
 
       if (!Array.isArray(businesses) || businesses.length === 0) {
+        console.log(`${new Date().toISOString()} No eligble businesses found`)
         return h.redirect('no-eligible-businesses')
       }
 

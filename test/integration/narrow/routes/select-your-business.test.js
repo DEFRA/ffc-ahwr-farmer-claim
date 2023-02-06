@@ -1,7 +1,6 @@
 const { when, resetAllWhenMocks } = require('jest-when')
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../utils/get-crumbs')
-const config = require('../../../../app/config')
 const sessionKeys = require('../../../../app/session/keys')
 
 const MOCK_NOW = new Date()
@@ -12,6 +11,8 @@ describe('API select-your-business', () => {
   let dateSpy
   let logSpy
   let session
+  let processEligibleBusinesses
+  let config
 
   beforeAll(() => {
     dateSpy = jest
@@ -33,6 +34,15 @@ describe('API select-your-business', () => {
         }
       }
     })
+
+    config = require('../../../../app/config')
+
+    processEligibleBusinesses = require('../../../../app/routes/models/eligible-businesses')
+    jest.mock('../../../../app/routes/models/eligible-businesses')
+  })
+
+  beforeEach(() => {
+    jest.clearAllMocks()
   })
 
   afterAll(() => {
@@ -51,9 +61,6 @@ describe('API select-your-business', () => {
         when: {
         },
         expect: {
-          consoleLogs: [
-            `${MOCK_NOW.toISOString()} Log message: ${JSON.stringify({})}`
-          ]
         }
       }
     ])('%s', async (testCase) => {
@@ -66,6 +73,60 @@ describe('API select-your-business', () => {
         }
       }
 
+      processEligibleBusinesses.mockResolvedValueOnce([
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e83',
+          reference: 'AHWR-48D2-F147',
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'sheep',
+            organisation: {
+              crn: '112222',
+              sbi: '122333',
+              name: 'My Amazing Farm',
+              email: 'liam.wilson@kainos.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        },
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e82',
+          reference: 'AHWR-48D2-F148',
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'pigs',
+            organisation: {
+              crn: '112222',
+              sbi: '123456789',
+              name: 'My Beautiful Farm',
+              email: 'liam.wilson@kainos.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        }
+      ])
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)
 
@@ -76,8 +137,26 @@ describe('API select-your-business', () => {
         sessionKeys.selectYourBusiness.eligibleBusinesses,
         expect.anything()
       )
+      expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
       expect($('title').text()).toEqual(config.serviceName)
       expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to apply for:')
+    })
+
+    test('No business redirects to correct page', async () => {
+      const options = {
+        method: 'GET',
+        url: `${API_URL}`,
+        auth: {
+          credentials: { reference: '1111', sbi: '122333' },
+          strategy: 'cookie'
+        }
+      }
+
+      processEligibleBusinesses.mockResolvedValueOnce([])
+      const response = await global.__SERVER__.inject(options)
+      expect(response.statusCode).toBe(302)
+      expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
+      expect(response.headers.location).toContain('no-eligible-businesses')
     })
   })
 
@@ -100,12 +179,6 @@ describe('API select-your-business', () => {
         },
         expect: {
           consoleLogs: [
-            `${MOCK_NOW.toISOString()} Latest application is eligible to claim : ${JSON.stringify({
-              sbi: '122333'
-            })}`,
-            `${MOCK_NOW.toISOString()} Latest application is eligible to claim : ${JSON.stringify({
-              sbi: '123456789'
-            })}`,
             `${MOCK_NOW.toISOString()} Selected business: ${JSON.stringify({
               sbi: '122333'
             })}`
@@ -182,18 +255,13 @@ describe('API select-your-business', () => {
           expect.anything(),
           sessionKeys.selectYourBusiness.eligibleBusinesses
         )
-        .mockReturnValue(businesses)
+        .mockReturnValueOnce(businesses)
 
       const response = await global.__SERVER__.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual('visit-review')
-      expect(session.setSelectYourBusiness).toHaveBeenCalledTimes(2)
-      expect(session.setSelectYourBusiness).toHaveBeenCalledWith(
-        expect.anything(),
-        sessionKeys.selectYourBusiness.eligibleBusinesses,
-        businesses
-      )
+      expect(session.setSelectYourBusiness).toHaveBeenCalledTimes(1)
       expect(session.setSelectYourBusiness).toHaveBeenCalledWith(
         expect.anything(),
         sessionKeys.selectYourBusiness.whichBusiness,
@@ -227,7 +295,7 @@ describe('API select-your-business', () => {
           expect.anything(),
           sessionKeys.selectYourBusiness.eligibleBusinesses
         )
-        .mockReturnValue([])
+        .mockReturnValueOnce([])
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)

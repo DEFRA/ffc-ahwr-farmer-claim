@@ -50,6 +50,32 @@ const latestApplicationForSbi = [
     createdBy: 'admin',
     updatedBy: null,
     statusId: 1
+  },
+  {
+    id: '48d2f147-614e-40df-9b568-9961e7974e82',
+    reference: 'AHWR-48D2-F149',
+    data: {
+      reference: null,
+      declaration: true,
+      offerStatus: 'accepted',
+      whichReview: 'pigs',
+      organisation: {
+        crn: '112222',
+        sbi: '777777',
+        name: 'My Beautiful Farm',
+        email: 'liam.wilson@kainos.com',
+        address: '1 Some Road',
+        farmerName: 'Mr Farmer'
+      },
+      eligibleSpecies: 'yes',
+      confirmCheckDetails: 'yes'
+    },
+    claimed: false,
+    createdAt: '2023-02-01T13: 52: 14.176Z',
+    updatedAt: '2023-02-01T13: 52: 14.207Z',
+    createdBy: 'admin',
+    updatedBy: null,
+    statusId: 5
   }
 ]
 
