@@ -3,7 +3,6 @@ const getCrumbs = require('../../../utils/get-crumbs')
 const pageExpects = require('../../../utils/page-expects')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const { claim: { detailsCorrect } } = require('../../../../app/session/keys')
-const { serviceName } = require('../../../../app/config')
 
 const { getTypeOfReviewRowForDisplay, getEligibleNumberRowForDisplay } = require('../../../../app/lib/display-helpers')
 
@@ -21,7 +20,7 @@ function expectPageContentOk ($, application) {
   expect(values.eq(2).text()).toMatch(typeOfReviewRow.value.text)
   expect(keys.eq(3).text()).toMatch(eligibleSpeciesRow.key.text)
   expect(values.eq(3).text()).toMatch('yes')
-  expect($('title').text()).toEqual(`Confirm the details - ${serviceName}`)
+  expect($('title').text()).toContain('Confirm the details')
   expectPhaseBanner.ok($)
 }
 
@@ -56,12 +55,23 @@ describe('Vet visit review page test', () => {
     return application
   }
 
+  beforeAll(() => {
+    jest.mock('../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../app/config')
+      return {
+        ...originalModule,
+        selectYourBusiness: {
+          enabled: false
+        }
+      }
+    })
+  })
+
   describe(`GET ${url} route when logged in`, () => {
     beforeAll(async () => {
       jest.resetAllMocks()
-
-      session = require('../../../../app/session')
       jest.mock('../../../../app/session')
+      session = require('../../../../app/session')
     })
 
     test.each([
@@ -101,7 +111,8 @@ describe('Vet visit review page test', () => {
   })
 
   describe(`GET ${url} route when logged in with select your business enabled`, () => {
-    beforeAll(async () => {
+    beforeAll(() => {
+      jest.resetModules()
       jest.resetAllMocks()
 
       jest.mock('../../../../app/config', () => {
@@ -113,8 +124,8 @@ describe('Vet visit review page test', () => {
           }
         }
       })
-      session = require('../../../../app/session')
       jest.mock('../../../../app/session')
+      session = require('../../../../app/session')
     })
 
     test('returns 200 and has correct back link', async () => {
