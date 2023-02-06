@@ -290,6 +290,36 @@ describe('API select-your-business', () => {
           strategy: 'cookie'
         }
       }
+
+      processEligibleBusinesses.mockResolvedValueOnce([
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e83',
+          reference: 'AHWR-48D2-F147',
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'sheep',
+            organisation: {
+              crn: '112222',
+              sbi: '122333',
+              name: 'My Amazing Farm',
+              email: 'liam.wilson@kainos.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        }
+      ])
+
       when(session.getSelectYourBusiness)
         .calledWith(
           expect.anything(),
