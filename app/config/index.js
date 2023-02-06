@@ -45,6 +45,7 @@ const schema = Joi.object({
   useRedis: Joi.boolean().default(false),
   eligibilityApiUri: Joi.string().uri(),
   eligibilityApiEnabled: Joi.boolean().default(true),
+  applicationApiUri: Joi.string().uri(),
   selectYourBusiness: {
     enabled: Joi.boolean().default(false)
   }
@@ -84,6 +85,7 @@ const config = {
   useRedis: process.env.NODE_ENV !== 'test',
   eligibilityApiEnabled: process.env.ELIGIBILITY_API_ENABLED,
   eligibilityApiUri: process.env.ELIGIBILITY_API_URI,
+  applicationApiUri: process.env.APPLICATION_API_URI,
   selectYourBusiness: {
     enabled: process.env.SELECT_YOUR_BUSINESS_ENABLED
   }

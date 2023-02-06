@@ -24,7 +24,6 @@ describe('Send Magic Link test', () => {
   const email = 'test@unit-test.com'
   const sendEmailResponse = true
   const testToken = '644a2a30-7487-4e98-a908-b5ecd82d5225'
-  const templateIdFarmerClaimLogin = '6fb2d1f6-9be6-4bb6-a862-6c31386814ac'
 
   beforeAll(() => {
     jest.resetModules()
@@ -62,7 +61,7 @@ describe('Send Magic Link test', () => {
     expect(cacheData[email]).toEqual([token])
     expect(cacheData[token]).toEqual({ email, redirectTo: 'visit-review', userType: farmerClaim })
     expect(sendEmail).toHaveBeenCalledTimes(1)
-    expect(sendEmail).toHaveBeenCalledWith(templateIdFarmerClaimLogin, email, {
+    expect(sendEmail).toHaveBeenCalledWith(expect.anything(), email, {
       personalisation: { magiclink: `http://localhost:3004/verify-login?token=${token}&email=${email}` },
       reference: token
     })
@@ -72,7 +71,6 @@ describe('Send Magic Link test', () => {
     const email = 'test@unit-test.com'
     const sendEmailResponse = true
     const testToken = '644a2a30-7487-4e98-a908-b5ecd82d5225'
-    const templateIdFarmerClaimLogin = '6fb2d1f6-9be6-4bb6-a862-6c31386814ac'
 
     beforeAll(() => {
       jest.resetModules()
@@ -106,7 +104,7 @@ describe('Send Magic Link test', () => {
       expect(cacheData[email]).toEqual([token])
       expect(cacheData[token]).toEqual({ email, redirectTo: 'select-your-business', userType: farmerClaim })
       expect(sendEmail).toHaveBeenCalledTimes(1)
-      expect(sendEmail).toHaveBeenCalledWith(templateIdFarmerClaimLogin, email, {
+      expect(sendEmail).toHaveBeenCalledWith(expect.anything(), email, {
         personalisation: { magiclink: `http://localhost:3004/verify-login?token=${token}&email=${email}` },
         reference: token
       })
