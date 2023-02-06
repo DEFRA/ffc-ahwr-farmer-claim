@@ -36,7 +36,8 @@ describe('Vet visit review page test', () => {
       reference: 'AWHR-TEST',
       data: {
         organisation: {
-          name: 'org-name'
+          name: 'org-name',
+          email: 'testemail@email.com'
         },
         whichReview: speciesToTest,
         eligibleSpecies: 'yes'
@@ -96,6 +97,39 @@ describe('Vet visit review page test', () => {
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toEqual('404 - Not Found')
+    })
+  })
+
+  describe(`GET ${url} route when logged in with select your business enabled`, () => {
+    beforeAll(async () => {
+      jest.resetAllMocks()
+
+      jest.mock('../../../../app/config', () => {
+        const originalModule = jest.requireActual('../../../../app/config')
+        return {
+          ...originalModule,
+          selectYourBusiness: {
+            enabled: true
+          }
+        }
+      })
+      session = require('../../../../app/session')
+      jest.mock('../../../../app/session')
+    })
+
+    test('returns 200 and has correct back link', async () => {
+      setupSessionMock('beef')
+      const options = {
+        auth,
+        method: 'GET',
+        url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').attr('href')).toEqual('/claim/select-your-business?businessEmail=testemail@email.com')
     })
   })
 
