@@ -12,7 +12,7 @@ module.exports = [{
   path: '/claim/select-your-business',
   options: {
     handler: async (request, h) => {
-      const businesses = await processEligibleBusinesses()
+      const businesses = await processEligibleBusinesses(request.query.businessEmail)
 
       if (!Array.isArray(businesses) || businesses.length === 0) {
         console.log(`${new Date().toISOString()} No eligble businesses found`)

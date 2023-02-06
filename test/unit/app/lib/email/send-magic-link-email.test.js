@@ -102,7 +102,7 @@ describe('Send Magic Link test', () => {
       const response = await sendMagicLinkEmail.sendFarmerClaimLoginMagicLink(requestGetMock, email)
       expect(response).toEqual(sendEmailResponse)
       expect(cacheData[email]).toEqual([token])
-      expect(cacheData[token]).toEqual({ email, redirectTo: 'select-your-business', userType: farmerClaim })
+      expect(cacheData[token]).toEqual({ email, redirectTo: 'select-your-business?businessEmail=test@unit-test.com', userType: farmerClaim })
       expect(sendEmail).toHaveBeenCalledTimes(1)
       expect(sendEmail).toHaveBeenCalledWith(expect.anything(), email, {
         personalisation: { magiclink: `http://localhost:3004/verify-login?token=${token}&email=${email}` },

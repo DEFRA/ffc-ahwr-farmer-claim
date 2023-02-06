@@ -59,7 +59,8 @@ container:
   eligibilityApiEnabled:
   eligibilityApiUri:
   selectYourBusinessEnabled:
-
+  applicationApiUrl:
+  
 ingress:
   class: nginx
   endpoint: ffc-ahwr-farmer
