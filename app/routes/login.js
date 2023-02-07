@@ -67,7 +67,7 @@ module.exports = [{
         return h.view('login', { ...request.payload, errorMessage: { text: `No user found with email address "${email}"` }, hintText }).code(400).takeover()
       }
 
-      if (config.selectYourBusiness.enabled === false) {
+      if (!config.selectYourBusiness.enabled) {
         const claim = await getClaim(email, request.yar.id)
 
         if (!claim) {

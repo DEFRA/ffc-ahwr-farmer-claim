@@ -25,7 +25,7 @@ async function sendMagicLinkEmail (request, email, templateId, redirectTo, userT
 }
 
 async function sendFarmerClaimLoginMagicLink (request, email) {
-  const redirectTo = selectYourBusiness.enabled === true ? `select-your-business?businessEmail=${email}` : 'visit-review'
+  const redirectTo = selectYourBusiness.enabled ? `select-your-business?businessEmail=${email}` : 'visit-review'
   return sendMagicLinkEmail(request, email, templateIdFarmerClaimLogin, redirectTo, farmerClaim)
 }
 
