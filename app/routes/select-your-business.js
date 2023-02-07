@@ -1,11 +1,12 @@
 const Joi = require('joi')
 const Boom = require('@hapi/boom')
+const config = require('../config')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
 const radios = require('./models/form-component/radios')
 const processEligibleBusinesses = require('./models/eligible-businesses')
 const ERROR_TEXT = 'Select the business you want reviewed'
-const LEGEND_TEXT = 'Choose the SBI you would like to apply for:'
+const LEGEND_TEXT = 'Choose the SBI you would like to claim for:'
 const RADIO_OPTIONS = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: false, undefined }
 const BUSINESS_EMAIL_SCHEMA = require('../schemas/business-email.schema')
 
@@ -24,6 +25,10 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
+      if (request.state[config.cookie.cookieNameAuth] && (request.query.businessEmail !== request.state[config.cookie.cookieNameAuth].email)) {
+        throw Boom.internal()
+      }
+
       const businesses = await processEligibleBusinesses(request.query.businessEmail)
 
       if (!Array.isArray(businesses) || businesses.length === 0) {

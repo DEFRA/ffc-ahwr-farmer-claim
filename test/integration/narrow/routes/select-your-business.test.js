@@ -5,7 +5,7 @@ const sessionKeys = require('../../../../app/session/keys')
 
 const MOCK_NOW = new Date()
 
-const API_URL = '/claim/select-your-business'
+const API_URL = '/claim/select-your-business?businessEmail=email@test.com'
 
 describe('API select-your-business', () => {
   let dateSpy
@@ -139,7 +139,7 @@ describe('API select-your-business', () => {
       )
       expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
       expect($('title').text()).toEqual(config.serviceName)
-      expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to apply for:')
+      expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to claim for:')
     })
 
     test('No business redirects to correct page', async () => {
@@ -333,7 +333,7 @@ describe('API select-your-business', () => {
       expect(response.statusCode).toBe(400)
       expect(response.statusMessage).toEqual('Bad Request')
       expect($('title').text()).toEqual(config.serviceName)
-      expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to apply for:')
+      expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to claim for:')
     })
   })
 })

@@ -33,8 +33,8 @@ module.exports = [{
     },
     handler: async (request, h) => {
       if (request.auth.isAuthenticated) {
-        const email = request.state.ffc_ahwr_auth.email
-        return h.redirect(request.query?.next || config.selectYourBusiness.enabled ? `/claim/select-your-business?business-email=${email}` : '/claim/visit-review')
+        const email = request.state[config.cookie.cookieNameAuth] && request.state[config.cookie.cookieNameAuth].email
+        return h.redirect(request.query?.next || config.selectYourBusiness.enabled ? `/claim/select-your-business?businessEmail=${email}` : '/claim/visit-review')
       }
 
       return h.view('login', { hintText })
