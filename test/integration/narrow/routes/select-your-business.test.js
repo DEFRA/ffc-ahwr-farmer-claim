@@ -156,7 +156,7 @@ describe('API select-your-business', () => {
       const response = await global.__SERVER__.inject(options)
       expect(response.statusCode).toBe(302)
       expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
-      expect(response.headers.location).toContain('no-eligible-businesses')
+      expect(response.headers.location).toContain('no-claimable-businesses')
     })
   })
 

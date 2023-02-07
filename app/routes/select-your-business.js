@@ -1,4 +1,5 @@
 const Joi = require('joi')
+const Boom = require('@hapi/boom')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
 const radios = require('./models/form-component/radios')
@@ -6,17 +7,28 @@ const processEligibleBusinesses = require('./models/eligible-businesses')
 const ERROR_TEXT = 'Select the business you want reviewed'
 const LEGEND_TEXT = 'Choose the SBI you would like to apply for:'
 const RADIO_OPTIONS = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: false, undefined }
+const BUSINESS_EMAIL_SCHEMA = require('../schemas/business-email.schema')
 
 module.exports = [{
   method: 'GET',
   path: '/claim/select-your-business',
   options: {
+    validate: {
+      query: Joi.object({
+        businessEmail: BUSINESS_EMAIL_SCHEMA
+      }).options({
+        stripUnknown: true
+      }),
+      failAction (request, h, err) {
+        throw Boom.badRequest('"businessEmail" param is missing or the value is empty')
+      }
+    },
     handler: async (request, h) => {
       const businesses = await processEligibleBusinesses(request.query.businessEmail)
 
       if (!Array.isArray(businesses) || businesses.length === 0) {
-        console.log(`${new Date().toISOString()} No eligible businesses found`)
-        return h.redirect('no-eligible-businesses')
+        console.log(`${new Date().toISOString()} No claimable businesses found.`)
+        return h.redirect('no-claimable-businesses')
       }
 
       const checkedBusiness = session.getSelectYourBusiness(

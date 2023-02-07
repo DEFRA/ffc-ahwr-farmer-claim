@@ -16,7 +16,7 @@ describe('No Eligible Businesses page test', () => {
       }
     }))
     require('../../../../app/config')
-    url = '/claim/no-eligible-businesses'
+    url = '/claim/no-claimable-businesses'
   })
 
   describe(`GET ${url} route`, () => {

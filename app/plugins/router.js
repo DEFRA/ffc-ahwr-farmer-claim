@@ -25,7 +25,7 @@ module.exports = {
       server.route(routes)
       if (config.selectYourBusiness.enabled) {
         server.route(require('../routes/select-your-business'))
-        server.route(require('../routes/no-eligible-businesses'))
+        server.route(require('../routes/no-claimable-businesses'))
       }
     }
   }
