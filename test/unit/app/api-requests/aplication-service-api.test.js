@@ -1,17 +1,19 @@
 const Wreck = require('@hapi/wreck')
 const mockConfig = require('../../../../app/config')
-
 jest.mock('@hapi/wreck')
-
 const consoleLogSpy = jest.spyOn(console, 'log')
 const consoleErrorSpy = jest.spyOn(console, 'error')
-
 const mockApplicationApiUri = 'http://internal:3333/api'
+
+const MOCK_NOW = new Date()
 
 describe('Application API', () => {
   let applicationApi
 
   beforeAll(() => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(MOCK_NOW)
+
     jest.mock('../../../../app/config', () => ({
       ...mockConfig,
       applicationApiUri: mockApplicationApiUri
@@ -20,11 +22,16 @@ describe('Application API', () => {
   })
 
   afterAll(() => {
+    jest.useRealTimers()
     jest.resetAllMocks()
     jest.resetModules()
   })
 
-  describe('getLatestApplicationForEachSbi', () => {
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
+  describe('getLatestApplicationsBy', () => {
     test('given an eligible business email address it returns business and their applicaton status', async () => {
       const expectedResponse = {
         payload: [
@@ -116,9 +123,7 @@ describe('Application API', () => {
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
-
-      const response = await applicationApi.getLatestApplicationForEachSbi(BUSINESS_EMAIL_ADDRESS)
-
+      const response = await applicationApi.getLatestApplicationsBy(BUSINESS_EMAIL_ADDRESS)
       expect(response).not.toBeNull()
       expect(Wreck.get).toHaveBeenCalledTimes(1)
       expect(Wreck.get).toHaveBeenCalledWith(
@@ -126,7 +131,6 @@ describe('Application API', () => {
           options
       )
     })
-
     test('given Wreck.get returns 400 it logs the issue and returns null', async () => {
       const statusCode = 400
       const statusMessage = 'A valid email address must be specified.'
@@ -146,18 +150,17 @@ describe('Application API', () => {
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
-
-      const response = await applicationApi.getLatestApplicationForEachSbi(BUSINESS_EMAIL_ADDRESS)
-
+      const response = await applicationApi.getLatestApplicationsBy(BUSINESS_EMAIL_ADDRESS)
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-      expect(consoleLogSpy).toHaveBeenCalledWith(`Bad response: ${statusCode} - ${statusMessage}`)
+      expect(consoleLogSpy).toHaveBeenCalledWith(`${MOCK_NOW.toISOString()} Getting latest applications by: ${JSON.stringify({
+        businessEmail: BUSINESS_EMAIL_ADDRESS
+      })}`)
       expect(response).toBeNull()
       expect(Wreck.get).toHaveBeenCalledWith(
         `${mockApplicationApiUri}/applications/latest?businessEmail=${BUSINESS_EMAIL_ADDRESS}`,
         options
       )
     })
-
     test('given Wreck.get throws an error it logs the error and returns null', async () => {
       const expectedError = new Error('msg')
       const options = {
@@ -165,11 +168,11 @@ describe('Application API', () => {
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockRejectedValue(expectedError)
-
-      const response = await applicationApi.getLatestApplicationForEachSbi(BUSINESS_EMAIL_ADDRESS)
-
+      const response = await applicationApi.getLatestApplicationsBy(BUSINESS_EMAIL_ADDRESS)
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
-      expect(consoleErrorSpy).toHaveBeenCalledWith(`applicationApiUri.getLatestApplicationForEachSbi failed: ${expectedError.message}`)
+      expect(consoleErrorSpy).toHaveBeenCalledWith(`${MOCK_NOW.toISOString()} Getting latest applications failed: ${JSON.stringify({
+        businessEmail: BUSINESS_EMAIL_ADDRESS
+      })}`, expectedError)
       expect(response).toBeNull()
       expect(Wreck.get).toHaveBeenCalledWith(
         `${mockApplicationApiUri}/applications/latest?businessEmail=${BUSINESS_EMAIL_ADDRESS}`,

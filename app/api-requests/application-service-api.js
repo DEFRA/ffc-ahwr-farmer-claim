@@ -1,23 +1,25 @@
 const Wreck = require('@hapi/wreck')
 const config = require('../config')
 
-async function getLatestApplicationForEachSbi (emailAddress) {
+async function getLatestApplicationsBy (businessEmail) {
+  console.log(`${new Date().toISOString()} Getting latest applications by: ${JSON.stringify({ businessEmail })}`)
   try {
     const response = await Wreck.get(
-      `${config.applicationApiUri}/applications/latest?businessEmail=${emailAddress}`,
+      `${config.applicationApiUri}/applications/latest?businessEmail=${businessEmail}`,
       { json: true }
     )
     if (response.res.statusCode !== 200) {
-      console.log(`Bad response: ${response.res.statusCode} - ${response.res.statusMessage}`)
-      return null
+      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
     }
     return response.payload
-  } catch (err) {
-    console.error(`applicationApiUri.getLatestApplicationForEachSbi failed: ${err.message}`)
+  } catch (error) {
+    console.error(`${new Date().toISOString()} Getting latest applications failed: ${JSON.stringify({
+      businessEmail
+    })}`, error)
     return null
   }
 }
 
 module.exports = {
-  getLatestApplicationForEachSbi
+  getLatestApplicationsBy
 }

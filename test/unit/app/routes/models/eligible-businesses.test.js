@@ -53,7 +53,7 @@ describe('Eligible businesses', () => {
       }
     }
   ])('%s', async (testCase) => {
-    applicationApi.getLatestApplicationForEachSbi.mockResolvedValueOnce(
+    applicationApi.getLatestApplicationsBy.mockResolvedValueOnce(
       [
         {
           id: '48d2f147-614e-40df-9ba8-9961e7974e83',
@@ -137,16 +137,16 @@ describe('Eligible businesses', () => {
     )
     const result = await processEligibleBusinesses('someemaiL@email.com')
     expect(result.length).toBe(2)
-    expect(applicationApi.getLatestApplicationForEachSbi).toBeCalledTimes(1)
+    expect(applicationApi.getLatestApplicationsBy).toBeCalledTimes(1)
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
   })
 
   test('test null application response handles', async () => {
-    applicationApi.getLatestApplicationForEachSbi.mockResolvedValueOnce(null)
+    applicationApi.getLatestApplicationsBy.mockResolvedValueOnce(null)
     const result = await processEligibleBusinesses('someemaiL@email.com')
     expect(result.length).toBe(0)
-    expect(applicationApi.getLatestApplicationForEachSbi).toBeCalledTimes(1)
+    expect(applicationApi.getLatestApplicationsBy).toBeCalledTimes(1)
   })
 })
