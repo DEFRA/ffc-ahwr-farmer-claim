@@ -44,7 +44,11 @@ const schema = Joi.object({
   applyServiceUri: Joi.string().uri(),
   useRedis: Joi.boolean().default(false),
   eligibilityApiUri: Joi.string().uri(),
-  eligibilityApiEnabled: Joi.boolean().default(true)
+  eligibilityApiEnabled: Joi.boolean().default(true),
+  applicationApiUri: Joi.string().uri(),
+  selectYourBusiness: {
+    enabled: Joi.boolean().default(false)
+  }
 })
 
 const config = {
@@ -80,7 +84,11 @@ const config = {
   applyServiceUri: process.env.APPLY_SERVICE_URI,
   useRedis: process.env.NODE_ENV !== 'test',
   eligibilityApiEnabled: process.env.ELIGIBILITY_API_ENABLED,
-  eligibilityApiUri: process.env.ELIGIBILITY_API_URI
+  eligibilityApiUri: process.env.ELIGIBILITY_API_URI,
+  applicationApiUri: process.env.APPLICATION_API_URI,
+  selectYourBusiness: {
+    enabled: process.env.SELECT_YOUR_BUSINESS_ENABLED
+  }
 }
 
 const result = schema.validate(config, {

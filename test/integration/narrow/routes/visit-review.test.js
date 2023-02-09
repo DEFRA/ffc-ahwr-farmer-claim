@@ -3,7 +3,6 @@ const getCrumbs = require('../../../utils/get-crumbs')
 const pageExpects = require('../../../utils/page-expects')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const { claim: { detailsCorrect } } = require('../../../../app/session/keys')
-const { serviceName } = require('../../../../app/config')
 
 const { getTypeOfReviewRowForDisplay, getEligibleNumberRowForDisplay } = require('../../../../app/lib/display-helpers')
 
@@ -21,7 +20,7 @@ function expectPageContentOk ($, application) {
   expect(values.eq(2).text()).toMatch(typeOfReviewRow.value.text)
   expect(keys.eq(3).text()).toMatch(eligibleSpeciesRow.key.text)
   expect(values.eq(3).text()).toMatch('yes')
-  expect($('title').text()).toEqual(`Confirm the details - ${serviceName}`)
+  expect($('title').text()).toContain('Confirm the details')
   expectPhaseBanner.ok($)
 }
 
@@ -36,7 +35,8 @@ describe('Vet visit review page test', () => {
       reference: 'AWHR-TEST',
       data: {
         organisation: {
-          name: 'org-name'
+          name: 'org-name',
+          email: 'testemail@email.com'
         },
         whichReview: speciesToTest,
         eligibleSpecies: 'yes'
@@ -55,12 +55,23 @@ describe('Vet visit review page test', () => {
     return application
   }
 
+  beforeAll(() => {
+    jest.mock('../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../app/config')
+      return {
+        ...originalModule,
+        selectYourBusiness: {
+          enabled: false
+        }
+      }
+    })
+  })
+
   describe(`GET ${url} route when logged in`, () => {
     beforeAll(async () => {
       jest.resetAllMocks()
-
-      session = require('../../../../app/session')
       jest.mock('../../../../app/session')
+      session = require('../../../../app/session')
     })
 
     test.each([
@@ -96,6 +107,40 @@ describe('Vet visit review page test', () => {
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toEqual('404 - Not Found')
+    })
+  })
+
+  describe(`GET ${url} route when logged in with select your business enabled`, () => {
+    beforeAll(() => {
+      jest.resetModules()
+      jest.resetAllMocks()
+
+      jest.mock('../../../../app/config', () => {
+        const originalModule = jest.requireActual('../../../../app/config')
+        return {
+          ...originalModule,
+          selectYourBusiness: {
+            enabled: true
+          }
+        }
+      })
+      jest.mock('../../../../app/session')
+      session = require('../../../../app/session')
+    })
+
+    test('returns 200 and has correct back link', async () => {
+      setupSessionMock('beef')
+      const options = {
+        auth,
+        method: 'GET',
+        url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').attr('href')).toEqual('/claim/select-your-business?businessEmail=testemail@email.com')
     })
   })
 

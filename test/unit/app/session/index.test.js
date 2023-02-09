@@ -3,18 +3,21 @@ const session = require('../../../../app/session')
 describe('session', () => {
   const applicationSectionKey = 'application'
   const claimKey = 'claim'
+  const selectYourBusinessKey = 'selectYourBusiness'
 
   const value = 'value'
   const objectValue = { key: value }
 
   const getFunctionsToTest = [
     { func: 'getApplication', expectedSectionKey: applicationSectionKey },
-    { func: 'getClaim', expectedSectionKey: claimKey }
+    { func: 'getClaim', expectedSectionKey: claimKey },
+    { func: 'getSelectYourBusiness', expectedSectionKey: selectYourBusinessKey }
   ]
 
   const setFunctionsToTest = [
     { func: 'setApplication', expectedSectionKey: applicationSectionKey },
-    { func: 'setClaim', expectedSectionKey: claimKey }
+    { func: 'setClaim', expectedSectionKey: claimKey },
+    { func: 'setSelectYourBusiness', expectedSectionKey: selectYourBusinessKey }
   ]
 
   const keysAndValuesToTest = [

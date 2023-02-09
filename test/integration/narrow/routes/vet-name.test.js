@@ -37,7 +37,7 @@ describe('Vet, enter name test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/login')
+      expect(res.headers.location).toEqual('/claim/login')
     })
 
     test('returns 200 when logged in', async () => {
@@ -93,7 +93,7 @@ describe('Vet, enter name test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/login')
+      expect(res.headers.location).toEqual('/claim/login')
     })
 
     test.each([

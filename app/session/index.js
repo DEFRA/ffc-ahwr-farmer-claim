@@ -3,7 +3,8 @@ const { sendSessionEvent } = require('../event')
 const entries = {
   application: 'application',
   claim: 'claim',
-  organisation: 'organisation'
+  organisation: 'organisation',
+  selectYourBusiness: 'selectYourBusiness'
 }
 
 function set (request, entryKey, key, value) {
@@ -24,6 +25,7 @@ function clear (request) {
   request.yar.clear(entries.claim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
+  request.yar.clear(entries.selectYourBusiness)
 }
 
 function setApplication (request, key, value) {
@@ -42,10 +44,20 @@ function getClaim (request, key) {
   return get(request, entries.claim, key)
 }
 
+function setSelectYourBusiness (request, key, value) {
+  set(request, entries.selectYourBusiness, key, value)
+}
+
+function getSelectYourBusiness (request, key) {
+  return get(request, entries.selectYourBusiness, key)
+}
+
 module.exports = {
   getApplication,
   getClaim,
   setApplication,
   setClaim,
-  clear
+  clear,
+  setSelectYourBusiness,
+  getSelectYourBusiness
 }

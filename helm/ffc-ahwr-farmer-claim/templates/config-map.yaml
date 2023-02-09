@@ -25,4 +25,6 @@ data:
   APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
   ELIGIBILITY_API_ENABLED: {{ quote .Values.container.eligibilityApiEnabled }}
   ELIGIBILITY_API_URI: {{ quote .Values.container.eligibilityApiUri }}
+  APPLICATION_API_URI: {{ quote .Values.container.applicationApiUri }}
+  SELECT_YOUR_BUSINESS_ENABLED: {{ quote .Values.container.selectYourBusinessEnabled }}
 {{- end -}}

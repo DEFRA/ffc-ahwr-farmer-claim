@@ -1,5 +1,6 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
+const config = require('../config')
 const { getByEmail } = require('../api-requests/users')
 const { getClaim } = require('../messaging/application')
 const { email: emailValidation } = require('../lib/validation/email')
@@ -32,7 +33,8 @@ module.exports = [{
     },
     handler: async (request, h) => {
       if (request.auth.isAuthenticated) {
-        return h.redirect(request.query?.next || '/claim/visit-review')
+        const email = request.state[config.cookie.cookieNameAuth] && request.state[config.cookie.cookieNameAuth].email
+        return h.redirect(request.query?.next || config.selectYourBusiness.enabled ? `/claim/select-your-business?businessEmail=${email}` : '/claim/visit-review')
       }
 
       return h.view('login', { hintText })
@@ -61,19 +63,23 @@ module.exports = [{
       const organisation = await getByEmail(email)
 
       if (!organisation) {
+        console.error(`No user found with email address ${email}`)
         sendMonitoringEvent(request.yar.id, `No user found with email address "${email}"`, email, getIp(request))
         return h.view('login', { ...request.payload, errorMessage: { text: `No user found with email address "${email}"` }, hintText }).code(400).takeover()
       }
 
-      const claim = await getClaim(email, request.yar.id)
+      if (!config.selectYourBusiness.enabled) {
+        const claim = await getClaim(email, request.yar.id)
 
-      if (!claim) {
-        sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email, getIp(request))
-        return h.view('login', { ...request.payload, errorMessage: { text: `No application found for ${email}. Please call the Rural Payments Agency on 03000 200 301 if you believe this is an error.`, hintText } }).code(400).takeover()
+        if (!claim) {
+          sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email, getIp(request))
+          return h.view('login', { ...request.payload, errorMessage: { text: `No application found for ${email}. Please call the Rural Payments Agency on 03000 200 301 if you believe this is an error.`, hintText } }).code(400).takeover()
+        }
+
+        clear(request)
+        cacheClaim(claim, request)
       }
 
-      clear(request)
-      cacheClaim(claim, request)
       const result = await sendFarmerClaimLoginMagicLink(request, email)
 
       if (!result) {
