@@ -68,7 +68,7 @@ describe('API select-your-business', () => {
         method: 'GET',
         url: `${API_URL}`,
         auth: {
-          credentials: { reference: '1111', sbi: '122333' },
+          credentials: { email: 'email@test.com', sbi: '122333' },
           strategy: 'cookie'
         }
       }
@@ -86,7 +86,7 @@ describe('API select-your-business', () => {
               crn: '112222',
               sbi: '122333',
               name: 'My Amazing Farm',
-              email: 'liam.wilson@kainos.com',
+              email: 'email@test.com',
               address: '1 Some Road',
               farmerName: 'Mr Farmer'
             },
@@ -112,7 +112,7 @@ describe('API select-your-business', () => {
               crn: '112222',
               sbi: '123456789',
               name: 'My Beautiful Farm',
-              email: 'liam.wilson@kainos.com',
+              email: 'email@test.com',
               address: '1 Some Road',
               farmerName: 'Mr Farmer'
             },
@@ -139,7 +139,7 @@ describe('API select-your-business', () => {
       )
       expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
       expect($('title').text()).toEqual(config.serviceName)
-      expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to claim for:')
+      expect($('.govuk-heading-l').first().text().trim()).toEqual('Which business are you claiming for?')
     })
 
     test('No business redirects to correct page', async () => {
@@ -147,7 +147,7 @@ describe('API select-your-business', () => {
         method: 'GET',
         url: `${API_URL}`,
         auth: {
-          credentials: { reference: '1111', sbi: '122333' },
+          credentials: { email: 'email@test.com', sbi: '122333' },
           strategy: 'cookie'
         }
       }
@@ -156,7 +156,7 @@ describe('API select-your-business', () => {
       const response = await global.__SERVER__.inject(options)
       expect(response.statusCode).toBe(302)
       expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
-      expect(response.headers.location).toContain('no-claimable-businesses')
+      expect(response.headers.location).toContain('no-business-available-to-claim-for')
     })
   })
 
@@ -333,7 +333,7 @@ describe('API select-your-business', () => {
       expect(response.statusCode).toBe(400)
       expect(response.statusMessage).toEqual('Bad Request')
       expect($('title').text()).toEqual(config.serviceName)
-      expect($('.govuk-fieldset__heading').first().text().trim()).toEqual('Choose the SBI you would like to claim for:')
+      expect($('.govuk-heading-l').first().text().trim()).toEqual('Which business are you claiming for?')
     })
   })
 })

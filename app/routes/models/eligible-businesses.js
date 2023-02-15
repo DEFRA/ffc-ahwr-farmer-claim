@@ -18,7 +18,7 @@ async function processEligibleBusinesses (businessEmail) {
       }
     })
   }
-  return businesses
+  return businesses.sort((a, b) => a.data.organisation.name.localeCompare(b.data.organisation.name))
 }
 
 module.exports = processEligibleBusinesses
