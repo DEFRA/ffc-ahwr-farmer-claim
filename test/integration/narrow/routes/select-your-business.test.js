@@ -158,6 +158,20 @@ describe('API select-your-business', () => {
       expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
       expect(response.headers.location).toContain('no-business-available-to-claim-for')
     })
+
+    test('Test business email query param does not match credentials throws 500', async () => {
+      const options = {
+        method: 'GET',
+        url: `${API_URL}`,
+        auth: {
+          credentials: { email: 'correctemail@email.com' },
+          strategy: 'cookie'
+        }
+      }
+
+      const response = await global.__SERVER__.inject(options)
+      expect(response.statusCode).toEqual(500)
+    })
   })
 
   describe('POST', () => {
