@@ -1,6 +1,6 @@
 const Joi = require('joi')
-const Boom = require('@hapi/boom')
 const config = require('../config')
+const Boom = require('@hapi/boom')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
 const radios = require('./models/form-component/radios')
@@ -25,7 +25,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      if (request.state[config.cookie.cookieNameAuth] && (request.query.businessEmail !== request.state[config.cookie.cookieNameAuth].email)) {
+      if (request.auth.credentials && (request.query.businessEmail !== request.auth.credentials.email)) {
         throw Boom.internal()
       }
 
@@ -33,7 +33,7 @@ module.exports = [{
 
       if (!Array.isArray(businesses) || businesses.length === 0) {
         console.log(`${new Date().toISOString()} No claimable businesses found.`)
-        return h.redirect('no-claimable-businesses')
+        return h.redirect('no-business-available-to-claim-for')
       }
 
       const checkedBusiness = session.getSelectYourBusiness(
@@ -47,16 +47,20 @@ module.exports = [{
       )
       return h
         .view('select-your-business',
-          radios(
-            LEGEND_TEXT,
-            sessionKeys.selectYourBusiness.whichBusiness,
-            undefined,
-            RADIO_OPTIONS
-          )(businesses.map(business => ({
-            value: business.data.organisation.sbi,
-            text: `${business.data.organisation.sbi} - ${business.data.organisation.name}`,
-            checked: checkedBusiness === business.data.organisation.sbi
-          })))
+          {
+            radioOptions: radios(
+              LEGEND_TEXT,
+              sessionKeys.selectYourBusiness.whichBusiness,
+              undefined,
+              RADIO_OPTIONS
+            )(businesses.map(business => ({
+              value: business.data.organisation.sbi,
+              text: `${business.data.organisation.sbi} - ${business.data.organisation.name}`,
+              checked: checkedBusiness === business.data.organisation.sbi
+            }))),
+            callChargesUri: config.callChargesUri,
+            ruralPaymentsEmail: config.ruralPaymentsEmail
+          }
         )
     }
   }
@@ -79,8 +83,8 @@ module.exports = [{
           sessionKeys.selectYourBusiness.whichBusiness
         )
         return h
-          .view('select-your-business',
-            radios(
+          .view('select-your-business', {
+            radioOptions: radios(
               LEGEND_TEXT,
               sessionKeys.selectYourBusiness.whichBusiness,
               ERROR_TEXT,
@@ -89,7 +93,10 @@ module.exports = [{
               value: business.data.organisation.sbi,
               text: `${business.data.organisation.sbi} - ${business.data.organisation.name}`,
               checked: checkedBusiness === business.data.organisation.sbi
-            })))
+            }))),
+            callChargesUri: config.callChargesUri,
+            ruralPaymentsEmail: config.ruralPaymentsEmail
+          }
           )
           .code(400)
           .takeover()

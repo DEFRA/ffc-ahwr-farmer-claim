@@ -1,0 +1,30 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}No business available to claim for - {{ serviceName }}{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/claim",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">No business available to claim for</h1>
+    <p>There is no agreement you can claim funding for at this time.</p>
+    <p>If you think this is wrong, contact the Rural Payments Agency:</p>
+    <ul class='govuk-list'>
+      <li>Rural Payments Agency</li>
+      <li>Telephone: 03000 200 301</li>
+      <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
+      <li><a href='mailto:{{ ruralPaymentsEmail }}'>{{ ruralPaymentsEmail }}</a></li>
+    </ul>
+    <p class='govuk-body'>Find out about <a class='govuk-link' target='_blank' href='{{ callChargesUri }}'> call charges </a></p>
+  </div>
+</div>
+{% endblock %}
