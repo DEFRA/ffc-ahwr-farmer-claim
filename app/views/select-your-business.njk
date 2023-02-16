@@ -5,12 +5,35 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Which business are you claiming for?</h1>
+    
+    <p>These businesses have applied for an annual health and welfare review of livestock.</p>
+
     <form method="POST" autocomplete="off" novalidate="novalidate">
       <input type="hidden" name="crumb" value="{{crumb}}"/>
-      {{ govukRadios(radios) }}
+
+      {{ govukInsetText({
+        text: "Select the business that’s claiming:"
+      }) }}
+
+      {{ govukRadios(radioOptions.radios) }}
+
       {{ govukButton({
-        text: "Continue",
-        attributes: {id: "btnContinue"}
+        text: "Start claim",
+        attributes: {id: "startClaim"}
+      }) }}
+
+      {{ govukDetails({
+        summaryText: "Can’t see the business you’re looking for?",
+        html: "<p>If you have a business that has applied for the review but is not listed, contact the Rural Payments Agency.</p>
+        <ul class='govuk-list'>
+          <li>Rural Payments Agency</li>
+          <li>Telephone: 03000 200 301</li>
+          <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
+          <li><a href='mailto:" + ruralPaymentsEmail + "'>" + ruralPaymentsEmail + "</a></li>
+        </ul>
+        <p class='govuk-body'>Find out about <a class='govuk-link' target='_blank' href='" + callChargesUri + "'> call charges</a></p>
+        " 
       }) }}
     </form>
   </div>
