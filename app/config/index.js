@@ -1,6 +1,5 @@
 const Joi = require('joi')
 const mqConfig = require('./messaging')
-const storageConfig = require('./storage')
 const notifyConfig = require('./notify')
 
 const schema = Joi.object({
@@ -44,7 +43,6 @@ const schema = Joi.object({
   applyServiceUri: Joi.string().uri(),
   useRedis: Joi.boolean().default(false),
   eligibilityApiUri: Joi.string().uri(),
-  eligibilityApiEnabled: Joi.boolean().default(true),
   applicationApiUri: Joi.string().uri(),
   selectYourBusiness: {
     enabled: Joi.boolean().default(false)
@@ -83,7 +81,6 @@ const config = {
   serviceUri: process.env.SERVICE_URI,
   applyServiceUri: process.env.APPLY_SERVICE_URI,
   useRedis: process.env.NODE_ENV !== 'test',
-  eligibilityApiEnabled: process.env.ELIGIBILITY_API_ENABLED,
   eligibilityApiUri: process.env.ELIGIBILITY_API_URI,
   applicationApiUri: process.env.APPLICATION_API_URI,
   selectYourBusiness: {
@@ -100,7 +97,6 @@ if (result.error) {
 }
 
 const value = result.value
-value.storageConfig = storageConfig
 value.mqConfig = mqConfig
 value.notifyConfig = notifyConfig
 

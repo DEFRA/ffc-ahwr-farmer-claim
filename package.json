@@ -24,7 +24,6 @@
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@azure/storage-blob": "^12.9.0",
     "@hapi/boom": "^9.1.4",
     "@hapi/catbox-redis": "^6.0.2",
     "@hapi/cookie": "^11.0.2",

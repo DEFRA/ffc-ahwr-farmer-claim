@@ -30,7 +30,6 @@ overridden by build and release pipelines.
 | ----                                  | -----------                                                                                      |
 | APPLICATIONREQUEST_QUEUE_ADDRESS      | Name of message queue used to send application requests                                          |
 | APPLICATIONRESPONSE_QUEUE_ADDRESS     | Name of session enabled message queue used to receive application responses                      |
-| AZURE_STORAGE_CONNECTION_STRING       | Azure Storage connection string                                                                  |
 | MESSAGE_QUEUE_HOST                    | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net`                           |
 | MESSAGE_QUEUE_PASSWORD                | Azure Service Bus SAS policy key                                                                 |
 | MESSAGE_QUEUE_SUFFIX                  | Developer initials                                                                               |
@@ -42,7 +41,6 @@ overridden by build and release pipelines.
 | SERVICE_URI                           | URI of service (used in links, in emails) e.g. `http://localhost:3000` or `https://defra.gov.uk` |
 | TEST_TOKEN                            | Test Token for Magic link for getting access to test access                                      |
 | AZURE_STORAGE_CREATE_CONTAINERS       | Set true to use connection string, false to connect using azure credentials for blobstorage      |
-| AZURE_STORAGE_ACCOUNT_NAME            | Blob storage account name example strageaccountxyz                                               |
 
 ## Running the application
 
