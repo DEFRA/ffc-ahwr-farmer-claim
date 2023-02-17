@@ -35,9 +35,6 @@ deployment:
 container:
   applicationRequestQueueAddress: ffc-ahwr-application-request
   applicationResponseQueueAddress: ffc-ahwr-application-response
-  azureStorageConnectionString:
-  azureStorageUseConnectionString: true
-  azureStorageAccountName:
   cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
   eventQueueAddress: ffc-ahwr-event
   googleTagManagerKey:
@@ -56,7 +53,6 @@ container:
   redisPort: 6379
   serviceUri:
   applyServiceUri:
-  eligibilityApiEnabled:
   eligibilityApiUri:
   selectYourBusinessEnabled:
   applicationApiUri:

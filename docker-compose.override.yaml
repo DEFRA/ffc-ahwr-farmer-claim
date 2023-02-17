@@ -16,15 +16,6 @@ services:
       - ./app:/home/node/app
       - ./package.json:/home/node/package.json
 
-  ffc-ahwr-farmer-claim-azurite:
-    image: mcr.microsoft.com/azure-storage/azurite:3.16.0
-    volumes:
-      - azurite_data:/data
-    ports:
-      - "10002:10000"
-      - "10003:10001"
-    command: "azurite --loose --skipApiVersionCheck --queueHost 0.0.0.0 --blobHost 0.0.0.0 --tableHost 0.0.0.0"
-
   redis:
     image: redis:4.0.14
     volumes:
