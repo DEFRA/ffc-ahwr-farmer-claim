@@ -29,6 +29,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { email, token } = request.query
+      const { magiclinkCache } = request.server.app
 
       const { email: cachedEmail, redirectTo, userType } = await lookupToken(request, token)
       if (isRequestInvalid(cachedEmail, email)) {
@@ -37,6 +38,9 @@ module.exports = [{
       }
 
       setAuthCookie(request, email, userType)
+
+      await magiclinkCache.drop(email)
+      await magiclinkCache.drop(token)
 
       return h.redirect(redirectTo)
     }
