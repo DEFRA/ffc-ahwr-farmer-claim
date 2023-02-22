@@ -39,8 +39,8 @@ module.exports = [{
 
       setAuthCookie(request, email, userType)
 
-      await magiclinkCache.set(token, null)
-      await magiclinkCache.set(email, null)
+      await magiclinkCache.drop(email)
+      await magiclinkCache.drop(token)
 
       return h.redirect(redirectTo)
     }
