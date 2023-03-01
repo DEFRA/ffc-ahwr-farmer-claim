@@ -25,7 +25,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      if (request.auth.credentials && (request.query.businessEmail !== request.auth.credentials.email)) {
+      if (request.auth.credentials && (request.query.businessEmail !== request.auth.credentials.email.toLowerCase())) {
         throw Boom.internal()
       }
 

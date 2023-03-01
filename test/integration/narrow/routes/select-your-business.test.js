@@ -159,12 +159,20 @@ describe('API select-your-business', () => {
       expect(response.headers.location).toContain('no-business-available-to-claim-for')
     })
 
-    test('Test business email query param does not match credentials throws 500', async () => {
+    test.each([
+      {
+        toString: () => 'Test business email query param does not match credentials throws 500',
+        given: {
+          businessEmail: 'wrongemail@email.com',
+          authenticationEmail: 'correctemail@email.com'
+        }
+      }
+    ])('%s', async (testCase) => {
       const options = {
         method: 'GET',
-        url: `${API_URL}`,
+        url: `${API_URL}?businessEmail=${testCase.given.businessEmail}`,
         auth: {
-          credentials: { email: 'correctemail@email.com' },
+          credentials: { email: testCase.given.authenticationEmail },
           strategy: 'cookie'
         }
       }
