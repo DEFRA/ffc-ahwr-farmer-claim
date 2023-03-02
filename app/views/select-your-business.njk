@@ -20,7 +20,8 @@
 
       {{ govukButton({
         text: "Start claim",
-        attributes: {id: "startClaim"}
+        attributes: {id: "startClaim"},
+        preventDoubleClick: true
       }) }}
 
       {{ govukDetails({
