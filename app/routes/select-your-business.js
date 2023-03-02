@@ -26,6 +26,7 @@ module.exports = [{
     },
     handler: async (request, h) => {
       if (request.auth.credentials && (request.query.businessEmail !== request.auth.credentials.email.toLowerCase())) {
+        console.log('Business email query param does not match email in auth credentials.')
         throw Boom.internal()
       }
 

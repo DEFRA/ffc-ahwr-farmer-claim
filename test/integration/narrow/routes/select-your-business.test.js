@@ -5,7 +5,7 @@ const sessionKeys = require('../../../../app/session/keys')
 
 const MOCK_NOW = new Date()
 
-const API_URL = '/claim/select-your-business?businessEmail=email@test.com'
+const API_URL = '/claim/select-your-business'
 
 describe('API select-your-business', () => {
   let dateSpy
@@ -66,7 +66,7 @@ describe('API select-your-business', () => {
     ])('%s', async (testCase) => {
       const options = {
         method: 'GET',
-        url: `${API_URL}`,
+        url: `${API_URL}?businessEmail=email@test.com`,
         auth: {
           credentials: { email: 'email@test.com', sbi: '122333' },
           strategy: 'cookie'
@@ -145,7 +145,7 @@ describe('API select-your-business', () => {
     test('No business redirects to correct page', async () => {
       const options = {
         method: 'GET',
-        url: `${API_URL}`,
+        url: `${API_URL}?businessEmail=email@test.com`,
         auth: {
           credentials: { email: 'email@test.com', sbi: '122333' },
           strategy: 'cookie'
