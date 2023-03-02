@@ -5,7 +5,7 @@ const sessionKeys = require('../../../../app/session/keys')
 
 const MOCK_NOW = new Date()
 
-const API_URL = '/claim/select-your-business?businessEmail=email@test.com'
+const API_URL = '/claim/select-your-business'
 
 describe('API select-your-business', () => {
   let dateSpy
@@ -66,7 +66,7 @@ describe('API select-your-business', () => {
     ])('%s', async (testCase) => {
       const options = {
         method: 'GET',
-        url: `${API_URL}`,
+        url: `${API_URL}?businessEmail=email@test.com`,
         auth: {
           credentials: { email: 'email@test.com', sbi: '122333' },
           strategy: 'cookie'
@@ -145,7 +145,7 @@ describe('API select-your-business', () => {
     test('No business redirects to correct page', async () => {
       const options = {
         method: 'GET',
-        url: `${API_URL}`,
+        url: `${API_URL}?businessEmail=email@test.com`,
         auth: {
           credentials: { email: 'email@test.com', sbi: '122333' },
           strategy: 'cookie'
@@ -159,12 +159,20 @@ describe('API select-your-business', () => {
       expect(response.headers.location).toContain('no-business-available-to-claim-for')
     })
 
-    test('Test business email query param does not match credentials throws 500', async () => {
+    test.each([
+      {
+        toString: () => 'Test business email query param does not match credentials throws 500',
+        given: {
+          businessEmail: 'wrongemail@email.com',
+          authenticationEmail: 'correctemail@email.com'
+        }
+      }
+    ])('%s', async (testCase) => {
       const options = {
         method: 'GET',
-        url: `${API_URL}`,
+        url: `${API_URL}?businessEmail=${testCase.given.businessEmail}`,
         auth: {
-          credentials: { email: 'correctemail@email.com' },
+          credentials: { email: testCase.given.authenticationEmail },
           strategy: 'cookie'
         }
       }
