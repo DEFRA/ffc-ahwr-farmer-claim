@@ -28,4 +28,3 @@ services:
       TEST_TOKEN:
       ELIGIBILITY_API_URI: http://host.docker.internal:3010/api 
       APPLICATION_API_URI: http://host.docker.internal:3001/api
-      SELECT_YOUR_BUSINESS_ENABLED: ${SELECT_YOUR_BUSINESS_ENABLED:-false}

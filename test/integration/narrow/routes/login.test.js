@@ -13,10 +13,7 @@ describe('FarmerClaim application login page test', () => {
     jest.mock('../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
-        ...originalModule,
-        selectYourBusiness: {
-          enabled: false
-        }
+        ...originalModule
       }
     })
   })
@@ -36,7 +33,7 @@ describe('FarmerClaim application login page test', () => {
       expectLoginPage.hasCorrectContent($, 'apply')
     })
 
-    test('route when already logged in redirects to visit-review', async () => {
+    test('route when already logged in redirects to select-your-business', async () => {
       const options = {
         auth: { credentials: { email: mockValidEmail }, strategy: 'cookie', isAuthenticated: true },
         method: 'GET',
@@ -46,7 +43,7 @@ describe('FarmerClaim application login page test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/visit-review')
+      expect(res.headers.location).toEqual(`/claim/select-your-business?businessEmail=${mockValidEmail}`)
     })
   })
 
@@ -56,10 +53,7 @@ describe('FarmerClaim application login page test', () => {
       jest.mock('../../../../app/config', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
-          ...originalModule,
-          selectYourBusiness: {
-            enabled: true
-          }
+          ...originalModule
         }
       })
     })
@@ -88,10 +82,7 @@ describe('FarmerClaim application login page test', () => {
       jest.mock('../../../../app/config', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
-          ...originalModule,
-          selectYourBusiness: {
-            enabled: false
-          }
+          ...originalModule
         }
       })
       jest.mock('../../../../app/lib/email/send-magic-link-email')
@@ -164,7 +155,7 @@ describe('FarmerClaim application login page test', () => {
 
       const res = await global.__SERVER__.inject(options)
       expect(users.getByEmail).toBeCalledWith(mockValidEmail)
-      expect(messageApplication.getClaim).toBeCalledWith(mockValidEmail, expect.anything())
+      expect(messageApplication.getClaim).not.toBeCalledTimes(1)
       expect(sendMagicLinkEmail.sendFarmerClaimLoginMagicLink).toBeCalledTimes(1)
       expect(res.statusCode).toBe(200)
     })
@@ -180,10 +171,7 @@ describe('FarmerClaim application login page test', () => {
       jest.mock('../../../../app/config', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
-          ...originalModule,
-          selectYourBusiness: {
-            enabled: true
-          }
+          ...originalModule
         }
       })
       jest.mock('../../../../app/lib/email/send-magic-link-email')

@@ -54,7 +54,6 @@ container:
   serviceUri:
   applyServiceUri:
   eligibilityApiUri:
-  selectYourBusinessEnabled:
   applicationApiUri:
   
 ingress:

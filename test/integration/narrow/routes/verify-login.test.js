@@ -21,10 +21,7 @@ describe('verify-login route', () => {
     setAuthCookie = auth.lookupToken
 
     jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
-      selectYourBusiness: {
-        enabled: false
-      }
+      ...jest.requireActual('../../../../app/config')
     }))
   })
 

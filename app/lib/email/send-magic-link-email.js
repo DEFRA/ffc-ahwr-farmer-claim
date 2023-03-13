@@ -1,6 +1,6 @@
 const getToken = require('../auth/get-token')
 const sendEmail = require('./send-email')
-const { serviceUri, selectYourBusiness } = require('../../config')
+const { serviceUri } = require('../../config')
 const { templateIdFarmerClaimLogin } = require('../../config').notifyConfig
 const { farmerClaim } = require('../../constants/user-types')
 
@@ -25,7 +25,7 @@ async function sendMagicLinkEmail (request, email, templateId, redirectTo, userT
 }
 
 async function sendFarmerClaimLoginMagicLink (request, email) {
-  const redirectTo = selectYourBusiness.enabled ? `select-your-business?businessEmail=${email}` : 'visit-review'
+  const redirectTo = `select-your-business?businessEmail=${email}`
   return sendMagicLinkEmail(request, email, templateIdFarmerClaimLogin, redirectTo, farmerClaim)
 }
 

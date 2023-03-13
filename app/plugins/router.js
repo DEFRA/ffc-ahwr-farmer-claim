@@ -1,5 +1,3 @@
-const config = require('../config')
-
 const routes = [].concat(
   require('../routes/assets'),
   require('../routes/cookies'),
@@ -23,10 +21,8 @@ module.exports = {
     name: 'router',
     register: (server, _) => {
       server.route(routes)
-      if (config.selectYourBusiness.enabled) {
-        server.route(require('../routes/select-your-business'))
-        server.route(require('../routes/no-business-available-to-claim-for'))
-      }
+      server.route(require('../routes/select-your-business'))
+      server.route(require('../routes/no-business-available-to-claim-for'))
     }
   }
 }
