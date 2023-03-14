@@ -4,6 +4,8 @@ describe('session', () => {
   const applicationSectionKey = 'application'
   const claimKey = 'claim'
   const selectYourBusinessKey = 'selectYourBusiness'
+  const tokensSectionKey = 'tokens'
+  const pkcecodesSectionKey = 'pkcecodes'
 
   const value = 'value'
   const objectValue = { key: value }
@@ -11,13 +13,17 @@ describe('session', () => {
   const getFunctionsToTest = [
     { func: 'getApplication', expectedSectionKey: applicationSectionKey },
     { func: 'getClaim', expectedSectionKey: claimKey },
-    { func: 'getSelectYourBusiness', expectedSectionKey: selectYourBusinessKey }
+    { func: 'getSelectYourBusiness', expectedSectionKey: selectYourBusinessKey },
+    { func: 'getToken', expectedSectionKey: tokensSectionKey },
+    { func: 'getPkcecodes', expectedSectionKey: pkcecodesSectionKey }
   ]
 
   const setFunctionsToTest = [
     { func: 'setApplication', expectedSectionKey: applicationSectionKey },
     { func: 'setClaim', expectedSectionKey: claimKey },
-    { func: 'setSelectYourBusiness', expectedSectionKey: selectYourBusinessKey }
+    { func: 'setSelectYourBusiness', expectedSectionKey: selectYourBusinessKey },
+    { func: 'setToken', expectedSectionKey: tokensSectionKey },
+    { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey }
   ]
 
   const keysAndValuesToTest = [

@@ -28,7 +28,6 @@ services:
       TEST_TOKEN:
       ELIGIBILITY_API_URI: http://host.docker.internal:3010/api 
       APPLICATION_API_URI: http://host.docker.internal:3001/api
-
       DEFRA_ID_ENABLED: ${DEFRA_ID_ENABLED:-false}
       DEFRA_ID_TENANT: ${DEFRA_ID_TENANT:-azdcuspoc5}
       DEFRA_ID_POLICY: ${DEFRA_ID_POLICY:-B2C_1A_SIGNUPSIGNINSFI}
