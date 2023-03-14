@@ -55,6 +55,13 @@ container:
   applyServiceUri:
   eligibilityApiUri:
   applicationApiUri:
+  defraIdEnabled:
+  defraIdTenant:
+  defraIdRedirectUri:
+  defraIdClientId:
+  defraIdClientSecret:
+  defraIdServiceId:
+  defraIdPolicy:
   
 ingress:
   class: nginx
