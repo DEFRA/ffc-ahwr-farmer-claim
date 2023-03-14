@@ -13,10 +13,7 @@ describe('Auth plugin test', () => {
     jest.mock('../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
-        ...originalModule,
-        selectYourBusiness: {
-          enabled: false
-        }
+        ...originalModule
       }
     })
     session = require('../../../../app/session')
@@ -34,10 +31,10 @@ describe('Auth plugin test', () => {
 
   describe('GET requests to /login', () => {
     const url = '/claim/login'
-    const redirectTo = '/claim/visit-review'
+    const email = uuid() + validEmail
+    const redirectTo = `/claim/select-your-business?businessEmail=${email}`
 
     async function login () {
-      const email = uuid() + validEmail
       const token = uuid()
       const options = {
         method: 'GET',

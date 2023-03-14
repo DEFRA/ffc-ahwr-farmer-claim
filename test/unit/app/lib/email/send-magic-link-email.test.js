@@ -30,10 +30,7 @@ describe('Send Magic Link test', () => {
     jest.mock('../../../../../app/config', () => ({
       ...jest.requireActual('../../../../../app/config'),
       serviceName: 'Annual health and welfare review of livestock',
-      serviceUri: 'http://localhost:3004',
-      selectYourBusiness: {
-        enabled: false
-      }
+      serviceUri: 'http://localhost:3004'
     }))
     sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
 
@@ -59,7 +56,7 @@ describe('Send Magic Link test', () => {
 
     expect(response).toEqual(sendEmailResponse)
     expect(cacheData[email]).toEqual([token])
-    expect(cacheData[token]).toEqual({ email, redirectTo: 'visit-review', userType: farmerClaim })
+    expect(cacheData[token]).toEqual({ email, redirectTo: `select-your-business?businessEmail=${email}`, userType: farmerClaim })
     expect(sendEmail).toHaveBeenCalledTimes(1)
     expect(sendEmail).toHaveBeenCalledWith(expect.anything(), email, {
       personalisation: { magiclink: `http://localhost:3004/verify-login?token=${token}&email=${email}` },
@@ -77,10 +74,7 @@ describe('Send Magic Link test', () => {
       jest.mock('../../../../../app/config', () => ({
         ...jest.requireActual('../../../../../app/config'),
         serviceName: 'Annual health and welfare review of livestock',
-        serviceUri: 'http://localhost:3004',
-        selectYourBusiness: {
-          enabled: true
-        }
+        serviceUri: 'http://localhost:3004'
       }))
       sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
 

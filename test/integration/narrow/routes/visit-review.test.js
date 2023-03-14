@@ -59,10 +59,7 @@ describe('Vet visit review page test', () => {
     jest.mock('../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
-        ...originalModule,
-        selectYourBusiness: {
-          enabled: false
-        }
+        ...originalModule
       }
     })
   })
@@ -118,10 +115,7 @@ describe('Vet visit review page test', () => {
       jest.mock('../../../../app/config', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
-          ...originalModule,
-          selectYourBusiness: {
-            enabled: true
-          }
+          ...originalModule
         }
       })
       jest.mock('../../../../app/session')
