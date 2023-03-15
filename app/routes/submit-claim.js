@@ -2,6 +2,13 @@ const { submitClaim } = require('../messaging/application')
 const { claimed } = require('../session/keys').claim
 const session = require('../session')
 const states = require('../constants/states')
+const { clearAuthCookie } = require('../auth')
+
+function updateSession (request, claimed, claimStatus) {  
+  session.setClaim(request, claimed, claimStatus)
+  session.clear(request)
+  clearAuthCookie(request)
+}
 
 module.exports = [{
   method: 'GET',
@@ -30,16 +37,16 @@ module.exports = [{
 
       switch (state) {
         case states.alreadyClaimed:
-          session.setClaim(request, claimed, states.alreadyClaimed)
+          updateSession(request, claimed, states.alreadyClaimed)
           return h.view('already-claimed', { reference })
         case states.notFound:
-          session.setClaim(request, claimed, states.notFound)
+          updateSession(request, claimed, states.notFound)
           return h.view('claim-not-found', { reference })
         case states.success:
-          session.setClaim(request, claimed, states.success)
+          updateSession(request, claimed, states.success)
           return h.view('claim-success', { reference })
         default:
-          session.setClaim(request, claimed, 'claim-failed')
+          updateSession(request, claimed, 'claim-failed')
           return h.view('claim-failed', { reference })
       }
     }
