@@ -116,6 +116,7 @@ module.exports = [{
         sbi: selectedBusiness.data.organisation.sbi
       })}`)
 
+      session.setClaim(request, sessionKeys.farmerApplyData.organisation, selectedBusiness.data.organisation)
       Object.entries(selectedBusiness).forEach(([k, v]) => session.setClaim(request, k, v))
       return h.redirect('visit-review')
     }

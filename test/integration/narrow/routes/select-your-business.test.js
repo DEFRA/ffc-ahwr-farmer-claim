@@ -286,6 +286,7 @@ describe('API select-your-business', () => {
         sessionKeys.selectYourBusiness.whichBusiness,
         '122333'
       )
+      expect(session.setClaim).toHaveBeenCalledWith(expect.anything(), sessionKeys.farmerApplyData.organisation, expect.anything())
       testCase.expect.consoleLogs.forEach(
         (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
       )
