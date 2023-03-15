@@ -4,7 +4,7 @@ const session = require('../session')
 const states = require('../constants/states')
 const { clearAuthCookie } = require('../auth')
 
-function updateSession (request, claimed, claimStatus) {  
+function updateSession (request, claimed, claimStatus) {
   session.setClaim(request, claimed, claimStatus)
   session.clear(request)
   clearAuthCookie(request)
