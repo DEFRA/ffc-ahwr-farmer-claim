@@ -269,6 +269,16 @@ describe('API select-your-business', () => {
           statusId: 1
         }
       ]
+
+      const selectedBusiness = {
+        crn: '112222',
+        sbi: '122333',
+        name: 'My Amazing Farm',
+        email: 'liam.wilson@kainos.com',
+        address: '1 Some Road',
+        farmerName: 'Mr Farmer'
+      }
+
       when(session.getSelectYourBusiness)
         .calledWith(
           expect.anything(),
@@ -286,7 +296,7 @@ describe('API select-your-business', () => {
         sessionKeys.selectYourBusiness.whichBusiness,
         '122333'
       )
-      expect(session.setClaim).toHaveBeenCalledWith(expect.anything(), sessionKeys.farmerApplyData.organisation, expect.anything())
+      expect(session.setClaim).toHaveBeenCalledWith(expect.anything(), sessionKeys.farmerApplyData.organisation, selectedBusiness)
       testCase.expect.consoleLogs.forEach(
         (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
       )
