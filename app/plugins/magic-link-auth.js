@@ -1,6 +1,6 @@
 const { getByEmail } = require('../api-requests/users')
 const { cookie: cookieConfig, cookiePolicy } = require('../config')
-const { getClaim, setClaim } = require('../session')
+const { getClaim } = require('../session')
 const { organisation: organisationKey } = require('../session/keys').farmerApplyData
 
 module.exports = {
@@ -27,7 +27,6 @@ module.exports = {
             result.valid = true
           } else {
             const organisation = (await getByEmail(session.email)) ?? {}
-            setClaim(request, organisationKey, organisation)
             result.valid = !!organisation
           }
 
