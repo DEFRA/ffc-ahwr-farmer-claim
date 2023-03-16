@@ -24,5 +24,13 @@ module.exports = {
   claim: {
     detailsCorrect: 'detailsCorrect',
     claimed: 'claimed'
+  },
+  pkcecodes: {
+    verifier: 'verifier'
+  },
+  tokens: {
+    accessToken: 'accessToken',
+    state: 'state',
+    nonce: 'nonce'
   }
 }

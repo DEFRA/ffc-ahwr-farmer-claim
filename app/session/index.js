@@ -4,7 +4,9 @@ const entries = {
   application: 'application',
   claim: 'claim',
   organisation: 'organisation',
-  selectYourBusiness: 'selectYourBusiness'
+  selectYourBusiness: 'selectYourBusiness',
+  pkcecodes: 'pkcecodes',
+  tokens: 'tokens'
 }
 
 function set (request, entryKey, key, value) {
@@ -52,6 +54,22 @@ function getSelectYourBusiness (request, key) {
   return get(request, entries.selectYourBusiness, key)
 }
 
+function setToken (request, key, value) {
+  set(request, entries.tokens, key, value)
+}
+
+function getToken (request, key) {
+  return get(request, entries.tokens, key)
+}
+
+function setPkcecodes (request, key, value) {
+  set(request, entries.pkcecodes, key, value)
+}
+
+function getPkcecodes (request, key) {
+  return get(request, entries.pkcecodes, key)
+}
+
 module.exports = {
   getApplication,
   getClaim,
@@ -59,5 +77,9 @@ module.exports = {
   setClaim,
   clear,
   setSelectYourBusiness,
-  getSelectYourBusiness
+  getSelectYourBusiness,
+  getToken,
+  setToken,
+  getPkcecodes,
+  setPkcecodes
 }
