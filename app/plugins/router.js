@@ -1,3 +1,4 @@
+const preSubmissionHandler = require('../routes/utils/pre-submission-handler')
 const routes = [].concat(
   require('../routes/assets'),
   require('../routes/cookies'),
@@ -23,6 +24,14 @@ module.exports = {
       server.route(routes)
       server.route(require('../routes/select-your-business'))
       server.route(require('../routes/no-business-available-to-claim-for'))
+
+      server.ext('onPreHandler', async (request, h) => {
+        if (request.method === 'post') {
+          return await preSubmissionHandler(request, h)
+        } else {
+          return h.continue
+        }
+      })
     }
   }
 }
