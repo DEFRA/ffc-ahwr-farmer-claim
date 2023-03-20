@@ -1,16 +1,5 @@
 const Boom = require('@hapi/boom')
-
-const lookupSubmissionCrumb = async (request) => {
-  const { submissionCrumbCache } = request.server.app
-  return (await submissionCrumbCache.get(request.plugins.crumb)) ?? {}
-}
-
-const cacheSubmissionCrumb = async (request) => {
-  const { submissionCrumbCache } = request.server.app
-  const crumb = request.plugins.crumb
-  await submissionCrumbCache.set(crumb, { crumb })
-  console.log('Crumb cached: %s', crumb)
-}
+const crumbCache = require('./crumb-cache')
 
 const generateNewCrumb = async (request, h) => {
   delete request.plugins.crumb
@@ -20,13 +9,13 @@ const generateNewCrumb = async (request, h) => {
 
 const preSubmissionHandler = async (request, h) => {
   if (request.method === 'post') {
-    const lookupCrumb = await lookupSubmissionCrumb(request)
-    if (lookupCrumb?.crumb?.length > 0) {
+    const lookupCrumb = await crumbCache.lookupSubmissionCrumb(request)
+    if (lookupCrumb?.crumb) {
       console.log('Duplicate crumb found: %s', request.plugins.crumb)
       await generateNewCrumb(request, h)
-      return Boom.forbidden()
+      return Boom.forbidden('Duplicate submission')
     } else {
-      await cacheSubmissionCrumb(request)
+      await crumbCache.cacheSubmissionCrumb(request)
       await generateNewCrumb(request, h)
       return h.continue
     }

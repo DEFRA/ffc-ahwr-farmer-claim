@@ -76,8 +76,8 @@ describe('Farmer claim - submit claim page test', () => {
       const res1 = await global.__SERVER__.inject(options)
       expect(res1.statusCode).toBe(200)
       expect(cheerio.load(res1.payload)('h1').text()).toMatch(heading)
-      const res2 = await global.__SERVER__.inject(options)
 
+      const res2 = await global.__SERVER__.inject(options)
       expect(res2.statusCode).toBe(403)
       const $ = cheerio.load(res2.payload)
       expectPhaseBanner.ok($)
