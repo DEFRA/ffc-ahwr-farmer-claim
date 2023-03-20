@@ -17,10 +17,10 @@ const getRows = (claim) => {
   return rows
 }
 
-function getClaim (claim, errorText) {
+function getClaimViewData (claim, backLink, errorText) {
   return {
     backLink: {
-      href: `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
+      href: backLink
     },
     ...getYesNoRadios(legendText, detailsCorrect, claim[detailsCorrect], errorText, { isPageHeading: false, legendClasses: 'govuk-fieldset__legend--m', inline: true }),
     listData: { rows: getRows(claim) },
@@ -28,4 +28,4 @@ function getClaim (claim, errorText) {
   }
 }
 
-module.exports = getClaim
+module.exports = getClaimViewData

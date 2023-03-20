@@ -13,7 +13,22 @@ const generateState = (session, request) => {
   return state
 }
 
+const stateIsValid = (session, request) => {
+  if (!request.query.error) {
+    const state = request.query.state
+    if (!state) {
+      return false
+    }
+    const savedState = session?.getToken(request, tokens.state)
+    return state === savedState
+  } else {
+    console.log(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
+    return false
+  }
+}
+
 module.exports = {
   generateNonce,
-  generateState
+  generateState,
+  stateIsValid
 }
