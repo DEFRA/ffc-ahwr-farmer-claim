@@ -298,7 +298,7 @@ describe('API select-your-business', () => {
       )
       expect(session.setClaim).toHaveBeenCalledWith(expect.anything(), sessionKeys.farmerApplyData.organisation, selectedBusiness)
       testCase.expect.consoleLogs.forEach(
-        (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(3, consoleLog)
+        (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
       )
     })
 

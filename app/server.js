@@ -42,9 +42,9 @@ async function createServer () {
   server.app.magiclinkCache = magiclinkCache
 
   const submissionCrumbCache = server.cache({
-    expiresIn: 1000 * 60 * 15,
+    expiresIn: 1000 * 60 * 60 * 24,
     segment: 'submissionCrumbs'
-  }) // 15 mins
+  }) // 24 hours
   server.app.submissionCrumbCache = submissionCrumbCache
 
   await server.register(require('@hapi/cookie'))

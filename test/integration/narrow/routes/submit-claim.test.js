@@ -59,6 +59,26 @@ describe('Farmer claim - submit claim page test', () => {
       expect($('.govuk-heading-l').text()).toEqual('403 - Forbidden')
     })
 
+    test('returns 403 when duplicate submission - $crumb', async () => {
+      messagingMock.receiveMessage.mockResolvedValueOnce({ state: states.success })
+      const crumb = await getCrumbs(global.__SERVER__)
+      const options = {
+        auth,
+        method,
+        url,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      await global.__SERVER__.inject(options)
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(403)
+      const $ = cheerio.load(res.payload)
+      expectPhaseBanner.ok($)
+      expect($('.govuk-heading-l').text()).toEqual('403 - Forbidden')
+    })
+
     test.each([
       { heading: 'Claim complete', state: states.success },
       { heading: 'Funding claim failed', state: states.failed },
