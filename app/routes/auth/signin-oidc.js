@@ -28,7 +28,7 @@ module.exports = [{
         const accessToken = await auth.authenticate(request, session)
         console.log(`Temporaily logging access token - ${accessToken}`)
         const latestApplication = await latestApplicationForSbi('113333333') // get actual SBI from claims
-        if(!latestApplication) {
+        if (!latestApplication) {
           console.log('No claimable application found for SBI - dummy SBI')
           return h.view('verify-login-failed', {
             backLink: auth.getAuthenticationUrl(session, request)
@@ -46,7 +46,7 @@ module.exports = [{
         }).code(400)
       }
 
-      function setAuthenticationState(latestApplication) {
+      function setAuthenticationState (latestApplication) {
         session.setClaim(request, sessionKeys.farmerApplyData.organisation, latestApplication.data.organisation)
         Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
         auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)

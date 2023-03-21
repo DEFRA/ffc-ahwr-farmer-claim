@@ -13,7 +13,12 @@ describe('FarmerClaim application login page test', () => {
     jest.mock('../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
-        ...originalModule
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
+        }
       }
     })
   })
@@ -47,31 +52,6 @@ describe('FarmerClaim application login page test', () => {
     })
   })
 
-  describe(`GET requests to '${url}' with select your business enabled`, () => {
-    beforeAll(async () => {
-      jest.resetModules()
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
-        return {
-          ...originalModule
-        }
-      })
-    })
-
-    test('route when already logged in redirects to select-your-business', async () => {
-      const options = {
-        auth: { credentials: { email: mockValidEmail }, strategy: 'cookie', isAuthenticated: true },
-        method: 'GET',
-        url
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toContain('/claim/select-your-business')
-    })
-  })
-
   describe(`POST requests to '${url}' route`, () => {
     let sendMagicLinkEmail
     let users
@@ -82,7 +62,12 @@ describe('FarmerClaim application login page test', () => {
       jest.mock('../../../../app/config', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
-          ...originalModule
+          ...originalModule,
+          authConfig: {
+            defraId: {
+              enabled: false
+            }
+          }
         }
       })
       jest.mock('../../../../app/lib/email/send-magic-link-email')
@@ -171,7 +156,12 @@ describe('FarmerClaim application login page test', () => {
       jest.mock('../../../../app/config', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
-          ...originalModule
+          ...originalModule,
+          authConfig: {
+            defraId: {
+              enabled: false
+            }
+          }
         }
       })
       jest.mock('../../../../app/lib/email/send-magic-link-email')

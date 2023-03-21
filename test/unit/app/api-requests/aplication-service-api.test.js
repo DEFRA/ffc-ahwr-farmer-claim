@@ -31,7 +31,7 @@ describe('Application API', () => {
     jest.clearAllMocks()
   })
 
-  describe('getLatestApplicationsBy', () => {
+  describe('getLatestApplicationsByBusinessEmail', () => {
     test('given an eligible business email address it returns business and their applicaton status', async () => {
       const expectedResponse = {
         payload: [
@@ -123,7 +123,7 @@ describe('Application API', () => {
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
-      const response = await applicationApi.getLatestApplicationsBy(BUSINESS_EMAIL_ADDRESS)
+      const response = await applicationApi.getLatestApplicationsByEmail(BUSINESS_EMAIL_ADDRESS)
       expect(response).not.toBeNull()
       expect(Wreck.get).toHaveBeenCalledTimes(1)
       expect(Wreck.get).toHaveBeenCalledWith(
@@ -150,7 +150,7 @@ describe('Application API', () => {
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
-      const response = await applicationApi.getLatestApplicationsBy(BUSINESS_EMAIL_ADDRESS)
+      const response = await applicationApi.getLatestApplicationsByEmail(BUSINESS_EMAIL_ADDRESS)
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
       expect(consoleLogSpy).toHaveBeenCalledWith(`${MOCK_NOW.toISOString()} Getting latest applications by: ${JSON.stringify({
         businessEmail: BUSINESS_EMAIL_ADDRESS
@@ -168,7 +168,7 @@ describe('Application API', () => {
       }
       const BUSINESS_EMAIL_ADDRESS = 'name@email.com'
       Wreck.get = jest.fn().mockRejectedValue(expectedError)
-      const response = await applicationApi.getLatestApplicationsBy(BUSINESS_EMAIL_ADDRESS)
+      const response = await applicationApi.getLatestApplicationsByEmail(BUSINESS_EMAIL_ADDRESS)
       expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
       expect(consoleErrorSpy).toHaveBeenCalledWith(`${MOCK_NOW.toISOString()} Getting latest applications failed: ${JSON.stringify({
         businessEmail: BUSINESS_EMAIL_ADDRESS

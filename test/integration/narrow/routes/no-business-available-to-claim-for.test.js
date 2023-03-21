@@ -10,7 +10,12 @@ describe('no-business-available-to-claim-for page test', () => {
     jest.mock('ffc-ahwr-event-publisher')
     jest.mock('../../../../app/config', () => ({
       ...jest.requireActual('../../../../app/config'),
-      serviceName: 'Annual health and welfare review of livestock'
+      serviceName: 'Annual health and welfare review of livestock',
+      authConfig: {
+        defraId: {
+          enabled: false
+        }
+      }
     }))
     require('../../../../app/config')
     url = '/claim/no-business-available-to-claim-for'

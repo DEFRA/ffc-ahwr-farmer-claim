@@ -21,7 +21,12 @@ describe('verify-login route', () => {
     setAuthCookie = auth.lookupToken
 
     jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config')
+      ...jest.requireActual('../../../../app/config'),
+      authConfig: {
+        defraId: {
+          enabled: false
+        }
+      }
     }))
   })
 

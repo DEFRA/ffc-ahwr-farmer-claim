@@ -4,13 +4,12 @@ const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const pageExpects = require('../../../utils/page-expects')
 const { name: nameErrorMessages } = require('../../../../app/lib/error-messages')
 const { farmerApplyData: { vetName: nameKey } } = require('../../../../app/session/keys')
-const { serviceName } = require('../../../../app/config')
 
 function expectPageContentOk ($) {
   expect($('.govuk-heading-l').text()).toEqual('What is the vet’s name?')
   expect($('label[for=name]').text()).toMatch('Vet\'s full name')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual(`What is the vet’s name? - ${serviceName}`)
+  expect($('title').text()).toEqual('What is the vet’s name? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/vet-visit-date')
@@ -22,6 +21,20 @@ jest.mock('../../../../app/session')
 describe('Vet, enter name test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/vet-name'
+
+  beforeAll(() => {
+    jest.mock('../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../app/config')
+      return {
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
+        }
+      }
+    })
+  })
 
   beforeEach(() => {
     jest.clearAllMocks()
