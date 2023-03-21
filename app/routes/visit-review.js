@@ -19,8 +19,7 @@ module.exports = [{
         return boom.notFound()
       }
 
-      const backLink = config.authConfig.defraId.enabled ? auth.getAuthenticationUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
-      return h.view('visit-review', getClaimViewData(claim, backLink))
+      return h.view('visit-review', getClaimViewData(claim, generateBackLink(request, claim)))
     }
   }
 },
@@ -34,8 +33,7 @@ module.exports = [{
       }),
       failAction: (request, h, _err) => {
         const claim = session.getClaim(request)
-        const backLink = config.authConfig.defraId.enabled ? auth.getAuthenticationUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
-        return h.view('visit-review', getClaimViewData(claim, backLink, errorMessage)).code(400).takeover()
+        return h.view('visit-review', getClaimViewData(claim, generateBackLink(request, claim), errorMessage)).code(400).takeover()
       }
     },
     handler: async (request, h) => {
@@ -48,3 +46,7 @@ module.exports = [{
     }
   }
 }]
+
+function generateBackLink (request, claim) {
+  return config.authConfig.defraId.enabled ? auth.getAuthenticationUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
+}
