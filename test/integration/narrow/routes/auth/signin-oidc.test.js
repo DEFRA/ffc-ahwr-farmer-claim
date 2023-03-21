@@ -88,6 +88,25 @@ describe('FarmerApply defra ID redirection test', () => {
       expect($('.govuk-heading-l').text()).toMatch('Login failed')
     })
 
+    test('returns 400 and login failed view when no applciation to claim for', async () => {
+      const baseUrl = `${url}?code=432432&state=83d2b160-74ce-4356-9709-3f8da7868e35`
+      const options = {
+        method: 'GET',
+        url: baseUrl
+      }
+
+      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      latestApplicationMock.mockResolvedValueOnce(null)
+
+      const res = await global.__SERVER__.inject(options)
+      expect(res.statusCode).toBe(400)
+      expect(authMock.authenticate).toBeCalledTimes(1)
+      expect(authMock.getAuthenticationUrl).toBeCalledTimes(1)
+      expect(latestApplicationMock).toBeCalledTimes(1)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-heading-l').text()).toMatch('Login failed')
+    })
+
     test('returns 302 and redirected to org view when authenticate successful', async () => {
       const baseUrl = `${url}?code=432432&state=83d2b160-74ce-4356-9709-3f8da7868e35`
       const options = {
