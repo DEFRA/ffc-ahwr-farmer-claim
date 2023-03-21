@@ -8,10 +8,10 @@ const url = '/claim/login'
 
 describe('FarmerClaim application login page test', () => {
   beforeAll(async () => {
-    jest.mock('../../../../app/lib/email/send-email')
+    jest.mock('../../../../../app/lib/email/send-email')
     jest.mock('ffc-ahwr-event-publisher')
-    jest.mock('../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../app/config')
+    jest.mock('../../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
         authConfig: {
@@ -59,8 +59,8 @@ describe('FarmerClaim application login page test', () => {
 
     beforeAll(async () => {
       jest.resetModules()
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
+      jest.mock('../../../../../app/config', () => {
+        const originalModule = jest.requireActual('../../../../../app/config')
         return {
           ...originalModule,
           authConfig: {
@@ -70,11 +70,11 @@ describe('FarmerClaim application login page test', () => {
           }
         }
       })
-      jest.mock('../../../../app/lib/email/send-magic-link-email')
+      jest.mock('../../../../../app/lib/email/send-magic-link-email')
       sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
       users = require('../../../../../app/api-requests/users')
-      jest.mock('../../../../app/api-requests/users')
-      jest.mock('../../../../app/messaging/application')
+      jest.mock('../../../../../app/api-requests/users')
+      jest.mock('../../../../../app/messaging/application')
       messageApplication = require('../../../../../app/messaging/application')
     })
 
@@ -133,7 +133,7 @@ describe('FarmerClaim application login page test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      jest.mock('../../../../app/api-requests/users')
+      jest.mock('../../../../../app/api-requests/users')
       users.getByEmail.mockResolvedValue({ email: mockValidEmail })
       sendMagicLinkEmail.sendFarmerClaimLoginMagicLink.mockResolvedValue(true)
       messageApplication.getClaim.mockResolvedValue({})
@@ -153,8 +153,8 @@ describe('FarmerClaim application login page test', () => {
 
     beforeAll(async () => {
       jest.resetModules()
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
+      jest.mock('../../../../../app/config', () => {
+        const originalModule = jest.requireActual('../../../../../app/config')
         return {
           ...originalModule,
           authConfig: {
@@ -164,11 +164,11 @@ describe('FarmerClaim application login page test', () => {
           }
         }
       })
-      jest.mock('../../../../app/lib/email/send-magic-link-email')
+      jest.mock('../../../../../app/lib/email/send-magic-link-email')
       sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
       users = require('../../../../../app/api-requests/users')
-      jest.mock('../../../../app/api-requests/users')
-      jest.mock('../../../../app/messaging/application')
+      jest.mock('../../../../../app/api-requests/users')
+      jest.mock('../../../../../app/messaging/application')
       messageApplication = require('../../../../../app/messaging/application')
     })
 
@@ -185,7 +185,7 @@ describe('FarmerClaim application login page test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      jest.mock('../../../../app/api-requests/users')
+      jest.mock('../../../../../app/api-requests/users')
       users.getByEmail.mockResolvedValue({ email: mockValidEmail })
       sendMagicLinkEmail.sendFarmerClaimLoginMagicLink.mockResolvedValue(true)
       messageApplication.getClaim.mockResolvedValue({})

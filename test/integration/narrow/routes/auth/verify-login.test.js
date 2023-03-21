@@ -5,9 +5,9 @@ describe('verify-login route', () => {
   beforeAll(async () => {
     jest.resetAllMocks()
     jest.mock('ffc-ahwr-event-publisher')
-    jest.mock('../../../../app/api-requests/users')
+    jest.mock('../../../../../app/api-requests/users')
 
-    jest.mock('../../../../app/auth', () => {
+    jest.mock('../../../../../app/auth', () => {
       return {
         lookupToken: jest.fn().mockImplementation(() => {
           return { email: 'someemail@email.com' }
@@ -20,8 +20,8 @@ describe('verify-login route', () => {
     lookupToken = auth.lookupToken
     setAuthCookie = auth.lookupToken
 
-    jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
+    jest.mock('../../../../../app/config', () => ({
+      ...jest.requireActual('../../../../../app/config'),
       authConfig: {
         defraId: {
           enabled: false
