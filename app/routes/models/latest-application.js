@@ -16,12 +16,12 @@ async function getLatestApplicationForSbi (sbi) {
 function applicationIsInAgreedStatus (latestApplication) {
   if (latestApplication.statusId === AGREED_STATUS) {
     console.log(`${new Date().toISOString()} Latest application is eligible to claim : ${JSON.stringify({
-        sbi: latestApplication.data.organisation.sbi
+        sbi: latestApplication.sbi
       })}`)
     return latestApplication
   } else {
     console.log(`${new Date().toISOString()} Latest application is not eligible to claim : ${JSON.stringify({
-        sbi: latestApplication.data.organisation.sbi
+        sbi: latestApplication.sbi
     })}`)
     return null
   }
