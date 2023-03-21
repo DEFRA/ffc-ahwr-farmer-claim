@@ -16,7 +16,7 @@ describe('verify-login route', () => {
       }
     })
 
-    const auth = require('../../../../app/auth')
+    const auth = require('../../../../../app/auth')
     lookupToken = auth.lookupToken
     setAuthCookie = auth.lookupToken
 

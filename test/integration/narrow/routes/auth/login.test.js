@@ -1,8 +1,8 @@
 const cheerio = require('cheerio')
-const getCrumbs = require('../../../utils/get-crumbs')
-const expectLoginPage = require('../../../utils/login-page-expect')
-const pageExpects = require('../../../utils/page-expects')
-const expectPhaseBanner = require('../../../utils/phase-banner-expect')
+const getCrumbs = require('../../../../utils/get-crumbs')
+const expectLoginPage = require('../../../../utils/login-page-expect')
+const pageExpects = require('../../../../utils/page-expects')
+const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const mockValidEmail = 'dairy@ltd.com'
 const url = '/claim/login'
 
@@ -71,11 +71,11 @@ describe('FarmerClaim application login page test', () => {
         }
       })
       jest.mock('../../../../app/lib/email/send-magic-link-email')
-      sendMagicLinkEmail = require('../../../../app/lib/email/send-magic-link-email')
-      users = require('../../../../app/api-requests/users')
+      sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
+      users = require('../../../../../app/api-requests/users')
       jest.mock('../../../../app/api-requests/users')
       jest.mock('../../../../app/messaging/application')
-      messageApplication = require('../../../../app/messaging/application')
+      messageApplication = require('../../../../../app/messaging/application')
     })
 
     beforeEach(async () => {
@@ -165,11 +165,11 @@ describe('FarmerClaim application login page test', () => {
         }
       })
       jest.mock('../../../../app/lib/email/send-magic-link-email')
-      sendMagicLinkEmail = require('../../../../app/lib/email/send-magic-link-email')
-      users = require('../../../../app/api-requests/users')
+      sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
+      users = require('../../../../../app/api-requests/users')
       jest.mock('../../../../app/api-requests/users')
       jest.mock('../../../../app/messaging/application')
-      messageApplication = require('../../../../app/messaging/application')
+      messageApplication = require('../../../../../app/messaging/application')
     })
 
     beforeEach(async () => {
