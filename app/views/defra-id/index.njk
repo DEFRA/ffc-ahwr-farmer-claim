@@ -5,14 +5,14 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">Claim funding for an annual health and welfare review of your livestock</h1>
+    <h1 class="govuk-heading-l">DEFRA ID PLACEHOLDER</h1>
 
     <p>Use this service to claim funding for an annual health and welfare review.</p>
     <p>Claiming takes about 5 minutes.</p>
 
     {{ govukButton({
       classes: "govuk-!-margin-top-2 govuk-!-margin-bottom-8",
-      href: "/claim/login",
+      href: defraIdLogin,
       isStartButton: true,
       text: "Start now",
       preventDoubleClick: true
@@ -21,8 +21,7 @@
     <h2 class="govuk-heading-m">Before you start</h2>
     <p>You’ll need:</p>
     <ul class="govuk-list govuk-list--bullet">
-      <li>your Rural Payments service customer reference number (CRN) </li>
-      <li>your Rural Payments service password</li>
+      <li>the email address you applied with </li>
       <li>the date of the visit to the farm for the review</li>
       <li>the name of the vet</li>
       <li>the vet’s Royal College of Veterinary Surgeons (RCVS) number </li>

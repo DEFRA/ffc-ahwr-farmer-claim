@@ -23,5 +23,8 @@ data:
   APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
   ELIGIBILITY_API_URI: {{ quote .Values.container.eligibilityApiUri }}
   APPLICATION_API_URI: {{ quote .Values.container.applicationApiUri }}
-  SELECT_YOUR_BUSINESS_ENABLED: {{ quote .Values.container.selectYourBusinessEnabled }}
+  DEFRA_ID_ENABLED: {{ quote .Values.container.defraIdEnabled }}
+  DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
+  DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
+  DEFRA_ID_REDIRECT_URI: {{ quote .Values.container.defraIdRedirectUri }}
 {{- end -}}

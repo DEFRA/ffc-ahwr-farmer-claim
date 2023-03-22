@@ -2,7 +2,6 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const { inputErrorClass, labels } = require('../../../../app/config/visit-date')
-const { serviceName } = require('../../../../app/config')
 
 function expectPageContentOk ($) {
   expect($('h1').text()).toMatch('When was the review completed?')
@@ -10,7 +9,7 @@ function expectPageContentOk ($) {
   expect($(`label[for=${labels.month}]`).text()).toMatch('Month')
   expect($(`label[for=${labels.year}]`).text()).toMatch('Year')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual(`Date of visit - ${serviceName}`)
+  expect($('title').text()).toEqual('Date of visit - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/visit-review')
@@ -22,6 +21,20 @@ jest.mock('../../../../app/session')
 describe('Vet, enter date of visit', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/vet-visit-date'
+
+  beforeAll(() => {
+    jest.mock('../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../app/config')
+      return {
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
+        }
+      }
+    })
+  })
 
   beforeEach(() => {
     jest.clearAllMocks()

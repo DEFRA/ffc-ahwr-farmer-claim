@@ -3,7 +3,7 @@ const AGREED_STATUS = 1
 
 async function processEligibleBusinesses (businessEmail) {
   const businesses = []
-  const latestApplicationForSbi = await applicationApi.getLatestApplicationsBy(businessEmail)
+  const latestApplicationForSbi = await applicationApi.getLatestApplicationsByEmail(businessEmail)
   if (latestApplicationForSbi !== null && Array.isArray(latestApplicationForSbi)) {
     latestApplicationForSbi.forEach(latestApplication => {
       if (latestApplication.statusId === AGREED_STATUS) {

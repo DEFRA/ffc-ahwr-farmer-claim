@@ -1,21 +1,23 @@
 const cheerio = require('cheerio')
-const getCrumbs = require('../../../utils/get-crumbs')
-const expectLoginPage = require('../../../utils/login-page-expect')
-const pageExpects = require('../../../utils/page-expects')
-const expectPhaseBanner = require('../../../utils/phase-banner-expect')
+const getCrumbs = require('../../../../utils/get-crumbs')
+const expectLoginPage = require('../../../../utils/login-page-expect')
+const pageExpects = require('../../../../utils/page-expects')
+const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const mockValidEmail = 'dairy@ltd.com'
 const url = '/claim/login'
 
 describe('FarmerClaim application login page test', () => {
   beforeAll(async () => {
-    jest.mock('../../../../app/lib/email/send-email')
+    jest.mock('../../../../../app/lib/email/send-email')
     jest.mock('ffc-ahwr-event-publisher')
-    jest.mock('../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../app/config')
+    jest.mock('../../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
-        selectYourBusiness: {
-          enabled: false
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
         }
       }
     })
@@ -36,34 +38,6 @@ describe('FarmerClaim application login page test', () => {
       expectLoginPage.hasCorrectContent($, 'apply')
     })
 
-    test('route when already logged in redirects to visit-review', async () => {
-      const options = {
-        auth: { credentials: { email: mockValidEmail }, strategy: 'cookie', isAuthenticated: true },
-        method: 'GET',
-        url
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/visit-review')
-    })
-  })
-
-  describe(`GET requests to '${url}' with select your business enabled`, () => {
-    beforeAll(async () => {
-      jest.resetModules()
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
-        return {
-          ...originalModule,
-          selectYourBusiness: {
-            enabled: true
-          }
-        }
-      })
-    })
-
     test('route when already logged in redirects to select-your-business', async () => {
       const options = {
         auth: { credentials: { email: mockValidEmail }, strategy: 'cookie', isAuthenticated: true },
@@ -74,7 +48,7 @@ describe('FarmerClaim application login page test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toContain('/claim/select-your-business')
+      expect(res.headers.location).toEqual(`/claim/select-your-business?businessEmail=${mockValidEmail}`)
     })
   })
 
@@ -85,21 +59,23 @@ describe('FarmerClaim application login page test', () => {
 
     beforeAll(async () => {
       jest.resetModules()
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
+      jest.mock('../../../../../app/config', () => {
+        const originalModule = jest.requireActual('../../../../../app/config')
         return {
           ...originalModule,
-          selectYourBusiness: {
-            enabled: false
+          authConfig: {
+            defraId: {
+              enabled: false
+            }
           }
         }
       })
-      jest.mock('../../../../app/lib/email/send-magic-link-email')
-      sendMagicLinkEmail = require('../../../../app/lib/email/send-magic-link-email')
-      users = require('../../../../app/api-requests/users')
-      jest.mock('../../../../app/api-requests/users')
-      jest.mock('../../../../app/messaging/application')
-      messageApplication = require('../../../../app/messaging/application')
+      jest.mock('../../../../../app/lib/email/send-magic-link-email')
+      sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
+      users = require('../../../../../app/api-requests/users')
+      jest.mock('../../../../../app/api-requests/users')
+      jest.mock('../../../../../app/messaging/application')
+      messageApplication = require('../../../../../app/messaging/application')
     })
 
     beforeEach(async () => {
@@ -157,14 +133,14 @@ describe('FarmerClaim application login page test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      jest.mock('../../../../app/api-requests/users')
+      jest.mock('../../../../../app/api-requests/users')
       users.getByEmail.mockResolvedValue({ email: mockValidEmail })
       sendMagicLinkEmail.sendFarmerClaimLoginMagicLink.mockResolvedValue(true)
       messageApplication.getClaim.mockResolvedValue({})
 
       const res = await global.__SERVER__.inject(options)
       expect(users.getByEmail).toBeCalledWith(mockValidEmail)
-      expect(messageApplication.getClaim).toBeCalledWith(mockValidEmail, expect.anything())
+      expect(messageApplication.getClaim).not.toBeCalledTimes(1)
       expect(sendMagicLinkEmail.sendFarmerClaimLoginMagicLink).toBeCalledTimes(1)
       expect(res.statusCode).toBe(200)
     })
@@ -177,21 +153,23 @@ describe('FarmerClaim application login page test', () => {
 
     beforeAll(async () => {
       jest.resetModules()
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
+      jest.mock('../../../../../app/config', () => {
+        const originalModule = jest.requireActual('../../../../../app/config')
         return {
           ...originalModule,
-          selectYourBusiness: {
-            enabled: true
+          authConfig: {
+            defraId: {
+              enabled: false
+            }
           }
         }
       })
-      jest.mock('../../../../app/lib/email/send-magic-link-email')
-      sendMagicLinkEmail = require('../../../../app/lib/email/send-magic-link-email')
-      users = require('../../../../app/api-requests/users')
-      jest.mock('../../../../app/api-requests/users')
-      jest.mock('../../../../app/messaging/application')
-      messageApplication = require('../../../../app/messaging/application')
+      jest.mock('../../../../../app/lib/email/send-magic-link-email')
+      sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
+      users = require('../../../../../app/api-requests/users')
+      jest.mock('../../../../../app/api-requests/users')
+      jest.mock('../../../../../app/messaging/application')
+      messageApplication = require('../../../../../app/messaging/application')
     })
 
     beforeEach(async () => {
@@ -207,7 +185,7 @@ describe('FarmerClaim application login page test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      jest.mock('../../../../app/api-requests/users')
+      jest.mock('../../../../../app/api-requests/users')
       users.getByEmail.mockResolvedValue({ email: mockValidEmail })
       sendMagicLinkEmail.sendFarmerClaimLoginMagicLink.mockResolvedValue(true)
       messageApplication.getClaim.mockResolvedValue({})

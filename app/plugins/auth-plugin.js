@@ -1,6 +1,7 @@
 const { getByEmail } = require('../api-requests/users')
-const { cookie: cookieConfig, cookiePolicy } = require('../config')
-const { getClaim, setClaim } = require('../session')
+const config = require('../config')
+const auth = require('../auth')
+const session = require('../session')
 const { organisation: organisationKey } = require('../session/keys').farmerApplyData
 
 module.exports = {
@@ -9,25 +10,24 @@ module.exports = {
     register: async (server, _) => {
       server.auth.strategy('session', 'cookie', {
         cookie: {
-          isSameSite: cookieConfig.isSameSite,
-          isSecure: cookieConfig.isSecure,
-          name: cookieConfig.cookieNameAuth,
-          password: cookieConfig.password,
-          path: cookiePolicy.path,
-          ttl: cookieConfig.ttl
+          isSameSite: config.cookie.isSameSite,
+          isSecure: config.cookie.isSecure,
+          name: config.cookie.cookieNameAuth,
+          password: config.cookie.password,
+          path: config.cookiePolicy.path,
+          ttl: config.cookie.ttl
         },
         keepAlive: true,
         redirectTo: (request) => {
-          return '/claim/login'
+          return config.authConfig.defraId.enabled ? auth.getAuthenticationUrl(session, request) : '/claim/login'
         },
-        validateFunc: async (request, session) => {
+        validateFunc: async (request, s) => {
           const result = { valid: false }
 
-          if (getClaim(request, organisationKey)) {
+          if (session.getClaim(request, organisationKey)) {
             result.valid = true
           } else {
-            const organisation = (await getByEmail(session.email)) ?? {}
-            setClaim(request, organisationKey, organisation)
+            const organisation = (await getByEmail(s.email)) ?? {}
             result.valid = !!organisation
           }
 

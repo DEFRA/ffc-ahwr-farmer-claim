@@ -1,10 +1,8 @@
 const { v4: uuid } = require('uuid')
 const { farmerClaim } = require('../../../../app/constants/user-types')
-const { farmerApplyData: { organisation: organisationKey } } = require('../../../../app/session/keys')
 
 describe('Auth plugin test', () => {
   let getByEmail
-  let session
   const organisation = { name: 'my-org' }
 
   beforeAll(async () => {
@@ -14,12 +12,13 @@ describe('Auth plugin test', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
         ...originalModule,
-        selectYourBusiness: {
-          enabled: false
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
         }
       }
     })
-    session = require('../../../../app/session')
     jest.mock('../../../../app/session')
     const orgs = require('../../../../app/api-requests/users')
     getByEmail = orgs.getByEmail
@@ -34,10 +33,10 @@ describe('Auth plugin test', () => {
 
   describe('GET requests to /login', () => {
     const url = '/claim/login'
-    const redirectTo = '/claim/visit-review'
+    const email = uuid() + validEmail
+    const redirectTo = `/claim/select-your-business?businessEmail=${email}`
 
     async function login () {
-      const email = uuid() + validEmail
       const token = uuid()
       const options = {
         method: 'GET',
@@ -69,12 +68,10 @@ describe('Auth plugin test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(redirectTo)
-      expect(session.setClaim).toHaveBeenCalledTimes(1)
-      expect(session.setClaim).toHaveBeenCalledWith(res.request, organisationKey, organisation)
       expect(parseInt(maxAgeOfCookieInSeconds, 10) * 1000).toEqual(259200000)
     })
 
-    test('when logged in with data in session does not set session data', async () => {
+    test('when logged in with data in session redirected to select your business', async () => {
       const loginResponse = await login()
 
       const cookieHeaders = loginResponse.headers['set-cookie'].map(x => x.split('; ')[0]).join('; ')
@@ -84,7 +81,6 @@ describe('Auth plugin test', () => {
         url,
         headers: { cookie: cookieHeaders }
       }
-      session.getClaim.mockReturnValue({ application: {} })
 
       const res = await global.__SERVER__.inject(options)
 

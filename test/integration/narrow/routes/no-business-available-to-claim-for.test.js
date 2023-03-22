@@ -11,8 +11,10 @@ describe('no-business-available-to-claim-for page test', () => {
     jest.mock('../../../../app/config', () => ({
       ...jest.requireActual('../../../../app/config'),
       serviceName: 'Annual health and welfare review of livestock',
-      selectYourBusiness: {
-        enabled: true
+      authConfig: {
+        defraId: {
+          enabled: false
+        }
       }
     }))
     require('../../../../app/config')

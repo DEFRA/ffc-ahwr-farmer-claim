@@ -60,8 +60,10 @@ describe('Vet visit review page test', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
         ...originalModule,
-        selectYourBusiness: {
-          enabled: false
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
         }
       }
     })
@@ -119,8 +121,10 @@ describe('Vet visit review page test', () => {
         const originalModule = jest.requireActual('../../../../app/config')
         return {
           ...originalModule,
-          selectYourBusiness: {
-            enabled: true
+          authConfig: {
+            defraId: {
+              enabled: false
+            }
           }
         }
       })

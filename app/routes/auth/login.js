@@ -1,18 +1,11 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
-const config = require('../config')
-const { getByEmail } = require('../api-requests/users')
-const { getClaim } = require('../messaging/application')
-const { email: emailValidation } = require('../lib/validation/email')
-const { sendFarmerClaimLoginMagicLink } = require('../lib/email/send-magic-link-email')
-const { setClaim, clear } = require('../session')
-const { sendMonitoringEvent } = require('../event')
+const { getByEmail } = require('../../api-requests/users')
+const { email: emailValidation } = require('../../lib/validation/email')
+const { sendFarmerClaimLoginMagicLink } = require('../../lib/email/send-magic-link-email')
+const { sendMonitoringEvent } = require('../../event')
 
 const hintText = 'We\'ll use this to send you a link to claim funding for a review. This must be the business email address linked to the business claiming for a review.'
-
-function cacheClaim (claim, request) {
-  Object.entries(claim).forEach(([k, v]) => setClaim(request, k, v))
-}
 
 const getIp = (request) => {
   const xForwardedForHeader = request.headers['x-forwarded-for']
@@ -34,7 +27,7 @@ module.exports = [{
     handler: async (request, h) => {
       if (request.auth.isAuthenticated) {
         const email = request.auth.credentials && request.auth.credentials.email
-        return h.redirect(request.query?.next || config.selectYourBusiness.enabled ? `/claim/select-your-business?businessEmail=${email}` : '/claim/visit-review')
+        return h.redirect(request.query?.next || `/claim/select-your-business?businessEmail=${email}`)
       }
 
       return h.view('login', { hintText })
@@ -66,18 +59,6 @@ module.exports = [{
         console.error(`No user found with email address ${email}`)
         sendMonitoringEvent(request.yar.id, `No user found with email address "${email}"`, email, getIp(request))
         return h.view('login', { ...request.payload, errorMessage: { text: `No user found with email address "${email}"` }, hintText }).code(400).takeover()
-      }
-
-      if (!config.selectYourBusiness.enabled) {
-        const claim = await getClaim(email, request.yar.id)
-
-        if (!claim) {
-          sendMonitoringEvent(request.yar.id, `No application found for ${email}.`, email, getIp(request))
-          return h.view('login', { ...request.payload, errorMessage: { text: `No application found for ${email}. Please call the Rural Payments Agency on 03000 200 301 if you believe this is an error.`, hintText } }).code(400).takeover()
-        }
-
-        clear(request)
-        cacheClaim(claim, request)
       }
 
       const result = await sendFarmerClaimLoginMagicLink(request, email)

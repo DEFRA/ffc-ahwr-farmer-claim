@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const mqConfig = require('./messaging')
 const notifyConfig = require('./notify')
+const authConfig = require('./auth')
 
 const schema = Joi.object({
   appInsights: Joi.object(),
@@ -45,10 +46,7 @@ const schema = Joi.object({
   eligibilityApiUri: Joi.string().uri(),
   applicationApiUri: Joi.string().uri(),
   callChargesUri: Joi.string().uri().default('https://www.gov.uk/call-charges'),
-  ruralPaymentsEmail: Joi.string().email().default('ruralpayments@defra.gov.uk'),
-  selectYourBusiness: {
-    enabled: Joi.boolean().default(false)
-  }
+  ruralPaymentsEmail: Joi.string().email().default('ruralpayments@defra.gov.uk')
 })
 
 const config = {
@@ -86,10 +84,7 @@ const config = {
   eligibilityApiUri: process.env.ELIGIBILITY_API_URI,
   applicationApiUri: process.env.APPLICATION_API_URI,
   callChargesUri: 'https://www.gov.uk/call-charges',
-  ruralPaymentsEmail: 'ruralpayments@defra.gov.uk',
-  selectYourBusiness: {
-    enabled: process.env.SELECT_YOUR_BUSINESS_ENABLED
-  }
+  ruralPaymentsEmail: 'ruralpayments@defra.gov.uk'
 }
 
 const result = schema.validate(config, {
@@ -103,5 +98,6 @@ if (result.error) {
 const value = result.value
 value.mqConfig = mqConfig
 value.notifyConfig = notifyConfig
+value.authConfig = authConfig
 
 module.exports = value

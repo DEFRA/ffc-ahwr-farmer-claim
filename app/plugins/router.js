@@ -7,14 +7,12 @@ const routes = [].concat(
   require('../routes/healthy'),
   require('../routes/healthz'),
   require('../routes/index'),
-  require('../routes/login'),
   require('../routes/visit-review'),
   require('../routes/details-incorrect'),
   require('../routes/submit-claim'),
   require('../routes/urn-result'),
   require('../routes/vet-name'),
   require('../routes/vet-rcvs'),
-  require('../routes/verify-login'),
   require('../routes/vet-visit-date')
 )
 
@@ -23,9 +21,13 @@ module.exports = {
     name: 'router',
     register: (server, _) => {
       server.route(routes)
-      if (config.selectYourBusiness.enabled) {
+      if (config.authConfig.defraId.enabled === true) {
+        server.route(require('../routes/auth/signin-oidc'))
+      } else {
         server.route(require('../routes/select-your-business'))
         server.route(require('../routes/no-business-available-to-claim-for'))
+        server.route(require('../routes/auth/verify-login'))
+        server.route(require('../routes/auth/login'))
       }
     }
   }

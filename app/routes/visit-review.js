@@ -1,6 +1,8 @@
 const Joi = require('joi')
 const boom = require('@hapi/boom')
-const { getClaim, setClaim } = require('../session')
+const session = require('../session')
+const config = require('../config')
+const auth = require('../auth')
 const getClaimViewData = require('./models/claim')
 const { detailsCorrect } = require('../session/keys').claim
 
@@ -11,13 +13,13 @@ module.exports = [{
   path: '/claim/visit-review',
   options: {
     handler: async (request, h) => {
-      const claim = getClaim(request)
+      const claim = session.getClaim(request)
 
       if (!claim) {
         return boom.notFound()
       }
 
-      return h.view('visit-review', getClaimViewData(claim))
+      return h.view('visit-review', getClaimViewData(claim, generateBackLink(request, claim)))
     }
   }
 },
@@ -30,13 +32,13 @@ module.exports = [{
         [detailsCorrect]: Joi.string().valid('yes', 'no').required()
       }),
       failAction: (request, h, _err) => {
-        const claim = getClaim(request)
-        return h.view('visit-review', getClaimViewData(claim, errorMessage)).code(400).takeover()
+        const claim = session.getClaim(request)
+        return h.view('visit-review', getClaimViewData(claim, generateBackLink(request, claim), errorMessage)).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const answer = request.payload[detailsCorrect]
-      setClaim(request, detailsCorrect, answer)
+      session.setClaim(request, detailsCorrect, answer)
       if (answer === 'yes') {
         return h.redirect('/claim/vet-visit-date')
       }
@@ -44,3 +46,7 @@ module.exports = [{
     }
   }
 }]
+
+function generateBackLink (request, claim) {
+  return config.authConfig.defraId.enabled ? auth.getAuthenticationUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
+}

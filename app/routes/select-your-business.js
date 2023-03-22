@@ -25,7 +25,8 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      if (request.auth.credentials && (request.query.businessEmail !== request.auth.credentials.email)) {
+      if (request.auth.credentials && (request.query.businessEmail !== request.auth.credentials.email.toLowerCase())) {
+        console.log('Business email query param does not match email in auth credentials.')
         throw Boom.internal()
       }
 
@@ -115,6 +116,7 @@ module.exports = [{
         sbi: selectedBusiness.data.organisation.sbi
       })}`)
 
+      session.setClaim(request, sessionKeys.farmerApplyData.organisation, selectedBusiness.data.organisation)
       Object.entries(selectedBusiness).forEach(([k, v]) => session.setClaim(request, k, v))
       return h.redirect('visit-review')
     }

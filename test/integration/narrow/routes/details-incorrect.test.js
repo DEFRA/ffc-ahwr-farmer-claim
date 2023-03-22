@@ -2,6 +2,19 @@ const cheerio = require('cheerio')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 
 describe('Farmer claim - review details incorrect page test', () => {
+  beforeAll(async () => {
+    jest.mock('../../../../app/config', () => ({
+      ...jest.requireActual('../../../../app/config'),
+      serviceName: 'Annual health and welfare review of livestock',
+      authConfig: {
+        defraId: {
+          enabled: false
+        }
+      }
+    }))
+    require('../../../../app/config')
+  })
+
   const url = '/claim/details-incorrect'
 
   describe(`GET ${url} route when logged in`, () => {

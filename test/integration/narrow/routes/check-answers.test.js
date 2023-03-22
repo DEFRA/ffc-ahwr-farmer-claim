@@ -1,12 +1,25 @@
 const cheerio = require('cheerio')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const sessionMock = require('../../../../app/session')
-const { serviceName } = require('../../../../app/config')
 jest.mock('../../../../app/session')
 
 describe('Check Answers test', () => {
   const auth = { credentials: { reference: '1111', sbi: '111111111' }, strategy: 'cookie' }
   const url = '/claim/check-answers'
+
+  beforeAll(() => {
+    jest.mock('../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../app/config')
+      return {
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
+        }
+      }
+    })
+  })
 
   afterAll(() => {
     jest.resetAllMocks()
@@ -41,7 +54,7 @@ describe('Check Answers test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toEqual(`Check your answers - ${serviceName}`)
+      expect($('title').text()).toEqual('Check your answers - Annual health and welfare review of livestock')
       expectPhaseBanner.ok($)
     })
 
