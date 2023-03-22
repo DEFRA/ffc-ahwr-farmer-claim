@@ -28,7 +28,12 @@ describe('API select-your-business', () => {
     jest.mock('../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../app/config')
       return {
-        ...originalModule
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            enabled: false
+          }
+        }
       }
     })
 

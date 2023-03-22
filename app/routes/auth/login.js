@@ -1,9 +1,9 @@
 const boom = require('@hapi/boom')
 const Joi = require('joi')
-const { getByEmail } = require('../api-requests/users')
-const { email: emailValidation } = require('../lib/validation/email')
-const { sendFarmerClaimLoginMagicLink } = require('../lib/email/send-magic-link-email')
-const { sendMonitoringEvent } = require('../event')
+const { getByEmail } = require('../../api-requests/users')
+const { email: emailValidation } = require('../../lib/validation/email')
+const { sendFarmerClaimLoginMagicLink } = require('../../lib/email/send-magic-link-email')
+const { sendMonitoringEvent } = require('../../event')
 
 const hintText = 'We\'ll use this to send you a link to claim funding for a review. This must be the business email address linked to the business claiming for a review.'
 
