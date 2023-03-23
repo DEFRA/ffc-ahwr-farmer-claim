@@ -61,6 +61,31 @@ describe('Farmer claim - submit claim page test', () => {
 
     test.each([
       { heading: 'Claim complete', state: states.success },
+      { heading: 'Funding claim failed', state: states.failed }
+    ])('returns 403 when duplicate submission - $crumb', async ({ heading, state }) => {
+      messagingMock.receiveMessage.mockResolvedValueOnce({ state })
+      const crumb = await getCrumbs(global.__SERVER__)
+      const options = {
+        auth,
+        method,
+        url,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res1 = await global.__SERVER__.inject(options)
+      expect(res1.statusCode).toBe(200)
+      expect(cheerio.load(res1.payload)('h1').text()).toMatch(heading)
+
+      const res2 = await global.__SERVER__.inject(options)
+      expect(res2.statusCode).toBe(403)
+      const $ = cheerio.load(res2.payload)
+      expectPhaseBanner.ok($)
+      expect($('.govuk-heading-l').text()).toEqual('403 - Forbidden')
+    })
+
+    test.each([
+      { heading: 'Claim complete', state: states.success },
       { heading: 'Funding claim failed', state: states.failed },
       { heading: 'Funding already claimed', state: states.alreadyClaimed },
       { heading: 'Funding claim not found', state: states.notFound }
