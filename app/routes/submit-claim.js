@@ -3,6 +3,7 @@ const { claimed } = require('../session/keys').claim
 const session = require('../session')
 const states = require('../constants/states')
 const { clearAuthCookie } = require('../auth')
+const preDoubleSubmitHandler = require('./utils/pre-submission-handler')
 
 function updateSession (request, claimed, claimStatus) {
   session.setClaim(request, claimed, claimStatus)
@@ -23,6 +24,7 @@ module.exports = [{
   method: 'POST',
   path: '/claim/submit-claim',
   options: {
+    pre: [{ method: preDoubleSubmitHandler }],
     handler: async (request, h) => {
       const claim = session.getClaim(request)
       const { reference } = claim
