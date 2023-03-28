@@ -4,11 +4,13 @@ window.onload = function () {
 }
 
 function preventDuplicateFormSubmission (form) {
-  form.addEventListener('submit', function (e) {
-    if (form.dataset.formSubmitted) {
-      e.preventDefault()
-    } else {
-      form.dataset.formSubmitted = true
-    }
-  })
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      if (form.dataset.formSubmitted) {
+        e.preventDefault()
+      } else {
+        form.dataset.formSubmitted = true
+      }
+    })
+  }
 }
