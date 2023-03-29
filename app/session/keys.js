@@ -30,7 +30,14 @@ module.exports = {
   },
   tokens: {
     accessToken: 'accessToken',
+    tokenExpiry: 'tokenExpiry',
+    idToken: 'idToken',
     state: 'state',
     nonce: 'nonce'
+  },
+  customer: {
+    id: 'id',
+    crn: 'crn',
+    organisationId: 'organisationId'
   }
 }

@@ -6,7 +6,8 @@ const entries = {
   organisation: 'organisation',
   selectYourBusiness: 'selectYourBusiness',
   pkcecodes: 'pkcecodes',
-  tokens: 'tokens'
+  tokens: 'tokens',
+  customer: 'customer'
 }
 
 function set (request, entryKey, key, value) {
@@ -62,6 +63,14 @@ function getToken (request, key) {
   return get(request, entries.tokens, key)
 }
 
+function setCustomer (request, key, value) {
+  set(request, entries.customer, key, value)
+}
+
+function getCustomer (request, key) {
+  return get(request, entries.customer, key)
+}
+
 function setPkcecodes (request, key, value) {
   set(request, entries.pkcecodes, key, value)
 }
@@ -80,6 +89,8 @@ module.exports = {
   getSelectYourBusiness,
   getToken,
   setToken,
+  getCustomer,
+  setCustomer,
   getPkcecodes,
   setPkcecodes
 }

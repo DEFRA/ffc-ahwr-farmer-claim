@@ -1,6 +1,6 @@
 const session = require('../session')
 const config = require('../config')
-const { getAuthenticationUrl } = require('../auth')
+const { requestAuthorizationCodeUrl } = require('../auth')
 
 module.exports = {
   method: 'GET',
@@ -12,7 +12,7 @@ module.exports = {
       session.clear(request)
       if (config.authConfig.defraId.enabled) {
         return h.view('defra-id/index', {
-          defraIdLogin: getAuthenticationUrl(session, request)
+          defraIdLogin: requestAuthorizationCodeUrl(session, request)
         })
       } else {
         return h.view('index')

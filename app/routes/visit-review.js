@@ -48,5 +48,5 @@ module.exports = [{
 }]
 
 function generateBackLink (request, claim) {
-  return config.authConfig.defraId.enabled ? auth.getAuthenticationUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
+  return config.authConfig.defraId.enabled ? auth.requestAuthorizationCodeUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
 }
