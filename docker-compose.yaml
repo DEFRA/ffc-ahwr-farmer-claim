@@ -31,7 +31,7 @@ services:
       DEFRA_ID_ENABLED: ${DEFRA_ID_ENABLED:-false}
       DEFRA_ID_TENANT: ${DEFRA_ID_TENANT:-changeme}
       DEFRA_ID_POLICY: ${DEFRA_ID_POLICY:-changeme}
-      DEFRA_ID_REDIRECT_URI: ${DEFRA_ID_REDIRECT_URI:-changeme}
+      DEFRA_ID_REDIRECT_URI: ${DEFRA_ID_REDIRECT_URI:-http://localhost:3000/apply/signin-oidc}
       DEFRA_ID_CLIENT_ID: ${DEFRA_ID_CLIENT_ID:-change_me}
       DEFRA_ID_CLIENT_SECRET: ${DEFRA_ID_CLIENT_SECRET:-change_me}
       DEFRA_ID_JWT_ISSUER_ID: ${DEFRA_ID_JWT_ISSUER_ID:-change_me}
