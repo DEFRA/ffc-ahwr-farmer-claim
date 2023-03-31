@@ -90,20 +90,25 @@ describe('authenticate', () => {
           },
           payload: {
             /* Decoded access_token:
-            HEADER
             {
               "alg": "HS256",
               "typ": "JWT"
-            }
-            PAYLOAD
+            },
             {
               "sub": "1234567890",
               "name": "John Doe",
+              "firstName": "John",
+              "lastName": "Doe",
+              "email": "john.doe@email.com",
               "iat": 1516239022,
               "iss": "https://tenantname.b2clogin.com/jwtissuerid/v2.0/",
-              "roles": ["5384769:Agent:3"]
+              "roles": [
+                "5384769:Agent:3"
+              ],
+              "contactId": "1234567890",
+              "currentRelationshipId": "123456789"
             } */
-            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJpc3MiOiJodHRwczovL3RlbmFudG5hbWUuYjJjbG9naW4uY29tL2p3dGlzc3VlcmlkL3YyLjAvIiwicm9sZXMiOlsiNTM4NDc2OTpBZ2VudDozIl19.9LpjSBJooZCadYwQV9DnfVX5le-odnM6E3ENCeZu30c',
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vand0aXNzdWVyaWQvdjIuMC8iLCJyb2xlcyI6WyI1Mzg0NzY5OkFnZW50OjMiXSwiY29udGFjdElkIjoiMTIzNDU2Nzg5MCIsImN1cnJlbnRSZWxhdGlvbnNoaXBJZCI6IjEyMzQ1Njc4OSJ9.pYC2VTlSnlIsLn4MknJl0YhLPCn2oW6K73FKFgzvAqE',
             id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
             expires_in: 10
           }
@@ -113,11 +118,11 @@ describe('authenticate', () => {
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Requesting an access token with a client_secret`,
           `${MOCK_NOW.toISOString()} Verifying JWT token: ${JSON.stringify({
-            token: 'eyJhb...Zu30c'
+            token: 'eyJhb...zvAqE'
           })}`,
           `${MOCK_NOW.toISOString()} Acquiring the signing key data necessary to validate the signature`,
           `${MOCK_NOW.toISOString()} Decoding JWT token: ${JSON.stringify({
-            token: 'eyJhb...Zu30c'
+            token: 'eyJhb...zvAqE'
           })}`,
           `${MOCK_NOW.toISOString()} Decoding JWT token: ${JSON.stringify({
             token: 'eyJhb...uRrzk'
@@ -173,6 +178,44 @@ describe('authenticate', () => {
 
     await authenticate(testCase.given.request)
 
+    expect(session.setToken).toHaveBeenCalledWith(
+      testCase.given.request,
+      sessionKeys.tokens.accessToken,
+      testCase.when.redeemResponse.payload.access_token
+    )
+    expect(session.setToken).toHaveBeenCalledWith(
+      testCase.given.request,
+      sessionKeys.tokens.tokenExpiry,
+      new Date(MOCK_NOW.getTime() + 10 * 1000).toISOString()
+    )
+    expect(session.setCustomer).toHaveBeenCalledWith(
+      testCase.given.request,
+      sessionKeys.customer.crn,
+      '1234567890'
+    )
+    expect(session.setCustomer).toHaveBeenCalledWith(
+      testCase.given.request,
+      sessionKeys.customer.organisationId,
+      '123456789'
+    )
+    expect(MOCK_COOKIE_AUTH_SET).toHaveBeenCalledWith({
+      account: {
+        email: 'john.doe@email.com',
+        name: 'John Doe'
+      },
+      scope: {
+        roleNames: [
+          'Agent'
+        ],
+        roles: [
+          {
+            relationshipId: '5384769',
+            roleName: 'Agent',
+            status: '3'
+          }
+        ]
+      }
+    })
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
