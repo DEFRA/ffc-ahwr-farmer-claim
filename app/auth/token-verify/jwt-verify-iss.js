@@ -14,7 +14,7 @@ const jwtVerifyIss = async (iss) => {
   } catch (error) {
     console.log(`${new Date().toISOString()} Error while verifying the issuer: ${error.message}`)
     console.error(error)
-    return false
+    throw error
   }
 }
 

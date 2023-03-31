@@ -13,27 +13,25 @@ const authenticate = async (request) => {
   if (!state.verify(request)) {
     throw new Error('Invalid state')
   }
-  const tokenResponse = await redeemAuthorizationCodeForAccessToken(request)
-  if (typeof tokenResponse === 'undefined') {
+  const redeemResponse = await redeemAuthorizationCodeForAccessToken(request)
+  if (typeof redeemResponse === 'undefined') {
     throw new Error('Code redemption failed')
   }
-  const verified = await jwtVerify(tokenResponse.access_token)
-  if (!verified) {
+  if (!await jwtVerify(redeemResponse.access_token)) {
     throw new Error('Invalid access token')
   }
 
-  const accessToken = jwtDecode(tokenResponse.access_token)
-  const idToken = jwtDecode(tokenResponse.id_token)
+  const accessToken = jwtDecode(redeemResponse.access_token)
+  const idToken = jwtDecode(redeemResponse.id_token)
 
-  if (!jwtVerifyIss(accessToken.iss)) {
-    throw new Error('Invalid iss')
-  }
+  await jwtVerifyIss(accessToken.iss)
+
   if (!nonce.verify(request, idToken)) {
     throw new Error('Invalid nonce')
   }
 
-  session.setToken(request, sessionKeys.tokens.accessToken, tokenResponse.access_token)
-  session.setToken(request, sessionKeys.tokens.tokenExpiry, expiresIn.toISOString(tokenResponse.expires_in))
+  session.setToken(request, sessionKeys.tokens.accessToken, redeemResponse.access_token)
+  session.setToken(request, sessionKeys.tokens.tokenExpiry, expiresIn.toISOString(redeemResponse.expires_in))
   session.setCustomer(request, sessionKeys.customer.crn, accessToken.contactId)
   session.setCustomer(request, sessionKeys.customer.organisationId, accessToken.currentRelationshipId)
 
