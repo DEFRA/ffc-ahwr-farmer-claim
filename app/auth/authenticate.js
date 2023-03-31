@@ -17,9 +17,8 @@ const authenticate = async (request) => {
   if (typeof redeemResponse === 'undefined') {
     throw new Error('Code redemption failed')
   }
-  if (!await jwtVerify(redeemResponse.access_token)) {
-    throw new Error('Invalid access token')
-  }
+
+  await jwtVerify(redeemResponse.access_token)
 
   const accessToken = jwtDecode(redeemResponse.access_token)
   const idToken = jwtDecode(redeemResponse.id_token)

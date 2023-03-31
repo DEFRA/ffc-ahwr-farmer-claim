@@ -13,11 +13,10 @@ const jwtVerify = async (token) => {
     if (!decoded) {
       throw new Error('The token has not been verified')
     }
-    return true
   } catch (error) {
     console.log(`${new Date().toISOString()} Error while verifying JWT token: ${error.message}`)
     console.error(error)
-    return false
+    throw error
   }
 }
 

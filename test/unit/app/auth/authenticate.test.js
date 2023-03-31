@@ -83,6 +83,7 @@ describe('authenticate', () => {
             verifier: 'verifier'
           }
         },
+        jwktopem: 'public_key',
         acquiredSigningKey: {
           signingKey: 'signing_key'
         },
@@ -157,6 +158,7 @@ describe('authenticate', () => {
             verifier: 'verifier'
           }
         },
+        jwktopem: 'public_key',
         acquiredSigningKey: {
           signingKey: 'signing_key'
         },
@@ -211,6 +213,75 @@ describe('authenticate', () => {
           new Error('Issuer not trusted: https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/')
         ]
       }
+    },
+    {
+      toString: () => 'authenticate - jwtVerify error',
+      given: {
+        request: {
+          query: {
+            state: 'query_state',
+            code: 'query_code'
+          },
+          cookieAuth: {
+            set: MOCK_COOKIE_AUTH_SET
+          }
+        }
+      },
+      when: {
+        session: {
+          state: 'query_state',
+          pkcecodes: {
+            verifier: 'verifier'
+          }
+        },
+        jwktopem: 'WRONG_KEY!!!',
+        acquiredSigningKey: {
+          signingKey: 'signing_key'
+        },
+        redeemResponse: {
+          res: {
+            statusCode: 200
+          },
+          payload: {
+            /* Decoded access_token:
+            {
+              "alg": "HS256",
+              "typ": "JWT"
+            },
+            {
+              "sub": "1234567890",
+              "name": "John Doe",
+              "firstName": "John",
+              "lastName": "Doe",
+              "email": "john.doe@email.com",
+              "iat": 1516239022,
+              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
+              "roles": [
+                "5384769:Agent:3"
+              ],
+              "contactId": "1234567890",
+              "currentRelationshipId": "123456789"
+            } */
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
+            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
+            expires_in: 10
+          }
+        }
+      },
+      expect: {
+        error: new Error('The token has not been verified'),
+        consoleLogs: [
+          `${MOCK_NOW.toISOString()} Requesting an access token with a client_secret`,
+          `${MOCK_NOW.toISOString()} Verifying JWT token: ${JSON.stringify({
+            token: 'eyJhb...n-6jI'
+          })}`,
+          `${MOCK_NOW.toISOString()} Acquiring the signing key data necessary to validate the signature`,
+          `${MOCK_NOW.toISOString()} Error while verifying JWT token: The token has not been verified`
+        ],
+        errorLogs: [
+          new Error('The token has not been verified')
+        ]
+      }
     }
   ])('%s', async (testCase) => {
     when(session.getToken)
@@ -244,7 +315,7 @@ describe('authenticate', () => {
       })
     when(jwktopem)
       .calledWith(testCase.when.acquiredSigningKey)
-      .mockReturnValue('public_key')
+      .mockReturnValue(testCase.when.jwktopem)
     when(MOCK_JWT_VERIFY)
       .calledWith(
         testCase.when.redeemResponse.payload.access_token,
@@ -306,13 +377,13 @@ describe('authenticate', () => {
         }
       })
     }
-    expect(logSpy).toHaveBeenCalledTimes(testCase.expect.consoleLogs.length)
     testCase.expect.consoleLogs.forEach(
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
-    expect(errorSpy).toHaveBeenCalledTimes(testCase.expect.errorLogs.length)
+    expect(logSpy).toHaveBeenCalledTimes(testCase.expect.consoleLogs.length)
     testCase.expect.errorLogs.forEach(
       (errorLog, idx) => expect(errorSpy).toHaveBeenNthCalledWith(idx + 1, errorLog)
     )
+    expect(errorSpy).toHaveBeenCalledTimes(testCase.expect.errorLogs.length)
   })
 })
