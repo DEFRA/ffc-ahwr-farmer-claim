@@ -21,11 +21,10 @@ const verify = (request, idToken) => {
     if (nonce !== idToken.nonce) {
       throw new Error('Nonce mismatch')
     }
-    return true
   } catch (error) {
     console.log(`${new Date().toISOString()} Error while verifying id_token nonce: ${error.message}`)
     console.error(error)
-    return false
+    throw error
   }
 }
 

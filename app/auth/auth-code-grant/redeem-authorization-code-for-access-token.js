@@ -36,7 +36,7 @@ const redeemAuthorizationCodeForAccessToken = async (request) => {
   } catch (error) {
     console.log(`${new Date().toISOString()} Error while requesting an access token: ${error.message}`)
     console.error(error)
-    return undefined
+    throw error
   }
 }
 
