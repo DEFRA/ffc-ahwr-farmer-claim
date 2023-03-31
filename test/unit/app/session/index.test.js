@@ -5,6 +5,7 @@ describe('session', () => {
   const claimKey = 'claim'
   const selectYourBusinessKey = 'selectYourBusiness'
   const tokensSectionKey = 'tokens'
+  const customerSectionKey = 'customer'
   const pkcecodesSectionKey = 'pkcecodes'
 
   const value = 'value'
@@ -15,6 +16,7 @@ describe('session', () => {
     { func: 'getClaim', expectedSectionKey: claimKey },
     { func: 'getSelectYourBusiness', expectedSectionKey: selectYourBusinessKey },
     { func: 'getToken', expectedSectionKey: tokensSectionKey },
+    { func: 'getCustomer', expectedSectionKey: customerSectionKey },
     { func: 'getPkcecodes', expectedSectionKey: pkcecodesSectionKey }
   ]
 
@@ -23,6 +25,7 @@ describe('session', () => {
     { func: 'setClaim', expectedSectionKey: claimKey },
     { func: 'setSelectYourBusiness', expectedSectionKey: selectYourBusinessKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
+    { func: 'setCustomer', expectedSectionKey: customerSectionKey },
     { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey }
   ]
 
