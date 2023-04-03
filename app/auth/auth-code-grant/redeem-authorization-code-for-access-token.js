@@ -22,7 +22,7 @@ const redeemAuthorizationCodeForAccessToken = async (request) => {
     // The same code_verifier that was used to obtain the authorization_code.
     data.append('code_verifier', session.getPkcecodes(request, sessionKeys.pkcecodes.verifier))
     const response = await Wreck.post(
-      `${config.authConfig.defraId.hostname}/b2c_1a_signupsigninsfi/oauth2/v2.0/token`,
+      `${config.authConfig.defraId.hostname}/${config.authConfig.defraId.policy}/oauth2/v2.0/token`,
       {
         headers: data.getHeaders(),
         payload: data,

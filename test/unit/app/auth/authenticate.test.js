@@ -28,7 +28,8 @@ describe('authenticate', () => {
           redirectUri: 'redirectUri',
           hostname: 'hostname',
           tenantName: 'tenantname',
-          jwtIssuerId: 'jwtissuerid'
+          jwtIssuerId: 'jwtissuerid',
+          policy: 'policy'
         }
       }
     }))
@@ -292,7 +293,7 @@ describe('authenticate', () => {
       .mockReturnValue(testCase.when.session.pkcecodes.verifier)
     when(Wreck.post)
       .calledWith(
-        'hostname/b2c_1a_signupsigninsfi/oauth2/v2.0/token',
+        'hostname/policy/oauth2/v2.0/token',
         {
           headers: expect.anything(),
           payload: expect.anything(),
