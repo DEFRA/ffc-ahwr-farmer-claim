@@ -19,7 +19,7 @@ module.exports = [{
       }),
       failAction (request, h, err) {
         return h.view('verify-login-failed', {
-          backLink: auth.getAuthenticationUrl(session, request)
+          backLink: auth.requestAuthorizationCodeUrl(session, request)
         }).code(400).takeover()
       }
     },
@@ -31,7 +31,7 @@ module.exports = [{
         if (!latestApplication) {
           console.log('No claimable application found for SBI - dummy SBI')
           return h.view('verify-login-failed', {
-            backLink: auth.getAuthenticationUrl(session, request)
+            backLink: auth.requestAuthorizationCodeUrl(session, request)
           }).code(400).takeover()
           // todo route to actual exception screen
         }
@@ -42,7 +42,7 @@ module.exports = [{
       } catch (e) {
         console.log(`Error when handling DEFRA ID redirect ${e.message}.`)
         return h.view('verify-login-failed', {
-          backLink: auth.getAuthenticationUrl(session, request)
+          backLink: auth.requestAuthorizationCodeUrl(session, request)
         }).code(400)
       }
 
