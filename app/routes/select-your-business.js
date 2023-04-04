@@ -59,8 +59,7 @@ module.exports = [{
               text: `${business.data.organisation.name} - SBI ${business.data.organisation.sbi}`,
               checked: checkedBusiness === business.data.organisation.sbi
             }))),
-            callChargesUri: config.callChargesUri,
-            ruralPaymentsEmail: config.ruralPaymentsEmail
+            ruralPaymentsAgency: config.ruralPaymentsAgency
           }
         )
     }
@@ -95,8 +94,7 @@ module.exports = [{
               text: `${business.data.organisation.sbi} - ${business.data.organisation.name}`,
               checked: checkedBusiness === business.data.organisation.sbi
             }))),
-            callChargesUri: config.callChargesUri,
-            ruralPaymentsEmail: config.ruralPaymentsEmail
+            ruralPaymentsAgency: config.ruralPaymentsAgency
           }
           )
           .code(400)

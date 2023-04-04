@@ -4,6 +4,7 @@ const session = require('../session')
 const states = require('../constants/states')
 const { clearAuthCookie } = require('../auth')
 const preDoubleSubmitHandler = require('./utils/pre-submission-handler')
+const ruralPaymentsAgency = require('../../app/config/index').ruralPaymentsAgency
 
 function updateSession (request, claimed, claimStatus) {
   session.setClaim(request, claimed, claimStatus)
@@ -46,7 +47,7 @@ module.exports = [{
           return h.view('claim-not-found', { reference })
         case states.success:
           updateSession(request, claimed, states.success)
-          return h.view('claim-success', { reference })
+          return h.view('claim-success', { reference, ruralPaymentsAgency })
         default:
           updateSession(request, claimed, 'claim-failed')
           return h.view('claim-failed', { reference })
