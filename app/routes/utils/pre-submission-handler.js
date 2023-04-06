@@ -9,6 +9,7 @@ const preSubmissionHandler = async (request, h) => {
       return Boom.forbidden('Duplicate submission')
     } else {
       await crumbCache.cacheSubmissionCrumb(request)
+      await crumbCache.generateNewCrumb(request, h)
       return h.continue
     }
   } else {
