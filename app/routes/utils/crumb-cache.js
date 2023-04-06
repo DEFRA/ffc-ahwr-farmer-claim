@@ -10,7 +10,14 @@ const cacheSubmissionCrumb = async (request) => {
   console.log('Crumb cached: %s', crumb)
 }
 
+const generateNewCrumb = async (request, h) => {
+  request.plugins.crumb = null
+  const crumb = await request.server.plugins.crumb.generate(request, h)
+  console.log('New crumb generated: %s', crumb)
+}
+
 module.exports = {
   lookupSubmissionCrumb,
-  cacheSubmissionCrumb
+  cacheSubmissionCrumb,
+  generateNewCrumb
 }
