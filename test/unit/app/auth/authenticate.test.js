@@ -141,6 +141,91 @@ describe('authenticate', () => {
       }
     },
     {
+      toString: () => 'authenticate - request query error found',
+      given: {
+        request: {
+          yar: {
+            id: 'req_id'
+          },
+          query: {
+            code: 'query_code',
+            error: 'err',
+            error_description: 'err_desc'
+          },
+          cookieAuth: {
+            set: MOCK_COOKIE_AUTH_SET
+          }
+        }
+      },
+      when: {
+        session: {
+          state: 'query_state',
+          pkcecodes: {
+            verifier: 'verifier'
+          }
+        },
+        jwktopem: 'public_key',
+        acquiredSigningKey: {
+          signingKey: 'signing_key'
+        },
+        redeemResponse: {
+          res: {
+            statusCode: 200
+          },
+          payload: {
+            /* Decoded access_token:
+            {
+              "alg": "HS256",
+              "typ": "JWT"
+            },
+            {
+              "sub": "1234567890",
+              "name": "John Doe",
+              "firstName": "John",
+              "lastName": "Doe",
+              "email": "john.doe@email.com",
+              "iat": 1516239022,
+              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
+              "roles": [
+                "5384769:Agent:3"
+              ],
+              "contactId": "1234567890",
+              "currentRelationshipId": "123456789"
+            } */
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
+            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
+            expires_in: 10
+          }
+        }
+      },
+      expect: {
+        error: new Error(`Request query error found: ${JSON.stringify({
+          request: {
+            yar: {
+              id: 'req_id'
+            },
+            query: {
+              error_description: 'err_desc'
+            }
+          }
+        })}`),
+        consoleLogs: [
+        ],
+        errorLogs: [
+          new Error(`Request query error found: ${JSON.stringify({
+            request: {
+              yar: {
+                id: 'req_id'
+              },
+              query: {
+                error_description: 'err_desc'
+              }
+            }
+          })}`)
+        ]
+      }
+    },
+    {
       toString: () => 'authenticate - no state found',
       given: {
         request: {
@@ -218,7 +303,7 @@ describe('authenticate', () => {
       }
     },
     {
-      toString: () => 'authenticate - invalid state found',
+      toString: () => 'authenticate - state mismatch',
       given: {
         request: {
           yar: {
@@ -275,7 +360,7 @@ describe('authenticate', () => {
         }
       },
       expect: {
-        error: new InvalidStateError(`Invalid state found: ${JSON.stringify({
+        error: new InvalidStateError(`State mismatch: ${JSON.stringify({
           request: {
             yar: {
               id: 'req_id'
@@ -285,7 +370,7 @@ describe('authenticate', () => {
         consoleLogs: [
         ],
         errorLogs: [
-          new InvalidStateError(`Invalid state found: ${JSON.stringify({
+          new InvalidStateError(`State mismatch: ${JSON.stringify({
             request: {
               yar: {
                 id: 'req_id'
