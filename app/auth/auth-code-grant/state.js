@@ -13,7 +13,13 @@ const verify = (request) => {
   if (!request.query.error) {
     const state = request.query.state
     if (!state) {
-      throw new InvalidStateError('No state found in request.query')
+      throw new InvalidStateError(`No state found: ${JSON.stringify({
+        request: {
+          yar: {
+            id: request.yar.id
+          }
+        }
+      })}`)
     }
     const savedState = session.getToken(request, tokens.state)
     return state === savedState
