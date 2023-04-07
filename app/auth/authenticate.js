@@ -10,9 +10,7 @@ const sessionKeys = require('../session/keys')
 const cookieAuth = require('./cookie-auth/cookie-auth')
 
 const authenticate = async (request) => {
-  if (!state.verify(request)) {
-    throw new Error('Invalid state')
-  }
+  state.verify(request)
   const redeemResponse = await redeemAuthorizationCodeForAccessToken(request)
   await jwtVerify(redeemResponse.access_token)
   const accessToken = jwtDecode(redeemResponse.access_token)

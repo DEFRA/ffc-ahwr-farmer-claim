@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const session = require('../../session')
 const { tokens } = require('../../session/keys')
+const InvalidStateError = require('./invalid-state-error')
 
 const generate = (request) => {
   const state = uuidv4()
@@ -12,13 +13,12 @@ const verify = (request) => {
   if (!request.query.error) {
     const state = request.query.state
     if (!state) {
-      return false
+      throw new InvalidStateError('No state found in request.query')
     }
     const savedState = session.getToken(request, tokens.state)
     return state === savedState
   } else {
-    console.log(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
-    return false
+    throw new InvalidStateError(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
   }
 }
 
