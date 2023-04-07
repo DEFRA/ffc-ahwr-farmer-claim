@@ -1,4 +1,5 @@
 const { when, resetAllWhenMocks } = require('jest-when')
+const InvalidStateError = require('../../../../app/auth/auth-code-grant/invalid-state-error')
 const MOCK_USE_ACTUAL_DECODE = require('jsonwebtoken').decode
 const sessionKeys = require('../../../../app/session/keys')
 
@@ -65,7 +66,7 @@ describe('authenticate', () => {
 
   test.each([
     {
-      toString: () => 'authenticate',
+      toString: () => 'authenticate - successful',
       given: {
         request: {
           query: {
@@ -136,6 +137,161 @@ describe('authenticate', () => {
           `${MOCK_NOW.toISOString()} Verifying id_token nonce`
         ],
         errorLogs: [
+        ]
+      }
+    },
+    {
+      toString: () => 'authenticate - no state found',
+      given: {
+        request: {
+          yar: {
+            id: 'req_id'
+          },
+          query: {
+            code: 'query_code'
+          },
+          cookieAuth: {
+            set: MOCK_COOKIE_AUTH_SET
+          }
+        }
+      },
+      when: {
+        session: {
+          state: 'query_state2',
+          pkcecodes: {
+            verifier: 'verifier'
+          }
+        },
+        jwktopem: 'public_key',
+        acquiredSigningKey: {
+          signingKey: 'signing_key'
+        },
+        redeemResponse: {
+          res: {
+            statusCode: 200
+          },
+          payload: {
+            /* Decoded access_token:
+            {
+              "alg": "HS256",
+              "typ": "JWT"
+            },
+            {
+              "sub": "1234567890",
+              "name": "John Doe",
+              "firstName": "John",
+              "lastName": "Doe",
+              "email": "john.doe@email.com",
+              "iat": 1516239022,
+              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
+              "roles": [
+                "5384769:Agent:3"
+              ],
+              "contactId": "1234567890",
+              "currentRelationshipId": "123456789"
+            } */
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
+            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
+            expires_in: 10
+          }
+        }
+      },
+      expect: {
+        error: new InvalidStateError(`No state found: ${JSON.stringify({
+          request: {
+            yar: {
+              id: 'req_id'
+            }
+          }
+        })}`),
+        consoleLogs: [
+        ],
+        errorLogs: [
+          new InvalidStateError(`No state found: ${JSON.stringify({
+            request: {
+              yar: {
+                id: 'req_id'
+              }
+            }
+          })}`)
+        ]
+      }
+    },
+    {
+      toString: () => 'authenticate - invalid state found',
+      given: {
+        request: {
+          yar: {
+            id: 'req_id'
+          },
+          query: {
+            state: 'query_state',
+            code: 'query_code'
+          },
+          cookieAuth: {
+            set: MOCK_COOKIE_AUTH_SET
+          }
+        }
+      },
+      when: {
+        session: {
+          state: 'query_state2',
+          pkcecodes: {
+            verifier: 'verifier'
+          }
+        },
+        jwktopem: 'public_key',
+        acquiredSigningKey: {
+          signingKey: 'signing_key'
+        },
+        redeemResponse: {
+          res: {
+            statusCode: 200
+          },
+          payload: {
+            /* Decoded access_token:
+            {
+              "alg": "HS256",
+              "typ": "JWT"
+            },
+            {
+              "sub": "1234567890",
+              "name": "John Doe",
+              "firstName": "John",
+              "lastName": "Doe",
+              "email": "john.doe@email.com",
+              "iat": 1516239022,
+              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
+              "roles": [
+                "5384769:Agent:3"
+              ],
+              "contactId": "1234567890",
+              "currentRelationshipId": "123456789"
+            } */
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
+            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
+            expires_in: 10
+          }
+        }
+      },
+      expect: {
+        error: new InvalidStateError(`Invalid state found: ${JSON.stringify({
+          request: {
+            yar: {
+              id: 'req_id'
+            }
+          }
+        })}`),
+        consoleLogs: [
+        ],
+        errorLogs: [
+          new InvalidStateError(`Invalid state found: ${JSON.stringify({
+            request: {
+              yar: {
+                id: 'req_id'
+              }
+            }
+          })}`)
         ]
       }
     },
@@ -382,6 +538,7 @@ describe('authenticate', () => {
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
     expect(logSpy).toHaveBeenCalledTimes(testCase.expect.consoleLogs.length)
+
     testCase.expect.errorLogs.forEach(
       (errorLog, idx) => expect(errorSpy).toHaveBeenNthCalledWith(idx + 1, errorLog)
     )

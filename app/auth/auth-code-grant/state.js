@@ -10,21 +10,33 @@ const generate = (request) => {
 }
 
 const verify = (request) => {
-  if (!request.query.error) {
+  if (request.query.error) {
+    throw new Error(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
+  }
+  try {
     const state = request.query.state
     if (!state) {
       throw new InvalidStateError(`No state found: ${JSON.stringify({
-        request: {
-          yar: {
-            id: request.yar.id
+          request: {
+            yar: {
+              id: request.yar.id
+            }
           }
-        }
-      })}`)
+        })}`)
     }
     const savedState = session.getToken(request, tokens.state)
-    return state === savedState
-  } else {
-    throw new InvalidStateError(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
+    if (state !== savedState) {
+      throw new InvalidStateError(`Invalid state found: ${JSON.stringify({
+          request: {
+            yar: {
+              id: request.yar.id
+            }
+          }
+        })}`)
+    }
+  } catch (error) {
+    console.error(error)
+    throw error
   }
 }
 
