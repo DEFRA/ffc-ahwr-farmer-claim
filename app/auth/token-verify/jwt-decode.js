@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken')
 
-const decodeJwt = (token) => {
+const jwtDecode = (token) => {
   console.log(`${new Date().toISOString()} Decoding JWT token: ${JSON.stringify({
     token: `${token.slice(0, 5)}...${token.slice(-5)}`
   })}`)
@@ -17,4 +17,4 @@ const decodeJwt = (token) => {
   }
 }
 
-module.exports = decodeJwt
+module.exports = jwtDecode
