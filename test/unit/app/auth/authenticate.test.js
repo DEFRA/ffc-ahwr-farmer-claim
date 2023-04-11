@@ -111,9 +111,10 @@ describe('authenticate', () => {
                 "5384769:Agent:3"
               ],
               "contactId": "1234567890",
-              "currentRelationshipId": "123456789"
+              "currentRelationshipId": "123456789",
+              "enrolmentCount": "2"
             } */
-            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vand0aXNzdWVyaWQvdjIuMC8iLCJyb2xlcyI6WyI1Mzg0NzY5OkFnZW50OjMiXSwiY29udGFjdElkIjoiMTIzNDU2Nzg5MCIsImN1cnJlbnRSZWxhdGlvbnNoaXBJZCI6IjEyMzQ1Njc4OSJ9.pYC2VTlSnlIsLn4MknJl0YhLPCn2oW6K73FKFgzvAqE',
+            access_token: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vand0aXNzdWVyaWQvdjIuMC8iLCJyb2xlcyI6WyI1Mzg0NzY5OkFnZW50OjMiXSwiY29udGFjdElkIjoiMTIzNDU2Nzg5MCIsImN1cnJlbnRSZWxhdGlvbnNoaXBJZCI6IjEyMzQ1Njc4OSIsImVucm9sbWVudENvdW50IjoiMiJ9.rz2yP1Iar8XOsYRftQ0ANmESjSSNHYRtCH-JI2G0n0A',
             id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
             expires_in: 10
           }
@@ -124,11 +125,11 @@ describe('authenticate', () => {
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Requesting an access token with a client_secret`,
           `${MOCK_NOW.toISOString()} Verifying JWT token: ${JSON.stringify({
-            token: 'eyJhb...zvAqE'
+            token: 'eyJhb...G0n0A'
           })}`,
           `${MOCK_NOW.toISOString()} Acquiring the signing key data necessary to validate the signature`,
           `${MOCK_NOW.toISOString()} Decoding JWT token: ${JSON.stringify({
-            token: 'eyJhb...zvAqE'
+            token: 'eyJhb...G0n0A'
           })}`,
           `${MOCK_NOW.toISOString()} Decoding JWT token: ${JSON.stringify({
             token: 'eyJhb...uRrzk'
@@ -599,6 +600,11 @@ describe('authenticate', () => {
         testCase.given.request,
         sessionKeys.customer.organisationId,
         '123456789'
+      )
+      expect(session.setCustomer).toHaveBeenCalledWith(
+        testCase.given.request,
+        sessionKeys.customer.attachedToMultipleBusinesses,
+        true
       )
       expect(MOCK_COOKIE_AUTH_SET).toHaveBeenCalledWith({
         account: {
