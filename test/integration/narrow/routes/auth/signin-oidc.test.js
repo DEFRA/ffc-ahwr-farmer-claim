@@ -104,7 +104,7 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect(latestApplicationMock).toBeCalledTimes(1)
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toMatch('Login failed')
+      expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
 
     test('returns 302 and redirected to org view when authenticate successful', async () => {
