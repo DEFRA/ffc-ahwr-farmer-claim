@@ -45,6 +45,8 @@ const schema = Joi.object({
   useRedis: Joi.boolean().default(false),
   eligibilityApiUri: Joi.string().uri(),
   applicationApiUri: Joi.string().uri(),
+  callChargesUri: Joi.string().uri().default('https://www.gov.uk/call-charges'),
+  ruralPaymentsEmail: Joi.string().email().default('ruralpayments@defra.gov.uk'),
   ruralPaymentsAgency: {
     loginUri: Joi.string().uri().default('https://www.ruralpayments.service.gov.uk'),
     callChargesUri: Joi.string().uri().default('https://www.gov.uk/call-charges'),
