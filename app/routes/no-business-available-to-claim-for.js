@@ -6,8 +6,7 @@ module.exports = {
   options: {
     handler: async (request, h) => {
       return h.view('no-business-available-to-claim-for', {
-        callChargesUri: config.callChargesUri,
-        ruralPaymentsEmail: config.ruralPaymentsEmail
+        ruralPaymentsAgency: config.ruralPaymentsAgency
       })
     }
   }

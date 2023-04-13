@@ -50,7 +50,7 @@ module.exports = [{
         .view('select-your-business',
           {
             radioOptions: radios(
-              LEGEND_TEXT,
+              undefined,
               sessionKeys.selectYourBusiness.whichBusiness,
               undefined,
               RADIO_OPTIONS

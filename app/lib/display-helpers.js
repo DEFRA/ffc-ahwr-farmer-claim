@@ -11,10 +11,10 @@ function getTypeOfReviewForDisplay (claimData) {
 
 function getSpeciesEligbileNumberForDisplay (claimData) {
   return {
-    beef: '11 beef cattle or more ',
-    dairy: '11 dairy cattle or more ',
-    pigs: '51 pigs or more ',
-    sheep: '21 sheep or more'
+    beef: '11 or more cattle ',
+    dairy: '11 or more cattle ',
+    pigs: '51 or more pigs',
+    sheep: '21 or more sheep'
   }[getClaimType(claimData)]
 }
 
@@ -23,7 +23,7 @@ function getTypeOfReviewRowForDisplay (claimData) {
 }
 
 function getEligibleNumberRowForDisplay (claimData) {
-  return { key: { text: getSpeciesEligbileNumberForDisplay(claimData) }, value: { text: `${claimData.eligibleSpecies}, I have ${getSpeciesEligbileNumberForDisplay(claimData)}` } }
+  return { key: { text: getSpeciesEligbileNumberForDisplay(claimData) }, value: { text: `${claimData.eligibleSpecies}, I had ${getSpeciesEligbileNumberForDisplay(claimData)}` } }
 }
 
 function upperFirstLetter (str) {
