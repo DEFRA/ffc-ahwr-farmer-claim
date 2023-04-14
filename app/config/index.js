@@ -52,6 +52,9 @@ const schema = Joi.object({
     callChargesUri: Joi.string().uri().default('https://www.gov.uk/call-charges'),
     email: Joi.string().email().default('ruralpayments@defra.gov.uk'),
     telephone: Joi.string().default('03000 200 301')
+  },
+  wreckHttp: {
+    timeoutMilliseconds: Joi.number().default(10000)
   }
 })
 
@@ -94,6 +97,9 @@ const config = {
     callChargesUri: 'https://www.gov.uk/call-charges',
     email: 'ruralpayments@defra.gov.uk',
     telephone: '03000 200 301'
+  },
+  wreckHttp: {
+    timeoutMilliseconds: process.env.WRECK_HTTP_TIMEOUT_MILLISECONDS
   }
 }
 
