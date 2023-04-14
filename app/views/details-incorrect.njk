@@ -17,15 +17,8 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Review details incorrect</h1>
 
-    <p>If you need to correct any details about the review, contact the Rural Payments Agency:</p>
-    <ul class="govuk-list">
-      <li>Rural Payments Agency</li>
-      <li>Telephone: 03000 200 301</li>
-      <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
-      <li><a class="govuk-link" href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></li>
-    </ul>
-
-    <p class="govuk-body"><a class="govuk-link" href="https://www.gov.uk/call-charges">Find out about call charges</a>.</p>
+    <p>If you need to correct any details about the review, contact the Rural Payments Agency by email or phone.</p>
+     {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
   </div>
 </div>
 {% endblock %}

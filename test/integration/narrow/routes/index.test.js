@@ -69,7 +69,7 @@ describe('Farmer claim home page test - DEFRA ID enabled', () => {
     expect(res.statusCode).toBe(200)
     const $ = cheerio.load(res.payload)
     expect($('.govuk-heading-l').text()).toEqual(
-      'DEFRA ID PLACEHOLDER'
+      'Claim for an annual health and welfare review of your livestock'
     )
     const button = $('.govuk-main-wrapper .govuk-button')
     expect(button.attr('href')).toContain('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize')

@@ -12,10 +12,11 @@ module.exports = {
       session.clear(request)
       if (config.authConfig.defraId.enabled) {
         return h.view('defra-id/index', {
-          defraIdLogin: requestAuthorizationCodeUrl(session, request)
+          defraIdLogin: requestAuthorizationCodeUrl(session, request),
+          ruralPaymentsAgency: config.ruralPaymentsAgency
         })
       } else {
-        return h.view('index')
+        return h.view('index', { ruralPaymentsAgency: config.ruralPaymentsAgency })
       }
     }
   }

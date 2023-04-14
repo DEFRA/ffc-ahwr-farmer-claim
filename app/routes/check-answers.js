@@ -32,12 +32,12 @@ module.exports = {
           actions: { items: [{ href: '/claim/vet-visit-date', text: 'Change', visuallyHiddenText: 'change date of visit' }] }
         },
         {
-          key: { text: 'Vet name' },
+          key: { text: 'Vet\'s name' },
           value: { html: name },
           actions: { items: [{ href: '/claim/vet-name', text: 'Change', visuallyHiddenText: 'change vet name' }] }
         },
         {
-          key: { text: 'Vet RCVS' },
+          key: { text: 'Vet\'s RCVS' },
           value: { html: rcvsNumber },
           actions: { items: [{ href: '/claim/vet-rcvs', text: 'Change', visuallyHiddenText: 'change vet rcvs' }] }
         },

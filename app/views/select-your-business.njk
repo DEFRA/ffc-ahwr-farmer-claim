@@ -12,9 +12,7 @@
     <form method="POST" autocomplete="off" novalidate="novalidate">
       <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-      {{ govukInsetText({
-        text: "Select the business that’s claiming:"
-      }) }}
+      <p>Select the business that’s claiming:</p>
 
       {{ govukRadios(radioOptions.radios) }}
 
@@ -26,15 +24,7 @@
 
       {{ govukDetails({
         summaryText: "Can’t see the business you’re looking for?",
-        html: "<p>If you have a business that has applied for the review but is not listed, contact the Rural Payments Agency.</p>
-        <ul class='govuk-list'>
-          <li>Rural Payments Agency</li>
-          <li>Telephone: 03000 200 301</li>
-          <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
-          <li><a href='mailto:" + ruralPaymentsEmail + "'>" + ruralPaymentsEmail + "</a></li>
-        </ul>
-        <p class='govuk-body'>Find out about <a class='govuk-link' target='_blank' href='" + callChargesUri + "'> call charges</a></p>
-        " 
+        html: "<p>If you have a business that has applied for the review but is not listed, contact the Rural Payments Agency.</p>" + rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone})
       }) }}
     </form>
   </div>

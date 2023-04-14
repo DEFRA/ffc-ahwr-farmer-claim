@@ -45,8 +45,12 @@ const schema = Joi.object({
   useRedis: Joi.boolean().default(false),
   eligibilityApiUri: Joi.string().uri(),
   applicationApiUri: Joi.string().uri(),
-  callChargesUri: Joi.string().uri().default('https://www.gov.uk/call-charges'),
-  ruralPaymentsEmail: Joi.string().email().default('ruralpayments@defra.gov.uk')
+  ruralPaymentsAgency: {
+    loginUri: Joi.string().uri().default('https://www.ruralpayments.service.gov.uk'),
+    callChargesUri: Joi.string().uri().default('https://www.gov.uk/call-charges'),
+    email: Joi.string().email().default('ruralpayments@defra.gov.uk'),
+    telephone: Joi.string().default('03000 200 301')
+  }
 })
 
 const config = {
@@ -83,8 +87,12 @@ const config = {
   useRedis: process.env.NODE_ENV !== 'test',
   eligibilityApiUri: process.env.ELIGIBILITY_API_URI,
   applicationApiUri: process.env.APPLICATION_API_URI,
-  callChargesUri: 'https://www.gov.uk/call-charges',
-  ruralPaymentsEmail: 'ruralpayments@defra.gov.uk'
+  ruralPaymentsAgency: {
+    loginUri: 'https://www.ruralpayments.service.gov.uk',
+    callChargesUri: 'https://www.gov.uk/call-charges',
+    email: 'ruralpayments@defra.gov.uk',
+    telephone: '03000 200 301'
+  }
 }
 
 const result = schema.validate(config, {

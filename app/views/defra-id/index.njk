@@ -5,9 +5,10 @@
 {% block content %}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l">DEFRA ID PLACEHOLDER</h1>
+    <h1 class="govuk-heading-l">Claim for an annual health and welfare review of your livestock</h1>
 
-    <p>Use this service to claim funding for an annual health and welfare review.</p>
+    <p>Use this service to claim for an annual health and welfare review with your vet.</p>
+    <p>If you have multiple businesses that are registered to your rural payments account, you'll be asked which one you're claiming for.</p>
     <p>Claiming takes about 5 minutes.</p>
 
     {{ govukButton({
@@ -31,18 +32,11 @@
 
     <h2 class="govuk-heading-m">Get help with your claim</h2>
 
-    <p>If you cannot claim online or have a question about your claim, contact the Rural Payments Agency.</p>
+    <p>If you cannot claim online or have a question about your claim, contact the Rural Payments Agency by email or phone..</p>
 
     <p>If you have your agreement number, have it with you when you call or include it in your email.</p>
 
-    <ul class="govuk-list">
-      <li>Rural Payments Agency</li>
-      <li>Telephone: 03000 200 301</li>
-      <li>Monday to Friday, 8:30am to 5pm (except public holidays)</li>
-      <li><a class="govuk-link" href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></li>
-    </ul>
-
-    <p class="govuk-body"><a class="govuk-link" href="https://www.gov.uk/call-charges">Find out about call charges</a>.</p>
+     {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
   </div>
 </div>
 {% endblock %}
