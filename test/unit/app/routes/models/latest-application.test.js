@@ -1,3 +1,5 @@
+const { NoApplicationFound, ClaimHasAlreadyBeenMade } = require('../../../../../app/exceptions')
+
 describe('Latest Applications Tests', () => {
   let applicationApiMock
   let latestApplication
@@ -82,7 +84,7 @@ describe('Latest Applications Tests', () => {
         sbi: 111111111
       },
       when: {
-        latestApplications: [[
+        latestApplications: [
           {
             claimed: false,
             createdAt: '2023-01-17 14:55:20',
@@ -213,10 +215,35 @@ describe('Latest Applications Tests', () => {
             updatedAt: '2023-01-17 13:55:20',
             updatedBy: 'David Jones'
           }
-        ]]
+        ]
       },
       expect: {
-        latestApplication: null
+        latestApplication: {
+          claimed: false,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 1,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }
       }
     },
     {
@@ -228,11 +255,11 @@ describe('Latest Applications Tests', () => {
         latestApplications: []
       },
       expect: {
-        latestApplication: null
+        error: new NoApplicationFound('No application found for SBI - 111111111')
       }
     },
     {
-      toString: () => 'Not agreed application returns null',
+      toString: () => 'NOT_AGREED application found',
       given: {
         sbi: 111111111
       },
@@ -265,12 +292,55 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        latestApplication: null
+        error: new NoApplicationFound('No claimable application found for SBI - 111111111')
+      }
+    },
+    {
+      toString: () => 'READY_TO_PAY application found',
+      given: {
+        sbi: 111111111
+      },
+      when: {
+        latestApplications: [{
+          claimed: true,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 9,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }]
+      },
+      expect: {
+        error: new ClaimHasAlreadyBeenMade('Claim has already been made for SBI - 111111111')
       }
     }
   ])('%s', async (testCase) => {
     applicationApiMock.getLatestApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
-    const result = await latestApplication(testCase.given.sbi)
-    expect(result).toEqual(testCase.expect.latestApplication)
+    if (testCase.expect.error) {
+      await expect(
+        latestApplication(testCase.given.sbi)
+      ).rejects.toEqual(testCase.expect.error)
+    } else {
+      const result = await latestApplication(testCase.given.sbi)
+      expect(result).toEqual(testCase.expect.latestApplication)
+    }
   })
 })
