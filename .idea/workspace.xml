@@ -4,159 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment="create new acceptance test for claims">
-      <change afterPath="$PROJECT_DIR$/test/acceptance/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/0059f42a-cf4a-4d4d-85cf-4f60b04d6ace-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/017de758-8fd5-4902-b3e1-d5a5f22b4c1d-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/02215d78-1965-40b6-a1ca-ffddb0ddfbff-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/0349d599-91da-4680-8036-781bd4be4a42-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/043cc0de-378a-4cbc-8912-518f59da0502-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/066466f5-a7a3-4314-b463-967436fe97d4-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/09ac5deb-fbb1-41b4-8c42-f9ce52fea2f8-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/0a2a36aa-f7cb-4025-9f91-b965affc12ed-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/0ce0a433-9cd1-48bb-860e-f68415671fd2-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/0f1c8eb1-d0d1-4fd6-af8d-71abe56a04c7-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/10aee67f-f6cf-424b-b794-06dea95f276d-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/14e7cf69-a245-4bab-92cf-e7658c046c2d-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/1750e6e6-2898-47e8-844a-8a6a76981ec0-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/17a779d4-8f49-4bf0-8226-cd550b078f27-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/19c7fc98-17f7-4af2-89e1-e396b1788bd3-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/2019a51a-1081-48fa-ba80-9ce65a8e6be6-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/2b1ee18a-4758-41d8-acea-13bda6cbc7eb-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/2d9192a3-644b-416a-803d-245206ee81cc-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/2e4d5fbf-c77c-4478-b0a1-2056f7c4230d-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/317cdb35-2776-4320-8265-fb096ef2563d-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/3314da51-d6e1-4b8f-8f9b-eaf99f97b45d-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/39fddf7f-3c66-40c6-8f32-d5d9d1ce43a4-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/40f826f2-bacc-407a-bbe9-6ad10aa32f35-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/460119d3-1761-4eaa-b26c-26ada5482440-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/46682138-37a9-4f77-94b1-8eb8afd771bf-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/47b4790b-2f6c-4ef8-939c-eba70d018c3a-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/4bd84678-58ab-46c0-b762-52ba348104a0-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/4be9ccef-9a4b-4824-ab65-7a4d27d5644e-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/57974929-e857-4f4c-b3f8-b9fbd0957cbe-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/58629db1-d6a6-4875-9b4e-5c05a5ac3f8d-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/58bd6c2b-49f3-4103-9ddf-981504369c45-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/5ce96c33-bbd4-4519-9fac-4c5a84f61dbb-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/64f9c378-4742-4879-8ce9-d0b9813bc60a-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/65394ea0-619e-4cc7-9383-4ab4445d661c-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/661ad6e6-2e54-438f-83ca-c2274871b71a-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/6cf08638-b1e7-40f9-8df0-2e91130eae90-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/77988bcf-0b4e-45f7-9f7a-6b866facd81a-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/784d198c-ee65-4097-9be2-589b9f25f16e-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/7887355a-3e10-4d6c-84eb-96ce34533aef-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/7894f201-70bc-4e9d-896b-b939260ecdd5-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/7af68a58-0a01-4bd5-94c3-a1c2dd39e920-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/7bb06079-d197-474e-a48e-2ae691d02934-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/7f6bea04-5214-45a2-88d2-5c7aeee7f167-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/81763c9a-6138-4711-910c-eefee937c849-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/8465a730-b1d3-4d29-9ffc-3c60486aa7cb-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/86267ef5-9f68-4c1b-b4e3-f8959961bfd7-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/8fc616bc-3bca-45c6-a8b5-1b2f7f597eb8-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/8ffd3504-046e-4a00-a1f5-b47331a59f10-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/9066230a-cffb-4445-9afc-18081270c50d-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/92d3a995-bb02-4b70-8105-1970b8b8439e-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/95d36761-2e9e-4616-8207-7d94c406ced9-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/95e326ea-2cc6-4f20-9847-aad43b370bda-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/9a7269c0-5719-4a9e-97b7-cebc6d5a4a2b-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/a2dead63-777a-47f9-a854-da57bac00ed5-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/a4d2a758-4645-4ef8-bd63-5bac6fcd8121-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/a65cc040-f404-4274-a1c7-944a35349baf-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/a91a2301-9a34-4da9-b6f4-b63d1525d78d-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/ace99faf-18b0-4f3d-9ea5-fc80b74963a9-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/aebba36f-8efa-44e8-ade4-2bbf90ded9a8-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/b0fb6dae-7759-46d4-bf72-00c9bde4a6d6-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/b9099595-aa67-46b5-a255-7aeb92ed279a-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/ba1100ce-5f72-48e3-8300-790dfaae1407-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/ba280e73-a6d1-43d1-bad1-78245e9a3012-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/ba53ac96-055e-4abd-ae47-5b12a2a83649-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/bddeed95-c077-4470-aa27-c9b67ccdf26b-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/c0db6e8b-51ed-4dad-ae92-d297fb8b3437-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/c575a63c-bc6e-4bc2-9a39-1357a704cec2-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/c74b4e6d-0036-44ac-b8db-7ea2123b59ac-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/cfcfacee-cc06-4686-899b-a04b2740b3a9-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/d0f02910-f6e6-48ef-b514-6909e1afb56f-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/d4f09147-284e-47df-ad65-f63ec619551e-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/db3f205a-9852-41c7-a885-39436d6b7a24-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/e4735bf6-c1a0-4267-9533-587af53e12c6-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/e8e7db6c-0a17-4976-b297-e4aa28f290fa-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/e90ec9bc-dd84-4b6d-a10c-7c4ab56fbb8f-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/ec6ab176-4c58-4e24-8431-7ec5cb238030-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/f0275dac-a794-4e85-976d-d1bebbeb3d98-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/f1a5c798-ae23-40d7-8f88-4badb96283cf-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/f6332d7b-13d5-43b6-8112-c43058157853-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/f6745a82-9ce9-4af5-9d4c-d8d0f036d8e9-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/f79a3cd9-c025-4265-a49f-8d1d387a7b5a-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/fadcc119-42fe-4b2a-af8e-aa8f5db77b69-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/fc4d2664-6315-4f1d-bd45-893bb21de76b-testsuite.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/fd3d2f56-5be4-4d79-aeaf-c7d7322d7fbd-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/fd3fdf98-ace3-4ed0-b11b-6dbd22f8e86a-attachment.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/fe43b8dc-a047-45ca-8728-2d8c73516701-attachment.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/browserstack.err" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/docker-compose.debug.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/docker-compose.override.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/docker-compose.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/features/startPage.feature" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/page-objects/common-actions.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/page-objects/start-page.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816458376018037.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816473498321045.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816494197204639.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816495225282686.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816500248359329.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816509434719883.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816509864655076.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816514075257607.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_1681651435664135.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816514815016475.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816549419061875.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_1681655041548279.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816552122049954.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816554074214043.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816657312402441.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816658671437673.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816659137601504.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16816659883641587.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817048452601382.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817049941533958.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_1681705135664103.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817052118432239.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817053181735293.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817054768155051.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817055015754563.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817055668632751.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/steps/startPage_step.js.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/acceptance/wdio.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment="create new acceptance test for claim journey">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/features/farmer-claim/farmer-claim.feature" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/features/login.feature" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/features/mandatory-pages/mandatory-pages.feature" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/declaration.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer-login.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/check-answers.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/claim-complete.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/farmer-claim.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/farmer-login.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/submit-claim.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/urn-result.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/vet-name.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/vet-rcvs.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/vet-visit-date.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/farmer/visit-review.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/landing-page.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/page.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/pages.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/terms-page.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/steps/farmer-steps.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/steps/given.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/steps/then.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/steps/when.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/wdio.bs.conf.js" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/wdio.conf.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/wdio.bs.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/acceptance/wdio.local.conf.js" beforeDir="false" />
     </list>
     <list id="20fb568c-a91b-4992-929f-0c19f5697436" name="Changes by justinemina" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -261,7 +110,7 @@
       <workItem from="1668170500800" duration="1143000" />
       <workItem from="1670683483553" duration="174000" />
       <workItem from="1681673999890" duration="730000" />
-      <workItem from="1681704689559" duration="940000" />
+      <workItem from="1681704689559" duration="4985000" />
     </task>
     <task id="LOCAL-00001" summary="added Test token to docker.compose">
       <created>1667830594239</created>
@@ -277,7 +126,14 @@
       <option name="project" value="LOCAL" />
       <updated>1667909541663</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="create new acceptance test for claim journey">
+      <created>1681706092241</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1681706092241</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -303,6 +159,7 @@
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="added Test token to docker.compose" />
     <MESSAGE value="create new acceptance test for claims" />
-    <option name="LAST_COMMIT_MESSAGE" value="create new acceptance test for claims" />
+    <MESSAGE value="create new acceptance test for claim journey" />
+    <option name="LAST_COMMIT_MESSAGE" value="create new acceptance test for claim journey" />
   </component>
 </project>
