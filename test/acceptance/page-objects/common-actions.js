@@ -7,8 +7,6 @@ class CommonActions {
   async open (path) {
     const url = process.env.TEST_ENVIRONMENT_ROOT_URL + path
     await browser.url(url)
-    console.log('url is this', url)
-
   }
 
   async clickOn (element) {

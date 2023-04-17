@@ -4,7 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+<<<<<<< HEAD
     <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment=" version increment @wip" />
+=======
+    <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment=" version increment @wip">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/features/startPage.feature" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/features/startPage.feature" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/page-objects/common-actions.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/page-objects/common-actions.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_1681725177078584.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/steps/startPage_step.js.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/steps/startPage_step.js.js" afterDir="false" />
+    </list>
+>>>>>>> 66fe879 (code refactor)
     <list id="20fb568c-a91b-4992-929f-0c19f5697436" name="Changes by justinemina" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +118,11 @@
       <workItem from="1668170500800" duration="1143000" />
       <workItem from="1670683483553" duration="174000" />
       <workItem from="1681673999890" duration="730000" />
+<<<<<<< HEAD
       <workItem from="1681704689559" duration="7842000" />
+=======
+      <workItem from="1681704689559" duration="12234000" />
+>>>>>>> 66fe879 (code refactor)
     </task>
     <task id="LOCAL-00001" summary="added Test token to docker.compose">
       <created>1667830594239</created>
@@ -159,7 +173,25 @@
       <option name="project" value="LOCAL" />
       <updated>1681724705867</updated>
     </task>
+<<<<<<< HEAD
     <option name="localTasksCounter" value="8" />
+=======
+    <task id="LOCAL-00008" summary=" version increment @wip">
+      <created>1681724785948</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1681724785948</updated>
+    </task>
+    <task id="LOCAL-00009" summary=" version increment @wip">
+      <created>1681725755160</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1681725755160</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
+>>>>>>> 66fe879 (code refactor)
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
