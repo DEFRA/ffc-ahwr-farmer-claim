@@ -11,6 +11,7 @@ npm-debug.log
 helm/**/*.lock
 *.tgz
 .env
+.env.snd
 *.log
 
 # Editor stuff
