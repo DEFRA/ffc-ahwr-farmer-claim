@@ -1,7 +1,7 @@
 class NoApplicationFound extends Error {
   constructor (message, organisation) {
     super(message)
-    this.name = 'NoAgreementFoundForThisBusiness'
+    this.name = 'NoApplicationFound'
     this.organisation = organisation
   }
 }

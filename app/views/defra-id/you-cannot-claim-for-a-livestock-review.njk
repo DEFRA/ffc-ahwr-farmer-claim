@@ -29,7 +29,7 @@
       </ul>
     {% endif %}
 
-    {% if (error.name === 'NoAgreementFoundForThisBusiness') %}
+    {% if (error.name === 'NoApplicationFound') %}
       <p class="govuk-body">{{ error.organisation.name }} - SBI {{ error.organisation.sbi }} has not applied for an annual health and welfare review of livestock.</p>
     {% endif %}
 
