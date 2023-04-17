@@ -4,8 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment="create new acceptance test for claim journey">
+    <list default="true" id="4e140ddd-912d-4d23-8d9b-01a8109a389d" name="Changes" comment="Change to zsh permission">
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/2d5bbefb-8816-4cae-be0c-f64ac19046ba-attachment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/4afce951-7e31-4b4d-a63e-8c7a9413d621-attachment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/74c15011-6cd8-45ed-a878-1debdf44ded6-testsuite.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/933d29d0-5b19-4dcc-9b4a-7788d45d09c8-attachment.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/a8126e85-4874-4c8b-9477-2c69bcd5cc72-attachment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/ab3f0672-9851-4088-bbb7-0c5be02a79fd-attachment.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/adc80eab-71f9-49cc-afb3-cd07af4385a0-testsuite.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/e5ad534a-ccd2-45d8-a94c-19faaadfebaa-attachment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/e81e6884-1196-4563-b147-cb7c65c8600e-attachment.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/allure-results/f2ab224f-b905-44b9-9b07-c791a7c659f0-testsuite.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_1681724143948189.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_168172416920094.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/acceptance/reporter/json/claim-journey-landing-page_16817242171676091.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/acceptance" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/acceptance" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/acceptance/steps/startPage_step.js.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/acceptance/steps/startPage_step.js.js" afterDir="false" />
     </list>
     <list id="20fb568c-a91b-4992-929f-0c19f5697436" name="Changes by justinemina" comment="" />
     <option name="SHOW_DIALOG" value="false" />
@@ -110,7 +125,7 @@
       <workItem from="1668170500800" duration="1143000" />
       <workItem from="1670683483553" duration="174000" />
       <workItem from="1681673999890" duration="730000" />
-      <workItem from="1681704689559" duration="4985000" />
+      <workItem from="1681704689559" duration="7491000" />
     </task>
     <task id="LOCAL-00001" summary="added Test token to docker.compose">
       <created>1667830594239</created>
@@ -133,7 +148,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681706092241</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Change to zsh permission">
+      <created>1681722180418</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1681722180418</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,6 +182,7 @@
     <MESSAGE value="added Test token to docker.compose" />
     <MESSAGE value="create new acceptance test for claims" />
     <MESSAGE value="create new acceptance test for claim journey" />
-    <option name="LAST_COMMIT_MESSAGE" value="create new acceptance test for claim journey" />
+    <MESSAGE value="Change to zsh permission" />
+    <option name="LAST_COMMIT_MESSAGE" value="Change to zsh permission" />
   </component>
 </project>
