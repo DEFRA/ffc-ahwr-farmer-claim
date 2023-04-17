@@ -17,8 +17,8 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">You cannot claim for a livestock review for this business</h1>
 
-    {% if permissionError %}
-      <p class="govuk-body">You do not have the required permission to act for {{ organisation.name }} - SBI {{ organisation.sbi }}.</p>
+    {% if (error.name === 'DoNotHaveRequiredPermission') %}
+      <p class="govuk-body">You do not have the required permission to act for {{ error.organisation.name }} - SBI {{ error.organisation.sbi }}.</p>
     
       <h2 class="govuk-heading-m">What to do next</h2>
 
@@ -29,12 +29,12 @@
       </ul>
     {% endif %}
 
-    {% if noAgreementFoundForThisBusiness %}
-      <p class="govuk-body">{{ organisation.name }} - SBI {{ organisation.sbi }} has not applied for an annual health and welfare review of livestock.</p>
+    {% if (error.name === 'NoAgreementFoundForThisBusiness') %}
+      <p class="govuk-body">{{ error.organisation.name }} - SBI {{ error.organisation.sbi }} has not applied for an annual health and welfare review of livestock.</p>
     {% endif %}
 
-    {% if claimHasAlreadyBeenMade %}
-      <p class="govuk-body">{{ organisation.name }} - SBI {{ organisation.sbi }} has already claimed for an annual health and welfare review of livestock.</p>
+    {% if (error.name === 'ClaimHasAlreadyBeenMade') %}
+      <p class="govuk-body">{{ error.organisation.name }} - SBI {{ error.organisation.sbi }} has already claimed for an annual health and welfare review of livestock.</p>
     
       <h2 class="govuk-heading-m">What to do next</h2>
     {% endif %}

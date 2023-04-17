@@ -1,7 +1,8 @@
 class ClaimHasAlreadyBeenMade extends Error {
-  constructor (message) {
+  constructor (message, organisation) {
     super(message)
     this.name = 'ClaimHasAlreadyBeenMade'
+    this.organisation = organisation
   }
 }
 

@@ -5,7 +5,8 @@ const session = require('../../session')
 const sessionKeys = require('../../session/keys')
 const latestApplicationForSbi = require('../models/latest-application')
 const { farmerClaim } = require('../../constants/user-types')
-const { NoAgreementFoundForThisBusiness } = require('../../exceptions')
+const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
+const { NoApplicationFound, DoNotHaveRequiredPermission, ClaimHasAlreadyBeenMade } = require('../../exceptions')
 
 module.exports = [{
   method: 'GET',
@@ -28,43 +29,56 @@ module.exports = [{
     },
     handler: async (request, h) => {
       try {
-        const accessToken = await auth.authenticate(request, session)
-        console.log(`Temporaily logging access token - ${accessToken}`)
-        const latestApplication = await latestApplicationForSbi('113333333') // get actual SBI from claims
-        if (!latestApplication) {
-          console.log('No claimable application found for SBI - dummy SBI')
-          throw new NoAgreementFoundForThisBusiness()
+        await auth.authenticate(request, session)
+
+        const apimAccessToken = await auth.getClientCredentials(request)
+        const personSummary = await getPersonSummary(request, apimAccessToken)
+        const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
+
+        if (!organisationSummary.organisationPermission) {
+          throw new DoNotHaveRequiredPermission(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)
         }
-        // todo implement RPA api call for permissions
+        const latestApplication = await latestApplicationForSbi(
+          organisationSummary.organisation.sbi.toString(),
+          organisationSummary.organisation.name
+        )
+        console.log(`${new Date().toISOString()} Claimable application found: ${JSON.stringify({
+          sbi: latestApplication.data.organisation.sbi
+        })}`)
+        Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
+        session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
+        session.setClaim(
+          request,
+          sessionKeys.farmerApplyData.organisation,
+          {
+            sbi: organisationSummary.organisation.sbi.toString(),
+            farmerName: getPersonName(personSummary),
+            name: organisationSummary.organisation.name,
+            email: organisationSummary.organisation.email ? organisationSummary.organisation.email : personSummary.email,
+            address: getOrganisationAddress(organisationSummary.organisation.address)
+          }
+        )
+        auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
         // todo implement RPA api call for CPH check
-        setAuthenticationState(latestApplication)
         return h.redirect('/claim/visit-review')
       } catch (error) {
-        if (error instanceof NoAgreementFoundForThisBusiness) {
-          return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
-            backLink: auth.requestAuthorizationCodeUrl(session, request),
-            noAgreementFoundForThisBusiness: error instanceof NoAgreementFoundForThisBusiness,
-            // todo change
-            organisation: {
-              sbi: '123456789',
-              name: 'Business Name'
-            },
-            hasMultipleBusineses: session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses),
-            ruralPaymentsAgency: config.ruralPaymentsAgency
-          }).code(400).takeover()
+        console.error(error)
+        switch (true) {
+          case error instanceof DoNotHaveRequiredPermission:
+          case error instanceof NoApplicationFound:
+          case error instanceof ClaimHasAlreadyBeenMade:
+            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
+              error,
+              hasMultipleBusineses: session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses),
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              backLink: auth.requestAuthorizationCodeUrl(session, request)
+            }).code(400).takeover()
+          default:
+            return h.view('verify-login-failed', {
+              backLink: auth.requestAuthorizationCodeUrl(session, request)
+            }).code(400).takeover()
         }
-        console.log(`Error when handling DEFRA ID redirect ${error.message}.`)
-        return h.view('verify-login-failed', {
-          backLink: auth.requestAuthorizationCodeUrl(session, request)
-        }).code(400).takeover()
-      }
-
-      function setAuthenticationState (latestApplication) {
-        session.setClaim(request, sessionKeys.farmerApplyData.organisation, latestApplication.data.organisation)
-        Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
-        auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
       }
     }
   }
-}
-]
+}]
