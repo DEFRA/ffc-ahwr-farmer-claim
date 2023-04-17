@@ -3,8 +3,8 @@ const StartPage = require('../page-objects/start-page')
 const startPage = new StartPage()
 
 Given(/^user is on the landing page$/,async function () {
-  await startPage.getHomepage()
-  //await browser.url('https://ffc-ahwr-farmer.ffc.snd.azure.defra.cloud/claim')
+  //await startPage.getHomepage()
+  await browser.url('https://ffc-ahwr-farmer.ffc.snd.azure.defra.cloud/claim')
 });
 When(/^user check the page title$/, async function () {
  await startPage.claimPageTitle()
