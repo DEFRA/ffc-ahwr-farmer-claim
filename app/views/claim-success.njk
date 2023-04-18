@@ -17,6 +17,13 @@
     <p>Contact the RPA by phone or email if you need to change the details of your claim - for example if you've entered the vet's Royal College of Veterinary Surgeons number incorrectly.</p>
     <p>Have your agreement number with you when you call or include it in your email.</p>
     {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+    <br/>
+     <p>
+      <a class='govuk-link' target='_blank' href={{ claimSurveyUri }}>
+        What did you think of this service?
+      </a>
+      (takes 30 seconds)
+    </p>
   </div>
 </div>
 {% endblock %}
