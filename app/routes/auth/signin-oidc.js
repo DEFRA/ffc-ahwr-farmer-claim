@@ -59,7 +59,6 @@ module.exports = [{
           }
         )
         auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
-        // todo implement RPA api call for CPH check
         return h.redirect('/claim/visit-review')
       } catch (error) {
         console.error(error)

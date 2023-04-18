@@ -25,8 +25,6 @@ const authenticate = async (request) => {
   session.setCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses, typeof accessToken.enrolmentCount !== 'undefined' && accessToken.enrolmentCount > 1)
 
   cookieAuth.set(request, accessToken)
-
-  return accessToken
 }
 
 module.exports = authenticate
