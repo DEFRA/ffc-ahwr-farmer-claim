@@ -41,6 +41,12 @@ async function createServer () {
   }) // 15 mins
   server.app.magiclinkCache = magiclinkCache
 
+  const clientCredentialCache = server.cache({
+    expiresIn: 1000 * 60 * 60 * 24,
+    segment: 'clientCredentials'
+  }) // 24 hours
+  server.app.clientCredentialCache = clientCredentialCache
+
   const submissionCrumbCache = server.cache({
     expiresIn: 1000 * 60 * 60 * 24,
     segment: 'submissionCrumbs'

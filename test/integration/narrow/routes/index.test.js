@@ -53,6 +53,9 @@ describe('Farmer claim home page test - DEFRA ID enabled', () => {
           clientId: 'dummy_client_id',
           serviceId: 'dummy_service_id',
           scope: 'openid dummy_client_id offline_access'
+        },
+        ruralPaymentsAgency: {
+          hostname: 'rpaHostname'
         }
       }
     }))

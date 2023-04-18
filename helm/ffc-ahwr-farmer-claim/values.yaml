@@ -62,6 +62,16 @@ container:
   defraIdClientSecret:
   defraIdServiceId:
   defraIdPolicy:
+  rpaHostname:
+  rpaGetPersonSummaryUrl:
+  rpaGetOrganisationPermissionsUrl:
+  rpaGetOrganisationUrl:
+  apimOcpSubscriptionKey:
+  apimHostname:
+  apimOAuthPath:
+  apimClientId:
+  apimClientSecret:
+  apimScope:
   
 ingress:
   class: nginx
@@ -87,3 +97,6 @@ readinessProbe:
 service:
   port: 80
   type: ClusterIP
+
+wreckHttp:
+  timeoutMilliseconds: 10000

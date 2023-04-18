@@ -5,5 +5,6 @@ module.exports = {
   authenticate: require('./authenticate'),
   setAuthCookie: cookieAuth.setAuthCookie,
   clearAuthCookie: cookieAuth.clear,
-  lookupToken: require('./magic-link-cache/lookupToken')
+  lookupToken: require('./magic-link-cache/lookupToken'),
+  getClientCredentials: require('./client-credential-grant/client-credential-grant')
 }

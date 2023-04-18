@@ -5,6 +5,12 @@ const authMock = require('../../../../../app/auth')
 jest.mock('../../../../../app/auth')
 const latestApplicationMock = require('../../../../../app/routes/models/latest-application')
 jest.mock('../../../../../app/routes/models/latest-application')
+const personMock = require('../../../../../app/api-requests/rpa-api/person')
+jest.mock('../../../../../app/api-requests/rpa-api/person')
+const organisationMock = require('../../../../../app/api-requests/rpa-api/organisation')
+jest.mock('../../../../../app/api-requests/rpa-api/organisation')
+
+const { NoApplicationFound } = require('../../../../../app/exceptions')
 
 describe('FarmerApply defra ID redirection test', () => {
   jest.mock('../../../../../app/config', () => ({
@@ -12,6 +18,9 @@ describe('FarmerApply defra ID redirection test', () => {
     authConfig: {
       defraId: {
         enabled: true
+      },
+      ruralPaymentsAgency: {
+        hostname: 'rpaHostname'
       }
     }
   }))
@@ -96,15 +105,46 @@ describe('FarmerApply defra ID redirection test', () => {
       }
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      latestApplicationMock.mockResolvedValueOnce(null)
+      authMock.getClientCredentials.mockResolvedValueOnce('Bearer 2323')
+      personMock.getPersonSummary.mockResolvedValueOnce({
+        firstName: 'Bill',
+        middleName: null,
+        lastName: 'Smith',
+        email: 'billsmith@testemail.com',
+        id: 1234567,
+        customerReferenceNumber: '1103452436'
+      })
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+        organisation: {
+          id: 7654321,
+          name: 'Mrs Gill Black',
+          sbi: 101122201,
+          address: {
+            address1: 'The Test House',
+            address2: 'Test road',
+            address3: 'Wicklewood',
+            buildingNumberRange: '11',
+            buildingName: 'TestHouse',
+            street: 'Test ROAD',
+            city: 'Test City',
+            postalCode: 'TS1 1TS',
+            country: 'United Kingdom',
+            dependentLocality: 'Test Local'
+          },
+          email: 'org1@testemail.com'
+        },
+        organisationPermission: true
+      })
+      latestApplicationMock.mockRejectedValueOnce(new NoApplicationFound('No application found for SBI - 101122201'))
 
       const res = await global.__SERVER__.inject(options)
+
       expect(res.statusCode).toBe(400)
       expect(authMock.authenticate).toBeCalledTimes(1)
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect(latestApplicationMock).toBeCalledTimes(1)
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toMatch('Login failed')
+      expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
 
     test('returns 302 and redirected to org view when authenticate successful', async () => {
@@ -115,6 +155,36 @@ describe('FarmerApply defra ID redirection test', () => {
       }
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      authMock.getClientCredentials.mockResolvedValueOnce('Bearer 2323')
+      personMock.getPersonSummary.mockResolvedValueOnce({
+        firstName: 'Bill',
+        middleName: null,
+        lastName: 'Smith',
+        email: 'billsmith@testemail.com',
+        id: 1234567,
+        customerReferenceNumber: '1103452436'
+      })
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+        organisation: {
+          id: 7654321,
+          name: 'Mrs Gill Black',
+          sbi: 101122201,
+          address: {
+            address1: 'The Test House',
+            address2: 'Test road',
+            address3: 'Wicklewood',
+            buildingNumberRange: '11',
+            buildingName: 'TestHouse',
+            street: 'Test ROAD',
+            city: 'Test City',
+            postalCode: 'TS1 1TS',
+            country: 'United Kingdom',
+            dependentLocality: 'Test Local'
+          },
+          email: 'org1@testemail.com'
+        },
+        organisationPermission: true
+      })
       latestApplicationMock.mockResolvedValueOnce(
         {
           claimed: false,
@@ -145,6 +215,7 @@ describe('FarmerApply defra ID redirection test', () => {
       )
 
       const res = await global.__SERVER__.inject(options)
+
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/visit-review')
       expect(latestApplicationMock).toBeCalledTimes(1)

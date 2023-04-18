@@ -38,6 +38,7 @@ module.exports = {
   customer: {
     id: 'id',
     crn: 'crn',
-    organisationId: 'organisationId'
+    organisationId: 'organisationId',
+    attachedToMultipleBusinesses: 'attachedToMultipleBusinesses'
   }
 }

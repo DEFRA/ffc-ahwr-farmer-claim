@@ -9,4 +9,8 @@ ignore:
     - '@hapi/yar > @hapi/statehood':
         reason: None given
         expires: '2022-09-14T10:50:15.269Z'
+  'SNYK-JS-XML2JS-5414874':
+    - '* > xml2js':
+      reason: 'No fix available'
+      expires: '2022-09-14T10:50:15.269Z'
 patch: {}
