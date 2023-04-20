@@ -3,7 +3,7 @@ const { lookupToken, setAuthCookie } = require('../../auth')
 const { sendMonitoringEvent } = require('../../event')
 
 function isRequestInvalid (cachedEmail, email) {
-  return !cachedEmail || email !== cachedEmail
+  return typeof cachedEmail === 'undefined' || email !== cachedEmail
 }
 
 const getIp = (request) => {
@@ -22,7 +22,11 @@ module.exports = [{
         token: Joi.string().uuid().required()
       }),
       failAction: async (request, h, error) => {
-        console.error(error)
+        console.log(`Request to /claim/verify-login failed: ${JSON.stringify({
+          id: request.yar.id,
+          query: request.query,
+          errorMessage: error.message
+        })}`)
         sendMonitoringEvent(request.yar.id, error.details[0].message, '', getIp(request))
         return h.view('verify-login-failed', {
           backLink: 'claim/login'
@@ -30,21 +34,22 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
+      console.log(`Request to /claim/verify-login: ${JSON.stringify({
+        id: request.yar.id,
+        query: request.query
+      })}`)
+
       const { email, token } = request.query
-      const { magiclinkCache } = request.server.app
 
       const { email: cachedEmail, redirectTo, userType } = await lookupToken(request, token)
       if (isRequestInvalid(cachedEmail, email)) {
         sendMonitoringEvent(request.yar.id, 'Invalid token', email, getIp(request))
         return h.view('verify-login-failed', {
           backLink: 'claim/login'
-        }).code(400)
+        }).code(400).takeover()
       }
 
       setAuthCookie(request, email, userType)
-
-      await magiclinkCache.drop(email)
-      await magiclinkCache.drop(token)
 
       return h.redirect(redirectTo)
     }
