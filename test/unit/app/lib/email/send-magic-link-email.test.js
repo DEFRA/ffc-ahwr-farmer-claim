@@ -20,6 +20,8 @@ const requestGetMock = {
       }
 }
 
+const MOCK_SERVICE_URI = 'http://localhost:3004'
+
 describe('Send Magic Link test', () => {
   const email = 'test@unit-test.com'
   const sendEmailResponse = true
@@ -30,7 +32,7 @@ describe('Send Magic Link test', () => {
     jest.mock('../../../../../app/config', () => ({
       ...jest.requireActual('../../../../../app/config'),
       serviceName: 'Annual health and welfare review of livestock',
-      serviceUri: 'http://localhost:3004'
+      serviceUri: MOCK_SERVICE_URI
     }))
     sendMagicLinkEmail = require('../../../../../app/lib/email/send-magic-link-email')
 
@@ -59,7 +61,7 @@ describe('Send Magic Link test', () => {
     expect(cacheData[token]).toEqual({ email, redirectTo: `select-your-business?businessEmail=${email}`, userType: farmerClaim })
     expect(sendEmail).toHaveBeenCalledTimes(1)
     expect(sendEmail).toHaveBeenCalledWith(expect.anything(), email, {
-      personalisation: { magiclink: `http://localhost:3004/verify-login?token=${token}&email=${email}` },
+      personalisation: { magiclink: `${MOCK_SERVICE_URI}/verify-login?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}` },
       reference: token
     })
   })
@@ -99,7 +101,7 @@ describe('Send Magic Link test', () => {
       expect(cacheData[token]).toEqual({ email, redirectTo: 'select-your-business?businessEmail=test@unit-test.com', userType: farmerClaim })
       expect(sendEmail).toHaveBeenCalledTimes(1)
       expect(sendEmail).toHaveBeenCalledWith(expect.anything(), email, {
-        personalisation: { magiclink: `http://localhost:3004/verify-login?token=${token}&email=${email}` },
+        personalisation: { magiclink: `${MOCK_SERVICE_URI}/verify-login?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}` },
         reference: token
       })
     })
