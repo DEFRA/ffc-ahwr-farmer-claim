@@ -62,6 +62,7 @@ container:
   defraIdClientSecret:
   defraIdServiceId:
   defraIdPolicy:
+  defraIdJwtIssuerId:
   rpaHostname:
   rpaGetPersonSummaryUrl:
   rpaGetOrganisationPermissionsUrl:
