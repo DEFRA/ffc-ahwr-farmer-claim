@@ -13,7 +13,7 @@ services:
 
   zap-baseline-scan:
     image: owasp/zap2docker-stable:2.11.1
-    command: zap-baseline.py -t http://ffc-ahwr-farmer-claim:${PORT:-3000}/claim -c config/zap.conf -r test-output/zap-report.html -a -d -I
+    command: zap-baseline.py -t http://ffc-ahwr-farmer-claim:${PORT:-3000} -c config/zap.conf -r test-output/zap-report.html -a -d -I
     depends_on:
       - ffc-ahwr-farmer-claim
     volumes:
