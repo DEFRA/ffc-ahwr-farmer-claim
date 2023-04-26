@@ -8,6 +8,8 @@ const EMAIL = '#email'
 const SUBMIT = '#submit'
 const ERROR_MESSAGE = '#email-error'
 const DISPLAYED_ERROR = 'Enter an email address in the correct format'
+const SENT_EMAIL = '.govuk-heading-l'
+const SUCCESS_MESSAGE = 'Check your email'
 
 class StartPageActions extends CommonActions {
 
@@ -29,6 +31,8 @@ class StartPageActions extends CommonActions {
   async emailMessage(){
     await this.elementToContainText(ERROR_MESSAGE,DISPLAYED_ERROR)
   }
-
+ async magicLinkMessage(){
+    await this.elementTextShouldBe(SENT_EMAIL,SUCCESS_MESSAGE)
+ }
 }
 module.exports = StartPageActions

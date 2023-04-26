@@ -22,6 +22,6 @@ layout.njk
 
 # OS stuff
 .DS_Store
-/test/acceptance/.env.snd
-/test/acceptance/allure-report/
+/test/acceptance - Disable/.env.snd
+/test/acceptance - Disable/allure-report/
 /.idea/

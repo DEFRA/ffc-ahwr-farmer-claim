@@ -12,11 +12,14 @@ When(/^user start the application$/, async function () {
  await startPage.startNow()
 });
 
-When(/^user input (.*)$/, async function (invalid) {
-  await startPage.inputEmail(invalid)
+When(/^user input (.*)$/, async function (email) {
+  await startPage.inputEmail(email)
   await startPage.proceed()
 
 });
 Then(/^an email error is displayed$/, async function () {
   await startPage.emailMessage()
+});
+Then(/^magic link is sent to user email$/, async function () {
+  await startPage.magicLinkMessage()
 });

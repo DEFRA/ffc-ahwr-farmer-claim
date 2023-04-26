@@ -21,7 +21,7 @@ exports.config = {
       'bstack:options': {
         os: 'Windows',
         osVersion: '10',
-        browserVersion: '87.0',
+        browserVersion: '112',
         local: true,
         networkLogs: true,
         seleniumVersion: '3.14.0',
@@ -31,32 +31,31 @@ exports.config = {
       maxInstances,
       acceptInsecureCerts: true,
       browserName: 'chrome',
-      'goog:chromeOptions': {
+      'google:chromeOptions': {
         args: chromeArgs
       }
-    }
-    // ,
-    // {
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'Firefox',
-    //   browserVersion: 'latest',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true
-    // }
-
-    // {
-    //   // Windows Edge 86
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'Edge',
-    //   browserVersion: '86',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // }
+    },
+     // {
+     //   os: 'Windows',
+     //   osVersion: '10',
+     //   browserName: 'Firefox',
+     //   browserVersion: '112',
+     //  'browserstack.local': true,
+     //   acceptInsecureCerts: true,
+     //   acceptSslCerts: true
+     // },
+     //
+     // {
+     //  // Windows Edge 112
+     //   os: 'Windows',
+     //   osVersion: '10',
+     //   browserName: 'Edge',
+     //   browserVersion: '112',
+     //   'browserstack.local': true,
+     //   acceptInsecureCerts: true,
+     //   acceptSslCerts: true,
+     //   'browserstack.selenium_version': '4.0.0-alpha-6'
+     // }
 
     // ,
     // {

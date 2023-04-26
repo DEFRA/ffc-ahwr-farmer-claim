@@ -47,7 +47,7 @@ exports.config = {
       maxInstances: 1,
       acceptInsecureCerts: true,
       browserName: "chrome",
-      "goog:chromeOptions": {
+      "google:chromeOptions": {
         args: [
           "--no-sandbox",
           "--disable-gpu",
@@ -105,6 +105,8 @@ exports.config = {
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
   services: ["chromedriver"],
+
+  //services: ['selenium-standalone'],
   // services: [],
   hostname: process.env.HOST_NAME || "localhost",
   port: 4444,
