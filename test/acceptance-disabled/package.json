@@ -16,9 +16,11 @@
   ],
   "scripts": {
     "test": "wdio wdio.bs.config.js",
+    "test.compatibility.docker": "wdio wdio.bs.config.js  --cucumberOpts.tagExpression='@compatibility'",
     "test:smoke:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
     "generate-report:allure": "allure generate allure-results --clean",
-    "generate-report:cucumber-html": "node reporter/cucumber-report.js",
+    "test:compatibility:local": "ENV=local wdio wdio.compatibility.config.js --cucumberOpts.tagExpression='@compatibility'",
+    "generate-report:cucumber-html": "node cucumber-reporter/cucumber-report.js",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/@wdio/cli/bin/wdio.js wdio.bs.config.js"
   },
   "dependencies": {
@@ -26,7 +28,6 @@
     "@babel/plugin-proposal-export-default-from": "^7.5.2",
     "@babel/preset-env": "^7.4.2",
     "@babel/register": "^7.4.0",
-    "@cucumber/cucumber": "^9.0.0",
     "@hapi/wreck": "^18.0.1",
     "@log4js-node/log4js-api": "^1.0.2",
     "@rpii/wdio-report-events": "^0.2.0",
@@ -44,6 +45,7 @@
     "ecstatic": "^4.1.4",
     "hosted-git-info": "^4.0.2",
     "joi": "^17.9.1",
+    "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "selenium": "^2.20.0",
     "selenium-server": "^3.141.59",

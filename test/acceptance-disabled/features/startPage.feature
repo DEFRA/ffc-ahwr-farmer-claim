@@ -10,7 +10,7 @@ Feature: claim journey landing page
     Examples:
       | invalid email   |
       | wrong@email     |
-
+@compatibility
   Scenario Outline: claim with invalid cred
     Given user is on the claim landing page
     And user check the page title

@@ -22,6 +22,9 @@ layout.njk
 
 # OS stuff
 .DS_Store
-/test/acceptance - Disable/.env.snd
-/test/acceptance - Disable/allure-report/
+/test/acceptance-disabled/.env.snd
+/test/acceptance-disabled/allure-report/
 /.idea/
+/test/acceptance-disabled/.env.snd
+/test/acceptance-disabled/reporter/cucumber_report.html
+/test/acceptance-disabled/reporter/cucumber_report.html.json
