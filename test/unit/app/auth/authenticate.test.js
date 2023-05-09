@@ -535,7 +535,7 @@ describe('authenticate', () => {
       .mockReturnValue(testCase.when.session.pkcecodes.verifier)
     when(Wreck.post)
       .calledWith(
-        'hostname/policy/oauth2/v2.0/token',
+        'hostname/b2c_1a_signupsignin/oauth2/v2.0/token',
         {
           headers: expect.anything(),
           payload: expect.anything(),
