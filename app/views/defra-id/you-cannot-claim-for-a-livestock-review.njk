@@ -17,8 +17,8 @@
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">You cannot claim for a livestock review for this business</h1>
 
-    {% if (error.name === 'DoNotHaveRequiredPermission') %}
-      <p class="govuk-body">You do not have the required permission to act for {{ error.organisation.name }} - SBI {{ error.organisation.sbi }}.</p>
+    {% if (error.name === 'InvalidPermissionsError') %}
+      <p class="govuk-body">You do not have the required permission to act for {{ organisationName }}{{ sbiText }}.</p>
     
       <h2 class="govuk-heading-m">What to do next</h2>
 
@@ -30,16 +30,16 @@
     {% endif %}
 
     {% if (error.name === 'NoApplicationFound') %}
-      <p class="govuk-body">{{ error.organisation.name }} - SBI {{ error.organisation.sbi }} has not applied for an annual health and welfare review of livestock.</p>
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has not applied for an annual health and welfare review of livestock.</p>
     {% endif %}
 
     {% if (error.name === 'ClaimHasAlreadyBeenMade') %}
-      <p class="govuk-body">{{ error.organisation.name }} - SBI {{ error.organisation.sbi }} has already claimed for an annual health and welfare review of livestock.</p>
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has already claimed for an annual health and welfare review of livestock.</p>
     
       <h2 class="govuk-heading-m">What to do next</h2>
     {% endif %}
 
-    {% if hasMultipleBusineses %}
+    {% if hasMultipleBusinesses %}
       <h2 class="govuk-heading-m">Claim for another business</h2>
       <p>You can <a href='{{backLink}}'>claim for another business</a> that has applied for a review.</p>
     {% endif %}

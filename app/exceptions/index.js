@@ -1,9 +1,9 @@
-const DoNotHaveRequiredPermission = require('./do-not-have-required-permission')
+const InvalidPermissionsError = require('./InvalidPermissionsError')
 const ClaimHasAlreadyBeenMade = require('./claim-has-already-been-made')
 const NoApplicationFound = require('./no-application-found')
 
 module.exports = {
-  DoNotHaveRequiredPermission,
+  InvalidPermissionsError,
   NoApplicationFound,
   ClaimHasAlreadyBeenMade
 }
