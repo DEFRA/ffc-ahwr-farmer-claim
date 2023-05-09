@@ -30,7 +30,7 @@ describe('authenticate', () => {
           hostname: 'hostname',
           tenantName: 'tenantname',
           jwtIssuerId: 'jwtissuerid',
-          policy: 'policy'
+          policy: 'b2c_1a_signupsignin'
         }
       }
     }))
