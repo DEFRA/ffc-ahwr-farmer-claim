@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
 const session = require('../../session')
 const { tokens } = require('../../session/keys')
-const InvalidStateError = require('./invalid-state-error')
+const InvalidStateError = require('../../exceptions/invalid-state-error')
 
 const generate = (request) => {
   const state = uuidv4()

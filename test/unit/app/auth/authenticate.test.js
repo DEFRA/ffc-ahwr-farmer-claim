@@ -1,5 +1,5 @@
 const { when, resetAllWhenMocks } = require('jest-when')
-const InvalidStateError = require('../../../../app/auth/auth-code-grant/invalid-state-error')
+const InvalidStateError = require('../../../../app/exceptions/invalid-state-error')
 const MOCK_USE_ACTUAL_DECODE = require('jsonwebtoken').decode
 const sessionKeys = require('../../../../app/session/keys')
 
