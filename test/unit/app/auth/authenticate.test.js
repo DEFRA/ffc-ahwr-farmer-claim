@@ -1,5 +1,5 @@
 const { when, resetAllWhenMocks } = require('jest-when')
-const InvalidStateError = require('../../../../app/auth/auth-code-grant/invalid-state-error')
+const InvalidStateError = require('../../../../app/exceptions/invalid-state-error')
 const MOCK_USE_ACTUAL_DECODE = require('jsonwebtoken').decode
 const sessionKeys = require('../../../../app/session/keys')
 
@@ -30,7 +30,7 @@ describe('authenticate', () => {
           hostname: 'hostname',
           tenantName: 'tenantname',
           jwtIssuerId: 'jwtissuerid',
-          policy: 'policy'
+          policy: 'b2c_1a_signupsignin'
         }
       }
     }))
@@ -535,7 +535,7 @@ describe('authenticate', () => {
       .mockReturnValue(testCase.when.session.pkcecodes.verifier)
     when(Wreck.post)
       .calledWith(
-        'hostname/policy/oauth2/v2.0/token',
+        'hostname/b2c_1a_signupsignin/oauth2/v2.0/token',
         {
           headers: expect.anything(),
           payload: expect.anything(),

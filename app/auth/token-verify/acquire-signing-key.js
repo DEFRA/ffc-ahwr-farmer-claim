@@ -5,7 +5,7 @@ const acquireSigningKey = async () => {
   console.log(`${new Date().toISOString()} Acquiring the signing key data necessary to validate the signature`)
   try {
     const response = await Wreck.get(
-      `${config.authConfig.defraId.hostname}/discovery/v2.0/keys?p=b2c_1a_signupsignin`,
+      `${config.authConfig.defraId.hostname}/discovery/v2.0/keys?p=${config.authConfig.defraId.policy}`,
       {
         json: true
       }
