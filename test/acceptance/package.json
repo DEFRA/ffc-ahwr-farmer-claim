@@ -19,7 +19,6 @@
     "test.compatibility.docker": "wdio wdio.bs.config.js  --cucumberOpts.tagExpression='@compatibility'",
     "test:smoke:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
     "generate-report:allure": "allure generate allure-results --clean",
-    "test:compatibility:local": "ENV=local wdio wdio.compatibility.config.js --cucumberOpts.tagExpression='@compatibility'",
     "generate-report:cucumber-html": "node cucumber-reporter/cucumber-report.js",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/@wdio/cli/bin/wdio.js wdio.bs.config.js"
   },
@@ -65,7 +64,7 @@
     "@wdio/spec-reporter": "^7.13.2",
     "allure-commandline": "^2.13.8",
     "babel-jest": "^24.8.0",
-    "chromedriver": "^111.0.0",
+    "chromedriver": "^113.0.0",
     "cucumber-html-reporter": "^5.5.0",
     "http-server": "^14.1.1",
     "jest": "^26.6.3",
