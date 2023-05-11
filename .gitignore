@@ -22,9 +22,11 @@ layout.njk
 
 # OS stuff
 .DS_Store
-/test/acceptance-disabled/.env.snd
-/test/acceptance-disabled/allure-report/
+
+
 /.idea/
-/test/acceptance-disabled/.env.snd
-/test/acceptance-disabled/reporter/cucumber_report.html
-/test/acceptance-disabled/reporter/cucumber_report.html.json
+
+/test/Compatibility/.env.local
+/test/Compatibility/.env.snd
+
+/test/Compatibility/wdio.wip.config.js

@@ -8,7 +8,7 @@ cd "${projectRoot}"
 # start web application
 ./scripts/start -d
 
-# run acceptance tests
+# run compatibility tests
 cd test/acceptance
 
 if [ "$1" = "debug" ];

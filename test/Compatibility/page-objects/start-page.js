@@ -10,6 +10,7 @@ const ERROR_MESSAGE = '#email-error'
 const DISPLAYED_ERROR = 'Enter an email address in the correct format'
 const SENT_EMAIL = '.govuk-heading-l'
 const SUCCESS_MESSAGE = 'Check your email'
+//const DEFRA = 'azdcuspoc5.b2clogin.com'
 
 class StartPageActions extends CommonActions {
 

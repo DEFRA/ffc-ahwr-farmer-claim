@@ -15,13 +15,13 @@
     "selenium"
   ],
   "scripts": {
-    "test": "wdio wdio.bs.config.js",
-    "test.compatibility.docker": "wdio wdio.bs.config.js  --cucumberOpts.tagExpression='@compatibility'",
+    "test": "wdio wdio.compatibility.config.js",
+    "test.compatibility.docker": "wdio wdio.compatibility.config.js  --cucumberOpts.tagExpression='@compatibility'",
     "test:smoke:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
     "generate-report:allure": "allure generate allure-results --clean",
-    "test:compatibility:local": "ENV=local wdio wdio.compatibility.config.js --cucumberOpts.tagExpression='@compatibility'",
+    "test:compatibility:local": "ENV=local wdio wdio.wip.config.js --cucumberOpts.tagExpression='@compatibility'",
     "generate-report:cucumber-html": "node cucumber-reporter/cucumber-report.js",
-    "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/@wdio/cli/bin/wdio.js wdio.bs.config.js"
+    "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/@wdio/cli/bin/wdio.js wdio.compatibility.config.js"
   },
   "dependencies": {
     "@babel/cli": "^7.2.3",

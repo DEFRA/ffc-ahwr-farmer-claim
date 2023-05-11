@@ -22,13 +22,14 @@ exports.config = {
   maxInstances,
   capabilities: [
     {
+
       'bstack:options': {
         os: 'Windows',
-        'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
+        projectName: 'Vet-Visit',
         osVersion: '10',
         browserVersion: '112',
         browserName: 'Chrome',
-        'buildName': 'Chrome 112 compatibility - ' + timeStamp,
+        buildName: 'Chrome 112 compatibility - ' + timeStamp,
         local: true,
         networkLogs: true,
         seleniumVersion: '3.14.0',
@@ -42,159 +43,183 @@ exports.config = {
         args: chromeArgs
       }
     },
-    //
-    // {
-    //   // firefox 112
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   'buildName': 'Firefox 112 compatibility - ' + timeStamp,
-    //   'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
-    //   browserVersion: '112',
-    //   browserName: 'Firefox',
-    //   'debug': true,
-    //   'networkLogs': true,
-    //   'video': true,
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true
-    // },
-    //
-    // {
-    //   // Windows Edge 112
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   'buildName': 'Edge 112 compatibility - ' + timeStamp,
-    //   'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
-    //   browserVersion: '112',
-    //   browserName: 'Edge',
-    //   'browserstack.local': true,
-    //   'debug': true,
-    //   'networkLogs': true,
-    //   'video': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // },
-    //
-    // {
-    //   // Chrome 111
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   'buildName': 'Chrome 111 compatibility - ' + timeStamp,
-    //   'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
-    //   browserVersion: '111',
-    //   browserName: 'Chrome',
-    //   'browserstack.local': true,
-    //   'debug': true,
-    //   'networkLogs': true,
-    //   'video': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // },
-    //
-    // {
-    //   // firefox 111
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   'buildName': 'Firefox 111 compatibility - ' + timeStamp,
-    //   'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
-    //   browserVersion: '111',
-    //   browserName: 'Firefox',
-    //   'debug': true,
-    //   'networkLogs': true,
-    //   'video': true,
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true
-    // },
-    //
-    // {
-    //   // Windows Edge 111
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   'buildName': 'Edge 111 compatibility - ' + timeStamp,
-    //   'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
-    //   browserVersion: '111',
-    //   browserName: 'Edge',
-    //   'browserstack.local': true,
-    //   'debug': true,
-    //   'networkLogs': true,
-    //   'video': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // },
-    //
+    {
+      // windows Edge 112
+      os: 'windows',
+      osVersion: '10',
+      buildName: 'Edge 112 compatibility - ' + timeStamp,
+      projectName: 'Vet-Visit',
+      browserVersion: '112',
+      browserName: 'Edge',
+      debug: true,
+      networkLogs: true,
+      video: true,
+      'browserstack.local': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true
+    },
 
-    // {
-    //   // firefox 111
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'Firefox',
-    //   browserVersion: '111',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true
-    // }
+    {
+      // Windows - firefox 112
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Edge 112 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '112',
+      browserName: 'Firefox',
+      'browserstack.local': true,
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true,
+    },
 
-    // {
-    //   // Windows Edge 111
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'Edge',
-    //   browserVersion: '111',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // },
-    // {
-    //   // Windows Edge 111
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'chrome',
-    //   browserVersion: '111',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // }
+    {
+      // Chrome 111
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Chrome 111 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '111',
+      browserName: 'Chrome',
+      'browserstack.local': true,
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true,
+      'browserstack.selenium_version': '4.0.0-alpha-6'
+    },
 
-    // ,
-    // {
-    //   os: 'OS X',
-    //   osVersion: 'Big Sur',
-    //   browserName: 'Safari',
-    //   browserVersion: 'latest',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true
-    // },
+    {
+      // firefox 111
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Firefox 111 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '111',
+      browserName: 'Firefox',
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      'browserstack.local': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true
+    },
 
-    // {
-    //   // Windows IE 11
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'IE',
-    //   browserVersion: '11',
-    //   resolution: '1024x768',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true
-    // },
+    {
+      // Windows Edge 111
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Edge 111 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '111',
+      browserName: 'Edge',
+      'browserstack.local': true,
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true
+    },
+   //////////////
+    {
+      // Chrome 110
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Chrome 110 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '110',
+      browserName: 'Chrome',
+      'browserstack.local': true,
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true,
+      'browserstack.selenium_version': '4.0.0-alpha-6'
+    },
 
-    // {
-    //   // Windows Edge 86
-    //   os: 'Windows',
-    //   osVersion: '10',
-    //   browserName: 'Edge',
-    //   browserVersion: '86',
-    //   'browserstack.local': true,
-    //   acceptInsecureCerts: true,
-    //   acceptSslCerts: true,
-    //   'browserstack.selenium_version': '4.0.0-alpha-6'
-    // }
+    {
+      // firefox 110
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Firefox 110 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '110',
+      browserName: 'Firefox',
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      'browserstack.local': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true
+    },
+
+    {
+      // Windows Edge 110
+      os: 'Windows',
+      osVersion: '10',
+      'buildName': 'Edge 110 compatibility - ' + timeStamp,
+      'projectName': 'Vet-Visit',
+      browserVersion: '110',
+      browserName: 'Edge',
+      'browserstack.local': true,
+      'debug': true,
+      'networkLogs': true,
+      'video': true,
+      acceptInsecureCerts: true,
+      acceptSslCerts: true
+    },
+//////////////////////////////////////////////////////
+      // Mac Chrome 112
+    {
+      'bstack:options': {
+        'projectName': 'Vet Visit',
+        'buildName': 'Mac Chrome compatibility' + timeStamp,
+        'debug': true,
+        'networkLogs': true,
+        'video': true,
+        'maskCommands': 'setValues, getValues, setCookies, getCookies',
+        'os': 'OS X',
+        'osVersion': 'Ventura',
+      },
+      browserName: 'Chrome',
+      browserVersion: '112',
+      acceptInsecureCerts: true
+    },
+
+    {
+      'bstack:options': {
+        'projectName': 'Vet Visit',
+        'buildName': 'Mac Chrome compatibility' + timeStamp,
+        'debug': true,
+        'networkLogs': true,
+        'video': true,
+        'maskCommands': 'setValues, getValues, setCookies, getCookies',
+        'os': 'OS X',
+        'osVersion': 'Ventura',
+      },
+      browserName: 'Edge',
+      browserVersion: '112',
+      acceptInsecureCerts: true
+    },
+    {
+      'bstack:options': {
+        'projectName': 'Vet Visit',
+        'buildName': 'Mac Chrome compatibility - ' + timeStamp,
+        'debug': true,
+        'networkLogs': true,
+        'video': true,
+        'maskCommands': 'setValues, getValues, setCookies, getCookies',
+        'os': 'OS X',
+        'osVersion': 'Big Sur',
+      },
+      browserName: 'Safari',
+      browserVersion: '112',
+      acceptInsecureCerts: true
+    }
   ],
   // ===================
   // Test Configurations
