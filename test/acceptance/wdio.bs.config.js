@@ -24,21 +24,24 @@ exports.config = {
     {
       'bstack:options': {
         os: 'Windows',
+        'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
         osVersion: '10',
         browserVersion: '87.0',
-        buildName: 'Vet-Visit/claim - ' + timeStamp,
+        browserName: 'Chrome',
+        'buildName': 'Chrome 112 compatibility - ' + timeStamp,
         local: true,
         networkLogs: true,
         seleniumVersion: '3.14.0',
         userName: user,
         accessKey: key
       },
+      // chrome
       maxInstances,
       acceptInsecureCerts: true,
       'google:chromeOptions': {
         args: chromeArgs
       }
-    }
+    },
     //
     // {
     //   // firefox 112
