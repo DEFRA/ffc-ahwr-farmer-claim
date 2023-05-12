@@ -2,7 +2,7 @@
 Feature: claim journey landing page
 
   Scenario Outline: claim with invalid cred
-    Given user is on the claim landing page
+    Given user is on the /claim landing page
     And user check the page title
     When user start the application
     And user input <invalid email>
@@ -12,7 +12,7 @@ Feature: claim journey landing page
       | wrong@email     |
 
   Scenario Outline: claim with invalid cred
-    Given user is on the claim landing page
+    Given user is on the /claim landing page
     And user check the page title
     When user start the application
     And user input <valid email>
