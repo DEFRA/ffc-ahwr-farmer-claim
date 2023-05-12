@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-farmer-claim",
-  "version": "0.23.5",
+  "version": "0.23.6",
   "description": "Web frontend for farmer claim journey",
   "homepage": "https://github.com/DEFRA/ffc-ahwr-farmer-claim",
   "main": "app/index.js",
@@ -90,9 +90,9 @@
     ],
     "ignore": [
       "app/frontend/dist/**/*.js",
-      "test/acceptance*/**/*.js",
-      "test/acceptance*/**/*.mjs",
-      "test/acceptance*/**/*.cjs"
+      "test/acceptance/**/*.js",
+      "test/acceptance/**/*.mjs",
+      "test/acceptance/**/*.cjs"
     ]
   },
   "nodemonConfig": {

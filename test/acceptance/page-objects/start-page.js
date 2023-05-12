@@ -1,7 +1,6 @@
 const CommonActions = require('./common-actions')
 
 // page element
-const COOKIES = '[value="accept"]'
 const START = '[role="button"]'
 const PAGE_TITLE = 'Claim funding - Annual health and welfare review of livestock'
 const EMAIL = '#email'
