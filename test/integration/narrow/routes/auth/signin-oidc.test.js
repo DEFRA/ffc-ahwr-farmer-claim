@@ -10,7 +10,7 @@ jest.mock('../../../../../app/api-requests/rpa-api/person')
 const organisationMock = require('../../../../../app/api-requests/rpa-api/organisation')
 jest.mock('../../../../../app/api-requests/rpa-api/organisation')
 
-const { NoApplicationFound } = require('../../../../../app/exceptions')
+const { NoApplicationFound, InvalidStateError } = require('../../../../../app/exceptions')
 
 describe('FarmerApply defra ID redirection test', () => {
   jest.mock('../../../../../app/config', () => ({
@@ -78,7 +78,7 @@ describe('FarmerApply defra ID redirection test', () => {
       expect($('.govuk-heading-l').text()).toMatch('Login failed')
     })
 
-    test('returns 400 and login failed view when state mismatch', async () => {
+    test('redirects to defra id when state mismatch', async () => {
       const baseUrl = `${url}?code=432432&state=83d2b160-74ce-4356-9709-3f8da7868e35`
       const options = {
         method: 'GET',
@@ -86,15 +86,13 @@ describe('FarmerApply defra ID redirection test', () => {
       }
 
       authMock.authenticate.mockImplementation(() => {
-        throw new Error('Invalid state')
+        throw new InvalidStateError('Invalid state')
       })
 
       const res = await global.__SERVER__.inject(options)
-      expect(res.statusCode).toBe(400)
+      expect(res.statusCode).toBe(302)
       expect(authMock.authenticate).toBeCalledTimes(1)
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toMatch('Login failed')
     })
 
     test('returns 400 and cannot claim for review view when no applciation to claim for', async () => {

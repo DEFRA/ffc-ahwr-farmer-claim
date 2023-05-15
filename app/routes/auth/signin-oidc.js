@@ -6,7 +6,7 @@ const sessionKeys = require('../../session/keys')
 const latestApplicationForSbi = require('../models/latest-application')
 const { farmerClaim } = require('../../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade } = require('../../exceptions')
+const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError } = require('../../exceptions')
 
 module.exports = [{
   method: 'GET',
@@ -64,6 +64,8 @@ module.exports = [{
         console.error(`Received error with name ${error.name} and message ${error.message}.`)
         const organisation = session.getClaim(request, sessionKeys.farmerApplyData.organisation)
         switch (true) {
+          case error instanceof InvalidStateError:
+            return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
           case error instanceof InvalidPermissionsError:
           case error instanceof NoApplicationFound:
           case error instanceof ClaimHasAlreadyBeenMade:

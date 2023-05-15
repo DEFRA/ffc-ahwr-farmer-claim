@@ -26,7 +26,7 @@ exports.config = {
         os: 'Windows',
         'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
         osVersion: '10',
-        browserVersion: '112',
+        browserVersion: '87.0',
         browserName: 'Chrome',
         'buildName': 'Chrome 112 compatibility - ' + timeStamp,
         local: true,
