@@ -31,7 +31,7 @@ module.exports = [{
       try {
         await auth.authenticate(request, session)
 
-        const apimAccessToken = await auth.getClientCredentials(request)
+        const apimAccessToken = await auth.retrieveApimAccessToken()
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
         session.setClaim(

@@ -6,5 +6,5 @@ module.exports = {
   setAuthCookie: cookieAuth.setAuthCookie,
   clearAuthCookie: cookieAuth.clear,
   lookupToken: require('./magic-link-cache/lookupToken'),
-  getClientCredentials: require('./client-credential-grant/client-credential-grant')
+  retrieveApimAccessToken: require('./client-credential-grant/retrieve-apim-access-token')
 }
