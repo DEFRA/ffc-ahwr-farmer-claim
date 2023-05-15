@@ -105,7 +105,7 @@ describe('FarmerApply defra ID redirection test', () => {
       }
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.getClientCredentials.mockResolvedValueOnce('Bearer 2323')
+      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
       personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
@@ -155,7 +155,7 @@ describe('FarmerApply defra ID redirection test', () => {
       }
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.getClientCredentials.mockResolvedValueOnce('Bearer 2323')
+      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
       personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
@@ -203,7 +203,7 @@ describe('FarmerApply defra ID redirection test', () => {
       }
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.getClientCredentials.mockResolvedValueOnce('Bearer 2323')
+      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
       personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
