@@ -21,6 +21,8 @@
 {% from "../macros/rpa-contact-details.njk"              import rpaContactDetails %}
 
 {% block pageTitle %}{{ serviceName }} - GOV.UK{% endblock %}
+{% set urlPrefix = "<%= htmlWebpackPlugin.options.meta.urlPrefix %>" %}
+{% set assetPath = urlPrefix + "/assets" %}
 
 {% block head %}
   {% if cookiesPolicy.analytics %}
@@ -43,7 +45,7 @@
     homepageUrl: "https://www.gov.uk/",
     containerClasses: "govuk-width-container",
     serviceName: serviceName,
-    serviceUrl: serviceUrl
+    serviceUrl: urlPrefix
   }) }}
   <div class="govuk-grid-row govuk-width-container">
     {{ govukPhaseBanner({
@@ -77,7 +79,7 @@
   </li>
 
   <li class="govuk-footer__inline-list-item">
-    <a class="govuk-footer__link" href="/claim/cookies">
+    <a class="govuk-footer__link" href="{{urlPrefix}}/cookies">
       Cookies
     </a>
   </li>
