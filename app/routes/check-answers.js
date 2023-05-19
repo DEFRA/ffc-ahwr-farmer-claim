@@ -37,7 +37,7 @@ module.exports = {
           actions: { items: [{ href: '/claim/vet-name', text: 'Change', visuallyHiddenText: 'change vet name' }] }
         },
         {
-          key: { text: 'Vet\'s RCVS' },
+          key: { text: 'Vet\'s RCVS number' },
           value: { html: rcvsNumber },
           actions: { items: [{ href: '/claim/vet-rcvs', text: 'Change', visuallyHiddenText: 'change vet rcvs' }] }
         },
