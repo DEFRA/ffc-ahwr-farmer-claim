@@ -31,6 +31,8 @@
 
     {% if (error.name === 'NoApplicationFound') %}
       <p class="govuk-body">{{ organisationName }}{{ sbiText }} has not applied for an annual health and welfare review of livestock.</p>
+
+      <h2 class="govuk-heading-m">What to do next</h2>
     {% endif %}
 
     {% if (error.name === 'ClaimHasAlreadyBeenMade') %}
@@ -39,18 +41,14 @@
       <h2 class="govuk-heading-m">What to do next</h2>
     {% endif %}
 
+    <p class="govuk-body">If you have a question about this claim, contact the Rural Payments Agency by email or phone.</p>
+   
+    {{ rpaContactDetails(ruralPaymentsAgency) }}
+
     {% if hasMultipleBusinesses %}
       <h2 class="govuk-heading-m">Claim for another business</h2>
       <p>You can <a href='{{backLink}}'>claim for another business</a> that has applied for a review.</p>
     {% endif %}
-
-    <h2 class="govuk-heading-m">Get help with your claim</h2>
-
-    <p class="govuk-body">If you have a question about this claim, contact the Rural Payments Agency by email or phone.</p>
-
-    <p>If you have your agreement number, have it with you when you call or include it in your email.</p>
-   
-    {{ rpaContactDetails(ruralPaymentsAgency) }}
   </div>
 </div>
 {% endblock %}
