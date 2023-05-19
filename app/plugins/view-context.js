@@ -1,4 +1,4 @@
-const { serviceName, applyServiceUri } = require('../config')
+const { serviceName, applyServiceUri, urlPrefix } = require('../config')
 
 module.exports = {
   plugin: {
@@ -12,13 +12,8 @@ module.exports = {
 
           const { path } = request
 
-          let serviceUrl = '/claim'
-
-          if (path.startsWith('/cookies')) {
-            serviceUrl = '/cookies'
-          }
           ctx.serviceName = serviceName
-          ctx.serviceUrl = serviceUrl
+          ctx.urlPrefix = path.startsWith('/cookies') ? '/cookies' : urlPrefix
           ctx.applyServiceUri = applyServiceUri
 
           response.source.context = ctx
