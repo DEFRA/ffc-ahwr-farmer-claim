@@ -30,11 +30,16 @@ module.exports = [{
         throw Boom.internal()
       }
 
-      const businesses = await processEligibleBusinesses(request.query.businessEmail)
+      let businesses = await processEligibleBusinesses(request.query.businessEmail)
 
       if (!Array.isArray(businesses) || businesses.length === 0) {
         console.log(`${new Date().toISOString()} No claimable businesses found.`)
         return h.redirect('no-business-available-to-claim-for')
+      } else if (businesses.length === 1 && businesses[0].expired) {
+        return h.redirect('single-business-claim-expired')
+      } else if (businesses.length > 1) {
+        // remove expired businesses from list when multiple available
+        businesses = businesses.filter((business) => !business.expired)
       }
 
       const checkedBusiness = session.getSelectYourBusiness(

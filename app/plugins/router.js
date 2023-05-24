@@ -26,6 +26,7 @@ module.exports = {
       } else {
         server.route(require('../routes/select-your-business'))
         server.route(require('../routes/no-business-available-to-claim-for'))
+        server.route(require('../routes/single-business-claim-expired'))
         server.route(require('../routes/auth/verify-login'))
         server.route(require('../routes/auth/login'))
       }
