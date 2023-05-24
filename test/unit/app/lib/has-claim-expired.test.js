@@ -79,6 +79,43 @@ describe('Has claim expired test', () => {
       }
     },
     {
+      toString: () => 'claim has not expired - exact time match',
+      given: {
+        application: {
+          claimed: false,
+          createdAt: '2021-11-24 12:00:00',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAC',
+          statusId: 1,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }
+      },
+      when: {
+        currentTime: '2022-05-24 12:00:00'
+      },
+      expect: {
+        hasExpired: false
+      }
+    },
+    {
       toString: () => 'claim has expired - 1 second after deadline',
       given: {
         application: {
@@ -109,7 +146,7 @@ describe('Has claim expired test', () => {
         }
       },
       when: {
-        currentTime: '2022-07-24 12:00:01'
+        currentTime: '2022-05-24 12:00:01'
       },
       expect: {
         hasExpired: true
@@ -146,7 +183,7 @@ describe('Has claim expired test', () => {
         }
       },
       when: {
-        currentTime: '2022-06-24 12:00:00'
+        currentTime: '2022-05-25 12:00:00'
       },
       expect: {
         hasExpired: true
