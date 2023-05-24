@@ -31,6 +31,12 @@
       <h2 class="govuk-heading-m">What to do next</h2>
     {% endif %}
 
+    {% if (error.name === 'ClaimHasExpired') %}
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has no valid agreement you can claim funding for at this time.</p>
+      <p>Claims must be made within 6 months from the date you accept your agreement offer.</p>  
+      <h2 class="govuk-heading-m">What to do next</h2>
+    {% endif %}
+
     <p class="govuk-body">If you have a question about this claim, contact the Rural Payments Agency by email or phone.</p>
    
     {{ rpaContactDetails(ruralPaymentsAgency) }}

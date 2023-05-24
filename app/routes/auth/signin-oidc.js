@@ -6,7 +6,7 @@ const sessionKeys = require('../../session/keys')
 const latestApplicationForSbi = require('../models/latest-application')
 const { farmerClaim } = require('../../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError } = require('../../exceptions')
+const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../../exceptions')
 
 module.exports = [{
   method: 'GET',
@@ -41,7 +41,7 @@ module.exports = [{
             sbi: organisationSummary.organisation.sbi?.toString(),
             farmerName: getPersonName(personSummary),
             name: organisationSummary.organisation.name,
-            email: organisationSummary.organisation.email ? organisationSummary.organisation.email : personSummary.email,
+            email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
             address: getOrganisationAddress(organisationSummary.organisation.address)
           }
         )
@@ -69,6 +69,7 @@ module.exports = [{
           case error instanceof InvalidPermissionsError:
           case error instanceof NoApplicationFound:
           case error instanceof ClaimHasAlreadyBeenMade:
+          case error instanceof ClaimHasExpired:
             return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
               hasMultipleBusinesses: session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses),

@@ -1,6 +1,6 @@
 const applicationApi = require('../../api-requests/application-service-api')
 const applicationStatus = require('../../constants/application-status')
-const hasClaimExpired = require('../../lib/has-claim-expired')
+const { hasClaimExpired } = require('../../lib/has-claim-expired')
 const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpired } = require('../../exceptions')
 
 async function getLatestApplicationForSbi (sbi, name = '') {
@@ -20,7 +20,13 @@ async function getLatestApplicationForSbi (sbi, name = '') {
   switch (latestApplication.statusId) {
     case applicationStatus.AGREED_STATUS:
       if (hasClaimExpired(latestApplication)) {
-        throw new ClaimHasExpired('Claim has expired')
+        throw new ClaimHasExpired(`Claim has expired for reference - ${latestApplication.reference}`,
+          {
+            sbi,
+            name,
+            reference: latestApplication.reference
+          }
+        )
       }
       return latestApplication
     case applicationStatus.IN_CHECK:
@@ -30,7 +36,8 @@ async function getLatestApplicationForSbi (sbi, name = '') {
         `Claim has already been made for SBI - ${sbi}`,
         {
           sbi,
-          name
+          name,
+          reference: latestApplication.reference
         }
       )
     default:
@@ -38,7 +45,8 @@ async function getLatestApplicationForSbi (sbi, name = '') {
         `No claimable application found for SBI - ${sbi}`,
         {
           sbi,
-          name
+          name,
+          reference: latestApplication.reference
         }
       )
   }

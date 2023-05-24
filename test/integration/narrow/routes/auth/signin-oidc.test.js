@@ -10,7 +10,7 @@ jest.mock('../../../../../app/api-requests/rpa-api/person')
 const organisationMock = require('../../../../../app/api-requests/rpa-api/organisation')
 jest.mock('../../../../../app/api-requests/rpa-api/organisation')
 
-const { NoApplicationFound, InvalidStateError } = require('../../../../../app/exceptions')
+const { NoApplicationFound, InvalidStateError, ClaimHasExpired } = require('../../../../../app/exceptions')
 
 describe('FarmerApply defra ID redirection test', () => {
   jest.mock('../../../../../app/config', () => ({
@@ -95,7 +95,7 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
     })
 
-    test('returns 400 and cannot claim for review view when no applciation to claim for', async () => {
+    test('returns 400 and cannot claim for review view when no application to claim for', async () => {
       const baseUrl = `${url}?code=432432&state=83d2b160-74ce-4356-9709-3f8da7868e35`
       const options = {
         method: 'GET',
@@ -134,6 +134,56 @@ describe('FarmerApply defra ID redirection test', () => {
         organisationPermission: true
       })
       latestApplicationMock.mockRejectedValueOnce(new NoApplicationFound('No application found for SBI - 101122201'))
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      expect(authMock.authenticate).toBeCalledTimes(1)
+      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(latestApplicationMock).toBeCalledTimes(1)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
+    })
+
+    test('returns 400 and cannot claim for review view when application has expired', async () => {
+      const baseUrl = `${url}?code=432432&state=83d2b160-74ce-4356-9709-3f8da7868e35`
+      const options = {
+        method: 'GET',
+        url: baseUrl
+      }
+
+      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
+      personMock.getPersonSummary.mockResolvedValueOnce({
+        firstName: 'Bill',
+        middleName: null,
+        lastName: 'Smith',
+        email: 'billsmith@testemail.com',
+        id: 1234567,
+        customerReferenceNumber: '1103452436'
+      })
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+        organisation: {
+          id: 7654321,
+          name: 'Mrs Gill Black',
+          sbi: 101122201,
+          address: {
+            address1: 'The Test House',
+            address2: 'Test road',
+            address3: 'Wicklewood',
+            buildingNumberRange: '11',
+            buildingName: 'TestHouse',
+            street: 'Test ROAD',
+            city: 'Test City',
+            postalCode: 'TS1 1TS',
+            country: 'United Kingdom',
+            dependentLocality: 'Test Local'
+          },
+          email: 'org1@testemail.com'
+        },
+        organisationPermission: true
+      })
+      latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpired('Claim has expired for reference - AHWR-1111-3213'))
 
       const res = await global.__SERVER__.inject(options)
 
