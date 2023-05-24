@@ -4,6 +4,7 @@ const MOCK_NOW = new Date()
 let logSpy
 let dateSpy
 let applicationApi
+let hasClaimedExpiredMock
 
 describe('Eligible businesses', () => {
   beforeAll(() => {
@@ -17,6 +18,7 @@ describe('Eligible businesses', () => {
     applicationApi = require('../../../../../app/api-requests/application-service-api')
     jest.mock('../../../../../app/api-requests/application-service-api')
 
+    hasClaimedExpiredMock = require('../../../../../app/lib/has-claim-expired')
     jest.mock('../../../../../app/lib/has-claim-expired')
 
     processEligibleBusinesses = require('../../../../../app/routes/models/eligible-businesses')
@@ -153,5 +155,43 @@ describe('Eligible businesses', () => {
     const result = await processEligibleBusinesses('someemaiL@email.com')
     expect(result.length).toBe(0)
     expect(applicationApi.getLatestApplicationsByEmail).toBeCalledTimes(1)
+  })
+
+  test('test application marked as expired', async () => {
+    hasClaimedExpiredMock.hasClaimExpired.mockReturnValueOnce(true)
+    applicationApi.getLatestApplicationsByEmail.mockResolvedValueOnce(
+      [
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e83',
+          reference: 'AHWR-48D2-F100',
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'sheep',
+            organisation: {
+              crn: '112222',
+              sbi: '122333',
+              name: 'My Amazing Farm',
+              email: 'liam.wilson@kainos.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2030-02-01T13: 52: 14.176Z',
+          updatedAt: '2030-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        }
+      ]
+    )
+    const result = await processEligibleBusinesses('someemaiL@email.com')
+    expect(result.length).toBe(1)
+    expect(applicationApi.getLatestApplicationsByEmail).toBeCalledTimes(1)
+    expect(result[0].expired).toEqual(true)
   })
 })
