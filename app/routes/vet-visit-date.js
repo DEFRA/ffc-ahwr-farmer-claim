@@ -5,6 +5,7 @@ const { createItemsFromDate, createItemsFromPayload } = require('../lib/visit-da
 const session = require('../session')
 const { farmerApplyData: { visitDate } } = require('../session/keys')
 const errorMessages = require('../lib/error-messages')
+const config = require('../../app/config')
 
 const templatePath = 'vet-visit-date'
 const path = `/claim/${templatePath}`
@@ -53,7 +54,7 @@ module.exports = [{
       const application = session.getClaim(request)
       const applicationDate = new Date(new Date(application.createdAt).toDateString())
       let endDate = new Date(new Date(application.createdAt).toDateString())
-      endDate = new Date(endDate.setMonth(endDate.getMonth() + 6))
+      endDate = new Date(endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths))
       const date = getDateFromPayload(request.payload)
       if (date > new Date()) {
         const dateInputErrors = {

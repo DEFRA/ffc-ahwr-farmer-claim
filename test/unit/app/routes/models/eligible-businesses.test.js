@@ -17,6 +17,8 @@ describe('Eligible businesses', () => {
     applicationApi = require('../../../../../app/api-requests/application-service-api')
     jest.mock('../../../../../app/api-requests/application-service-api')
 
+    jest.mock('../../../../../app/lib/has-claim-expired')
+
     processEligibleBusinesses = require('../../../../../app/routes/models/eligible-businesses')
   })
 
@@ -41,13 +43,16 @@ describe('Eligible businesses', () => {
       expect: {
         consoleLogs: [
                 `${MOCK_NOW.toISOString()} Latest application is eligible to claim : ${JSON.stringify({
-                  sbi: '122333'
+                  sbi: '122333',
+                  reference: 'AHWR-48D2-F147'
                 })}`,
                 `${MOCK_NOW.toISOString()} Latest application is eligible to claim : ${JSON.stringify({
-                    sbi: '123456789'
+                    sbi: '123456789',
+                    reference: 'AHWR-48D2-F148'
                   })}`,
                   `${MOCK_NOW.toISOString()} Latest application is not eligible to claim : ${JSON.stringify({
-                    sbi: '777777'
+                    sbi: '777777',
+                    reference: 'AHWR-48D2-F149'
                   })}`
         ]
       }
@@ -75,8 +80,8 @@ describe('Eligible businesses', () => {
             confirmCheckDetails: 'yes'
           },
           claimed: false,
-          createdAt: '2023-02-01T13: 52: 14.176Z',
-          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdAt: '2030-02-01T13: 52: 14.176Z',
+          updatedAt: '2030-02-01T13: 52: 14.207Z',
           createdBy: 'admin',
           updatedBy: null,
           statusId: 1
@@ -101,8 +106,8 @@ describe('Eligible businesses', () => {
             confirmCheckDetails: 'yes'
           },
           claimed: false,
-          createdAt: '2023-02-01T13: 52: 14.176Z',
-          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdAt: '2030-02-01T13: 52: 14.176Z',
+          updatedAt: '2030-02-01T13: 52: 14.207Z',
           createdBy: 'admin',
           updatedBy: null,
           statusId: 1
@@ -127,8 +132,8 @@ describe('Eligible businesses', () => {
             confirmCheckDetails: 'yes'
           },
           claimed: false,
-          createdAt: '2023-02-01T13: 52: 14.176Z',
-          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdAt: '2030-02-01T13: 52: 14.176Z',
+          updatedAt: '2030-02-01T13: 52: 14.207Z',
           createdBy: 'admin',
           updatedBy: null,
           statusId: 5

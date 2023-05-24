@@ -8,7 +8,7 @@ function hasClaimExpired (application) {
   const currentDate = new Date()
   return currentDate > endDate
 }
-  
+
 module.exports = {
   hasClaimExpired
 }
