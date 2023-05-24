@@ -9,8 +9,8 @@ describe('Latest Applications Tests', () => {
     applicationApiMock = require('../../../../../app/api-requests/application-service-api')
     jest.mock('../../../../../app/api-requests/application-service-api')
 
-    hasClaimExpiredMock = require('../../../../../app/lib/has-claim-expired')
-    jest.mock('../../../../../app/lib/has-claim-expired')
+    hasClaimExpiredMock = require('../../../../../app/lib/claim-has-expired')
+    jest.mock('../../../../../app/lib/claim-has-expired')
 
     latestApplication = require('../../../../../app/routes/models/latest-application')
   })
@@ -376,7 +376,7 @@ describe('Latest Applications Tests', () => {
     }
   ])('%s', async (testCase) => {
     if (testCase.when.agreementExpired) {
-      hasClaimExpiredMock.hasClaimExpired.mockReturnValueOnce(true)
+      hasClaimExpiredMock.claimHasExpired.mockReturnValueOnce(true)
     }
     applicationApiMock.getLatestApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
     if (testCase.expect.error) {

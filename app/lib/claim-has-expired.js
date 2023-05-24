@@ -1,7 +1,6 @@
+const config = require('../config')
 
-const config = require('../../app/config')
-
-function hasClaimExpired (application) {
+function claimHasExpired (application) {
   const startDate = new Date(application.createdAt)
   const endDate = new Date(startDate)
   endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
@@ -10,5 +9,5 @@ function hasClaimExpired (application) {
 }
 
 module.exports = {
-  hasClaimExpired
+  claimHasExpired
 }

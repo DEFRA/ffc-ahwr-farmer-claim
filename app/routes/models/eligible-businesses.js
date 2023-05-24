@@ -1,5 +1,5 @@
 const applicationApi = require('../../api-requests/application-service-api')
-const { hasClaimExpired } = require('../../lib/has-claim-expired')
+const { claimHasExpired } = require('../../lib/claim-has-expired')
 const AGREED_STATUS = 1
 
 async function processEligibleBusinesses (businessEmail) {
@@ -8,7 +8,7 @@ async function processEligibleBusinesses (businessEmail) {
   if (latestApplications !== null && Array.isArray(latestApplications)) {
     latestApplications.forEach(latestApplication => {
       if (latestApplication.statusId === AGREED_STATUS) {
-        if (hasClaimExpired(latestApplication)) {
+        if (claimHasExpired(latestApplication)) {
           console.log(`${new Date().toISOString()} Time to claim for application has expired : ${JSON.stringify({
             sbi: latestApplication.data.organisation.sbi,
             reference: latestApplication.reference,

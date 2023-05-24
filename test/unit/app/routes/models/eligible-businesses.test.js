@@ -18,8 +18,8 @@ describe('Eligible businesses', () => {
     applicationApi = require('../../../../../app/api-requests/application-service-api')
     jest.mock('../../../../../app/api-requests/application-service-api')
 
-    hasClaimedExpiredMock = require('../../../../../app/lib/has-claim-expired')
-    jest.mock('../../../../../app/lib/has-claim-expired')
+    hasClaimedExpiredMock = require('../../../../../app/lib/claim-has-expired')
+    jest.mock('../../../../../app/lib/claim-has-expired')
 
     processEligibleBusinesses = require('../../../../../app/routes/models/eligible-businesses')
   })
@@ -158,7 +158,7 @@ describe('Eligible businesses', () => {
   })
 
   test('test application marked as expired', async () => {
-    hasClaimedExpiredMock.hasClaimExpired.mockReturnValueOnce(true)
+    hasClaimedExpiredMock.claimHasExpired.mockReturnValueOnce(true)
     applicationApi.getLatestApplicationsByEmail.mockResolvedValueOnce(
       [
         {
