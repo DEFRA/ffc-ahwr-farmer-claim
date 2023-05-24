@@ -161,6 +161,169 @@ describe('API select-your-business', () => {
       expect(response.headers.location).toContain('no-business-available-to-claim-for')
     })
 
+    test('Expired claim with single business navigates to correct page', async () => {
+      const options = {
+        method: 'GET',
+        url: `${API_URL}?businessEmail=email@test.com`,
+        auth: {
+          credentials: { email: 'email@test.com', sbi: '122333' },
+          strategy: 'cookie'
+        }
+      }
+
+      processEligibleBusinesses.mockResolvedValueOnce([
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e82',
+          reference: 'AHWR-48D2-F148',
+          expired: true,
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'pigs',
+            organisation: {
+              crn: '112222',
+              sbi: '123456789',
+              name: 'My Beautiful Farm',
+              email: 'email@test.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        }
+      ])
+      const response = await global.__SERVER__.inject(options)
+      expect(response.statusCode).toBe(302)
+      expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
+      expect(response.headers.location).toContain('single-business-claim-expired')
+    })
+
+    test.each([
+      {
+        toString: () => 'HTTP 200 - one expired business removed from list',
+        given: {
+        },
+        when: {
+        },
+        expect: {
+        }
+      }
+    ])('%s', async (testCase) => {
+      const options = {
+        method: 'GET',
+        url: `${API_URL}?businessEmail=email@test.com`,
+        auth: {
+          credentials: { email: 'email@test.com', sbi: '122333' },
+          strategy: 'cookie'
+        }
+      }
+
+      processEligibleBusinesses.mockResolvedValueOnce([
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e83',
+          reference: 'AHWR-48D2-F147',
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'sheep',
+            organisation: {
+              crn: '112222',
+              sbi: '122333',
+              name: 'My Amazing Farm',
+              email: 'email@test.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        },
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e83',
+          reference: 'AHWR-48D2-F165',
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'sheep',
+            organisation: {
+              crn: '112222',
+              sbi: '122333',
+              name: 'My Amazing Farm',
+              email: 'email@test.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        },
+        {
+          id: '48d2f147-614e-40df-9ba8-9961e7974e82',
+          reference: 'AHWR-48D2-F148',
+          expired: true,
+          data: {
+            reference: null,
+            declaration: true,
+            offerStatus: 'accepted',
+            whichReview: 'pigs',
+            organisation: {
+              crn: '112222',
+              sbi: '123456789',
+              name: 'My Beautiful Farm',
+              email: 'email@test.com',
+              address: '1 Some Road',
+              farmerName: 'Mr Farmer'
+            },
+            eligibleSpecies: 'yes',
+            confirmCheckDetails: 'yes'
+          },
+          claimed: false,
+          createdAt: '2023-02-01T13: 52: 14.176Z',
+          updatedAt: '2023-02-01T13: 52: 14.207Z',
+          createdBy: 'admin',
+          updatedBy: null,
+          statusId: 1
+        }
+      ])
+      const response = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect(response.statusCode).toBe(200)
+      expect(session.setSelectYourBusiness).toHaveBeenCalledTimes(1)
+      expect(session.setSelectYourBusiness).toHaveBeenCalledWith(
+        expect.anything(),
+        sessionKeys.selectYourBusiness.eligibleBusinesses,
+        expect.anything()
+      )
+      expect(processEligibleBusinesses).toHaveBeenCalledTimes(1)
+      expect($('title').text()).toEqual(config.serviceName)
+      expect($('.govuk-heading-l').first().text().trim()).toEqual('Which business are you claiming for?')
+      const result = $('.govuk-radios__item')
+      expect(result.length).toEqual(2)
+    })
+
     test.each([
       {
         toString: () => 'Test business email query param does not match credentials throws 500',
