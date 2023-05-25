@@ -9,7 +9,7 @@ describe('Has claim expired test', () => {
       given: {
         application: {
           claimed: false,
-          createdAt: '2021-11-24 12:00:00',
+          createdAt: '2021-11-24 08:23:10',
           createdBy: 'David Jones',
           data: {
             confirmCheckDetails: 'yes',
@@ -35,7 +35,7 @@ describe('Has claim expired test', () => {
         }
       },
       when: {
-        currentTime: '2022-05-24 11:59:59'
+        currentTime: '2022-05-24 23:59:59'
       },
       expect: {
         hasExpired: false
@@ -109,7 +109,7 @@ describe('Has claim expired test', () => {
         }
       },
       when: {
-        currentTime: '2022-05-24 12:00:00'
+        currentTime: '2022-05-25 00:00:00'
       },
       expect: {
         hasExpired: false
@@ -146,7 +146,7 @@ describe('Has claim expired test', () => {
         }
       },
       when: {
-        currentTime: '2022-05-24 12:00:01'
+        currentTime: '2022-05-25 00:00:01'
       },
       expect: {
         hasExpired: true
