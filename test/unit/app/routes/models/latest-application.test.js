@@ -1,12 +1,16 @@
-const { NoApplicationFound, ClaimHasAlreadyBeenMade } = require('../../../../../app/exceptions')
+const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpired } = require('../../../../../app/exceptions')
 
 describe('Latest Applications Tests', () => {
   let applicationApiMock
+  let hasClaimExpiredMock
   let latestApplication
 
   beforeAll(() => {
     applicationApiMock = require('../../../../../app/api-requests/application-service-api')
     jest.mock('../../../../../app/api-requests/application-service-api')
+
+    hasClaimExpiredMock = require('../../../../../app/lib/claim-has-expired')
+    jest.mock('../../../../../app/lib/claim-has-expired')
 
     latestApplication = require('../../../../../app/routes/models/latest-application')
   })
@@ -331,8 +335,49 @@ describe('Latest Applications Tests', () => {
       expect: {
         error: new ClaimHasAlreadyBeenMade('Claim has already been made for SBI - 111111111')
       }
+    },
+    {
+      toString: () => 'AGREED but expired application found',
+      given: {
+        sbi: 111111111
+      },
+      when: {
+        agreementExpired: true,
+        latestApplications: [{
+          claimed: false,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 1,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }]
+      },
+      expect: {
+        error: new ClaimHasExpired('Claim has expired for reference - AHWR-5C1C-AAAA')
+      }
     }
   ])('%s', async (testCase) => {
+    if (testCase.when.agreementExpired) {
+      hasClaimExpiredMock.claimHasExpired.mockReturnValueOnce(true)
+    }
     applicationApiMock.getLatestApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
     if (testCase.expect.error) {
       await expect(
