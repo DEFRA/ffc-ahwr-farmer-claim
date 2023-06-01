@@ -27,22 +27,22 @@ deployment:
   memoryThreshold: 80
   minReadySeconds: 0
   minReplicas: 1
-  maxReplicas: 2
+  maxReplicas: 4
   priorityClassName: default
   replicas: 1
   restartPolicy: Always
 
 container:
+  requestMemory: 120Mi
+  requestCpu: 120m
+  limitMemory: 400Mi
+  limitCpu: 400m
   applicationRequestQueueAddress: ffc-ahwr-application-request
   applicationResponseQueueAddress: ffc-ahwr-application-response
   cookiePassword: who-likes-cookies-i-like-cookies-everybody-likes-cookies
   eventQueueAddress: ffc-ahwr-event
   googleTagManagerKey:
   imagePullPolicy: IfNotPresent
-  requestMemory: 100Mi
-  requestCpu: 40m
-  limitMemory: 100Mi
-  limitCpu: 100m
   messageQueueHost: namespace.servicebus.windows.net
   notifyApiKey:
   notifyTemplateIdFarmerClaimLogin:
