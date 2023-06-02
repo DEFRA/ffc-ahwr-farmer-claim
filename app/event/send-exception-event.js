@@ -9,13 +9,13 @@ const sendExceptionEvent = async (sessionId, sbi, crn, exception, status = 'aler
       email: 'unknown',
       name: 'send-exception-event',
       type: 'exception-event',
-      message: `Apply: ${exception}`,
+      message: `Claim: ${exception}`,
       data: {
         sbi,
         crn,
         exception,
         raisedAt: new Date(),
-        journey: 'apply'
+        journey: 'claim'
       },
       status
     }
