@@ -31,13 +31,13 @@ describe('Send event on exception', () => {
       email: 'unknown',
       name: 'send-exception-event',
       type: 'exception-event',
-      message: `Apply: ${exception}`,
+      message: `Claim: ${exception}`,
       data: {
         sbi,
         crn,
         exception,
         raisedAt: MOCK_NOW,
-        journey: 'apply'
+        journey: 'claim'
       },
       status: 'alert'
     }
