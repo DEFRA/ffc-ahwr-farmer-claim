@@ -101,7 +101,7 @@ module.exports = [{
               hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           case error instanceof ClaimHasAlreadyBeenMade:
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'NotAppliedYet')
+            sendExceptionEvent(event.id, event.sbi, event.crn, 'AlreadyClaimed')
             return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
               error,
               organisationName: organisation?.name,
@@ -111,6 +111,7 @@ module.exports = [{
               hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           case error instanceof ClaimHasExpired:
+            sendExceptionEvent(event.id, event.sbi, event.crn, 'ClaimExpired')
             return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
               error,
               organisationName: organisation?.name,
@@ -121,7 +122,6 @@ module.exports = [{
             }).code(400).takeover()
           case error instanceof NoEligibleCphError:
             sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidCPH')
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'NotAppliedYet')
             return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
               error,
               organisationName: organisation?.name,
