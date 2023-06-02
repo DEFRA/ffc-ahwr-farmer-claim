@@ -25,6 +25,17 @@
       <h2 class="govuk-heading-m">What to do next</h2>
     {% endif %}
 
+    {% if error.name === 'InvalidCPH' %}
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has no eligible county parish holding (CPH) number registered to it.</p>
+    
+      <p class="govuk-body">To be eligible a CPH must be registered in England.</p>
+      <p class="govuk-body">The CPH number cannot be:</p>
+      <ul class='govuk-list govuk-list--bullet'>
+        <li>an 8000 number used for abattoirs, pet food manufacturers, racing pigeon establishments and showgrounds</li>
+        <li>a 9000 number used for poultry keepers</li>
+      </ul>
+    {% endif %}
+
     {% if (error.name === 'ClaimHasAlreadyBeenMade') %}
       <p class="govuk-body">{{ organisationName }}{{ sbiText }} has already claimed for an annual health and welfare review of livestock.</p>
     
