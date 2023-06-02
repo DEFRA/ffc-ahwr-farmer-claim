@@ -6,7 +6,11 @@ const sessionKeys = require('../../session/keys')
 const latestApplicationForSbi = require('../models/latest-application')
 const { farmerClaim } = require('../../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../../exceptions')
+const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired, NoEligibleCphError } = require('../../exceptions')
+const { sendExceptionEvent } = require('../../event')
+const cphCheck = require('../../api-requests/rpa-api/cph-check')
+
+let event
 
 module.exports = [{
   method: 'GET',
@@ -49,6 +53,15 @@ module.exports = [{
         if (!organisationSummary.organisationPermission) {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)
         }
+
+        await cphCheck.customerMustHaveAtLeastOneValidCph(request, apimAccessToken)
+
+        event = {
+          id: request.yar.id,
+          sbi: organisationSummary.organisation.sbi,
+          crn: organisationSummary.organisation.crn
+        }
+
         const latestApplication = await latestApplicationForSbi(
           organisationSummary.organisation.sbi.toString(),
           organisationSummary.organisation.name
@@ -67,8 +80,44 @@ module.exports = [{
           case error instanceof InvalidStateError:
             return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
           case error instanceof InvalidPermissionsError:
+            sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidPermissions')
+            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              alreadyAppliedError: err instanceof AlreadyAppliedError,
+              permissionError: err instanceof InvalidPermissionsError,
+              cphError: err instanceof NoEligibleCphError,
+              hasMultipleBusineses: attachedToMultipleBusinesses,
+              backLink: auth.requestAuthorizationCodeUrl(session, request),
+              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
+              organisationName: organisation?.name,
+              guidanceLink: config.serviceUri
+            }).code(400).takeover()
           case error instanceof NoApplicationFound:
+            sendExceptionEvent(event.id, event.sbi, event.crn, 'NotAppliedYet')
+            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              alreadyAppliedError: err instanceof AlreadyAppliedError,
+              permissionError: err instanceof InvalidPermissionsError,
+              cphError: err instanceof NoEligibleCphError,
+              hasMultipleBusineses: attachedToMultipleBusinesses,
+              backLink: auth.requestAuthorizationCodeUrl(session, request),
+              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
+              organisationName: organisation?.name,
+              guidanceLink: config.serviceUri
+            }).code(400).takeover()
           case error instanceof ClaimHasAlreadyBeenMade:
+            sendExceptionEvent(event.id, event.sbi, event.crn, 'AlreadyClaimed')
+            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              alreadyAppliedError: err instanceof AlreadyAppliedError,
+              permissionError: err instanceof InvalidPermissionsError,
+              cphError: err instanceof NoEligibleCphError,
+              hasMultipleBusineses: attachedToMultipleBusinesses,
+              backLink: auth.requestAuthorizationCodeUrl(session, request),
+              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
+              organisationName: organisation?.name,
+              guidanceLink: config.serviceUri
+            }).code(400).takeover()
           case error instanceof ClaimHasExpired:
             return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
@@ -77,6 +126,19 @@ module.exports = [{
               backLink: auth.requestAuthorizationCodeUrl(session, request),
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
               organisationName: organisation?.name
+            }).code(400).takeover()
+          case err instanceof NoEligibleCphError:
+            sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidCPH')
+            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              alreadyAppliedError: err instanceof AlreadyAppliedError,
+              permissionError: err instanceof InvalidPermissionsError,
+              cphError: err instanceof NoEligibleCphError,
+              hasMultipleBusineses: attachedToMultipleBusinesses,
+              backLink: auth.requestAuthorizationCodeUrl(session, request),
+              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
+              organisationName: organisation?.name,
+              guidanceLink: config.serviceUri
             }).code(400).takeover()
           default:
             return h.view('verify-login-failed', {
