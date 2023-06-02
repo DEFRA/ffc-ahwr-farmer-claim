@@ -81,8 +81,8 @@ module.exports = [{
           case error instanceof InvalidStateError:
             return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
           case error instanceof InvalidPermissionsError:
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidPermissions')
-            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+            await sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidPermissions')
+            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
               organisationName: organisation?.name,
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
@@ -91,8 +91,8 @@ module.exports = [{
               hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           case error instanceof NoApplicationFound:
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'NotAppliedYet')
-            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+            await sendExceptionEvent(event.id, event.sbi, event.crn, 'NotAppliedYet')
+            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
               organisationName: organisation?.name,
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
@@ -101,8 +101,8 @@ module.exports = [{
               hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           case error instanceof ClaimHasAlreadyBeenMade:
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'AlreadyClaimed')
-            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+            await sendExceptionEvent(event.id, event.sbi, event.crn, 'AlreadyClaimed')
+            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
               organisationName: organisation?.name,
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
@@ -111,8 +111,8 @@ module.exports = [{
               hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           case error instanceof ClaimHasExpired:
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'ClaimExpired')
-            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+            await sendExceptionEvent(event.id, event.sbi, event.crn, 'ClaimExpired')
+            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
               organisationName: organisation?.name,
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
@@ -121,8 +121,8 @@ module.exports = [{
               hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           case error instanceof NoEligibleCphError:
-            sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidCPH')
-            return h.view('defra-id/cannot-apply-for-livestock-review-exception', {
+            await sendExceptionEvent(event.id, event.sbi, event.crn, 'InvalidCPH')
+            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
               organisationName: organisation?.name,
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
