@@ -1,12 +1,13 @@
 jest.mock('../../../../app/event/raise-event')
 const raiseEvent = require('../../../../app/event/raise-event')
 
-const sendExceptionEvent = require('../../../../app/event/raise-ineligibility-event')
+const raiseIneligibilityEvent = require('../../../../app/event/raise-ineligibility-event')
 
 let event
 const sessionId = '9e016c50-046b-4597-b79a-ebe4f0bf8505'
 const sbi = '123'
 const crn = 123
+const email = 'business@email.com'
 const exception = 'test exception'
 
 describe('Send event on exception', () => {
@@ -19,7 +20,7 @@ describe('Send event on exception', () => {
   })
 
   test('should call raiseEvent when a valid event is received', async () => {
-    await sendExceptionEvent(sessionId, sbi, crn, exception)
+    await raiseIneligibilityEvent(sessionId, sbi, crn, email, exception)
     expect(raiseEvent).toHaveBeenCalled()
   })
 
@@ -28,9 +29,9 @@ describe('Send event on exception', () => {
       id: sessionId,
       sbi,
       cph: 'n/a',
-      email: 'unknown',
-      name: 'send-exception-event',
-      type: 'exception-event',
+      email: email,
+      name: 'send-ineligibility-event',
+      type: 'ineligibility-event',
       message: `Claim: ${exception}`,
       data: {
         sbi,
@@ -42,17 +43,17 @@ describe('Send event on exception', () => {
       status: 'alert'
     }
 
-    await sendExceptionEvent(sessionId, sbi, crn, exception)
+    await raiseIneligibilityEvent(sessionId, sbi, crn, email, exception)
     expect(raiseEvent).toHaveBeenCalledWith(event, 'alert')
   })
 
   test('should not call raiseEvent when an event with a null sessionId is received', async () => {
-    await sendExceptionEvent(null, sbi, crn, exception)
+    await raiseIneligibilityEvent(null, sbi, crn, email, exception)
     expect(raiseEvent).not.toHaveBeenCalled()
   })
 
   test('should not call raiseEvent when an event with a null exception is received', async () => {
-    await sendExceptionEvent(sessionId, sbi, crn, null)
+    await raiseIneligibilityEvent(sessionId, sbi, crn, email, null)
     expect(raiseEvent).not.toHaveBeenCalled()
   })
 })
