@@ -3,13 +3,11 @@ const ClaimHasAlreadyBeenMade = require('./claim-has-already-been-made')
 const NoApplicationFound = require('./no-application-found')
 const InvalidStateError = require('./invalid-state-error')
 const ClaimHasExpired = require('./claim-has-expired')
-const NoEligibleCphError = require('./no-eligible-cph-error')
 
 module.exports = {
   InvalidPermissionsError,
   NoApplicationFound,
   ClaimHasAlreadyBeenMade,
   InvalidStateError,
-  ClaimHasExpired,
-  NoEligibleCphError
+  ClaimHasExpired
 }
