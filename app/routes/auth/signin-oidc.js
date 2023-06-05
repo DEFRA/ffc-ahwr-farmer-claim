@@ -7,7 +7,7 @@ const latestApplicationForSbi = require('../models/latest-application')
 const { farmerClaim } = require('../../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
 const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../../exceptions')
-const { sendExceptionEvent } = require('../../event')
+const { raiseIneligibilityEvent } = require('../../event')
 
 module.exports = [{
   method: 'GET',
@@ -75,7 +75,7 @@ module.exports = [{
           case error instanceof NoApplicationFound:
           case error instanceof ClaimHasAlreadyBeenMade:
           case error instanceof ClaimHasExpired:
-            await sendExceptionEvent(
+            await raiseIneligibilityEvent(
               request.yar.id,
               organisation?.sbi,
               crn,

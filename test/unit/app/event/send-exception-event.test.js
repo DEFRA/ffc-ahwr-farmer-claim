@@ -1,7 +1,7 @@
 jest.mock('../../../../app/event/raise-event')
 const raiseEvent = require('../../../../app/event/raise-event')
 
-const sendExceptionEvent = require('../../../../app/event/send-exception-event')
+const sendExceptionEvent = require('../../../../app/event/raise-ineligibility-event')
 
 let event
 const sessionId = '9e016c50-046b-4597-b79a-ebe4f0bf8505'
