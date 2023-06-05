@@ -20,7 +20,6 @@ const raiseIneligibilityEvent = async (sessionId, sbi, crn, email, exception, st
       status
     }
     await raiseEvent(event, status)
-    console.log(`Event raised: ${JSON.stringify(event)}`)
   }
 }
 

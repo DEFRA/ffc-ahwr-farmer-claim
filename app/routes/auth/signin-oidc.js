@@ -67,7 +67,6 @@ module.exports = [{
         const crn = session.getCustomer(request, sessionKeys.customer.crn)
         const attachedToMultipleBusinesses = session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses)
         const organisation = session.getClaim(request, sessionKeys.farmerApplyData.organisation)
-        const email = session.getClaim(request, sessionKeys.farmerApplyData.email)
         switch (true) {
           case error instanceof InvalidStateError:
             return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
@@ -79,7 +78,7 @@ module.exports = [{
               request.yar.id,
               organisation?.sbi,
               crn,
-              email,
+              organisation?.email,
               error.name
             )
             return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
