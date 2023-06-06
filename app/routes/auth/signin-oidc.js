@@ -23,7 +23,8 @@ module.exports = [{
       failAction (request, h, err) {
         console.log(`Validation error caught during DEFRA ID redirect - ${err.message}.`)
         return h.view('verify-login-failed', {
-          backLink: auth.requestAuthorizationCodeUrl(session, request)
+          backLink: auth.requestAuthorizationCodeUrl(session, request),
+          ruralPaymentsAgency: config.ruralPaymentsAgency
         }).code(400).takeover()
       }
     },
@@ -80,7 +81,8 @@ module.exports = [{
             }).code(400).takeover()
           default:
             return h.view('verify-login-failed', {
-              backLink: auth.requestAuthorizationCodeUrl(session, request)
+              backLink: auth.requestAuthorizationCodeUrl(session, request),
+              ruralPaymentsAgency: config.ruralPaymentsAgency
             }).code(400).takeover()
         }
       }
