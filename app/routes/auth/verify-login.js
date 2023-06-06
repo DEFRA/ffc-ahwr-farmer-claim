@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { lookupToken, setAuthCookie } = require('../../auth')
 const { sendMonitoringEvent } = require('../../event')
+const config = require('../../../app/config')
 
 function isRequestInvalid (cachedEmail, email) {
   return typeof cachedEmail === 'undefined' || email !== cachedEmail
@@ -29,7 +30,8 @@ module.exports = [{
         })}`)
         sendMonitoringEvent(request.yar.id, error.details[0].message, '', getIp(request))
         return h.view('verify-login-failed', {
-          backLink: 'claim/login'
+          backLink: 'claim/login',
+          ruralPaymentsAgency: config.ruralPaymentsAgency
         }).code(400).takeover()
       }
     },
@@ -45,7 +47,8 @@ module.exports = [{
       if (isRequestInvalid(cachedEmail, email)) {
         sendMonitoringEvent(request.yar.id, 'Invalid token', email, getIp(request))
         return h.view('verify-login-failed', {
-          backLink: 'claim/login'
+          backLink: 'claim/login',
+          ruralPaymentsAgency: config.ruralPaymentsAgency
         }).code(400).takeover()
       }
 
