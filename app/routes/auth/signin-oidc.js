@@ -7,6 +7,7 @@ const latestApplicationForSbi = require('../models/latest-application')
 const { farmerClaim } = require('../../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
 const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../../exceptions')
+const { raiseIneligibilityEvent } = require('../../event')
 
 module.exports = [{
   method: 'GET',
@@ -50,8 +51,9 @@ module.exports = [{
         if (!organisationSummary.organisationPermission) {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)
         }
+
         const latestApplication = await latestApplicationForSbi(
-          organisationSummary.organisation.sbi.toString(),
+          organisationSummary.organisation.sbi?.toString(),
           organisationSummary.organisation.name
         )
         console.log(`${new Date().toISOString()} Claimable application found: ${JSON.stringify({
@@ -63,6 +65,8 @@ module.exports = [{
         return h.redirect('/claim/visit-review')
       } catch (error) {
         console.error(`Received error with name ${error.name} and message ${error.message}.`)
+        const crn = session.getCustomer(request, sessionKeys.customer.crn)
+        const attachedToMultipleBusinesses = session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses)
         const organisation = session.getClaim(request, sessionKeys.farmerApplyData.organisation)
         switch (true) {
           case error instanceof InvalidStateError:
@@ -71,13 +75,20 @@ module.exports = [{
           case error instanceof NoApplicationFound:
           case error instanceof ClaimHasAlreadyBeenMade:
           case error instanceof ClaimHasExpired:
+            await raiseIneligibilityEvent(
+              request.yar.id,
+              organisation?.sbi,
+              crn,
+              organisation?.email,
+              error.name
+            )
             return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
               error,
-              hasMultipleBusinesses: session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses),
+              organisationName: organisation?.name,
+              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
               ruralPaymentsAgency: config.ruralPaymentsAgency,
               backLink: auth.requestAuthorizationCodeUrl(session, request),
-              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
-              organisationName: organisation?.name
+              hasMultipleBusinesses: attachedToMultipleBusinesses
             }).code(400).takeover()
           default:
             return h.view('verify-login-failed', {
