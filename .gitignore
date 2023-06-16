@@ -28,3 +28,5 @@ layout.njk
 /test/acceptance/.env.snd
 /test/acceptance/reporter/cucumber_report.html
 /test/acceptance/reporter/cucumber_report.html.json
+/test/acceptance/.env.dev
+/test/acceptance/.env.test
