@@ -24,7 +24,7 @@ then
   echo "================================"
   echo "| Running Test on your machine |"
   echo "================================"
-  npm run test.compatibility.docker
+  npm run test:local
 else
   echo "==================================="
   echo "| Running Test using Docker Image |"
