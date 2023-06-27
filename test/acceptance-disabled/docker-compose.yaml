@@ -2,7 +2,7 @@ version: "3.7"
 services:
   wdio-cucumber:
     build: .
-    image: ffc-ahwr-farmer-apply-acceptance
+    image: ffc-ahwr-farmer-claim-acceptance
     container_name: webdriver-cuke
     environment:
       TEST_ENVIRONMENT_ROOT_URL: ${TEST_ENVIRONMENT_ROOT_URL}
@@ -14,3 +14,5 @@ services:
       FFC_AHWR_AUTOMATION_NOTIFY_JWT_ISSUER: ${FFC_AHWR_AUTOMATION_NOTIFY_JWT_ISSUER}
       NOTIFY_TEMPLATE_ID_FARMER_APPLY_LOGIN: "073cc8bc-495f-4d93-ba32-9a9226120d48"
       NODE_TLS_REJECT_UNAUTHORIZED: 0
+      CRN_USERNAME: ${FFC_AHWR_CRN_USERNAME}
+      CRN_PASSWORD: ${FFC_AHWR_CRN_PASSWORD}
