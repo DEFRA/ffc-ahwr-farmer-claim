@@ -9,7 +9,6 @@ describe('Auth config', () => {
   test.each([
     {
       processEnv: {
-        enabled: true,
         tenant: 'testtenant',
         policy: 'testpolicy',
         redirectUri: 'http://localhost:3000/apply/signin-oidc',
@@ -30,7 +29,6 @@ describe('Auth config', () => {
       },
       config: {
         defraId: {
-          enabled: true,
           hostname: 'https://testtenant.b2clogin.com/testtenant.onmicrosoft.com',
           oAuthAuthorisePath: '/oauth2/v2.0/authorize',
           policy: 'testpolicy',
@@ -59,7 +57,6 @@ describe('Auth config', () => {
       }
     }
   ])('GIVEN $processEnv EXPECT $config', (testCase) => {
-    process.env.DEFRA_ID_ENABLED = testCase.processEnv.enabled
     process.env.DEFRA_ID_TENANT = testCase.processEnv.tenant
     process.env.DEFRA_ID_POLICY = testCase.processEnv.policy
     process.env.DEFRA_ID_REDIRECT_URI = testCase.processEnv.redirectUri

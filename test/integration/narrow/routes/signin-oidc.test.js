@@ -1,22 +1,22 @@
 const cheerio = require('cheerio')
-const sessionMock = require('../../../../../app/session')
-jest.mock('../../../../../app/session')
-const authMock = require('../../../../../app/auth')
-jest.mock('../../../../../app/auth')
-const latestApplicationMock = require('../../../../../app/routes/models/latest-application')
-jest.mock('../../../../../app/routes/models/latest-application')
-const personMock = require('../../../../../app/api-requests/rpa-api/person')
-jest.mock('../../../../../app/api-requests/rpa-api/person')
-const organisationMock = require('../../../../../app/api-requests/rpa-api/organisation')
-jest.mock('../../../../../app/api-requests/rpa-api/organisation')
-const sendExceptionEventMock = require('../../../../../app/event/raise-ineligibility-event')
-jest.mock('../../../../../app/event/raise-ineligibility-event')
+const sessionMock = require('../../../../app/session')
+jest.mock('../../../../app/session')
+const authMock = require('../../../../app/auth')
+jest.mock('../../../../app/auth')
+const latestApplicationMock = require('../../../../app/routes/models/latest-application')
+jest.mock('../../../../app/routes/models/latest-application')
+const personMock = require('../../../../app/api-requests/rpa-api/person')
+jest.mock('../../../../app/api-requests/rpa-api/person')
+const organisationMock = require('../../../../app/api-requests/rpa-api/organisation')
+jest.mock('../../../../app/api-requests/rpa-api/organisation')
+const sendExceptionEventMock = require('../../../../app/event/raise-ineligibility-event')
+jest.mock('../../../../app/event/raise-ineligibility-event')
 
-const { NoApplicationFound, InvalidStateError, ClaimHasExpired, ClaimHasAlreadyBeenMade } = require('../../../../../app/exceptions')
+const { NoApplicationFound, InvalidStateError, ClaimHasExpired, ClaimHasAlreadyBeenMade } = require('../../../../app/exceptions')
 
 describe('FarmerApply defra ID redirection test', () => {
-  jest.mock('../../../../../app/config', () => ({
-    ...jest.requireActual('../../../../../app/config'),
+  jest.mock('../../../../app/config', () => ({
+    ...jest.requireActual('../../../../app/config'),
     authConfig: {
       defraId: {
         enabled: true

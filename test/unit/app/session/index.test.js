@@ -3,7 +3,6 @@ const session = require('../../../../app/session')
 describe('session', () => {
   const applicationSectionKey = 'application'
   const claimKey = 'claim'
-  const selectYourBusinessKey = 'selectYourBusiness'
   const tokensSectionKey = 'tokens'
   const customerSectionKey = 'customer'
   const pkcecodesSectionKey = 'pkcecodes'
@@ -14,7 +13,6 @@ describe('session', () => {
   const getFunctionsToTest = [
     { func: 'getApplication', expectedSectionKey: applicationSectionKey },
     { func: 'getClaim', expectedSectionKey: claimKey },
-    { func: 'getSelectYourBusiness', expectedSectionKey: selectYourBusinessKey },
     { func: 'getToken', expectedSectionKey: tokensSectionKey },
     { func: 'getCustomer', expectedSectionKey: customerSectionKey },
     { func: 'getPkcecodes', expectedSectionKey: pkcecodesSectionKey }
@@ -23,7 +21,6 @@ describe('session', () => {
   const setFunctionsToTest = [
     { func: 'setApplication', expectedSectionKey: applicationSectionKey },
     { func: 'setClaim', expectedSectionKey: claimKey },
-    { func: 'setSelectYourBusiness', expectedSectionKey: selectYourBusinessKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
     { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey }

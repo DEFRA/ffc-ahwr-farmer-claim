@@ -1,5 +1,3 @@
-const config = require('../config')
-
 const routes = [].concat(
   require('../routes/assets'),
   require('../routes/cookies'),
@@ -13,7 +11,8 @@ const routes = [].concat(
   require('../routes/urn-result'),
   require('../routes/vet-name'),
   require('../routes/vet-rcvs'),
-  require('../routes/vet-visit-date')
+  require('../routes/vet-visit-date'),
+  require('../routes/signin-oidc')
 )
 
 module.exports = {
@@ -21,15 +20,6 @@ module.exports = {
     name: 'router',
     register: (server, _) => {
       server.route(routes)
-      if (config.authConfig.defraId.enabled === true) {
-        server.route(require('../routes/auth/signin-oidc'))
-      } else {
-        server.route(require('../routes/select-your-business'))
-        server.route(require('../routes/no-business-available-to-claim-for'))
-        server.route(require('../routes/single-business-claim-expired'))
-        server.route(require('../routes/auth/verify-login'))
-        server.route(require('../routes/auth/login'))
-      }
     }
   }
 }

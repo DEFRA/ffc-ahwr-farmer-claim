@@ -9,7 +9,6 @@ data:
   EVENT_QUEUE_ADDRESS: {{ .Values.container.eventQueueAddress }}
   GOOGLE_TAG_MANAGER_KEY: {{ quote .Values.container.googleTagManagerKey}}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
-  NOTIFY_TEMPLATE_ID_FARMER_CLAIM_LOGIN: {{ quote .Values.container.notifyTemplateIdFarmerClaimLogin }}
   {{- if .Values.container.redisHostname }}
   REDIS_HOSTNAME: {{ quote .Values.container.redisHostname }}
   {{- end }}
@@ -21,9 +20,7 @@ data:
   REDIS_PORT: {{ quote .Values.container.redisPort }}
   SERVICE_URI: {{ quote .Values.container.serviceUri }}
   APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
-  ELIGIBILITY_API_URI: {{ quote .Values.container.eligibilityApiUri }}
   APPLICATION_API_URI: {{ quote .Values.container.applicationApiUri }}
-  DEFRA_ID_ENABLED: {{ quote .Values.container.defraIdEnabled }}
   DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
   DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
   DEFRA_ID_REDIRECT_URI: {{ quote .Values.container.defraIdRedirectUri }}

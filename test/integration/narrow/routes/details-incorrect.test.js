@@ -8,7 +8,19 @@ describe('Farmer claim - review details incorrect page test', () => {
       serviceName: 'Annual health and welfare review of livestock',
       authConfig: {
         defraId: {
-          enabled: false
+          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+          policy: 'b2c_1a_signupsigninsfi',
+          redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          clientId: 'dummy_client_id',
+          serviceId: 'dummy_service_id',
+          scope: 'openid dummy_client_id offline_access'
+        },
+        ruralPaymentsAgency: {
+          hostname: 'dummy-host-name',
+          getPersonSummaryUrl: 'dummy-get-person-summary-url',
+          getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
+          getOrganisationUrl: 'dummy-get-organisation-url'
         }
       }
     }))
@@ -34,7 +46,7 @@ describe('Farmer claim - review details incorrect page test', () => {
     })
 
     describe(`GET ${url} route when not logged in`, () => {
-      test('redirects to /login', async () => {
+      test('redirects to defra id', async () => {
         const options = {
           method: 'GET',
           url
@@ -43,7 +55,7 @@ describe('Farmer claim - review details incorrect page test', () => {
         const res = await global.__SERVER__.inject(options)
 
         expect(res.statusCode).toBe(302)
-        expect(res.headers.location).toEqual('/claim/login')
+        expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
       })
     })
   })

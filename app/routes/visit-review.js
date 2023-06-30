@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const boom = require('@hapi/boom')
 const session = require('../session')
-const config = require('../config')
 const auth = require('../auth')
 const getClaimViewData = require('./models/claim')
 const { detailsCorrect } = require('../session/keys').claim
@@ -19,7 +18,7 @@ module.exports = [{
         return boom.notFound()
       }
 
-      return h.view('visit-review', getClaimViewData(claim, generateBackLink(request, claim)))
+      return h.view('visit-review', getClaimViewData(claim, generateBackLink(request)))
     }
   }
 },
@@ -33,7 +32,7 @@ module.exports = [{
       }),
       failAction: (request, h, _err) => {
         const claim = session.getClaim(request)
-        return h.view('visit-review', getClaimViewData(claim, generateBackLink(request, claim), errorMessage)).code(400).takeover()
+        return h.view('visit-review', getClaimViewData(claim, generateBackLink(request), errorMessage)).code(400).takeover()
       }
     },
     handler: async (request, h) => {
@@ -47,6 +46,6 @@ module.exports = [{
   }
 }]
 
-function generateBackLink (request, claim) {
-  return config.authConfig.defraId.enabled ? auth.requestAuthorizationCodeUrl(session, request) : `/claim/select-your-business?businessEmail=${claim.data.organisation.email}`
+function generateBackLink (request) {
+  return auth.requestAuthorizationCodeUrl(session, request)
 }

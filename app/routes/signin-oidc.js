@@ -1,13 +1,13 @@
 const Joi = require('joi')
-const config = require('../../config')
-const auth = require('../../auth')
-const session = require('../../session')
-const sessionKeys = require('../../session/keys')
-const latestApplicationForSbi = require('../models/latest-application')
-const { farmerClaim } = require('../../constants/user-types')
-const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../../exceptions')
-const { raiseIneligibilityEvent } = require('../../event')
+const config = require('../config')
+const auth = require('../auth')
+const session = require('../session')
+const sessionKeys = require('../session/keys')
+const latestApplicationForSbi = require('./models/latest-application')
+const { farmerClaim } = require('../constants/user-types')
+const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
+const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../exceptions')
+const { raiseIneligibilityEvent } = require('../event')
 
 module.exports = [{
   method: 'GET',
@@ -82,7 +82,7 @@ module.exports = [{
               organisation?.email,
               error.name
             )
-            return h.view('defra-id/you-cannot-claim-for-a-livestock-review', {
+            return h.view('you-cannot-claim-for-a-livestock-review', {
               error,
               organisationName: organisation?.name,
               sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
