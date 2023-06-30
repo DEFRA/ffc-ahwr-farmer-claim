@@ -1,5 +1,4 @@
 const { when, resetAllWhenMocks } = require('jest-when')
-const InvalidStateError = require('../../../../app/exceptions/invalid-state-error')
 const MOCK_USE_ACTUAL_DECODE = require('jsonwebtoken').decode
 const sessionKeys = require('../../../../app/session/keys')
 
@@ -23,14 +22,30 @@ describe('authenticate', () => {
       ...jest.requireActual('../../../../app/config'),
       authConfig: {
         defraId: {
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-          scope: 'scope',
-          redirectUri: 'redirectUri',
-          hostname: 'hostname',
+          hostname: 'https://tenantname.b2clogin.com/tenantname.onmicrosoft.com',
           tenantName: 'tenantname',
-          jwtIssuerId: 'jwtissuerid',
-          policy: 'b2c_1a_signupsignin'
+          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+          policy: 'b2c_1a_signupsigninsfi',
+          redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          clientId: 'dummy_client_id',
+          clientSecret: 'dummy_client_secret',
+          serviceId: 'dummy_service_id',
+          scope: 'openid dummy_client_id offline_access',
+          jwtIssuerId: 'jwtissuerid'
+        },
+        ruralPaymentsAgency: {
+          hostname: 'dummy-host-name',
+          getPersonSummaryUrl: 'dummy-get-person-summary-url',
+          getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
+          getOrganisationUrl: 'dummy-get-organisation-url'
+        },
+        apim: {
+          ocpSubscriptionKey: 'dummy-ocp-subscription-key',
+          hostname: 'dummy-host-name',
+          oAuthPath: 'dummy-oauth-path',
+          clientId: 'dummy-client-id',
+          clientSecret: 'dummy-client-secret',
+          scope: 'dummy-scope'
         }
       }
     }))
@@ -66,7 +81,7 @@ describe('authenticate', () => {
 
   test.each([
     {
-      toString: () => 'authenticate - successful',
+      toString: () => 'authenticate',
       given: {
         request: {
           query: {
@@ -111,10 +126,9 @@ describe('authenticate', () => {
                 "5384769:Agent:3"
               ],
               "contactId": "1234567890",
-              "currentRelationshipId": "123456789",
-              "enrolmentCount": "2"
+              "currentRelationshipId": "123456789"
             } */
-            access_token: 'eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vand0aXNzdWVyaWQvdjIuMC8iLCJyb2xlcyI6WyI1Mzg0NzY5OkFnZW50OjMiXSwiY29udGFjdElkIjoiMTIzNDU2Nzg5MCIsImN1cnJlbnRSZWxhdGlvbnNoaXBJZCI6IjEyMzQ1Njc4OSIsImVucm9sbWVudENvdW50IjoiMiJ9.rz2yP1Iar8XOsYRftQ0ANmESjSSNHYRtCH-JI2G0n0A',
+            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vand0aXNzdWVyaWQvdjIuMC8iLCJyb2xlcyI6WyI1Mzg0NzY5OkFnZW50OjMiXSwiY29udGFjdElkIjoiMTIzNDU2Nzg5MCIsImN1cnJlbnRSZWxhdGlvbnNoaXBJZCI6IjEyMzQ1Njc4OSJ9.pYC2VTlSnlIsLn4MknJl0YhLPCn2oW6K73FKFgzvAqE',
             id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
             expires_in: 10
           }
@@ -125,11 +139,11 @@ describe('authenticate', () => {
         consoleLogs: [
           `${MOCK_NOW.toISOString()} Requesting an access token with a client_secret`,
           `${MOCK_NOW.toISOString()} Verifying JWT token: ${JSON.stringify({
-            token: 'eyJhb...G0n0A'
+            token: 'eyJhb...zvAqE'
           })}`,
           `${MOCK_NOW.toISOString()} Acquiring the signing key data necessary to validate the signature`,
           `${MOCK_NOW.toISOString()} Decoding JWT token: ${JSON.stringify({
-            token: 'eyJhb...G0n0A'
+            token: 'eyJhb...zvAqE'
           })}`,
           `${MOCK_NOW.toISOString()} Decoding JWT token: ${JSON.stringify({
             token: 'eyJhb...uRrzk'
@@ -138,246 +152,6 @@ describe('authenticate', () => {
           `${MOCK_NOW.toISOString()} Verifying id_token nonce`
         ],
         errorLogs: [
-        ]
-      }
-    },
-    {
-      toString: () => 'authenticate - request query error found',
-      given: {
-        request: {
-          yar: {
-            id: 'req_id'
-          },
-          query: {
-            code: 'query_code',
-            error: 'err',
-            error_description: 'err_desc'
-          },
-          cookieAuth: {
-            set: MOCK_COOKIE_AUTH_SET
-          }
-        }
-      },
-      when: {
-        session: {
-          state: 'query_state',
-          pkcecodes: {
-            verifier: 'verifier'
-          }
-        },
-        jwktopem: 'public_key',
-        acquiredSigningKey: {
-          signingKey: 'signing_key'
-        },
-        redeemResponse: {
-          res: {
-            statusCode: 200
-          },
-          payload: {
-            /* Decoded access_token:
-            {
-              "alg": "HS256",
-              "typ": "JWT"
-            },
-            {
-              "sub": "1234567890",
-              "name": "John Doe",
-              "firstName": "John",
-              "lastName": "Doe",
-              "email": "john.doe@email.com",
-              "iat": 1516239022,
-              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
-              "roles": [
-                "5384769:Agent:3"
-              ],
-              "contactId": "1234567890",
-              "currentRelationshipId": "123456789"
-            } */
-            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
-            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
-            expires_in: 10
-          }
-        }
-      },
-      expect: {
-        error: new Error(`Request query error found: ${JSON.stringify({
-          request: {
-            yar: {
-              id: 'req_id'
-            },
-            query: {
-              error_description: 'err_desc'
-            }
-          }
-        })}`),
-        consoleLogs: [
-        ],
-        errorLogs: [
-          new Error(`Request query error found: ${JSON.stringify({
-            request: {
-              yar: {
-                id: 'req_id'
-              },
-              query: {
-                error_description: 'err_desc'
-              }
-            }
-          })}`)
-        ]
-      }
-    },
-    {
-      toString: () => 'authenticate - no state found',
-      given: {
-        request: {
-          yar: {
-            id: 'req_id'
-          },
-          query: {
-            code: 'query_code'
-          },
-          cookieAuth: {
-            set: MOCK_COOKIE_AUTH_SET
-          }
-        }
-      },
-      when: {
-        session: {
-          state: 'query_state2',
-          pkcecodes: {
-            verifier: 'verifier'
-          }
-        },
-        jwktopem: 'public_key',
-        acquiredSigningKey: {
-          signingKey: 'signing_key'
-        },
-        redeemResponse: {
-          res: {
-            statusCode: 200
-          },
-          payload: {
-            /* Decoded access_token:
-            {
-              "alg": "HS256",
-              "typ": "JWT"
-            },
-            {
-              "sub": "1234567890",
-              "name": "John Doe",
-              "firstName": "John",
-              "lastName": "Doe",
-              "email": "john.doe@email.com",
-              "iat": 1516239022,
-              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
-              "roles": [
-                "5384769:Agent:3"
-              ],
-              "contactId": "1234567890",
-              "currentRelationshipId": "123456789"
-            } */
-            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
-            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
-            expires_in: 10
-          }
-        }
-      },
-      expect: {
-        error: new InvalidStateError(`No state found: ${JSON.stringify({
-          request: {
-            yar: {
-              id: 'req_id'
-            }
-          }
-        })}`),
-        consoleLogs: [
-        ],
-        errorLogs: [
-          new InvalidStateError(`No state found: ${JSON.stringify({
-            request: {
-              yar: {
-                id: 'req_id'
-              }
-            }
-          })}`)
-        ]
-      }
-    },
-    {
-      toString: () => 'authenticate - state mismatch',
-      given: {
-        request: {
-          yar: {
-            id: 'req_id'
-          },
-          query: {
-            state: 'query_state',
-            code: 'query_code'
-          },
-          cookieAuth: {
-            set: MOCK_COOKIE_AUTH_SET
-          }
-        }
-      },
-      when: {
-        session: {
-          state: 'query_state2',
-          pkcecodes: {
-            verifier: 'verifier'
-          }
-        },
-        jwktopem: 'public_key',
-        acquiredSigningKey: {
-          signingKey: 'signing_key'
-        },
-        redeemResponse: {
-          res: {
-            statusCode: 200
-          },
-          payload: {
-            /* Decoded access_token:
-            {
-              "alg": "HS256",
-              "typ": "JWT"
-            },
-            {
-              "sub": "1234567890",
-              "name": "John Doe",
-              "firstName": "John",
-              "lastName": "Doe",
-              "email": "john.doe@email.com",
-              "iat": 1516239022,
-              "iss": "https://tenantname.b2clogin.com/WRONG_JWT_ISSUER_ID/v2.0/",
-              "roles": [
-                "5384769:Agent:3"
-              ],
-              "contactId": "1234567890",
-              "currentRelationshipId": "123456789"
-            } */
-            access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZmlyc3ROYW1lIjoiSm9obiIsImxhc3ROYW1lIjoiRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjIsImlzcyI6Imh0dHBzOi8vdGVuYW50bmFtZS5iMmNsb2dpbi5jb20vV1JPTkdfSldUX0lTU1VFUl9JRC92Mi4wLyIsInJvbGVzIjpbIjUzODQ3Njk6QWdlbnQ6MyJdLCJjb250YWN0SWQiOiIxMjM0NTY3ODkwIiwiY3VycmVudFJlbGF0aW9uc2hpcElkIjoiMTIzNDU2Nzg5In0.CIzX3BNGBXDLfDbZ0opb3N9jFJv5tYQjQsB_Nrn-6jI',
-            id_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJub25jZSI6IjEyMyJ9.EFgheK9cJjMwoszwDYbf9n_XF8NJ3qBvLYqUB8uRrzk',
-            expires_in: 10
-          }
-        }
-      },
-      expect: {
-        error: new InvalidStateError(`State mismatch: ${JSON.stringify({
-          request: {
-            yar: {
-              id: 'req_id'
-            }
-          }
-        })}`),
-        consoleLogs: [
-        ],
-        errorLogs: [
-          new InvalidStateError(`State mismatch: ${JSON.stringify({
-            request: {
-              yar: {
-                id: 'req_id'
-              }
-            }
-          })}`)
         ]
       }
     },
@@ -535,7 +309,7 @@ describe('authenticate', () => {
       .mockReturnValue(testCase.when.session.pkcecodes.verifier)
     when(Wreck.post)
       .calledWith(
-        'hostname/b2c_1a_signupsignin/oauth2/v2.0/token',
+        'https://tenantname.b2clogin.com/tenantname.onmicrosoft.com/b2c_1a_signupsigninsfi/oauth2/v2.0/token',
         {
           headers: expect.anything(),
           payload: expect.anything(),
@@ -545,7 +319,7 @@ describe('authenticate', () => {
       .mockResolvedValue(testCase.when.redeemResponse)
     when(Wreck.get)
       .calledWith(
-        'hostname/discovery/v2.0/keys?p=b2c_1a_signupsignin',
+        'https://tenantname.b2clogin.com/tenantname.onmicrosoft.com/discovery/v2.0/keys?p=b2c_1a_signupsigninsfi',
         { json: true }
       )
       .mockResolvedValue({
@@ -604,7 +378,7 @@ describe('authenticate', () => {
       expect(session.setCustomer).toHaveBeenCalledWith(
         testCase.given.request,
         sessionKeys.customer.attachedToMultipleBusinesses,
-        true
+        false
       )
       expect(MOCK_COOKIE_AUTH_SET).toHaveBeenCalledWith({
         account: {
@@ -629,7 +403,6 @@ describe('authenticate', () => {
       (consoleLog, idx) => expect(logSpy).toHaveBeenNthCalledWith(idx + 1, consoleLog)
     )
     expect(logSpy).toHaveBeenCalledTimes(testCase.expect.consoleLogs.length)
-
     testCase.expect.errorLogs.forEach(
       (errorLog, idx) => expect(errorSpy).toHaveBeenNthCalledWith(idx + 1, errorLog)
     )

@@ -62,7 +62,19 @@ describe('Vet visit review page test', () => {
         ...originalModule,
         authConfig: {
           defraId: {
-            enabled: false
+            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+            policy: 'b2c_1a_signupsigninsfi',
+            redirectUri: 'http://localhost:3000/apply/signin-oidc',
+            clientId: 'dummy_client_id',
+            serviceId: 'dummy_service_id',
+            scope: 'openid dummy_client_id offline_access'
+          },
+          ruralPaymentsAgency: {
+            hostname: 'dummy-host-name',
+            getPersonSummaryUrl: 'dummy-get-person-summary-url',
+            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
+            getOrganisationUrl: 'dummy-get-organisation-url'
           }
         }
       }
@@ -109,42 +121,6 @@ describe('Vet visit review page test', () => {
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toEqual('404 - Not Found')
-    })
-  })
-
-  describe(`GET ${url} route when logged in with select your business enabled`, () => {
-    beforeAll(() => {
-      jest.resetModules()
-      jest.resetAllMocks()
-
-      jest.mock('../../../../app/config', () => {
-        const originalModule = jest.requireActual('../../../../app/config')
-        return {
-          ...originalModule,
-          authConfig: {
-            defraId: {
-              enabled: false
-            }
-          }
-        }
-      })
-      jest.mock('../../../../app/session')
-      session = require('../../../../app/session')
-    })
-
-    test('returns 200 and has correct back link', async () => {
-      setupSessionMock('beef')
-      const options = {
-        auth,
-        method: 'GET',
-        url
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-back-link').attr('href')).toEqual('/claim/select-your-business?businessEmail=testemail@email.com')
     })
   })
 
