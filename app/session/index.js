@@ -4,7 +4,6 @@ const entries = {
   application: 'application',
   claim: 'claim',
   organisation: 'organisation',
-  selectYourBusiness: 'selectYourBusiness',
   pkcecodes: 'pkcecodes',
   tokens: 'tokens',
   customer: 'customer'
@@ -28,7 +27,6 @@ function clear (request) {
   request.yar.clear(entries.claim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
-  request.yar.clear(entries.selectYourBusiness)
 }
 
 function setApplication (request, key, value) {
@@ -45,14 +43,6 @@ function getApplication (request, key) {
 
 function getClaim (request, key) {
   return get(request, entries.claim, key)
-}
-
-function setSelectYourBusiness (request, key, value) {
-  set(request, entries.selectYourBusiness, key, value)
-}
-
-function getSelectYourBusiness (request, key) {
-  return get(request, entries.selectYourBusiness, key)
 }
 
 function setToken (request, key, value) {
@@ -85,8 +75,6 @@ module.exports = {
   setApplication,
   setClaim,
   clear,
-  setSelectYourBusiness,
-  getSelectYourBusiness,
   getToken,
   setToken,
   getCustomer,

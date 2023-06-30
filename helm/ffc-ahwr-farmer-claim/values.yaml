@@ -44,8 +44,6 @@ container:
   googleTagManagerKey:
   imagePullPolicy: IfNotPresent
   messageQueueHost: namespace.servicebus.windows.net
-  notifyApiKey:
-  notifyTemplateIdFarmerClaimLogin:
   port: 3000
   redisHostname: redis-hostname.default
   redisPartition: ffc-ahwr-farmer-claim
@@ -53,9 +51,7 @@ container:
   redisPort: 6379
   serviceUri:
   applyServiceUri:
-  eligibilityApiUri:
   applicationApiUri:
-  defraIdEnabled:
   defraIdTenant:
   defraIdRedirectUri:
   defraIdClientId:

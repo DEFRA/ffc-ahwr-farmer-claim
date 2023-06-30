@@ -1,4 +1,3 @@
-const { getByEmail } = require('../api-requests/users')
 const config = require('../config')
 const auth = require('../auth')
 const session = require('../session')
@@ -19,16 +18,13 @@ module.exports = {
         },
         keepAlive: true,
         redirectTo: (request) => {
-          return config.authConfig.defraId.enabled ? auth.requestAuthorizationCodeUrl(session, request) : '/claim/login'
+          return auth.requestAuthorizationCodeUrl(session, request)
         },
         validateFunc: async (request, s) => {
           const result = { valid: false }
 
           if (session.getClaim(request, organisationKey)) {
             result.valid = true
-          } else {
-            const organisation = (await getByEmail(s.email)) ?? {}
-            result.valid = !!organisation
           }
 
           return result

@@ -2,7 +2,6 @@ const Joi = require('joi')
 
 const authSchema = Joi.object({
   defraId: {
-    enabled: Joi.bool().default(false),
     hostname: Joi.string().uri(),
     oAuthAuthorisePath: Joi.string(),
     policy: Joi.string(),
@@ -32,7 +31,6 @@ const authSchema = Joi.object({
 
 const authConfig = {
   defraId: {
-    enabled: process.env.DEFRA_ID_ENABLED,
     hostname: `https://${process.env.DEFRA_ID_TENANT}.b2clogin.com/${process.env.DEFRA_ID_TENANT}.onmicrosoft.com`,
     oAuthAuthorisePath: '/oauth2/v2.0/authorize',
     policy: process.env.DEFRA_ID_POLICY,
