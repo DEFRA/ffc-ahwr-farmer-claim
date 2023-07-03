@@ -86,6 +86,10 @@ components:
                   type: string
                   description: Details correctness confirmation
                   required: true
+                dateOfClaim:
+                  type: string
+                  description: Date claim mode
+                  required: false
                 organisation:
                   type: object
                   properties:
@@ -182,6 +186,10 @@ components:
                   type: string
                   description: Details correctness confirmation
                   required: true
+                dateOfClaim:
+                  type: string
+                  description: Date claim mode
+                  required: false
                 organisation:
                   type: object
                   properties:
@@ -273,6 +281,10 @@ components:
                   type: string
                   required: true
                   description: Details correctness confirmation
+                dateOfClaim:
+                  type: string
+                  description: Date claim mode
+                  required: false
                 organisation:
                   type: object
                   properties:
