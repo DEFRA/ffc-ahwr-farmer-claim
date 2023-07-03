@@ -17,8 +17,15 @@ async function submitClaim (submission, sessionId) {
   return response.state
 }
 
+async function submitDeadLetter (submission, sessionId) {
+  await sendMessage(submission, 'uk.gov.ffc.ahwr.deadletter', applicationRequestQueue, { sessionId })
+  const response = await receiveMessage(sessionId, applicationResponseQueue)
+  return response
+}
+
 module.exports = {
   getApplication,
   getClaim,
-  submitClaim
+  submitClaim,
+  submitDeadLetter
 }
