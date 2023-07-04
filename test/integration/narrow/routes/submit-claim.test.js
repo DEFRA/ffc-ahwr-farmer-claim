@@ -13,7 +13,7 @@ const data = {
   offerStatus: 'accepted'
 }
 
-sessionMock.getClaim.mockReturnValue({ reference, data, visitDate: '2022-11-07T00:00:00.000Z', vetName: 'testvetname', vetRcvs: '1234234', detailsCorrect: 'yes', urnResult: '134242' })
+sessionMock.getClaim.mockReturnValue({ reference, data, visitDate: '2022-11-07T00:00:00.000Z', dateOfClaim: '2022-11-08T00:00:00.000Z', vetName: 'testvetname', vetRcvs: '1234234', detailsCorrect: 'yes', urnResult: '134242' })
 
 describe('Farmer claim - submit claim page test', () => {
   const url = '/claim/submit-claim'

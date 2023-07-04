@@ -35,6 +35,7 @@ module.exports = [{
       claim.data.vetName = claim.vetName
       claim.data.vetRcvs = claim.vetRcvs
       claim.data.urnResult = claim.urnResult
+      claim.data.dateOfClaim = new Date().toISOString()
       const submission = { reference, data: claim.data }
       const state = await submitClaim(submission, request.yar.id)
 
