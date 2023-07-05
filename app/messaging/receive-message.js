@@ -7,9 +7,9 @@ async function receiveMessage (messageId, config) {
   let result
   if (messages.length) {
     result = messages[0].body
-    sessionReceiver.completeMessage(messages[0])
+    await sessionReceiver.completeMessage(messages[0])
   }
-  sessionReceiver.close()
+  await sessionReceiver.close()
   return result
 }
 
