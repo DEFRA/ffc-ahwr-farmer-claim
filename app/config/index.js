@@ -57,7 +57,10 @@ const schema = Joi.object({
   wreckHttp: {
     timeoutMilliseconds: Joi.number().default(10000)
   },
-  claimExpiryTimeMonths: Joi.number()
+  claimExpiryTimeMonths: Joi.number(),
+  dateOfTesting: {
+    enabled: Joi.bool().default(false)
+  }
 })
 
 const config = {
@@ -107,7 +110,10 @@ const config = {
   wreckHttp: {
     timeoutMilliseconds: process.env.WRECK_HTTP_TIMEOUT_MILLISECONDS
   },
-  claimExpiryTimeMonths: 6
+  claimExpiryTimeMonths: 6,
+  dateOfTesting: {
+    enabled: process.env.DATE_OF_TESTING_ENABLED
+  }
 }
 
 const result = schema.validate(config, {

@@ -33,4 +33,5 @@ data:
   APIM_OAUTH_PATH: {{ quote .Values.container.apimOAuthPath }}
   APIM_SCOPE: {{ quote .Values.container.apimScope }}
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
+  DATE_OF_TESTING_ENABLED: {{ quote .Values.container.dateOfTestingEnabled }}
 {{- end -}}

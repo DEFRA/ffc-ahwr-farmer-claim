@@ -12,7 +12,8 @@ module.exports = {
       session.clear(request)
       return h.view('index', {
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
-        ruralPaymentsAgency: config.ruralPaymentsAgency
+        ruralPaymentsAgency: config.ruralPaymentsAgency,
+        dateOfTestingEnabled: config.dateOfTesting.enabled
       })
     }
   }
