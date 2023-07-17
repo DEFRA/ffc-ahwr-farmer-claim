@@ -47,7 +47,14 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(error.details, request.payload, createdAt)
-        return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
+        const errorList = { visitDateError: null, testingDateError: null }
+        if (dateInputErrors.errorMessage.text) {
+          errorList.visitDateError = {
+            text: 'Enter a date',
+            href: '#visit-date'
+          }
+        }
+        return h.view(templatePath, { ...request.payload, ...dateInputErrors, errorList }).code(400).takeover()
       }
     },
     handler: async (request, h) => {

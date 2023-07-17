@@ -1,4 +1,5 @@
 {% extends './layouts/layout.njk' %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
 
 {% block pageTitle %}Date of visit - {{ serviceName }}{% endblock %}
 
@@ -18,6 +19,16 @@
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
+        {% if errorList %}
+          {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [ 
+              errorList.visitDateError,
+              errorList.testingDateError
+            ]
+          }) }}
+        {% endif %}
+
         {{ govukDateInput({
           id: "visit-date",
           namePrefix: "visit-date",
@@ -29,10 +40,30 @@
             }
           },
           hint: {
-            html: "This is the date of the last visit to the farm for the review<br>For example, 27 3 2022"
+            html: "This is the date when the vet last visited the farm to carry out the review.<br>For example, 27 3 2022"
           },
-          errorMessage: errorMessage,
+          errorMessage: errorList.visitDateError,
           items: items
+        }) }}
+
+        <h2 class="govuk-heading-m">When was endemic disease or condition testing carried out?</h2>
+
+        {{ govukRadios({
+          name: "testing-date",
+          hint: {
+            html: "This is the date the vet completed testing."
+          },
+          items: [
+            {
+              value: "on-review-date",
+              text: "When the vet visited the farm to carry out the review"
+            },
+            {
+              value: "on-another-date",
+              text: "On another date"
+            }
+          ],
+          errorMessage: errorList.testingDateError
         }) }}
 
         {{ govukButton({
