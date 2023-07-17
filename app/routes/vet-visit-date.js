@@ -50,7 +50,7 @@ module.exports = [{
         const errorList = { visitDateError: null, testingDateError: null }
         if (dateInputErrors.errorMessage.text) {
           errorList.visitDateError = {
-            text: 'Enter a date',
+            text: dateInputErrors.errorMessage.text,
             href: '#visit-date'
           }
         }
