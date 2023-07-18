@@ -18,22 +18,104 @@
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        {{ govukDateInput({
-          id: "visit-date",
-          namePrefix: "visit-date",
-          fieldset: {
-            legend: {
-              text: "When was the review completed?",
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--l"
-            }
-          },
-          hint: {
-            html: "This is the date of the last visit to the farm for the review<br>For example, 27 3 2022"
-          },
-          errorMessage: errorMessage,
-          items: items
-        }) }}
+        <div class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
+          {{ govukDateInput({
+            id: "visit-date",
+            namePrefix: "visit-date",
+            fieldset: {
+              legend: {
+                text: "When was the review completed?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
+            hint: {
+              html: "This is the date of the last visit to the farm for the review<br>For example, 27 3 2022"
+            },
+            errorMessage: errorMessage,
+            items: items
+          }) }}
+        </div>
+
+        <div class="govuk-form-group {% if whenCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+          {% if onAnotherDate.day.error %}
+            {% set day = {
+              name: 'day',
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set day = {
+              name: 'day',
+              value: onAnotherDate.day.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if onAnotherDate.month.error %}
+            {% set month = {
+              name: 'month',
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set month = {
+              name: 'month',
+              value: onAnotherDate.month.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if onAnotherDate.year.error %}
+            {% set year = {
+              name: 'year',
+              classes: 'govuk-input--width-4 govuk-input--error'
+            } %}
+          {% else %}
+            {% set year = {
+              name: 'year',
+              value: onAnotherDate.year.value,
+              classes: 'govuk-input--width-4'
+            } %}
+          {% endif %}
+
+          {% set onAnotherDate %}
+            {{ govukDateInput({
+              id: "on-another-date",
+              namePrefix: "on-another-date",
+              errorMessage: onAnotherDate.errorMessage,
+              items: [day, month, year]
+            }) }}
+          {% endset %}
+
+          {{ govukRadios({
+            name: "whenCarriedOut",
+            fieldset: {
+              legend: {
+                text: "When was endemic disease or condition testing carried out?",
+                isPageHeading: false,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              text: "This is the date the vet completed testing."
+            },
+            errorMessage: whenCarriedOut.errorMessage,
+            items: [
+              {
+                value: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+                text: "When the vet visited the farm to carry out the review",
+                checked: whenCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+              },
+              {
+                value: "onAnotherDate",
+                text: "On another date",
+                checked: whenCarriedOut.value === 'onAnotherDate',
+                conditional: {
+                  html: onAnotherDate
+                }
+              }
+            ]
+          }) }}
+        </div>
 
         {{ govukButton({
           text: "Continue",

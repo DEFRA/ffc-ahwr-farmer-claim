@@ -42,12 +42,81 @@ module.exports = [{
           })
           .required(),
         [labels.month]: Joi.number().min(1).max(12).required(),
-        [labels.year]: Joi.number().min(2022).max(2024).required()
+        [labels.year]: Joi.number().min(2022).max(2024).required(),
+
+        whenCarriedOut: Joi.string()
+          .valid('onAnotherDate', 'whenTheVetVisitedTheFarmToCarryOutTheReview')
+          .required(),
+
+        'on-another-date-day': Joi.number()
+          .min(1)
+          .when('on-another-date-month', {
+            switch: [
+              { is: 2, then: Joi.number().max(28) },
+              { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
+            ]
+          })
+          .when('whenCarriedOut', {
+            switch: [
+              { is: 'onAnotherDate', then: Joi.required() },
+              { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
+            ],
+            otherwise: Joi.allow('')
+          }),
+
+        'on-another-date-month': Joi.number()
+          .min(1)
+          .max(12)
+          .when('whenCarriedOut', {
+            switch: [
+              { is: 'onAnotherDate', then: Joi.required() },
+              { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
+            ],
+            otherwise: Joi.allow('')
+          }),
+
+        'on-another-date-year': Joi.number()
+          .min(2022)
+          .max(2024)
+          .when('whenCarriedOut', {
+            switch: [
+              { is: 'onAnotherDate', then: Joi.required() },
+              { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
+            ],
+            otherwise: Joi.allow('')
+          })
       }),
       failAction: async (request, h, error) => {
-        const { createdAt } = session.getClaim(request)
-        const dateInputErrors = getDateInputErrors(error.details, request.payload, createdAt)
-        return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
+        const dateInputErrors = getDateInputErrors(
+          error.details.filter(err => err.context.label.startsWith('visit-date')),
+          request.payload
+        )
+        return h
+          .view(templatePath, {
+            ...request.payload,
+            ...dateInputErrors,
+            whenCarriedOut: {
+              value: request.payload.whenCarriedOut,
+              errorMessage: error.details.find(e => e.context.label === 'whenCarriedOut') ? { text: 'hello 2' } : undefined
+            },
+            onAnotherDate: {
+              day: {
+                value: request.payload['on-another-date-day'],
+                error: error.details.find(e => e.context.label === 'on-another-date-day')
+              },
+              month: {
+                value: request.payload['on-another-date-month'],
+                error: error.details.find(e => e.context.label === 'on-another-date-month')
+              },
+              year: {
+                value: request.payload['on-another-date-year'],
+                error: error.details.find(e => e.context.label === 'on-another-date-year')
+              },
+              errorMessage: error.details.find(e => e.context.label === 'on-another-date-day') || error.details.find(e => e.context.label === 'on-another-date-month') || error.details.find(e => e.context.label === 'on-another-date-year') ? { text: 'hello' } : undefined
+            }
+          })
+          .code(400)
+          .takeover()
       }
     },
     handler: async (request, h) => {
