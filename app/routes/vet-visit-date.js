@@ -93,13 +93,35 @@ module.exports = [{
           request.payload,
           createdAt
         )
+        const errors = []
+        if (dateInputErrors.errorMessage?.text) {
+          errors.push({
+            text: dateInputErrors.errorMessage.text,
+            href: '#when-was-the-review-completed'
+          })
+        }
+        if (error.details.find(e => e.context.label === 'whenCarriedOut')) {
+          errors.push({
+            text: 'Enter the date the vet completed testing',
+            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+          })
+        }
+        if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
+          errors.push({
+            text: 'Enter the date the vet completed testing',
+            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+          })
+        }
         return h
           .view(templatePath, {
             ...request.payload,
             ...dateInputErrors,
+            errors,
             whenCarriedOut: {
               value: request.payload.whenCarriedOut,
-              errorMessage: error.details.find(e => e.context.label === 'whenCarriedOut') ? { text: 'hello 2' } : undefined
+              errorMessage: error.details.find(e => e.context.label === 'whenCarriedOut')
+                ? { text: 'Enter the date the vet completed testing' }
+                : undefined
             },
             onAnotherDate: {
               day: {
@@ -114,7 +136,9 @@ module.exports = [{
                 value: request.payload['on-another-date-year'],
                 error: error.details.find(e => e.context.label === 'on-another-date-year')
               },
-              errorMessage: error.details.find(e => e.context.label === 'on-another-date-day') || error.details.find(e => e.context.label === 'on-another-date-month') || error.details.find(e => e.context.label === 'on-another-date-year') ? { text: 'hello' } : undefined
+              errorMessage: error.details.find(e => e.context.label === 'on-another-date-day') || error.details.find(e => e.context.label === 'on-another-date-month') || error.details.find(e => e.context.label === 'on-another-date-year')
+                ? { text: 'Enter the date the vet completed testing' }
+                : undefined
             }
           })
           .code(400)
@@ -132,14 +156,64 @@ module.exports = [{
           errorMessage: { text: errorMessages.visitDate.todayOrPast },
           items: createItemsFromPayload(request.payload, true)
         }
-        return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
+        const errors = []
+        if (dateInputErrors.errorMessage?.text) {
+          errors.push({
+            text: dateInputErrors.errorMessage.text,
+            href: '#when-was-the-review-completed'
+          })
+        }
+        return h.view(templatePath, {
+          ...request.payload,
+          ...dateInputErrors,
+          errors,
+          whenCarriedOut: {
+            value: request.payload.whenCarriedOut
+          },
+          onAnotherDate: {
+            day: {
+              value: request.payload['on-another-date-day']
+            },
+            month: {
+              value: request.payload['on-another-date-month']
+            },
+            year: {
+              value: request.payload['on-another-date-year']
+            }
+          }
+        }).code(400).takeover()
       }
       if (date > endDate || date < applicationDate) {
         const dateInputErrors = {
           errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
           items: createItemsFromPayload(request.payload, true)
         }
-        return h.view(templatePath, { ...request.payload, ...dateInputErrors }).code(400).takeover()
+        const errors = []
+        if (dateInputErrors.errorMessage?.text) {
+          errors.push({
+            text: dateInputErrors.errorMessage.text,
+            href: '#when-was-the-review-completed'
+          })
+        }
+        return h.view(templatePath, {
+          ...request.payload,
+          ...dateInputErrors,
+          errors,
+          whenCarriedOut: {
+            value: request.payload.whenCarriedOut
+          },
+          onAnotherDate: {
+            day: {
+              value: request.payload['on-another-date-day']
+            },
+            month: {
+              value: request.payload['on-another-date-month']
+            },
+            year: {
+              value: request.payload['on-another-date-year']
+            }
+          }
+        }).code(400).takeover()
       }
       session.setClaim(request, visitDate, date)
       return h.redirect('/claim/vet-name')

@@ -15,10 +15,17 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {% if errors.length %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errors
+        }) }}
+      {% endif %}
+
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        <div class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
+        <div id="when-was-the-review-completed" class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
           {{ govukDateInput({
             id: "visit-date",
             namePrefix: "visit-date",
@@ -37,14 +44,14 @@
           }) }}
         </div>
 
-        <div class="govuk-form-group {% if whenCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
           {% if onAnotherDate.day.error %}
-            {% set day = {
+            {% set onAnotherDateDay = {
               name: 'day',
               classes: 'govuk-input--width-2 govuk-input--error'
             } %}
           {% else %}
-            {% set day = {
+            {% set onAnotherDateDay = {
               name: 'day',
               value: onAnotherDate.day.value,
               classes: 'govuk-input--width-2'
@@ -52,12 +59,12 @@
           {% endif %}
 
           {% if onAnotherDate.month.error %}
-            {% set month = {
+            {% set onAnotherDateMonth = {
               name: 'month',
               classes: 'govuk-input--width-2 govuk-input--error'
             } %}
           {% else %}
-            {% set month = {
+            {% set onAnotherDateMonth = {
               name: 'month',
               value: onAnotherDate.month.value,
               classes: 'govuk-input--width-2'
@@ -65,12 +72,12 @@
           {% endif %}
 
           {% if onAnotherDate.year.error %}
-            {% set year = {
+            {% set onAnotherDateYear = {
               name: 'year',
               classes: 'govuk-input--width-4 govuk-input--error'
             } %}
           {% else %}
-            {% set year = {
+            {% set onAnotherDateYear = {
               name: 'year',
               value: onAnotherDate.year.value,
               classes: 'govuk-input--width-4'
@@ -82,7 +89,7 @@
               id: "on-another-date",
               namePrefix: "on-another-date",
               errorMessage: onAnotherDate.errorMessage,
-              items: [day, month, year]
+              items: [onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear]
             }) }}
           {% endset %}
 

@@ -51,7 +51,7 @@ module.exports = (errorDetails, payload, firstValidDate) => {
   if (!text) {
     const { isDateValid, errorMessage } = isDateInFutureOrBeforeFirstValidDate(date, firstValidDate)
     if (isDateValid) {
-      text = errorMessages.realDate
+      text = undefined
     } else {
       text = errorMessage.text
       items.forEach(item => {
@@ -61,7 +61,7 @@ module.exports = (errorDetails, payload, firstValidDate) => {
   }
 
   return {
-    errorMessage: { text },
+    errorMessage: text ? { text } : undefined,
     items
   }
 }
