@@ -3,7 +3,7 @@ const { labels } = require('../config/visit-date')
 const getDateInputErrors = require('../lib/visit-date/date-input-errors')
 const { createItemsFromDate, createItemsFromPayload } = require('../lib/visit-date/date-input-items')
 const session = require('../session')
-const { farmerApplyData: { visitDate } } = require('../session/keys')
+const sessionKeys = require('../session/keys')
 const errorMessages = require('../lib/error-messages')
 const config = require('../../app/config')
 
@@ -22,9 +22,28 @@ module.exports = [{
   path,
   options: {
     handler: async (request, h) => {
-      const date = session.getClaim(request, visitDate)
-      const items = createItemsFromDate(new Date(date), false)
-      return h.view(templatePath, { items })
+      const dateOfReview = session.getClaim(request, sessionKeys.farmerApplyData.visitDate)
+      const dateOfTesting = session.getClaim(request, sessionKeys.farmerApplyData.dateOfTesting)
+
+      return h.view(templatePath, {
+        items: createItemsFromDate(new Date(dateOfReview), false),
+        whenCarriedOut: {
+          value: dateOfReview === dateOfTesting
+            ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+            : 'onAnotherDate'
+        },
+        onAnotherDate: {
+          day: {
+            value: new Date(dateOfTesting).getDate()
+          },
+          month: {
+            value: new Date(dateOfTesting).getMonth() + 1
+          },
+          year: {
+            value: new Date(dateOfTesting).getFullYear()
+          }
+        }
+      })
     }
   }
 }, {
@@ -49,38 +68,39 @@ module.exports = [{
           .required(),
 
         'on-another-date-day': Joi.number()
-          .min(1)
-          .when('on-another-date-month', {
-            switch: [
-              { is: 2, then: Joi.number().max(28) },
-              { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
-            ]
-          })
           .when('whenCarriedOut', {
             switch: [
-              { is: 'onAnotherDate', then: Joi.required() },
+              {
+                is: 'onAnotherDate',
+                then: Joi
+                  .number()
+                  .min(1)
+                  .when('on-another-date-month', {
+                    switch: [
+                      { is: 2, then: Joi.number().max(28) },
+                      { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
+                    ]
+                  })
+                  .required()
+              },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
             ],
             otherwise: Joi.allow('')
           }),
 
         'on-another-date-month': Joi.number()
-          .min(1)
-          .max(12)
           .when('whenCarriedOut', {
             switch: [
-              { is: 'onAnotherDate', then: Joi.required() },
+              { is: 'onAnotherDate', then: Joi.number().min(1).max(12).required() },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
             ],
             otherwise: Joi.allow('')
           }),
 
         'on-another-date-year': Joi.number()
-          .min(2022)
-          .max(2024)
           .when('whenCarriedOut', {
             switch: [
-              { is: 'onAnotherDate', then: Joi.required() },
+              { is: 'onAnotherDate', then: Joi.number().min(2022).max(2024).required() },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
             ],
             otherwise: Joi.allow('')
@@ -150,8 +170,8 @@ module.exports = [{
       const applicationDate = new Date(new Date(application.createdAt).toDateString())
       let endDate = new Date(new Date(application.createdAt).toDateString())
       endDate = new Date(endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths))
-      const date = getDateFromPayload(request.payload)
-      if (date > new Date()) {
+      const dateOfReview = getDateFromPayload(request.payload)
+      if (dateOfReview > new Date()) {
         const dateInputErrors = {
           errorMessage: { text: errorMessages.visitDate.todayOrPast },
           items: createItemsFromPayload(request.payload, true)
@@ -183,7 +203,7 @@ module.exports = [{
           }
         }).code(400).takeover()
       }
-      if (date > endDate || date < applicationDate) {
+      if (dateOfReview > endDate || dateOfReview < applicationDate) {
         const dateInputErrors = {
           errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
           items: createItemsFromPayload(request.payload, true)
@@ -215,7 +235,15 @@ module.exports = [{
           }
         }).code(400).takeover()
       }
-      session.setClaim(request, visitDate, date)
+      const dateOfTesting = request.payload.whenCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+        ? dateOfReview
+        : new Date(
+          request.payload['on-another-date-year'],
+          request.payload['on-another-date-month'] - 1,
+          request.payload['on-another-date-day']
+        )
+      session.setClaim(request, sessionKeys.farmerApplyData.visitDate, dateOfReview)
+      session.setClaim(request, sessionKeys.farmerApplyData.dateOfTesting, dateOfTesting)
       return h.redirect('/claim/vet-name')
     }
   }
