@@ -87,9 +87,11 @@ module.exports = [{
           })
       }),
       failAction: async (request, h, error) => {
+        const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(
           error.details.filter(err => err.context.label.startsWith('visit-date')),
-          request.payload
+          request.payload,
+          createdAt
         )
         return h
           .view(templatePath, {

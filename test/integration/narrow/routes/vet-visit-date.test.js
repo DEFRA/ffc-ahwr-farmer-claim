@@ -140,21 +140,21 @@ describe('Vet, enter date of visit', () => {
     const allErrorHighlights = [labels.day, labels.month, labels.year]
 
     test.each([
-      { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), errorMessage: 'The date the review was completed must be within six months of agreement date.', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-      { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-      { description: 'missing day and month and year', day: '', month: '', year: '', errorMessage: 'Enter the date of the visit', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-      { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), errorMessage: 'Date must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
-      { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), errorMessage: 'Date must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
-      { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', errorMessage: 'Date must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
-      { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), errorMessage: 'Date must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
-      { description: 'missing day and year', day: '', month: today.getMonth(), year: '', errorMessage: 'Date must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
-      { description: 'missing month and year', day: today.getDate(), month: '', year: '', errorMessage: 'Date must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today }
-    ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, errorMessage, errorHighlights, applicationCreationDate }) => {
+      { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be within six months of agreement date.', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+      { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+      { description: 'missing day and month and year', day: '', month: '', year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date of the visit', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+      { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
+      { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
+      { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
+      { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
+      { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
+      { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today }
+    ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, whenCarriedOut, errorMessage, errorHighlights, applicationCreationDate }) => {
       session.getClaim.mockReturnValueOnce({ createdAt: applicationCreationDate })
       const options = {
         method,
         url,
-        payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year },
+        payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenCarriedOut },
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }
@@ -179,7 +179,7 @@ describe('Vet, enter date of visit', () => {
         auth,
         method,
         url,
-        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear() },
+        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
