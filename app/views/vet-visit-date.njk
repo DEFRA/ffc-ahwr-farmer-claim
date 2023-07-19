@@ -44,8 +44,8 @@
           }) }}
         </div>
 
-        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
-          {% if onAnotherDate.day.error %}
+        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingWasCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+          {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
             {% set onAnotherDateDay = {
               name: 'day',
               classes: 'govuk-input--width-2 govuk-input--error'
@@ -53,12 +53,12 @@
           {% else %}
             {% set onAnotherDateDay = {
               name: 'day',
-              value: onAnotherDate.day.value,
+              value: whenTestingWasCarriedOut.onAnotherDate.day.value,
               classes: 'govuk-input--width-2'
             } %}
           {% endif %}
 
-          {% if onAnotherDate.month.error %}
+          {% if whenTestingWasCarriedOut.onAnotherDate.month.error %}
             {% set onAnotherDateMonth = {
               name: 'month',
               classes: 'govuk-input--width-2 govuk-input--error'
@@ -66,12 +66,12 @@
           {% else %}
             {% set onAnotherDateMonth = {
               name: 'month',
-              value: onAnotherDate.month.value,
+              value: whenTestingWasCarriedOut.onAnotherDate.month.value,
               classes: 'govuk-input--width-2'
             } %}
           {% endif %}
 
-          {% if onAnotherDate.year.error %}
+          {% if whenTestingWasCarriedOut.onAnotherDate.year.error %}
             {% set onAnotherDateYear = {
               name: 'year',
               classes: 'govuk-input--width-4 govuk-input--error'
@@ -79,7 +79,7 @@
           {% else %}
             {% set onAnotherDateYear = {
               name: 'year',
-              value: onAnotherDate.year.value,
+              value: whenTestingWasCarriedOut.onAnotherDate.year.value,
               classes: 'govuk-input--width-4'
             } %}
           {% endif %}
@@ -88,13 +88,13 @@
             {{ govukDateInput({
               id: "on-another-date",
               namePrefix: "on-another-date",
-              errorMessage: onAnotherDate.errorMessage,
+              errorMessage: whenTestingWasCarriedOut.onAnotherDate.errorMessage,
               items: [onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear]
             }) }}
           {% endset %}
 
           {{ govukRadios({
-            name: "whenTestingCarriedOut",
+            name: "whenTestingWasCarriedOut",
             fieldset: {
               legend: {
                 text: "When was endemic disease or condition testing carried out?",
@@ -105,17 +105,17 @@
             hint: {
               text: "This is the date the vet completed testing."
             },
-            errorMessage: whenTestingCarriedOut.errorMessage,
+            errorMessage: whenTestingWasCarriedOut.errorMessage,
             items: [
               {
                 value: "whenTheVetVisitedTheFarmToCarryOutTheReview",
                 text: "When the vet visited the farm to carry out the review",
-                checked: whenTestingCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                checked: whenTestingWasCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
               },
               {
                 value: "onAnotherDate",
                 text: "On another date",
-                checked: whenTestingCarriedOut.value === 'onAnotherDate',
+                checked: whenTestingWasCarriedOut.value === 'onAnotherDate',
                 conditional: {
                   html: onAnotherDate
                 }

@@ -27,20 +27,20 @@ module.exports = [{
 
       return h.view(templatePath, {
         items: createItemsFromDate(new Date(dateOfReview), false),
-        whenTestingCarriedOut: {
+        whenTestingWasCarriedOut: {
           value: dateOfReview === dateOfTesting
             ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-            : 'onAnotherDate'
-        },
-        onAnotherDate: {
-          day: {
-            value: new Date(dateOfTesting).getDate()
-          },
-          month: {
-            value: new Date(dateOfTesting).getMonth() + 1
-          },
-          year: {
-            value: new Date(dateOfTesting).getFullYear()
+            : 'onAnotherDate',
+          onAnotherDate: {
+            day: {
+              value: new Date(dateOfTesting).getDate()
+            },
+            month: {
+              value: new Date(dateOfTesting).getMonth() + 1
+            },
+            year: {
+              value: new Date(dateOfTesting).getFullYear()
+            }
           }
         }
       })
@@ -63,12 +63,12 @@ module.exports = [{
         [labels.month]: Joi.number().min(1).max(12).required(),
         [labels.year]: Joi.number().min(2022).max(2024).required(),
 
-        whenTestingCarriedOut: Joi.string()
+        whenTestingWasCarriedOut: Joi.string()
           .valid('onAnotherDate', 'whenTheVetVisitedTheFarmToCarryOutTheReview')
           .required(),
 
         'on-another-date-day': Joi.number()
-          .when('whenTestingCarriedOut', {
+          .when('whenTestingWasCarriedOut', {
             switch: [
               {
                 is: 'onAnotherDate',
@@ -89,7 +89,7 @@ module.exports = [{
           }),
 
         'on-another-date-month': Joi.number()
-          .when('whenTestingCarriedOut', {
+          .when('whenTestingWasCarriedOut', {
             switch: [
               { is: 'onAnotherDate', then: Joi.number().min(1).max(12).required() },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -98,7 +98,7 @@ module.exports = [{
           }),
 
         'on-another-date-year': Joi.number()
-          .when('whenTestingCarriedOut', {
+          .when('whenTestingWasCarriedOut', {
             switch: [
               { is: 'onAnotherDate', then: Joi.number().min(2022).max(2024).required() },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -120,7 +120,7 @@ module.exports = [{
             href: '#when-was-the-review-completed'
           })
         }
-        if (error.details.find(e => e.context.label === 'whenTestingCarriedOut')) {
+        if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
           errors.push({
             text: 'Select if testing was carried out when the vet visited the farm or on another date',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
@@ -137,28 +137,28 @@ module.exports = [{
             ...request.payload,
             ...dateInputErrors,
             errors,
-            whenTestingCarriedOut: {
-              value: request.payload.whenTestingCarriedOut,
-              errorMessage: error.details.find(e => e.context.label === 'whenTestingCarriedOut')
+            whenTestingWasCarriedOut: {
+              value: request.payload.whenTestingWasCarriedOut,
+              errorMessage: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')
                 ? { text: 'Select if testing was carried out when the vet visited the farm or on another date' }
-                : undefined
-            },
-            onAnotherDate: {
-              day: {
-                value: request.payload['on-another-date-day'],
-                error: error.details.find(e => e.context.label === 'on-another-date-day')
-              },
-              month: {
-                value: request.payload['on-another-date-month'],
-                error: error.details.find(e => e.context.label === 'on-another-date-month')
-              },
-              year: {
-                value: request.payload['on-another-date-year'],
-                error: error.details.find(e => e.context.label === 'on-another-date-year')
-              },
-              errorMessage: error.details.filter(e => e.context.label.startsWith('on-another-date')).length
-                ? { text: 'Enter a date' }
-                : undefined
+                : undefined,
+              onAnotherDate: {
+                day: {
+                  value: request.payload['on-another-date-day'],
+                  error: error.details.find(e => e.context.label === 'on-another-date-day')
+                },
+                month: {
+                  value: request.payload['on-another-date-month'],
+                  error: error.details.find(e => e.context.label === 'on-another-date-month')
+                },
+                year: {
+                  value: request.payload['on-another-date-year'],
+                  error: error.details.find(e => e.context.label === 'on-another-date-year')
+                },
+                errorMessage: error.details.filter(e => e.context.label.startsWith('on-another-date')).length
+                  ? { text: 'Enter a date' }
+                  : undefined
+              }
             }
           })
           .code(400)
@@ -187,18 +187,18 @@ module.exports = [{
           ...request.payload,
           ...dateInputErrors,
           errors,
-          whenTestingCarriedOut: {
-            value: request.payload.whenTestingCarriedOut
-          },
-          onAnotherDate: {
-            day: {
-              value: request.payload['on-another-date-day']
-            },
-            month: {
-              value: request.payload['on-another-date-month']
-            },
-            year: {
-              value: request.payload['on-another-date-year']
+          whenTestingWasCarriedOut: {
+            value: request.payload.whenTestingWasCarriedOut,
+            onAnotherDate: {
+              day: {
+                value: request.payload['on-another-date-day']
+              },
+              month: {
+                value: request.payload['on-another-date-month']
+              },
+              year: {
+                value: request.payload['on-another-date-year']
+              }
             }
           }
         }).code(400).takeover()
@@ -219,23 +219,23 @@ module.exports = [{
           ...request.payload,
           ...dateInputErrors,
           errors,
-          whenTestingCarriedOut: {
-            value: request.payload.whenTestingCarriedOut
-          },
-          onAnotherDate: {
-            day: {
-              value: request.payload['on-another-date-day']
-            },
-            month: {
-              value: request.payload['on-another-date-month']
-            },
-            year: {
-              value: request.payload['on-another-date-year']
+          whenTestingWasCarriedOut: {
+            value: request.payload.whenTestingWasCarriedOut,
+            onAnotherDate: {
+              day: {
+                value: request.payload['on-another-date-day']
+              },
+              month: {
+                value: request.payload['on-another-date-month']
+              },
+              year: {
+                value: request.payload['on-another-date-year']
+              }
             }
           }
         }).code(400).takeover()
       }
-      const dateOfTesting = request.payload.whenTestingCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+      const dateOfTesting = request.payload.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
         ? dateOfReview
         : new Date(
           request.payload['on-another-date-year'],
