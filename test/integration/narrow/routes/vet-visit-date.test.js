@@ -148,13 +148,18 @@ describe('Vet, enter date of visit', () => {
       { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
       { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
       { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
-      { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today }
-    ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, whenCarriedOut, errorMessage, errorHighlights, applicationCreationDate }) => {
+      { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today },
+      { description: 'missing whenCarriedOut', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenCarriedOut: '', errorMessage: 'Enter the date the vet completed testing', errorHighlights: [], applicationCreationDate: today },
+      { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenCarriedOut: 'onAnotherDate', errorMessage: 'Enter the date the vet completed testing', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
+      { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter the date the vet completed testing', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
+      { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter the date the vet completed testing', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
+      { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, errorMessage: 'Enter the date the vet completed testing', errorHighlights: ['on-another-date-year'], applicationCreationDate: today }
+    ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, whenCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, errorHighlights, applicationCreationDate }) => {
       session.getClaim.mockReturnValueOnce({ createdAt: applicationCreationDate })
       const options = {
         method,
         url,
-        payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenCarriedOut },
+        payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear },
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }
