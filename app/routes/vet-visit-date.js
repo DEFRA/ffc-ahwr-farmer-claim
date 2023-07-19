@@ -64,7 +64,7 @@ module.exports = [{
         [labels.year]: Joi.number().min(2022).max(2024).required(),
 
         whenTestingWasCarriedOut: Joi.string()
-          .valid('onAnotherDate', 'whenTheVetVisitedTheFarmToCarryOutTheReview')
+          .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
           .required(),
 
         'on-another-date-day': Joi.number()
@@ -113,21 +113,21 @@ module.exports = [{
           request.payload,
           createdAt
         )
-        const errors = []
+        const errorSummary = []
         if (dateInputErrors.errorMessage?.text) {
-          errors.push({
+          errorSummary.push({
             text: dateInputErrors.errorMessage.text,
             href: '#when-was-the-review-completed'
           })
         }
         if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
-          errors.push({
+          errorSummary.push({
             text: 'Select if testing was carried out when the vet visited the farm or on another date',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
         if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
-          errors.push({
+          errorSummary.push({
             text: 'Enter a date',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
@@ -136,7 +136,7 @@ module.exports = [{
           .view(templatePath, {
             ...request.payload,
             ...dateInputErrors,
-            errors,
+            errorSummary,
             whenTestingWasCarriedOut: {
               value: request.payload.whenTestingWasCarriedOut,
               errorMessage: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')
@@ -176,9 +176,9 @@ module.exports = [{
           errorMessage: { text: errorMessages.visitDate.todayOrPast },
           items: createItemsFromPayload(request.payload, true)
         }
-        const errors = []
+        const errorSummary = []
         if (dateInputErrors.errorMessage?.text) {
-          errors.push({
+          errorSummary.push({
             text: dateInputErrors.errorMessage.text,
             href: '#when-was-the-review-completed'
           })
@@ -186,7 +186,7 @@ module.exports = [{
         return h.view(templatePath, {
           ...request.payload,
           ...dateInputErrors,
-          errors,
+          errorSummary,
           whenTestingWasCarriedOut: {
             value: request.payload.whenTestingWasCarriedOut,
             onAnotherDate: {
@@ -208,9 +208,9 @@ module.exports = [{
           errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
           items: createItemsFromPayload(request.payload, true)
         }
-        const errors = []
+        const errorSummary = []
         if (dateInputErrors.errorMessage?.text) {
-          errors.push({
+          errorSummary.push({
             text: dateInputErrors.errorMessage.text,
             href: '#when-was-the-review-completed'
           })
@@ -218,7 +218,7 @@ module.exports = [{
         return h.view(templatePath, {
           ...request.payload,
           ...dateInputErrors,
-          errors,
+          errorSummary,
           whenTestingWasCarriedOut: {
             value: request.payload.whenTestingWasCarriedOut,
             onAnotherDate: {
