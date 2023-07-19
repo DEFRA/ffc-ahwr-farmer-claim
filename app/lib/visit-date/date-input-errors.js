@@ -52,9 +52,7 @@ module.exports = (errorDetails, payload, firstValidDate) => {
     const { isDateValid, errorMessage } = isDateInFutureOrBeforeFirstValidDate(date, firstValidDate)
     if (isNaN(date)) {
       text = errorMessages.realDate
-    } else if (isDateValid) {
-      text = undefined
-    } else {
+    } else if (!isDateValid) {
       text = errorMessage.text
       items.forEach(item => {
         item.classes += ` ${inputErrorClass}`
