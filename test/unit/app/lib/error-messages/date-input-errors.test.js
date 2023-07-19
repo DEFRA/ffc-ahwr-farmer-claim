@@ -24,7 +24,7 @@ describe('date input error message', () => {
 
     const res = getDateInputErrors(errorDetails, payload)
 
-    expect(res.errorMessage.text).toEqual('Enter the date of the visit')
+    expect(res.errorMessage.text).toEqual('Enter a date')
   })
 
   test.each([

@@ -108,7 +108,7 @@ module.exports = [{
         }
         if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
           errors.push({
-            text: 'Enter a date in the correct format',
+            text: 'Enter a date',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
@@ -137,7 +137,7 @@ module.exports = [{
                 error: error.details.find(e => e.context.label === 'on-another-date-year')
               },
               errorMessage: error.details.filter(e => e.context.label.startsWith('on-another-date')).length
-                ? { text: 'Enter a date in the correct format' }
+                ? { text: 'Enter a date' }
                 : undefined
             }
           })
