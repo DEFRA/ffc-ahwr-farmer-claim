@@ -50,7 +50,9 @@ module.exports = (errorDetails, payload, firstValidDate) => {
   let text = getEmptyValuesMessage(emptyValues)
   if (!text) {
     const { isDateValid, errorMessage } = isDateInFutureOrBeforeFirstValidDate(date, firstValidDate)
-    if (isDateValid) {
+    if (isNaN(date)) {
+      text = errorMessages.realDate
+    } else if (isDateValid) {
       text = undefined
     } else {
       text = errorMessage.text
