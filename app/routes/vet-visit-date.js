@@ -102,13 +102,13 @@ module.exports = [{
         }
         if (error.details.find(e => e.context.label === 'whenCarriedOut')) {
           errors.push({
-            text: 'Enter the date the vet completed testing',
+            text: 'Select if testing was carried out when the vet visited the farm or on another date',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
         if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
           errors.push({
-            text: 'Enter the date the vet completed testing',
+            text: 'Enter a date in the correct format',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
@@ -120,7 +120,7 @@ module.exports = [{
             whenCarriedOut: {
               value: request.payload.whenCarriedOut,
               errorMessage: error.details.find(e => e.context.label === 'whenCarriedOut')
-                ? { text: 'Enter the date the vet completed testing' }
+                ? { text: 'Select if testing was carried out when the vet visited the farm or on another date' }
                 : undefined
             },
             onAnotherDate: {
@@ -136,8 +136,8 @@ module.exports = [{
                 value: request.payload['on-another-date-year'],
                 error: error.details.find(e => e.context.label === 'on-another-date-year')
               },
-              errorMessage: error.details.find(e => e.context.label === 'on-another-date-day') || error.details.find(e => e.context.label === 'on-another-date-month') || error.details.find(e => e.context.label === 'on-another-date-year')
-                ? { text: 'Enter the date the vet completed testing' }
+              errorMessage: error.details.filter(e => e.context.label.startsWith('on-another-date')).length
+                ? { text: 'Enter a date in the correct format' }
                 : undefined
             }
           })
