@@ -27,7 +27,7 @@ module.exports = [{
 
       return h.view(templatePath, {
         items: createItemsFromDate(new Date(dateOfReview), false),
-        whenCarriedOut: {
+        whenTestingCarriedOut: {
           value: dateOfReview === dateOfTesting
             ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
             : 'onAnotherDate'
@@ -63,12 +63,12 @@ module.exports = [{
         [labels.month]: Joi.number().min(1).max(12).required(),
         [labels.year]: Joi.number().min(2022).max(2024).required(),
 
-        whenCarriedOut: Joi.string()
+        whenTestingCarriedOut: Joi.string()
           .valid('onAnotherDate', 'whenTheVetVisitedTheFarmToCarryOutTheReview')
           .required(),
 
         'on-another-date-day': Joi.number()
-          .when('whenCarriedOut', {
+          .when('whenTestingCarriedOut', {
             switch: [
               {
                 is: 'onAnotherDate',
@@ -89,7 +89,7 @@ module.exports = [{
           }),
 
         'on-another-date-month': Joi.number()
-          .when('whenCarriedOut', {
+          .when('whenTestingCarriedOut', {
             switch: [
               { is: 'onAnotherDate', then: Joi.number().min(1).max(12).required() },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -98,7 +98,7 @@ module.exports = [{
           }),
 
         'on-another-date-year': Joi.number()
-          .when('whenCarriedOut', {
+          .when('whenTestingCarriedOut', {
             switch: [
               { is: 'onAnotherDate', then: Joi.number().min(2022).max(2024).required() },
               { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -120,7 +120,7 @@ module.exports = [{
             href: '#when-was-the-review-completed'
           })
         }
-        if (error.details.find(e => e.context.label === 'whenCarriedOut')) {
+        if (error.details.find(e => e.context.label === 'whenTestingCarriedOut')) {
           errors.push({
             text: 'Select if testing was carried out when the vet visited the farm or on another date',
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
@@ -137,9 +137,9 @@ module.exports = [{
             ...request.payload,
             ...dateInputErrors,
             errors,
-            whenCarriedOut: {
-              value: request.payload.whenCarriedOut,
-              errorMessage: error.details.find(e => e.context.label === 'whenCarriedOut')
+            whenTestingCarriedOut: {
+              value: request.payload.whenTestingCarriedOut,
+              errorMessage: error.details.find(e => e.context.label === 'whenTestingCarriedOut')
                 ? { text: 'Select if testing was carried out when the vet visited the farm or on another date' }
                 : undefined
             },
@@ -187,8 +187,8 @@ module.exports = [{
           ...request.payload,
           ...dateInputErrors,
           errors,
-          whenCarriedOut: {
-            value: request.payload.whenCarriedOut
+          whenTestingCarriedOut: {
+            value: request.payload.whenTestingCarriedOut
           },
           onAnotherDate: {
             day: {
@@ -219,8 +219,8 @@ module.exports = [{
           ...request.payload,
           ...dateInputErrors,
           errors,
-          whenCarriedOut: {
-            value: request.payload.whenCarriedOut
+          whenTestingCarriedOut: {
+            value: request.payload.whenTestingCarriedOut
           },
           onAnotherDate: {
             day: {
@@ -235,7 +235,7 @@ module.exports = [{
           }
         }).code(400).takeover()
       }
-      const dateOfTesting = request.payload.whenCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+      const dateOfTesting = request.payload.whenTestingCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
         ? dateOfReview
         : new Date(
           request.payload['on-another-date-year'],

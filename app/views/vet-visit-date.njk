@@ -44,7 +44,7 @@
           }) }}
         </div>
 
-        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
           {% if onAnotherDate.day.error %}
             {% set onAnotherDateDay = {
               name: 'day',
@@ -94,7 +94,7 @@
           {% endset %}
 
           {{ govukRadios({
-            name: "whenCarriedOut",
+            name: "whenTestingCarriedOut",
             fieldset: {
               legend: {
                 text: "When was endemic disease or condition testing carried out?",
@@ -105,17 +105,17 @@
             hint: {
               text: "This is the date the vet completed testing."
             },
-            errorMessage: whenCarriedOut.errorMessage,
+            errorMessage: whenTestingCarriedOut.errorMessage,
             items: [
               {
                 value: "whenTheVetVisitedTheFarmToCarryOutTheReview",
                 text: "When the vet visited the farm to carry out the review",
-                checked: whenCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                checked: whenTestingCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
               },
               {
                 value: "onAnotherDate",
                 text: "On another date",
-                checked: whenCarriedOut.value === 'onAnotherDate',
+                checked: whenTestingCarriedOut.value === 'onAnotherDate',
                 conditional: {
                   html: onAnotherDate
                 }
