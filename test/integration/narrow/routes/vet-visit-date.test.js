@@ -149,7 +149,7 @@ describe('Vet, enter date of visit', () => {
       const allErrorHighlights = [labels.day, labels.month, labels.year]
 
       test.each([
-        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), errorMessage: 'The date the review was completed must be within six months of agreement date.', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `Date must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
@@ -172,7 +172,7 @@ describe('Vet, enter date of visit', () => {
 
         const $ = cheerio.load(res.payload)
         expect(res.statusCode).toBe(400)
-        expect($('p.govuk-error-message').text()).toMatch(errorMessage)
+        expect($('p.govuk-error-message').text().trim()).toEqual(`Error: ${errorMessage}`)
         errorHighlights.forEach(label => {
           expect($(`#${label}`).hasClass(inputErrorClass)).toEqual(true)
         })
@@ -335,7 +335,16 @@ describe('Vet, enter date of visit', () => {
       const allErrorHighlights = [labels.day, labels.month, labels.year]
 
       test.each([
-        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be within six months of agreement date.', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        {
+          description: 'visit before application - application created today, visit date yesterday',
+          day: yesterday.getDate(),
+          month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1,
+          year: yesterday.getFullYear(),
+          whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+          errorMessage: `Date must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorHighlights: allErrorHighlights,
+          applicationCreationDate: today
+        },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
@@ -346,9 +355,9 @@ describe('Vet, enter date of visit', () => {
         { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today },
         { description: 'missing whenTestingWasCarriedOut', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: '', errorMessage: 'Select if testing was carried out when the vet visited the farm or on another date', errorHighlights: [], applicationCreationDate: today },
         { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', errorMessage: 'Enter a date', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, errorMessage: 'Enter a date', errorHighlights: ['on-another-date-year'], applicationCreationDate: today }
+        { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
+        { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
+        { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-year'], applicationCreationDate: today }
       ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, errorHighlights, applicationCreationDate }) => {
         session.getClaim.mockReturnValueOnce({ createdAt: applicationCreationDate })
         const options = {
@@ -363,7 +372,7 @@ describe('Vet, enter date of visit', () => {
 
         const $ = cheerio.load(res.payload)
         expect(res.statusCode).toBe(400)
-        expect($('p.govuk-error-message').text()).toMatch(errorMessage)
+        expect($('p.govuk-error-message').text().trim()).toEqual(`Error: ${errorMessage}`)
         errorHighlights.forEach(label => {
           expect($(`#${label}`).hasClass(inputErrorClass)).toEqual(true)
         })

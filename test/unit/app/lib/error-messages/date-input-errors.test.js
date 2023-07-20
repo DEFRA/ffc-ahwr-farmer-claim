@@ -101,7 +101,7 @@ describe('date input error message', () => {
   test.each([
     { label: labels.day, value: 999, expectedErrorMessage: 'The date the review was completed must be in the past' },
     { label: labels.month, value: 999, expectedErrorMessage: 'The date the review was completed must be in the past' },
-    { label: labels.year, value: 999, expectedErrorMessage: `Date must be the same or after ${firstValidDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when the application was made` }
+    { label: labels.year, value: 999, expectedErrorMessage: `Date must be the same or after ${firstValidDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer` }
   ])('returns all items highlighted with values set - %p', ({ label, value, expectedErrorMessage }) => {
     const errorDetails = [{
       context: { label, value, key: label }
