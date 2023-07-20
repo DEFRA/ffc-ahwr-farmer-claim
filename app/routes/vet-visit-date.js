@@ -17,6 +17,14 @@ function getDateFromPayload (payload) {
   return new Date(year, month - 1, day)
 }
 
+const dateOfReviewMustBeTodayOrInPast = (value, helpers) => {
+  const dateOfReview = getDateFromPayload(value)
+  if (dateOfReview > new Date()) {
+    return helpers.error('any.custom')
+  }
+  return value
+}
+
 module.exports = [{
   method: 'GET',
   path,
@@ -109,7 +117,7 @@ module.exports = [{
                 ],
                 otherwise: Joi.allow('')
               })
-          })
+          }).custom(dateOfReviewMustBeTodayOrInPast)
         : Joi.object({
           [labels.day]: Joi.number().min(1)
             .when(labels.month, {
@@ -121,7 +129,7 @@ module.exports = [{
             .required(),
           [labels.month]: Joi.number().min(1).max(12).required(),
           [labels.year]: Joi.number().min(2022).max(2024).required()
-        }),
+        }).custom(dateOfReviewMustBeTodayOrInPast),
       failAction: async (request, h, error) => {
         const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(
@@ -196,41 +204,6 @@ module.exports = [{
       let endDate = new Date(new Date(application.createdAt).toDateString())
       endDate = new Date(endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths))
       const dateOfReview = getDateFromPayload(request.payload)
-      if (dateOfReview > new Date()) {
-        const dateInputErrors = {
-          errorMessage: { text: errorMessages.visitDate.todayOrPast },
-          items: createItemsFromPayload(request.payload, true)
-        }
-        const errorSummary = []
-        if (dateInputErrors.errorMessage?.text) {
-          errorSummary.push({
-            text: dateInputErrors.errorMessage.text,
-            href: '#when-was-the-review-completed'
-          })
-        }
-        return h.view(templatePath, {
-          dateOfTestingEnabled: config.dateOfTesting.enabled,
-          ...request.payload,
-          ...dateInputErrors,
-          errorSummary,
-          whenTestingWasCarriedOut: config.dateOfTesting.enabled
-            ? {
-                value: request.payload.whenTestingWasCarriedOut,
-                onAnotherDate: {
-                  day: {
-                    value: request.payload['on-another-date-day']
-                  },
-                  month: {
-                    value: request.payload['on-another-date-month']
-                  },
-                  year: {
-                    value: request.payload['on-another-date-year']
-                  }
-                }
-              }
-            : {}
-        }).code(400).takeover()
-      }
       if (dateOfReview > endDate || dateOfReview < applicationDate) {
         const dateInputErrors = {
           errorMessage: { text: dateOfReview > endDate ? errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement : errorMessages.visitDate.startDateOrAfter(applicationDate) },
