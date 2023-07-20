@@ -28,9 +28,9 @@ describe('date input error message', () => {
   })
 
   test.each([
-    { label: labels.day, value: 31, error: 'Date must include a month and a year' },
-    { label: labels.month, value: 12, error: 'Date must include a day and a year' },
-    { label: labels.year, value: 2022, error: 'Date must include a day and a month' }
+    { label: labels.day, value: 31, error: 'Enter a date in the correct format' },
+    { label: labels.month, value: 12, error: 'Enter a date in the correct format' },
+    { label: labels.year, value: 2022, error: 'Enter a date in the correct format' }
   ])('returns message to enter value when single value has been entered - %p', ({ label, value, error }) => {
     const errorDetails = emptyErrorDetails.filter(err => err.context.label !== label)
     const payload = { ...emptyPayload }
@@ -42,9 +42,9 @@ describe('date input error message', () => {
   })
 
   test.each([
-    { label: labels.day, error: 'Date must include a day' },
-    { label: labels.month, error: 'Date must include a month' },
-    { label: labels.year, error: 'Date must include a year' }
+    { label: labels.day, error: 'Enter a date in the correct format' },
+    { label: labels.month, error: 'Enter a date in the correct format' },
+    { label: labels.year, error: 'Enter a date in the correct format' }
   ])('returns message to enter value when two values have been entered - %p', ({ label, error }) => {
     const errorDetails = [{ context: { label, value: '', key: label } }]
     const payload = { ...fullPayload }

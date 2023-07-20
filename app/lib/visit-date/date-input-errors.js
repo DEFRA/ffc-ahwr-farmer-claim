@@ -7,11 +7,8 @@ function getEmptyValuesMessage (emptyValues) {
   let text
   if (emptyValues.length === 3) {
     text = errorMessages.enterDate
-  } else if (emptyValues.length === 2) {
-    emptyValues.sort()
-    text = errorMessages.emptyValues(emptyValues[0], emptyValues[1])
-  } else if (emptyValues.length === 1) {
-    text = errorMessages.emptyValues(emptyValues[0])
+  } else if (emptyValues.length > 0) {
+    text = errorMessages.enterDateInTheCorrectFormat
   }
   return text
 }
