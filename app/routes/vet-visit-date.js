@@ -1,27 +1,40 @@
 const Joi = require('joi')
 const { labels } = require('../config/visit-date')
 const getDateInputErrors = require('../lib/visit-date/date-input-errors')
-const { createItemsFromDate, createItemsFromPayload } = require('../lib/visit-date/date-input-items')
+const { createItemsFromDate } = require('../lib/visit-date/date-input-items')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
-const errorMessages = require('../lib/error-messages')
 const config = require('../../app/config')
 
 const templatePath = 'vet-visit-date'
 const path = `/claim/${templatePath}`
 
-function getDateFromPayload (payload) {
+function getDateOfReviewFromPayload (payload) {
   const day = payload[labels.day]
   const month = payload[labels.month]
   const year = payload[labels.year]
   return new Date(year, month - 1, day)
 }
 
-const dateOfReviewMustBeTodayOrInPast = (value, helpers) => {
-  const dateOfReview = getDateFromPayload(value)
-  if (dateOfReview > new Date()) {
-    return helpers.error('any.custom')
+const validateDateOfReview = (value, helpers) => {
+  const dateOfReview = getDateOfReviewFromPayload(value)
+  const currentDate = new Date()
+  const dateOfAgreementAccepted = new Date(value.dateOfAgreementAccepted)
+
+  if (dateOfReview > currentDate) {
+    return helpers.error('dateOfReview.future')
   }
+
+  if (dateOfReview < dateOfAgreementAccepted) {
+    return helpers.error('dateOfReview.beforeAccepted')
+  }
+
+  const endDate = new Date(dateOfAgreementAccepted)
+  endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
+  if (dateOfReview > endDate) {
+    return helpers.error('dateOfReview.expired')
+  }
+
   return value
 }
 
@@ -30,11 +43,13 @@ module.exports = [{
   path,
   options: {
     handler: async (request, h) => {
+      const agreement = session.getClaim(request)
       const dateOfReview = session.getClaim(request, sessionKeys.farmerApplyData.visitDate)
       const dateOfTesting = session.getClaim(request, sessionKeys.farmerApplyData.dateOfTesting)
 
       return h.view(templatePath, {
         dateOfTestingEnabled: config.dateOfTesting.enabled,
+        dateOfAgreementAccepted: agreement?.createdAt ? new Date(agreement.createdAt).toISOString() : undefined,
         items: createItemsFromDate(new Date(dateOfReview), false),
         whenTestingWasCarriedOut: config.dateOfTesting.enabled && dateOfReview
           ? {
@@ -64,6 +79,8 @@ module.exports = [{
     validate: {
       payload: config.dateOfTesting.enabled
         ? Joi.object({
+            dateOfAgreementAccepted: Joi.string().required(),
+
             [labels.day]: Joi.number().min(1)
               .when(labels.month, {
                 switch: [
@@ -117,8 +134,9 @@ module.exports = [{
                 ],
                 otherwise: Joi.allow('')
               })
-          }).custom(dateOfReviewMustBeTodayOrInPast)
+          }).custom(validateDateOfReview)
         : Joi.object({
+          dateOfAgreementAccepted: Joi.string().required(),
           [labels.day]: Joi.number().min(1)
             .when(labels.month, {
               switch: [
@@ -129,8 +147,9 @@ module.exports = [{
             .required(),
           [labels.month]: Joi.number().min(1).max(12).required(),
           [labels.year]: Joi.number().min(2022).max(2024).required()
-        }).custom(dateOfReviewMustBeTodayOrInPast),
+        }).custom(validateDateOfReview),
       failAction: async (request, h, error) => {
+        console.log(error.details)
         const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(
           error.details.filter(err => err.context.label.startsWith('visit-date')),
@@ -199,57 +218,20 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const application = session.getClaim(request)
-      const applicationDate = new Date(new Date(application.createdAt).toDateString())
-      let endDate = new Date(new Date(application.createdAt).toDateString())
-      endDate = new Date(endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths))
-      const dateOfReview = getDateFromPayload(request.payload)
-      if (dateOfReview > endDate || dateOfReview < applicationDate) {
-        const dateInputErrors = {
-          errorMessage: { text: dateOfReview > endDate ? errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement : errorMessages.visitDate.startDateOrAfter(applicationDate) },
-          items: createItemsFromPayload(request.payload, true)
-        }
-        const errorSummary = []
-        if (dateInputErrors.errorMessage?.text) {
-          errorSummary.push({
-            text: dateInputErrors.errorMessage.text,
-            href: '#when-was-the-review-completed'
-          })
-        }
-        return h.view(templatePath, {
-          dateOfTestingEnabled: config.dateOfTesting.enabled,
-          ...request.payload,
-          ...dateInputErrors,
-          errorSummary,
-          whenTestingWasCarriedOut: config.dateOfTesting.enabled
-            ? {
-                value: request.payload.whenTestingWasCarriedOut,
-                onAnotherDate: {
-                  day: {
-                    value: request.payload['on-another-date-day']
-                  },
-                  month: {
-                    value: request.payload['on-another-date-month']
-                  },
-                  year: {
-                    value: request.payload['on-another-date-year']
-                  }
-                }
-              }
-            : {}
-        }).code(400).takeover()
-      }
-      const dateOfTesting = config.dateOfTesting.enabled
-        ? request.payload.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-            ? dateOfReview
-            : new Date(
-              request.payload['on-another-date-year'],
-              request.payload['on-another-date-month'] - 1,
-              request.payload['on-another-date-day']
-            )
-        : dateOfReview
+      const dateOfReview = getDateOfReviewFromPayload(request.payload)
       session.setClaim(request, sessionKeys.farmerApplyData.visitDate, dateOfReview)
-      session.setClaim(request, sessionKeys.farmerApplyData.dateOfTesting, dateOfTesting)
+
+      if (config.dateOfTesting.enabled) {
+        const dateOfTesting = request.payload.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+          ? dateOfReview
+          : new Date(
+            request.payload['on-another-date-year'],
+            request.payload['on-another-date-month'] - 1,
+            request.payload['on-another-date-day']
+          )
+        session.setClaim(request, sessionKeys.farmerApplyData.dateOfTesting, dateOfTesting)
+      }
+
       return h.redirect('/claim/vet-name')
     }
   }

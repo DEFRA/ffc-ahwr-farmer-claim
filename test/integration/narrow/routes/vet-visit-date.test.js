@@ -188,7 +188,7 @@ describe('Vet, enter date of visit', () => {
           auth,
           method,
           url,
-          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear() },
+          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear(), dateOfAgreementAccepted: before5Months },
           headers: { cookie: `crumb=${crumb}` }
         }
 
@@ -196,8 +196,6 @@ describe('Vet, enter date of visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/vet-name')
-        expect(session.getClaim).toHaveBeenCalledTimes(1)
-        expect(session.getClaim).toHaveBeenCalledWith(res.request)
       })
     })
   })
@@ -388,7 +386,7 @@ describe('Vet, enter date of visit', () => {
           auth,
           method,
           url,
-          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview' },
+          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear(), dateOfAgreementAccepted: before5Months, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview' },
           headers: { cookie: `crumb=${crumb}` }
         }
 
@@ -396,8 +394,6 @@ describe('Vet, enter date of visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/vet-name')
-        expect(session.getClaim).toHaveBeenCalledTimes(1)
-        expect(session.getClaim).toHaveBeenCalledWith(res.request)
       })
     })
   })

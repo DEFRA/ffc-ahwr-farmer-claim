@@ -25,6 +25,8 @@
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
+        <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
+
         <div id="when-was-the-review-completed" class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
           {{ govukDateInput({
             id: "visit-date",
