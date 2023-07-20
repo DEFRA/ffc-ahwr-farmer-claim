@@ -149,7 +149,6 @@ module.exports = [{
           [labels.year]: Joi.number().min(2022).max(2024).required()
         }).custom(validateDateOfReview),
       failAction: async (request, h, error) => {
-        console.log(error.details)
         const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(
           error.details.filter(err => err.context.label.startsWith('visit-date')),
