@@ -43,6 +43,9 @@ describe('Vet, enter date of visit', () => {
             getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
+        },
+        dateOfTesting: {
+          enabled: true
         }
       }
     })
