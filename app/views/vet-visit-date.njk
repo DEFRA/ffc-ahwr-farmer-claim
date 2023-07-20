@@ -44,6 +44,7 @@
           }) }}
         </div>
 
+        {% if dateOfTestingEnabled %}
         <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingWasCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
           {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
             {% set onAnotherDateDay = {
@@ -123,6 +124,7 @@
             ]
           }) }}
         </div>
+        {% endif %}
 
         {{ govukButton({
           text: "Continue",
