@@ -23,7 +23,7 @@ module.exports = {
     emptyValues: (val1, val2) => `Date must include a ${val1}${val2 ? ' and a ' + val2 : ''}`,
     enterDate: 'Enter a date',
     realDate: 'Date must be a real date',
-    startDateOrAfter: (createdAt) => `Date must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when the application was made`,
+    startDateOrAfter: (createdAt) => `Date must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
     todayOrPast: 'The date the review was completed must be in the past',
     shouldBeLessThan6MonthAfterAgreement: 'The date the review was completed must be within six months of agreement date.'
   }

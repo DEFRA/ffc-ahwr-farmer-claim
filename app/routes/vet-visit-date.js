@@ -227,7 +227,7 @@ module.exports = [{
       }
       if (dateOfReview > endDate || dateOfReview < applicationDate) {
         const dateInputErrors = {
-          errorMessage: { text: errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement },
+          errorMessage: { text: dateOfReview > endDate ? errorMessages.visitDate.shouldBeLessThan6MonthAfterAgreement : errorMessages.visitDate.startDateOrAfter(applicationDate) },
           items: createItemsFromPayload(request.payload, true)
         }
         const errorSummary = []
