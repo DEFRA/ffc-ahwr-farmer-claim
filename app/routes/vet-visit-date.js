@@ -28,7 +28,7 @@ module.exports = [{
       return h.view(templatePath, {
         dateOfTestingEnabled: config.dateOfTesting.enabled,
         items: createItemsFromDate(new Date(dateOfReview), false),
-        whenTestingWasCarriedOut: config.dateOfTesting.enabled
+        whenTestingWasCarriedOut: config.dateOfTesting.enabled && dateOfReview
           ? {
               value: dateOfReview === dateOfTesting
                 ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
