@@ -3,7 +3,7 @@ const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const sessionMock = require('../../../../app/session')
 jest.mock('../../../../app/session')
 
-describe('Check Answers test', () => {
+describe('Check Answers test ', () => {
   const auth = { credentials: { reference: '1111', sbi: '111111111' }, strategy: 'cookie' }
   const url = '/claim/check-answers'
 
@@ -30,7 +30,7 @@ describe('Check Answers test', () => {
           }
         },
         dateOfTesting: {
-          enabled: false
+          enabled: true
         }
       }
     })
@@ -76,23 +76,12 @@ describe('Check Answers test', () => {
       expect($('.govuk-summary-list__key').text()).toContain('11 or more cattle')
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
       expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
+      expect($('.govuk-summary-list__key').text()).toContain('Date of testing')
       expect($('.govuk-summary-list__key').text()).toContain('Vet\'s name')
       expect($('.govuk-summary-list__key').text()).toContain('Vet\'s RCVS number')
       expect($('.govuk-summary-list__key').text()).toContain('Test results URN')
 
       expectPhaseBanner.ok($)
-    })
-
-    test('when not logged in redirects to defra id', async () => {
-      const options = {
-        method: 'GET',
-        url
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
   })
 })
