@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const { labels } = require('../config/visit-date')
 const getDateInputErrors = require('../lib/visit-date/date-input-errors')
-const errorMessages = require('../lib/error-messages')
 const { createItemsFromDate } = require('../lib/visit-date/date-input-items')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
@@ -48,9 +47,16 @@ const validateDateOfTesting = (value, helpers) => {
     value['on-another-date-month'] - 1,
     value['on-another-date-day']
   )
+  const currentDate = new Date()
+  if (dateOfTesting > currentDate) {
+    return helpers.error('dateOfTesting.future')
+  }
   const dateOfAgreementAccepted = new Date(value.dateOfAgreementAccepted)
   if (dateOfTesting < dateOfAgreementAccepted) {
-    return helpers.error('dateOfTesting.beforeAccepted')
+    return helpers.error('dateOfTesting.beforeAccepted', {
+      dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
+        .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    })
   }
   return value
 }
@@ -151,7 +157,13 @@ module.exports = [{
                 ],
                 otherwise: Joi.allow('')
               })
-          }).custom(validateDateOfReview).custom(validateDateOfTesting)
+          })
+            .custom(validateDateOfReview)
+            .custom(validateDateOfTesting)
+            .messages({
+              'dateOfTesting.future': 'The date of testing must be in the past',
+              'dateOfTesting.beforeAccepted': 'Date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+            })
         : Joi.object({
           dateOfAgreementAccepted: Joi.string().required(),
           [labels.day]: Joi.number().min(1)
@@ -193,13 +205,18 @@ module.exports = [{
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
-        if (error.details.find(e => e.type === 'dateOfTesting.beforeAccepted')) {
+        if (error.details.find(e => e.type === 'dateOfTesting.future')) {
           errorSummary.push({
-            text: errorMessages.visitDate.startDateOrAfter(createdAt),
+            text: error.details.find(e => e.type === 'dateOfTesting.future').message,
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
-        console.log(request.payload)
+        if (error.details.find(e => e.type === 'dateOfTesting.beforeAccepted')) {
+          errorSummary.push({
+            text: error.details.find(e => e.type === 'dateOfTesting.beforeAccepted').message,
+            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+          })
+        }
         return h
           .view(templatePath, {
             dateOfTestingEnabled: config.dateOfTesting.enabled,
@@ -233,7 +250,7 @@ module.exports = [{
                         }
                       : error.details.filter(e => e.type.startsWith('dateOfTesting')).length
                         ? {
-                            text: errorMessages.visitDate.startDateOrAfter(createdAt)
+                            text: error.details.filter(e => e.type.startsWith('dateOfTesting'))[0].message
                           }
                         : undefined
                   }
