@@ -355,13 +355,26 @@ describe('Vet, enter date of visit', () => {
         { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', errorMessage: 'Enter a date', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-year'], applicationCreationDate: today }
+        { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-year'], applicationCreationDate: today },
+        {
+          description: 'onAnotherDay - must not be in the future',
+          day: today.getDate(),
+          month: today.getMonth() + 1,
+          year: today.getFullYear(),
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          onAnotherDateDay: tomorrow.getDate(),
+          onAnotherDateMonth: tomorrow.getMonth() + 1,
+          onAnotherDateYear: tomorrow.getFullYear(),
+          errorMessage: 'The date of testing must be in the past',
+          errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
+          applicationCreationDate: today
+        }
       ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, errorHighlights, applicationCreationDate }) => {
         session.getClaim.mockReturnValueOnce({ createdAt: applicationCreationDate })
         const options = {
           method,
           url,
-          payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear },
+          payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfAgreementAccepted: applicationCreationDate.toISOString().slice(0, 10) },
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
