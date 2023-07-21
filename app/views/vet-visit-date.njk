@@ -51,6 +51,7 @@
           {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
             {% set onAnotherDateDay = {
               name: 'day',
+              value: whenTestingWasCarriedOut.onAnotherDate.day.value,
               classes: 'govuk-input--width-2 govuk-input--error'
             } %}
           {% else %}
@@ -64,6 +65,7 @@
           {% if whenTestingWasCarriedOut.onAnotherDate.month.error %}
             {% set onAnotherDateMonth = {
               name: 'month',
+              value: whenTestingWasCarriedOut.onAnotherDate.month.value,
               classes: 'govuk-input--width-2 govuk-input--error'
             } %}
           {% else %}
@@ -77,6 +79,7 @@
           {% if whenTestingWasCarriedOut.onAnotherDate.year.error %}
             {% set onAnotherDateYear = {
               name: 'year',
+              value: whenTestingWasCarriedOut.onAnotherDate.year.value,
               classes: 'govuk-input--width-4 govuk-input--error'
             } %}
           {% else %}

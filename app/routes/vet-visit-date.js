@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const { labels } = require('../config/visit-date')
 const getDateInputErrors = require('../lib/visit-date/date-input-errors')
+const errorMessages = require('../lib/error-messages')
 const { createItemsFromDate } = require('../lib/visit-date/date-input-items')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
@@ -38,6 +39,22 @@ const validateDateOfReview = (value, helpers) => {
   return value
 }
 
+const validateDateOfTesting = (value, helpers) => {
+  if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
+    return value
+  }
+  const dateOfTesting = new Date(
+    value['on-another-date-year'],
+    value['on-another-date-month'] - 1,
+    value['on-another-date-day']
+  )
+  const dateOfAgreementAccepted = new Date(value.dateOfAgreementAccepted)
+  if (dateOfTesting < dateOfAgreementAccepted) {
+    return helpers.error('dateOfTesting.beforeAccepted')
+  }
+  return value
+}
+
 module.exports = [{
   method: 'GET',
   path,
@@ -49,7 +66,7 @@ module.exports = [{
 
       return h.view(templatePath, {
         dateOfTestingEnabled: config.dateOfTesting.enabled,
-        dateOfAgreementAccepted: agreement?.createdAt ? new Date(agreement.createdAt).toISOString() : undefined,
+        dateOfAgreementAccepted: agreement?.createdAt ? new Date(agreement.createdAt).toISOString().slice(0, 10) : undefined,
         items: createItemsFromDate(new Date(dateOfReview), false),
         whenTestingWasCarriedOut: config.dateOfTesting.enabled && dateOfReview
           ? {
@@ -134,7 +151,7 @@ module.exports = [{
                 ],
                 otherwise: Joi.allow('')
               })
-          }).custom(validateDateOfReview)
+          }).custom(validateDateOfReview).custom(validateDateOfTesting)
         : Joi.object({
           dateOfAgreementAccepted: Joi.string().required(),
           [labels.day]: Joi.number().min(1)
@@ -176,6 +193,13 @@ module.exports = [{
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
+        if (error.details.find(e => e.type === 'dateOfTesting.beforeAccepted')) {
+          errorSummary.push({
+            text: errorMessages.visitDate.startDateOrAfter(createdAt),
+            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+          })
+        }
+        console.log(request.payload)
         return h
           .view(templatePath, {
             dateOfTestingEnabled: config.dateOfTesting.enabled,
@@ -191,15 +215,15 @@ module.exports = [{
                   onAnotherDate: {
                     day: {
                       value: request.payload['on-another-date-day'],
-                      error: error.details.find(e => e.context.label === 'on-another-date-day')
+                      error: error.details.find(e => e.context.label === 'on-another-date-day' || e.type.startsWith('dateOfTesting'))
                     },
                     month: {
                       value: request.payload['on-another-date-month'],
-                      error: error.details.find(e => e.context.label === 'on-another-date-month')
+                      error: error.details.find(e => e.context.label === 'on-another-date-month' || e.type.startsWith('dateOfTesting'))
                     },
                     year: {
                       value: request.payload['on-another-date-year'],
-                      error: error.details.find(e => e.context.label === 'on-another-date-year')
+                      error: error.details.find(e => e.context.label === 'on-another-date-year' || e.type.startsWith('dateOfTesting'))
                     },
                     errorMessage: error.details.filter(e => e.context.label.startsWith('on-another-date')).length
                       ? {
@@ -207,7 +231,11 @@ module.exports = [{
                             ? 'Enter a date'
                             : 'Enter a date in the correct format'
                         }
-                      : undefined
+                      : error.details.filter(e => e.type.startsWith('dateOfTesting')).length
+                        ? {
+                            text: errorMessages.visitDate.startDateOrAfter(createdAt)
+                          }
+                        : undefined
                   }
                 }
               : {}
