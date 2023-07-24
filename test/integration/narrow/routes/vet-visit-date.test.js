@@ -188,7 +188,13 @@ describe('Vet, enter date of visit', () => {
           auth,
           method,
           url,
-          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear(), dateOfAgreementAccepted: before5Months },
+          payload: {
+            crumb,
+            [labels.day]: today.getDate(),
+            [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
+            [labels.year]: today.getFullYear(),
+            dateOfAgreementAccepted: before5Months
+          },
           headers: { cookie: `crumb=${crumb}` }
         }
 

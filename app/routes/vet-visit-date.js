@@ -17,16 +17,23 @@ function getDateOfReviewFromPayload (payload) {
 }
 
 const validateDateOfReview = (value, helpers) => {
-  const dateOfReview = getDateOfReviewFromPayload(value)
+  const dateOfReview = new Date(Date.UTC(
+    helpers.state.ancestors[0][labels.year],
+    helpers.state.ancestors[0][labels.month] - 1,
+    helpers.state.ancestors[0][labels.day]
+  ))
   const currentDate = new Date()
-  const dateOfAgreementAccepted = new Date(value.dateOfAgreementAccepted)
+  const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
 
   if (dateOfReview > currentDate) {
     return helpers.error('dateOfReview.future')
   }
 
   if (dateOfReview < dateOfAgreementAccepted) {
-    return helpers.error('dateOfReview.beforeAccepted')
+    return helpers.error('dateOfReview.beforeAccepted', {
+      dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
+        .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    })
   }
 
   const endDate = new Date(dateOfAgreementAccepted)
@@ -43,21 +50,22 @@ const validateDateOfTesting = (value, helpers) => {
     return value
   }
   const dateOfTesting = new Date(
-    value['on-another-date-year'],
-    value['on-another-date-month'] - 1,
-    value['on-another-date-day']
+    helpers.state.ancestors[0]['on-another-date-year'],
+    helpers.state.ancestors[0]['on-another-date-month'] - 1,
+    helpers.state.ancestors[0]['on-another-date-day']
   )
   const currentDate = new Date()
   if (dateOfTesting > currentDate) {
     return helpers.error('dateOfTesting.future')
   }
-  const dateOfAgreementAccepted = new Date(value.dateOfAgreementAccepted)
+  const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
   if (dateOfTesting < dateOfAgreementAccepted) {
     return helpers.error('dateOfTesting.beforeAccepted', {
       dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
         .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     })
   }
+
   return value
 }
 
@@ -113,7 +121,22 @@ module.exports = [{
               })
               .required(),
             [labels.month]: Joi.number().min(1).max(12).required(),
-            [labels.year]: Joi.number().min(2022).max(2024).required(),
+            [labels.year]: Joi.number()
+              .min(2022)
+              .max(2024)
+              .required()
+              .when(labels.day, {
+                is: Joi.number().required(),
+                then: Joi.when(labels.month, {
+                  is: Joi.number().required(),
+                  then: Joi.custom(validateDateOfReview)
+                })
+              })
+              .messages({
+                'dateOfReview.future': 'The date of testing must be in the past',
+                'dateOfReview.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                'dateOfReview.expired': 'expired...'
+              }),
 
             whenTestingWasCarriedOut: Joi.string()
               .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
@@ -152,18 +175,29 @@ module.exports = [{
             'on-another-date-year': Joi.number()
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  { is: 'onAnotherDate', then: Joi.number().min(2022).max(2024).required() },
+                  {
+                    is: 'onAnotherDate',
+                    then: Joi.number()
+                      .min(2022)
+                      .max(2024)
+                      .required()
+                      .when('on-another-date-day', {
+                        is: Joi.number().required(),
+                        then: Joi.when('on-another-date-month', {
+                          is: Joi.number().required(),
+                          then: Joi.custom(validateDateOfTesting)
+                        })
+                      })
+                      .messages({
+                        'dateOfTesting.future': 'The date of testing must be in the past',
+                        'dateOfTesting.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                      })
+                  },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
               })
           })
-            .custom(validateDateOfReview)
-            .custom(validateDateOfTesting)
-            .messages({
-              'dateOfTesting.future': 'The date of testing must be in the past',
-              'dateOfTesting.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
-            })
         : Joi.object({
           dateOfAgreementAccepted: Joi.string().required(),
           [labels.day]: Joi.number().min(1)
@@ -175,8 +209,23 @@ module.exports = [{
             })
             .required(),
           [labels.month]: Joi.number().min(1).max(12).required(),
-          [labels.year]: Joi.number().min(2022).max(2024).required()
-        }).custom(validateDateOfReview),
+          [labels.year]: Joi.number()
+            .min(2022)
+            .max(2024)
+            .required()
+            .when(labels.day, {
+              is: Joi.number().required(),
+              then: Joi.when(labels.month, {
+                is: Joi.number().required(),
+                then: Joi.custom(validateDateOfReview)
+              })
+            })
+            .messages({
+              'dateOfReview.future': 'The date of testing must be in the past',
+              'dateOfReview.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+              'dateOfReview.expired': 'expired...'
+            })
+        }),
       failAction: async (request, h, error) => {
         const { createdAt } = session.getClaim(request)
         const dateInputErrors = getDateInputErrors(
@@ -197,23 +246,17 @@ module.exports = [{
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
-        if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
+        console.log(error.details)
+        if (error.details.find(e => e.type.startsWith('dateOfTesting'))) {
+          errorSummary.push({
+            text: error.details.find(e => e.type.startsWith('dateOfTesting')).message,
+            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+          })
+        } else if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
           errorSummary.push({
             text: error.details.filter(e => e.context.label.startsWith('on-another-date')).length === 3
               ? 'Enter a date'
               : 'Enter a date in the correct format',
-            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-          })
-        }
-        if (error.details.find(e => e.type === 'dateOfTesting.future')) {
-          errorSummary.push({
-            text: error.details.find(e => e.type === 'dateOfTesting.future').message,
-            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-          })
-        }
-        if (error.details.find(e => e.type === 'dateOfTesting.beforeAccepted')) {
-          errorSummary.push({
-            text: error.details.find(e => e.type === 'dateOfTesting.beforeAccepted').message,
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
@@ -242,15 +285,15 @@ module.exports = [{
                       value: request.payload['on-another-date-year'],
                       error: error.details.find(e => e.context.label === 'on-another-date-year' || e.type.startsWith('dateOfTesting'))
                     },
-                    errorMessage: error.details.filter(e => e.context.label.startsWith('on-another-date')).length
+                    errorMessage: error.details.filter(e => e.type.startsWith('dateOfTesting')).length
                       ? {
-                          text: error.details.filter(e => e.context.label.startsWith('on-another-date')).length === 3
-                            ? 'Enter a date'
-                            : 'Enter a date in the correct format'
+                          text: error.details.filter(e => e.type.startsWith('dateOfTesting'))[0].message
                         }
-                      : error.details.filter(e => e.type.startsWith('dateOfTesting')).length
+                      : error.details.filter(e => e.context.label.startsWith('on-another-date')).length
                         ? {
-                            text: error.details.filter(e => e.type.startsWith('dateOfTesting'))[0].message
+                            text: error.details.filter(e => e.context.label.startsWith('on-another-date')).length === 3
+                              ? 'Enter a date'
+                              : 'Enter a date in the correct format'
                           }
                         : undefined
                   }
