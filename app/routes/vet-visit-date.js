@@ -133,8 +133,8 @@ module.exports = [{
                 })
               })
               .messages({
-                'dateOfReview.future': 'The date of testing must be in the past',
-                'dateOfReview.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                'dateOfReview.future': 'The date of review must be in the past',
+                'dateOfReview.beforeAccepted': 'The date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                 'dateOfReview.expired': 'expired...'
               }),
 
@@ -190,7 +190,7 @@ module.exports = [{
                       })
                       .messages({
                         'dateOfTesting.future': 'The date of testing must be in the past',
-                        'dateOfTesting.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                        'dateOfTesting.beforeAccepted': 'The date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
                       })
                   },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -221,8 +221,8 @@ module.exports = [{
               })
             })
             .messages({
-              'dateOfReview.future': 'The date of testing must be in the past',
-              'dateOfReview.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+              'dateOfReview.future': 'The date of review must be in the past',
+              'dateOfReview.beforeAccepted': 'The date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
               'dateOfReview.expired': 'expired...'
             })
         }),
