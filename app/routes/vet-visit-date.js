@@ -131,16 +131,14 @@ module.exports = [{
                   is: Joi.number().required(),
                   then: Joi.custom(validateDateOfReview)
                 })
-              })
-              .messages({
-                'dateOfReview.future': 'The date of review must be in the past',
-                'dateOfReview.beforeAccepted': 'The date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
-                'dateOfReview.expired': 'expired...'
               }),
 
             whenTestingWasCarriedOut: Joi.string()
               .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
-              .required(),
+              .required()
+              .messages({
+                'any.required': 'Select if testing was carried out when the vet visited the farm or on another date'
+              }),
 
             'on-another-date-day': Joi.number()
               .when('whenTestingWasCarriedOut', {
@@ -220,11 +218,6 @@ module.exports = [{
                 then: Joi.custom(validateDateOfReview)
               })
             })
-            .messages({
-              'dateOfReview.future': 'The date of review must be in the past',
-              'dateOfReview.beforeAccepted': 'The date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
-              'dateOfReview.expired': 'expired...'
-            })
         }),
       failAction: async (request, h, error) => {
         const { createdAt } = session.getClaim(request)
@@ -242,11 +235,10 @@ module.exports = [{
         }
         if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
           errorSummary.push({
-            text: 'Select if testing was carried out when the vet visited the farm or on another date',
+            text: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut').message,
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
-        console.log(error.details)
         if (error.details.find(e => e.type.startsWith('dateOfTesting'))) {
           errorSummary.push({
             text: error.details.find(e => e.type.startsWith('dateOfTesting')).message,
@@ -270,7 +262,7 @@ module.exports = [{
               ? {
                   value: request.payload.whenTestingWasCarriedOut,
                   errorMessage: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')
-                    ? { text: 'Select if testing was carried out when the vet visited the farm or on another date' }
+                    ? { text: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut').message }
                     : undefined,
                   onAnotherDate: {
                     day: {
