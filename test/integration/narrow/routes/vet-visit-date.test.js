@@ -149,7 +149,7 @@ describe('Vet, enter date of visit', () => {
       const allErrorHighlights = [labels.day, labels.month, labels.year]
 
       test.each([
-        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `Date must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `The date must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date in the correct format', errorHighlights: [labels.day], applicationCreationDate: today },
@@ -339,7 +339,7 @@ describe('Vet, enter date of visit', () => {
           month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1,
           year: yesterday.getFullYear(),
           whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-          errorMessage: `Date must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorMessage: `The date must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
           errorHighlights: allErrorHighlights,
           applicationCreationDate: today
         },
@@ -378,7 +378,7 @@ describe('Vet, enter date of visit', () => {
           onAnotherDateDay: yesterday.getDate(),
           onAnotherDateMonth: yesterday.getMonth() + 1,
           onAnotherDateYear: yesterday.getFullYear(),
-          errorMessage: `Date must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorMessage: `The date must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
           errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
           applicationCreationDate: today
         }

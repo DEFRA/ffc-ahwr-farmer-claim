@@ -162,7 +162,7 @@ module.exports = [{
             .custom(validateDateOfTesting)
             .messages({
               'dateOfTesting.future': 'The date of testing must be in the past',
-              'dateOfTesting.beforeAccepted': 'Date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+              'dateOfTesting.beforeAccepted': 'The date must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
             })
         : Joi.object({
           dateOfAgreementAccepted: Joi.string().required(),
