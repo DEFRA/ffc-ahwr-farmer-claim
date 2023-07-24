@@ -70,7 +70,7 @@ describe('date input error message', () => {
     ]
 
     const { errorMessage, items } = getDateInputErrors(errorDetails, payload)
-    expect(errorMessage.text).toEqual('Date must be a real date')
+    expect(errorMessage.text).toEqual('The date must be a real date')
     const errorItems = items.filter(x => x.classes.includes(inputErrorClass))
     expect(errorItems).toHaveLength(1)
     expect(errorItems[0].name).toEqual(label.split('-').pop())
@@ -101,7 +101,7 @@ describe('date input error message', () => {
   test.each([
     { label: labels.day, value: 999, expectedErrorMessage: 'The date the review was completed must be in the past' },
     { label: labels.month, value: 999, expectedErrorMessage: 'The date the review was completed must be in the past' },
-    { label: labels.year, value: 999, expectedErrorMessage: `Date must be the same or after ${firstValidDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer` }
+    { label: labels.year, value: 999, expectedErrorMessage: `The date must be the same or after ${firstValidDate.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer` }
   ])('returns all items highlighted with values set - %p', ({ label, value, expectedErrorMessage }) => {
     const errorDetails = [{
       context: { label, value, key: label }
