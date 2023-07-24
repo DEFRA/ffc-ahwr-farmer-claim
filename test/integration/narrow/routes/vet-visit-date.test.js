@@ -357,7 +357,16 @@ describe('Vet, enter date of visit', () => {
         { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date in the correct format', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
         { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date in the correct format', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
         { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter a date in the correct format', errorHighlights: [labels.month, labels.year], applicationCreationDate: today },
-        { description: 'missing whenTestingWasCarriedOut', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: '', errorMessage: 'Select if testing was carried out when the vet visited the farm or on another date', errorHighlights: [], applicationCreationDate: today },
+        {
+          description: 'missing whenTestingWasCarriedOut',
+          day: today.getDate(),
+          month: today.getMonth() + 1,
+          year: today.getFullYear(),
+          whenTestingWasCarriedOut: undefined,
+          errorMessage: 'Select if testing was carried out when the vet visited the farm or on another date',
+          errorHighlights: [],
+          applicationCreationDate: today
+        },
         { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', errorMessage: 'Enter a date', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Enter a date in the correct format', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
@@ -384,7 +393,7 @@ describe('Vet, enter date of visit', () => {
           onAnotherDateDay: yesterday.getDate(),
           onAnotherDateMonth: yesterday.getMonth() + 1,
           onAnotherDateYear: yesterday.getFullYear(),
-          errorMessage: `The date must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorMessage: `The date of testing must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
           errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
           applicationCreationDate: today
         }
