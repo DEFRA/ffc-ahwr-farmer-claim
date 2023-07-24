@@ -7,11 +7,8 @@ function getEmptyValuesMessage (emptyValues) {
   let text
   if (emptyValues.length === 3) {
     text = errorMessages.enterDate
-  } else if (emptyValues.length === 2) {
-    emptyValues.sort()
-    text = errorMessages.emptyValues(emptyValues[0], emptyValues[1])
-  } else if (emptyValues.length === 1) {
-    text = errorMessages.emptyValues(emptyValues[0])
+  } else if (emptyValues.length > 0) {
+    text = errorMessages.enterDateInTheCorrectFormat
   }
   return text
 }
@@ -50,9 +47,9 @@ module.exports = (errorDetails, payload, firstValidDate) => {
   let text = getEmptyValuesMessage(emptyValues)
   if (!text) {
     const { isDateValid, errorMessage } = isDateInFutureOrBeforeFirstValidDate(date, firstValidDate)
-    if (isDateValid) {
+    if (isNaN(date)) {
       text = errorMessages.realDate
-    } else {
+    } else if (!isDateValid) {
       text = errorMessage.text
       items.forEach(item => {
         item.classes += ` ${inputErrorClass}`
@@ -61,7 +58,7 @@ module.exports = (errorDetails, payload, firstValidDate) => {
   }
 
   return {
-    errorMessage: { text },
+    errorMessage: text ? { text } : undefined,
     items
   }
 }

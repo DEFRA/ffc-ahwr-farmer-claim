@@ -15,7 +15,8 @@ module.exports = {
     urnResult: 'urnResult',
     vetName: 'vetName',
     vetRcvs: 'vetRcvs',
-    visitDate: 'visitDate'
+    visitDate: 'visitDate',
+    dateOfTesting: 'dateOfTesting'
   },
   claim: {
     detailsCorrect: 'detailsCorrect',
