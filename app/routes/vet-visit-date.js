@@ -6,6 +6,10 @@ const session = require('../session')
 const sessionKeys = require('../session/keys')
 const config = require('../../app/config')
 
+const validateDateInputDay = require('./govuk-components/validate-date-input-day')
+const validateDateInputMonth = require('./govuk-components/validate-date-input-month')
+const validateDateInputYear = require('./govuk-components/validate-date-input-year')
+
 const templatePath = 'vet-visit-date'
 const path = `/claim/${templatePath}`
 
@@ -40,30 +44,6 @@ const validateDateOfReview = (value, helpers) => {
   endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
   if (dateOfReview > endDate) {
     return helpers.error('dateOfReview.expired')
-  }
-
-  return value
-}
-
-const validateDateOfTesting = (value, helpers) => {
-  if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
-    return value
-  }
-  const dateOfTesting = new Date(
-    helpers.state.ancestors[0]['on-another-date-year'],
-    helpers.state.ancestors[0]['on-another-date-month'] - 1,
-    helpers.state.ancestors[0]['on-another-date-day']
-  )
-  const currentDate = new Date()
-  if (dateOfTesting > currentDate) {
-    return helpers.error('dateOfTesting.future')
-  }
-  const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
-  if (dateOfTesting < dateOfAgreementAccepted) {
-    return helpers.error('dateOfTesting.beforeAccepted', {
-      dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
-        .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-    })
   }
 
   return value
@@ -143,52 +123,7 @@ module.exports = [{
             'on-another-date-day': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  {
-                    is: 'onAnotherDate',
-                    then: Joi
-                      .when('on-another-date-day', {
-                        switch: [
-                          {
-                            is: '',
-                            then: Joi.custom((value, helpers) => {
-                              if (
-                                helpers.state.ancestors[0]['on-another-date-year'] === '' &&
-                                helpers.state.ancestors[0]['on-another-date-month'] === ''
-                              ) {
-                                return helpers.error('custom.nothingIsEntered')
-                              }
-                              if (helpers.state.ancestors[0]['on-another-date-year'] === '') {
-                                return helpers.error('custom.missing.dayAndYear')
-                              }
-                              if (helpers.state.ancestors[0]['on-another-date-month'] === '') {
-                                return helpers.error('custom.missing.dayAndMonth')
-                              }
-                              return helpers.error('custom.missing.day')
-                            }).messages({
-                              'custom.nothingIsEntered': 'Enter the date of testing',
-                              'custom.missing.dayAndYear': 'The date of testing must include a day and a year',
-                              'custom.missing.dayAndMonth': 'The date of testing must include a day and a month',
-                              'custom.missing.day': 'The date of testing must include a day'
-                            }),
-                            otherwise: Joi
-                              .number()
-                              .min(1)
-                              .when('on-another-date-month', {
-                                switch: [
-                                  { is: 2, then: Joi.number().max(28) },
-                                  { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
-                                ]
-                              })
-                              .required()
-                              .messages({
-                                'number.base': 'The date of testing must be a real date',
-                                'number.min': 'The date of testing must be a real date',
-                                'number.max': 'The date of testing must be a real date'
-                              })
-                          }
-                        ]
-                      })
-                  },
+                  { is: 'onAnotherDate', then: validateDateInputDay('on-another-date', 'The date of testing') },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
@@ -197,46 +132,7 @@ module.exports = [{
             'on-another-date-month': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  {
-                    is: 'onAnotherDate',
-                    then: Joi.when('on-another-date-month', {
-                      switch: [
-                        {
-                          is: '',
-                          then: Joi.custom((value, helpers) => {
-                            if (
-                              helpers.state.ancestors[0]['on-another-date-day'] === '' &&
-                              helpers.state.ancestors[0]['on-another-date-year'] === ''
-                            ) {
-                              return helpers.error('custom.nothingIsEntered')
-                            }
-                            if (helpers.state.ancestors[0]['on-another-date-day'] === '') {
-                              return helpers.error('custom.missing.dayAndMonth')
-                            }
-                            if (helpers.state.ancestors[0]['on-another-date-year'] === '') {
-                              return helpers.error('custom.missing.monthAndYear')
-                            }
-                            return helpers.error('custom.missing.month')
-                          }).messages({
-                            'custom.nothingIsEntered': 'Enter the date of testing',
-                            'custom.missing.dayAndMonth': 'The date of testing must include a day and a month',
-                            'custom.missing.monthAndYear': 'The date of testing must include a month and a year',
-                            'custom.missing.month': 'The date of testing must include a month'
-                          }),
-                          otherwise: Joi
-                            .number()
-                            .min(1)
-                            .max(12)
-                            .required()
-                            .messages({
-                              'number.base': 'The date of testing must be a real date',
-                              'number.min': 'The date of testing must be a real date',
-                              'number.max': 'The date of testing must be a real date'
-                            })
-                        }
-                      ]
-                    })
-                  },
+                  { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'The date of testing') },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
@@ -247,50 +143,30 @@ module.exports = [{
                 switch: [
                   {
                     is: 'onAnotherDate',
-                    then: Joi.when('on-another-date-year', {
-                      switch: [
-                        {
-                          is: '',
-                          then: Joi.custom((value, helpers) => {
-                            if (
-                              helpers.state.ancestors[0]['on-another-date-day'] === '' &&
-                              helpers.state.ancestors[0]['on-another-date-month'] === ''
-                            ) {
-                              return helpers.error('custom.nothingIsEntered')
-                            }
-                            if (helpers.state.ancestors[0]['on-another-date-day'] === '') {
-                              return helpers.error('custom.missing.dayAndYear')
-                            }
-                            if (helpers.state.ancestors[0]['on-another-date-month'] === '') {
-                              return helpers.error('custom.missing.monthAndYear')
-                            }
-                            return helpers.error('custom.missing.year')
-                          }).messages({
-                            'custom.nothingIsEntered': 'Enter the date of testing',
-                            'custom.missing.dayAndYear': 'The date of testing must include a day and a year',
-                            'custom.missing.monthAndYear': 'The date of testing must include a month and a year',
-                            'custom.missing.year': 'The date of testing must include a year'
-                          }),
-                          otherwise: Joi.number()
-                            .min(2022)
-                            .max(2024)
-                            .required()
-                            .when('on-another-date-day', {
-                              is: Joi.number().required(),
-                              then: Joi.when('on-another-date-month', {
-                                is: Joi.number().required(),
-                                then: Joi.custom(validateDateOfTesting)
-                              })
-                            })
-                            .messages({
-                              'number.base': 'The date of testing must be a real date',
-                              'number.min': 'The date of testing must be a real date',
-                              'number.max': 'The date of testing must be a real date',
-                              'dateOfTesting.future': 'The date of testing must be in the past',
-                              'dateOfTesting.beforeAccepted': 'The date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
-                            })
-                        }
-                      ]
+                    then: validateDateInputYear('on-another-date', 'The date of testing', (value, helpers) => {
+                      if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
+                        return value
+                      }
+                      const dateOfTesting = new Date(
+                        helpers.state.ancestors[0]['on-another-date-year'],
+                        helpers.state.ancestors[0]['on-another-date-month'] - 1,
+                        helpers.state.ancestors[0]['on-another-date-day']
+                      )
+                      const currentDate = new Date()
+                      if (dateOfTesting > currentDate) {
+                        return helpers.error('dateOfTesting.future')
+                      }
+                      const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
+                      if (dateOfTesting < dateOfAgreementAccepted) {
+                        return helpers.error('dateOfTesting.beforeAccepted', {
+                          dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
+                            .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+                        })
+                      }
+                      return value
+                    }, {
+                      'dateOfTesting.future': 'The date of testing must be in the past',
+                      'dateOfTesting.beforeAccepted': 'The date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
                     })
                   },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
