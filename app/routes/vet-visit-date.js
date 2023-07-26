@@ -140,56 +140,158 @@ module.exports = [{
                 'any.required': 'Select if testing was carried out when the vet visited the farm or on another date'
               }),
 
-            'on-another-date-day': Joi.number()
+            'on-another-date-day': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
                   {
                     is: 'onAnotherDate',
                     then: Joi
-                      .number()
-                      .min(1)
-                      .when('on-another-date-month', {
+                      .when('on-another-date-day', {
                         switch: [
-                          { is: 2, then: Joi.number().max(28) },
-                          { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
+                          {
+                            is: '',
+                            then: Joi.custom((value, helpers) => {
+                              if (
+                                helpers.state.ancestors[0]['on-another-date-year'] === '' &&
+                                helpers.state.ancestors[0]['on-another-date-month'] === ''
+                              ) {
+                                return helpers.error('custom.nothingIsEntered')
+                              }
+                              if (helpers.state.ancestors[0]['on-another-date-year'] === '') {
+                                return helpers.error('custom.missing.dayAndYear')
+                              }
+                              if (helpers.state.ancestors[0]['on-another-date-month'] === '') {
+                                return helpers.error('custom.missing.dayAndMonth')
+                              }
+                              return helpers.error('custom.missing.day')
+                            }).messages({
+                              'custom.nothingIsEntered': 'Enter the date of testing',
+                              'custom.missing.dayAndYear': 'The date of testing must include a day and a year',
+                              'custom.missing.dayAndMonth': 'The date of testing must include a day and a month',
+                              'custom.missing.day': 'The date of testing must include a day'
+                            }),
+                            otherwise: Joi
+                              .number()
+                              .min(1)
+                              .when('on-another-date-month', {
+                                switch: [
+                                  { is: 2, then: Joi.number().max(28) },
+                                  { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
+                                ]
+                              })
+                              .required()
+                              .messages({
+                                'number.base': 'The date of testing must be a real date',
+                                'number.min': 'The date of testing must be a real date',
+                                'number.max': 'The date of testing must be a real date'
+                              })
+                          }
                         ]
                       })
-                      .required()
                   },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
               }),
 
-            'on-another-date-month': Joi.number()
+            'on-another-date-month': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  { is: 'onAnotherDate', then: Joi.number().min(1).max(12).required() },
+                  {
+                    is: 'onAnotherDate',
+                    then: Joi.when('on-another-date-month', {
+                      switch: [
+                        {
+                          is: '',
+                          then: Joi.custom((value, helpers) => {
+                            if (
+                              helpers.state.ancestors[0]['on-another-date-day'] === '' &&
+                              helpers.state.ancestors[0]['on-another-date-year'] === ''
+                            ) {
+                              return helpers.error('custom.nothingIsEntered')
+                            }
+                            if (helpers.state.ancestors[0]['on-another-date-day'] === '') {
+                              return helpers.error('custom.missing.dayAndMonth')
+                            }
+                            if (helpers.state.ancestors[0]['on-another-date-year'] === '') {
+                              return helpers.error('custom.missing.monthAndYear')
+                            }
+                            return helpers.error('custom.missing.month')
+                          }).messages({
+                            'custom.nothingIsEntered': 'Enter the date of testing',
+                            'custom.missing.dayAndMonth': 'The date of testing must include a day and a month',
+                            'custom.missing.monthAndYear': 'The date of testing must include a month and a year',
+                            'custom.missing.month': 'The date of testing must include a month'
+                          }),
+                          otherwise: Joi
+                            .number()
+                            .min(1)
+                            .max(12)
+                            .required()
+                            .messages({
+                              'number.base': 'The date of testing must be a real date',
+                              'number.min': 'The date of testing must be a real date',
+                              'number.max': 'The date of testing must be a real date'
+                            })
+                        }
+                      ]
+                    })
+                  },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
               }),
 
-            'on-another-date-year': Joi.number()
+            'on-another-date-year': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
                   {
                     is: 'onAnotherDate',
-                    then: Joi.number()
-                      .min(2022)
-                      .max(2024)
-                      .required()
-                      .when('on-another-date-day', {
-                        is: Joi.number().required(),
-                        then: Joi.when('on-another-date-month', {
-                          is: Joi.number().required(),
-                          then: Joi.custom(validateDateOfTesting)
-                        })
-                      })
-                      .messages({
-                        'dateOfTesting.future': 'The date of testing must be in the past',
-                        'dateOfTesting.beforeAccepted': 'The date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
-                      })
+                    then: Joi.when('on-another-date-year', {
+                      switch: [
+                        {
+                          is: '',
+                          then: Joi.custom((value, helpers) => {
+                            if (
+                              helpers.state.ancestors[0]['on-another-date-day'] === '' &&
+                              helpers.state.ancestors[0]['on-another-date-month'] === ''
+                            ) {
+                              return helpers.error('custom.nothingIsEntered')
+                            }
+                            if (helpers.state.ancestors[0]['on-another-date-day'] === '') {
+                              return helpers.error('custom.missing.dayAndYear')
+                            }
+                            if (helpers.state.ancestors[0]['on-another-date-month'] === '') {
+                              return helpers.error('custom.missing.monthAndYear')
+                            }
+                            return helpers.error('custom.missing.year')
+                          }).messages({
+                            'custom.nothingIsEntered': 'Enter the date of testing',
+                            'custom.missing.dayAndYear': 'The date of testing must include a day and a year',
+                            'custom.missing.monthAndYear': 'The date of testing must include a month and a year',
+                            'custom.missing.year': 'The date of testing must include a year'
+                          }),
+                          otherwise: Joi.number()
+                            .min(2022)
+                            .max(2024)
+                            .required()
+                            .when('on-another-date-day', {
+                              is: Joi.number().required(),
+                              then: Joi.when('on-another-date-month', {
+                                is: Joi.number().required(),
+                                then: Joi.custom(validateDateOfTesting)
+                              })
+                            })
+                            .messages({
+                              'number.base': 'The date of testing must be a real date',
+                              'number.min': 'The date of testing must be a real date',
+                              'number.max': 'The date of testing must be a real date',
+                              'dateOfTesting.future': 'The date of testing must be in the past',
+                              'dateOfTesting.beforeAccepted': 'The date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                            })
+                        }
+                      ]
+                    })
                   },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
@@ -226,6 +328,7 @@ module.exports = [{
           request.payload,
           createdAt
         )
+
         const errorSummary = []
         if (dateInputErrors.errorMessage?.text) {
           errorSummary.push({
@@ -239,19 +342,13 @@ module.exports = [{
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
-        if (error.details.find(e => e.type.startsWith('dateOfTesting'))) {
+        if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
           errorSummary.push({
-            text: error.details.find(e => e.type.startsWith('dateOfTesting')).message,
-            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-          })
-        } else if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
-          errorSummary.push({
-            text: error.details.filter(e => e.context.label.startsWith('on-another-date')).length === 3
-              ? 'Enter a date'
-              : 'Enter a date in the correct format',
+            text: error.details.find(e => e.context.label.startsWith('on-another-date')).message,
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
+
         return h
           .view(templatePath, {
             dateOfTestingEnabled: config.dateOfTesting.enabled,
@@ -277,17 +374,9 @@ module.exports = [{
                       value: request.payload['on-another-date-year'],
                       error: error.details.find(e => e.context.label === 'on-another-date-year' || e.type.startsWith('dateOfTesting'))
                     },
-                    errorMessage: error.details.filter(e => e.type.startsWith('dateOfTesting')).length
-                      ? {
-                          text: error.details.filter(e => e.type.startsWith('dateOfTesting'))[0].message
-                        }
-                      : error.details.filter(e => e.context.label.startsWith('on-another-date')).length
-                        ? {
-                            text: error.details.filter(e => e.context.label.startsWith('on-another-date')).length === 3
-                              ? 'Enter a date'
-                              : 'Enter a date in the correct format'
-                          }
-                        : undefined
+                    errorMessage: error.details.find(e => e.context.label.startsWith('on-another-date'))
+                      ? { text: error.details.find(e => e.context.label.startsWith('on-another-date')).message }
+                      : undefined
                   }
                 }
               : {}
