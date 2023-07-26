@@ -21,7 +21,7 @@ module.exports = {
   },
   visitDate: {
     emptyValues: (val1, val2) => `The date of review must include a ${val1}${val2 ? ' and a ' + val2 : ''}`,
-    enterDate: 'Enter a date of review',
+    enterDate: 'Enter the date of review',
     enterDateInTheCorrectFormat: 'Enter a date in the correct format',
     realDate: 'The date of review must be a real date',
     startDateOrAfter: (createdAt) => `The date of review must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
