@@ -39,7 +39,7 @@
     "govuk-frontend": "4.0.1",
     "hapi-pino": "^9.1.2",
     "joi": "^17.6.0",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.1",
     "jwk-to-pem": "^2.0.5",
     "notifications-node-client": "^5.1.1",
     "nunjucks": "^3.2.3",
