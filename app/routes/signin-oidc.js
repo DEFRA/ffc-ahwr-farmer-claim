@@ -17,7 +17,7 @@ module.exports = [{
     validate: {
       query: Joi.object({
         code: Joi.string().required(),
-        state: Joi.string().uuid().required()
+        state: Joi.string().required()
       }).options({
         stripUnknown: true
       }),
