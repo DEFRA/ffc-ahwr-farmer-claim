@@ -3,6 +3,7 @@
 data:
   NODE_ENV: {{ quote .Values.environment }}
   PORT: {{ quote .Values.container.port }}
+  NAMESPACE: {{ quote .Values.namespace }}
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
   APPLICATIONREQUEST_QUEUE_ADDRESS: {{ quote .Values.container.applicationRequestQueueAddress }}
   APPLICATIONRESPONSE_QUEUE_ADDRESS: {{ quote .Values.container.applicationResponseQueueAddress }}

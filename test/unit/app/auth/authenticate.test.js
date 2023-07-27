@@ -85,7 +85,7 @@ describe('authenticate', () => {
       given: {
         request: {
           query: {
-            state: 'query_state',
+            state: 'eyJpZCI6IjgyN2E0NmEyLTEzZGQtNGI4MC04MzM1LWQxZDZhNTVlNmY3MSJ9',
             code: 'query_code'
           },
           cookieAuth: {
@@ -95,7 +95,7 @@ describe('authenticate', () => {
       },
       when: {
         session: {
-          state: 'query_state',
+          state: 'eyJpZCI6IjgyN2E0NmEyLTEzZGQtNGI4MC04MzM1LWQxZDZhNTVlNmY3MSJ9',
           pkcecodes: {
             verifier: 'verifier'
           }
@@ -160,7 +160,7 @@ describe('authenticate', () => {
       given: {
         request: {
           query: {
-            state: 'query_state',
+            state: 'eyJpZCI6IjgyN2E0NmEyLTEzZGQtNGI4MC04MzM1LWQxZDZhNTVlNmY3MSJ9',
             code: 'query_code'
           },
           cookieAuth: {
@@ -170,7 +170,7 @@ describe('authenticate', () => {
       },
       when: {
         session: {
-          state: 'query_state',
+          state: 'eyJpZCI6IjgyN2E0NmEyLTEzZGQtNGI4MC04MzM1LWQxZDZhNTVlNmY3MSJ9',
           pkcecodes: {
             verifier: 'verifier'
           }
@@ -236,7 +236,7 @@ describe('authenticate', () => {
       given: {
         request: {
           query: {
-            state: 'query_state',
+            state: 'eyJpZCI6IjgyN2E0NmEyLTEzZGQtNGI4MC04MzM1LWQxZDZhNTVlNmY3MSJ9',
             code: 'query_code'
           },
           cookieAuth: {
@@ -246,7 +246,7 @@ describe('authenticate', () => {
       },
       when: {
         session: {
-          state: 'query_state',
+          state: 'eyJpZCI6IjgyN2E0NmEyLTEzZGQtNGI4MC04MzM1LWQxZDZhNTVlNmY3MSJ9',
           pkcecodes: {
             verifier: 'verifier'
           }
