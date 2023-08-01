@@ -70,7 +70,7 @@ class StartPageActions extends CommonActions {
   }
 
   async validData(){
-    await this.inputValidCrn(process.env.CRN_CLAIMUSERNAME)
+    await this.inputValidCrn(process.env.CRN_CLAIM)
     await this.inputPassword(process.env.CRN_PASSWORD)
   }
   //....org review
