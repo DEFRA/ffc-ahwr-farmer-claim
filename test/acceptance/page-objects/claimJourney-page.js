@@ -70,11 +70,10 @@ class StartPageActions extends CommonActions {
   }
 
   async validData(){
-    await this.inputValidCrn(process.env.CRN_USERNAME)
+    await this.inputValidCrn(process.env.CRN_CLAIMUSERNAME)
     await this.inputPassword(process.env.CRN_PASSWORD)
   }
   //....org review
-
 
   async visitReviewPage(){
     await this.urlContain('dcidm')
