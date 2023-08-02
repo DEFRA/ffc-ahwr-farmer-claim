@@ -20,13 +20,12 @@ const validateDateInputYear = (namePrefix, whateverItIs, customValidation, custo
           }
           return helpers.error('dateInputYear.ifTheDateIsIncomplete.year')
         }),
-        otherwise: Joi.number()
-          .min(2022)
-          .max(2024)
+        otherwise: Joi.string()
+          .length(4)
           .required()
-          .when('on-another-date-day', {
+          .when(`${namePrefix}-day`, {
             is: Joi.number().required(),
-            then: Joi.when('on-another-date-month', {
+            then: Joi.when(`${namePrefix}-month`, {
               is: Joi.number().required(),
               then: Joi.custom(customValidation)
             })
@@ -34,9 +33,7 @@ const validateDateInputYear = (namePrefix, whateverItIs, customValidation, custo
       }
     ]
   }).messages({
-    'number.base': `${whateverItIs} must be a real date`,
-    'number.min': `${whateverItIs} must be a real date`,
-    'number.max': `${whateverItIs} must be a real date`,
+    'string.length': 'Year must include 4 numbers',
     'dateInputYear.ifNothingIsEntered': `Enter ${whateverItIs.toLowerCase()}`,
     'dateInputYear.ifTheDateIsIncomplete.dayAndYear': `${whateverItIs} must include a day and a year`,
     'dateInputYear.ifTheDateIsIncomplete.monthAndYear': `${whateverItIs} must include a month and a year`,

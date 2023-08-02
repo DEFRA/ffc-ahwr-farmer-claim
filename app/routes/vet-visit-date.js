@@ -1,7 +1,5 @@
 const Joi = require('joi')
 const { labels } = require('../config/visit-date')
-const getDateInputErrors = require('../lib/visit-date/date-input-errors')
-const { createItemsFromDate } = require('../lib/visit-date/date-input-items')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
 const config = require('../../app/config')
@@ -61,7 +59,17 @@ module.exports = [{
       return h.view(templatePath, {
         dateOfTestingEnabled: config.dateOfTesting.enabled,
         dateOfAgreementAccepted: agreement?.createdAt ? new Date(agreement.createdAt).toISOString().slice(0, 10) : undefined,
-        items: createItemsFromDate(new Date(dateOfReview), false),
+        dateOfReview: {
+          day: {
+            value: new Date(dateOfReview).getDate()
+          },
+          month: {
+            value: new Date(dateOfReview).getMonth() + 1
+          },
+          year: {
+            value: new Date(dateOfReview).getFullYear()
+          }
+        },
         whenTestingWasCarriedOut: config.dateOfTesting.enabled && dateOfReview
           ? {
               value: dateOfReview === dateOfTesting
@@ -179,57 +187,73 @@ module.exports = [{
 
           [labels.day]: Joi.when('dateOfAgreementAccepted', {
             switch: [
-              { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review') },
-            ],
+              { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review') }
+            ]
           }),
 
           [labels.month]: Joi.when('dateOfAgreementAccepted', {
             switch: [
-              { is: Joi.exist(), then: validateDateInputMonth('visit-date', 'Date of review') },
-            ],
+              { is: Joi.exist(), then: validateDateInputMonth('visit-date', 'Date of review') }
+            ]
           }),
 
           [labels.year]: Joi.when('dateOfAgreementAccepted', {
             switch: [
-              { is: Joi.exist(), then: validateDateInputYear('visit-date', 'Date of review', (value, helpers) => {
-                const dateOfReview = new Date(Date.UTC(
-                  helpers.state.ancestors[0][labels.year],
-                  helpers.state.ancestors[0][labels.month] - 1,
-                  helpers.state.ancestors[0][labels.day]
-                ))
-                const currentDate = new Date()
-                const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
-              
-                if (dateOfReview > currentDate) {
-                  return helpers.error('dateOfReview.future')
-                }
-              
-                if (dateOfReview < dateOfAgreementAccepted) {
-                  return helpers.error('dateOfReview.beforeAccepted', {
-                    dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
-                      .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-                  })
-                }
-              
-                const endDate = new Date(dateOfAgreementAccepted)
-                endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
-                if (dateOfReview > endDate) {
-                  return helpers.error('dateOfReview.expired')
-                }
-              
-                return value
-              }, {
-                'dateOfReview.future': 'Date of review must be in the past',
-                'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
-                'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
-              }) },
-            ],
+              {
+                is: Joi.exist(),
+                then: validateDateInputYear('visit-date', 'Date of review', (value, helpers) => {
+                  if (value.length !== 4) {
+                    return value
+                  }
+
+                  const dateOfReview = new Date(Date.UTC(
+                    helpers.state.ancestors[0][labels.year],
+                    helpers.state.ancestors[0][labels.month] - 1,
+                    helpers.state.ancestors[0][labels.day]
+                  ))
+                  const currentDate = new Date()
+                  const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
+
+                  if (dateOfReview > currentDate) {
+                    return helpers.error('dateOfReview.future')
+                  }
+
+                  if (dateOfReview < dateOfAgreementAccepted) {
+                    return helpers.error('dateOfReview.beforeAccepted', {
+                      dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
+                        .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+                    })
+                  }
+
+                  const endDate = new Date(dateOfAgreementAccepted)
+                  endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
+                  if (dateOfReview > endDate) {
+                    return helpers.error('dateOfReview.expired')
+                  }
+
+                  return value
+                }, {
+                  'dateOfReview.future': 'Date of review must be in the past',
+                  'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                  'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
+                })
+              }
+            ]
           })
         }),
       failAction: async (request, h, error) => {
         const errorSummary = []
 
-        if (error.details.filter(e => e.context.label.startsWith('visit-date')).length) {
+        if (
+          error.details
+            .filter(e => e.context.label.startsWith('visit-date'))
+            .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+            .length
+        ) {
+          error.details = error.details
+            .filter(e => !e.context.label.startsWith('visit-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+        }
+        if (error.details.filter(e => e.context.label.startsWith('visit-date').length)) {
           errorSummary.push({
             text: error.details.find(e => e.context.label.startsWith('visit-date')).message,
             href: '#when-was-the-review-completed'
