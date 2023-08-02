@@ -1,0 +1,213 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1690975194566' stop='1690975211093'>
+    <name>claim journey landing page</name>
+    <title>claim journey landing page</title>
+    <test-cases>
+        <test-case start='1690975194770' status='broken' stop='1690975210987'>
+            <name>claim with valid credentials</name>
+            <title>claim with valid credentials</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690975194804' status='passed' stop='1690975210938'>
+                    <name>Given user is on the /claim landing page</name>
+                    <title>Given user is on the /claim landing page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='5fa54622-d1a5-490e-9450-972d29a67bf4-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690975210940' status='broken' stop='1690975210987'>
+                    <name>And user check the page title</name>
+                    <title>And user check the page title</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='13aded92-dab7-41da-9a18-59921d3d8709-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690975210988' status='canceled' stop='1690975210988'>
+                    <name>When user start the application</name>
+                    <title>When user start the application</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975210989' status='canceled' stop='1690975210989'>
+                    <name>When redirected to Defra ID page</name>
+                    <title>When redirected to Defra ID page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975210990' status='canceled' stop='1690975210990'>
+                    <name>When user input valid data</name>
+                    <title>When user input valid data</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975210990' status='canceled' stop='1690975210991'>
+                    <name>Then user click on sign in button</name>
+                    <title>Then user click on sign in button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='682a33ea-b0c2-46bc-9df9-92b2d5028907-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>no such window: no such window: target window already closed</message>
+                <stack-trace>no such window: no such window: target window already closed
+                from unknown error: web view not found
+                  (Session info: chrome=115.0.5790.110)
+                    at getErrorFromResponseBody (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\utils.js:198:12)
+                    at NodeJSRequest._request (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\request\index.js:166:60)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async Browser.wrapCommandFn (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\@wdio\utils\build\shim.js:137:29)
+                    at async StartPageActions.getPageTitle (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:33:25)
+                    at async StartPageActions.claimPageTitle (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:43:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:14:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690975210997' status='broken' stop='1690975211039'>
+            <name>user check all business details</name>
+            <title>user check all business details</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690975211007' status='broken' stop='1690975211039'>
+                    <name>Given user confirm to be on business page</name>
+                    <title>Given user confirm to be on business page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='a095589f-08e3-452f-bee9-fd0348f3df99-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690975211039' status='canceled' stop='1690975211039'>
+                    <name>When the agreement number is shown</name>
+                    <title>When the agreement number is shown</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211040' status='canceled' stop='1690975211040'>
+                    <name>When the business name is correct</name>
+                    <title>When the business name is correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211040' status='canceled' stop='1690975211041'>
+                    <name>When user type of review is correct</name>
+                    <title>When user type of review is correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211041' status='canceled' stop='1690975211041'>
+                    <name>When user accept the displayed business details to be correct</name>
+                    <title>When user accept the displayed business details to be correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211041' status='canceled' stop='1690975211042'>
+                    <name>Then user continue to claim</name>
+                    <title>Then user continue to claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='9c4c345d-f7f0-41d2-ab87-1a4c5a5df9aa-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>no such window: no such window: target window already closed</message>
+                <stack-trace>no such window: no such window: target window already closed
+                from unknown error: web view not found
+                  (Session info: chrome=115.0.5790.110)
+                    at getErrorFromResponseBody (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\utils.js:198:12)
+                    at NodeJSRequest._request (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\request\index.js:166:60)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async Browser.wrapCommandFn (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\@wdio\utils\build\shim.js:137:29)
+                    at async StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:37:23)
+                    at async StartPageActions.visitReviewPage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:76:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:42:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690975211043' status='broken' stop='1690975211089'>
+            <name>farmer input the date of the last visit to the farm for review</name>
+            <title>farmer input the date of the last visit to the farm for review</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690975211049' status='broken' stop='1690975211089'>
+                    <name>Given user is on vet visit date page</name>
+                    <title>Given user is on vet visit date page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='476b7246-5954-4710-b29a-c1ec6a9fb5a4-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690975211090' status='canceled' stop='1690975211090'>
+                    <name>When asked about the date the review was completed</name>
+                    <title>When asked about the date the review was completed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211090' status='canceled' stop='1690975211090'>
+                    <name>When user input the date in correct order</name>
+                    <title>When user input the date in correct order</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211090' status='canceled' stop='1690975211090'>
+                    <name>And click on the option when vet visited the farm to carry out the review</name>
+                    <title>And click on the option when vet visited the farm to carry out the review</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690975211090' status='canceled' stop='1690975211090'>
+                    <name>Then clicked on continue button</name>
+                    <title>Then clicked on continue button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='1e5c40ea-7be5-41a9-aa32-19729daae2c7-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>no such window: no such window: target window already closed</message>
+                <stack-trace>no such window: no such window: target window already closed
+                from unknown error: web view not found
+                  (Session info: chrome=115.0.5790.110)
+                    at getErrorFromResponseBody (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\utils.js:198:12)
+                    at NodeJSRequest._request (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\request\index.js:166:60)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async Browser.wrapCommandFn (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\@wdio\utils\build\shim.js:137:29)
+                    at async StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:37:23)
+                    at async StartPageActions.visitDatePage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:94:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:61:3)</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

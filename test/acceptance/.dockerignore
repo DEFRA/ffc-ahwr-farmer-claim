@@ -1,0 +1,16 @@
+# dotfiles
+.dockerignore
+.pre-commit-config.yaml
+.secrets.baseline
+.snyk
+
+# files
+npm-debug.log
+docker-compose*
+Dockerfile
+LICENCE
+README.md
+
+# directories
+node_modules
+test-output
