@@ -47,7 +47,7 @@ const validateDateInputDay = (namePrefix, whateverItIs) => {
     'number.base': `${whateverItIs} must be a real date`,
     'number.min': `${whateverItIs} must be a real date`,
     'number.max': `${whateverItIs} must be a real date`,
-    'dateInputDay.ifNothingIsEntered': `Enter ${whateverItIs.toLowerCase()}`,
+    'dateInputDay.ifNothingIsEntered': `Enter the ${whateverItIs.toLowerCase()}`,
     'dateInputDay.ifTheDateIsIncomplete.dayAndYear': `${whateverItIs} must include a day and a year`,
     'dateInputDay.ifTheDateIsIncomplete.dayAndMonth': `${whateverItIs} must include a day and a month`,
     'dateInputDay.ifTheDateIsIncomplete.day': `${whateverItIs} must include a day`

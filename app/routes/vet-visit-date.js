@@ -11,42 +11,6 @@ const validateDateInputYear = require('./govuk-components/validate-date-input-ye
 const templatePath = 'vet-visit-date'
 const path = `/claim/${templatePath}`
 
-function getDateOfReviewFromPayload (payload) {
-  const day = payload[labels.day]
-  const month = payload[labels.month]
-  const year = payload[labels.year]
-  return new Date(year, month - 1, day)
-}
-
-const validateDateOfReview = (value, helpers) => {
-  const dateOfReview = new Date(Date.UTC(
-    helpers.state.ancestors[0][labels.year],
-    helpers.state.ancestors[0][labels.month] - 1,
-    helpers.state.ancestors[0][labels.day]
-  ))
-  const currentDate = new Date()
-  const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
-
-  if (dateOfReview > currentDate) {
-    return helpers.error('dateOfReview.future')
-  }
-
-  if (dateOfReview < dateOfAgreementAccepted) {
-    return helpers.error('dateOfReview.beforeAccepted', {
-      dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
-        .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-    })
-  }
-
-  const endDate = new Date(dateOfAgreementAccepted)
-  endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
-  if (dateOfReview > endDate) {
-    return helpers.error('dateOfReview.expired')
-  }
-
-  return value
-}
-
 module.exports = [{
   method: 'GET',
   path,
@@ -100,26 +64,78 @@ module.exports = [{
         ? Joi.object({
             dateOfAgreementAccepted: Joi.string().required(),
 
-            [labels.day]: Joi.number().min(1)
-              .when(labels.month, {
-                switch: [
-                  { is: 2, then: Joi.number().max(28) },
-                  { is: Joi.number().valid(4, 6, 9, 11), then: Joi.number().max(30), otherwise: Joi.number().max(31) }
-                ]
-              })
-              .required(),
-            [labels.month]: Joi.number().min(1).max(12).required(),
-            [labels.year]: Joi.number()
-              .min(2022)
-              .max(2024)
-              .required()
-              .when(labels.day, {
-                is: Joi.number().required(),
-                then: Joi.when(labels.month, {
-                  is: Joi.number().required(),
-                  then: Joi.custom(validateDateOfReview)
-                })
-              }),
+            [labels.day]: Joi.when('dateOfAgreementAccepted', {
+              switch: [
+                { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review') }
+              ]
+            }),
+  
+            [labels.month]: Joi.when('dateOfAgreementAccepted', {
+              switch: [
+                { is: Joi.exist(), then: validateDateInputMonth('visit-date', 'Date of review') }
+              ]
+            }),
+  
+            [labels.year]: Joi.when('dateOfAgreementAccepted', {
+              switch: [
+                {
+                  is: Joi.exist(),
+                  then: validateDateInputYear('visit-date', 'Date of review', (value, helpers) => {
+                    if (value.length !== 4) {
+                      return value
+                    }
+
+                    const isValidDate = (year, month, day) => {
+                      const dateObject = new Date(year, month - 1, day);
+                      return (
+                        dateObject.getFullYear() === year &&
+                        dateObject.getMonth() === month - 1 &&
+                        dateObject.getDate() === day
+                      );
+                    }
+                    if (!isValidDate(
+                      helpers.state.ancestors[0][labels.year],
+                      helpers.state.ancestors[0][labels.month],
+                      helpers.state.ancestors[0][labels.day]
+                    )) {
+                      return value
+                    }
+  
+                    const dateOfReview = new Date(Date.UTC(
+                      helpers.state.ancestors[0][labels.year],
+                      helpers.state.ancestors[0][labels.month] - 1,
+                      helpers.state.ancestors[0][labels.day]
+                    ))
+
+                    const currentDate = new Date()
+                    const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
+  
+                    if (dateOfReview > currentDate) {
+                      return helpers.error('dateOfReview.future')
+                    }
+  
+                    if (dateOfReview < dateOfAgreementAccepted) {
+                      return helpers.error('dateOfReview.beforeAccepted', {
+                        dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
+                          .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+                      })
+                    }
+  
+                    const endDate = new Date(dateOfAgreementAccepted)
+                    endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
+                    if (dateOfReview > endDate) {
+                      return helpers.error('dateOfReview.expired')
+                    }
+  
+                    return value
+                  }, {
+                    'dateOfReview.future': 'Date of review must be in the past',
+                    'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                    'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
+                  })
+                }
+              ]
+            }),
 
             whenTestingWasCarriedOut: Joi.string()
               .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
@@ -131,7 +147,7 @@ module.exports = [{
             'on-another-date-day': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  { is: 'onAnotherDate', then: validateDateInputDay('on-another-date', 'The date of testing') },
+                  { is: 'onAnotherDate', then: validateDateInputDay('on-another-date', 'Date of testing') },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
@@ -140,7 +156,7 @@ module.exports = [{
             'on-another-date-month': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'The date of testing') },
+                  { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'Date of testing') },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
@@ -151,7 +167,11 @@ module.exports = [{
                 switch: [
                   {
                     is: 'onAnotherDate',
-                    then: validateDateInputYear('on-another-date', 'The date of testing', (value, helpers) => {
+                    then: validateDateInputYear('on-another-date', 'Date of testing', (value, helpers) => {
+                      if (value.length !== 4) {
+                        return value
+                      }
+
                       if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
                         return value
                       }
@@ -206,11 +226,28 @@ module.exports = [{
                     return value
                   }
 
+                  const isValidDate = (year, month, day) => {
+                    const dateObject = new Date(year, month - 1, day);
+                    return (
+                      dateObject.getFullYear() === year &&
+                      dateObject.getMonth() === month - 1 &&
+                      dateObject.getDate() === day
+                    );
+                  }
+                  if (!isValidDate(
+                    helpers.state.ancestors[0][labels.year],
+                    helpers.state.ancestors[0][labels.month],
+                    helpers.state.ancestors[0][labels.day]
+                  )) {
+                    return value
+                  }
+
                   const dateOfReview = new Date(Date.UTC(
                     helpers.state.ancestors[0][labels.year],
                     helpers.state.ancestors[0][labels.month] - 1,
                     helpers.state.ancestors[0][labels.day]
                   ))
+
                   const currentDate = new Date()
                   const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
 
@@ -328,7 +365,11 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const dateOfReview = getDateOfReviewFromPayload(request.payload)
+      const dateOfReview = new Date(
+        request.payload[labels.year],
+        request.payload[labels.month] - 1,
+        request.payload[labels.day]
+      )
       session.setClaim(request, sessionKeys.farmerApplyData.visitDate, dateOfReview)
 
       if (config.dateOfTesting.enabled) {
