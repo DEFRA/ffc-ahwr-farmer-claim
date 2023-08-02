@@ -71,7 +71,7 @@ class StartPageActions extends CommonActions {
 
   async validData(){
     const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
-    await sleep(10000)
+    await sleep(5000)
     await this.inputValidCrn(process.env.CRN_CLAIM)
     await this.inputPassword(process.env.CRN_PASSWORD)
     console.log(`################ CRN is ${process.env.CRN_CLAIM}`)
@@ -83,6 +83,8 @@ class StartPageActions extends CommonActions {
   //   await this.urlContain('dcidm')
   // }
   async agreementNumber(){
+    const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+    await sleep(10000)
     await this.elementToContainText(CONTENT,'AHWR')
   }
   async nameOfBusiness(){
