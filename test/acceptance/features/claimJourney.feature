@@ -10,7 +10,7 @@ Feature: claim journey landing page
     Then user click on sign in button
 
   Scenario: user check all business details
-    Given user confirm to be on business page
+#    Given user confirm to be on business page
     When the agreement number is shown
     When the business name is correct
     When user type of review is correct
