@@ -66,9 +66,12 @@ module.exports = [{
 
             [labels.day]: Joi.when('dateOfAgreementAccepted', {
               switch: [
-                { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review').messages({
-                  'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review',
-                }) }
+                {
+                  is: Joi.exist(),
+                  then: validateDateInputDay('visit-date', 'Date of review').messages({
+                    'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review'
+                  })
+                }
               ]
             }),
 
@@ -149,9 +152,12 @@ module.exports = [{
             'on-another-date-day': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  { is: 'onAnotherDate', then: validateDateInputDay('on-another-date', 'Date of testing').messages({
-                    'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed testing',
-                  }) },
+                  {
+                    is: 'onAnotherDate',
+                    then: validateDateInputDay('on-another-date', 'Date of testing').messages({
+                      'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed testing'
+                    })
+                  },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
@@ -228,9 +234,12 @@ module.exports = [{
 
           [labels.day]: Joi.when('dateOfAgreementAccepted', {
             switch: [
-              { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review').messages({
-                'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review',
-              }) }
+              {
+                is: Joi.exist(),
+                then: validateDateInputDay('visit-date', 'Date of review').messages({
+                  'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review'
+                })
+              }
             ]
           }),
 
