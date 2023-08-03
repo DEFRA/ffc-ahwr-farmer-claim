@@ -81,11 +81,11 @@ class StartPageActions extends CommonActions {
   //....org review
 
   async visitReviewPage(){
+    const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+    await sleep(10000)
     await this.urlContain('dcidm')
   }
   async agreementNumber(){
-    const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
-    await sleep(10000)
     await this.elementToContainText(CONTENT,'AHWR')
   }
   async nameOfBusiness(){
