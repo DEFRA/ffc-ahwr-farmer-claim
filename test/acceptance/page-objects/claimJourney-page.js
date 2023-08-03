@@ -39,8 +39,8 @@ const DIFFERENT_DAY='#on-another-date-day'
 const DIFFERENT_MONTH='#on-another-date-month'
 const DIFFERENT_YEAR='#on-another-date-year'
 const PAST_DATE_ERROR='a[href*="#when-was-endemic-disease-or-condition-testing-carried-out"]'
-const PAST_DATE_ERROR_EXPECTED ='The date of testing must be in the past'
-const APPLICATION_DATE_ERROR_EXPECTED='The date of testing must be the same'
+const PAST_DATE_ERROR_EXPECTED ='Date of testing must be in the past'
+const APPLICATION_DATE_ERROR_EXPECTED='Date of testing must be the same'
 
 
 
@@ -156,6 +156,8 @@ class StartPageActions extends CommonActions {
   async validate_Error(){
     await this.elementToContainText(PAST_DATE_ERROR,PAST_DATE_ERROR_EXPECTED)
   }
+
+
   async clickOnSameDay(){
     await this.clickOn(SAME_AS_REVIEW_RADIO)
   }

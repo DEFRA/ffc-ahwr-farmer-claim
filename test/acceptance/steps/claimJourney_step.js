@@ -62,6 +62,7 @@ When(/^enter the future date to check if the error message is displayed$/, async
 });
 Then(/^validate the error message$/, async function () {
  await claimJourney.validate_Error()
+
 });
 When(/^enter the past date to check if the error message is displayed$/, async function () {
  await claimJourney.VerifyError_BeforeApplicationDate()
