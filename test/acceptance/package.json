@@ -21,6 +21,7 @@
     "test:smoke:dev": "ENV=dev wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
     "test:smoke:test": "ENV=test wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
     "test:negative:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@negative'",
+    "test:negative:dev": "ENV=dev wdio wdio.config.js  --cucumberOpts.tagExpression='@negative'",
     "generate-report:allure": "allure generate allure-results --clean",
     "generate-report:cucumber-html": "node cucumber-reporter/cucumber-report.js",
     "test:debug": "node --inspect-brk=0.0.0.0 ./node_modules/@wdio/cli/bin/wdio.js wdio.bs.config.js"
