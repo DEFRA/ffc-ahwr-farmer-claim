@@ -75,8 +75,6 @@ class StartPageActions extends CommonActions {
     await sleep(5000)
     await this.inputValidCrn(process.env.CRN_CLAIM)
     await this.inputPassword(process.env.CRN_PASSWORD)
-    console.log(`################ CRN is ${process.env.CRN_CLAIM}`)
-    console.log(`################# PASSWORD is ${process.env.CRN_PASSWORD}`)
   }
   //....org review
 
