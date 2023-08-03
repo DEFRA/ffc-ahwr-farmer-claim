@@ -87,7 +87,7 @@ class StartPageActions extends CommonActions {
   
   async agreementNumber(){
     const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
-     await sleep(5000)
+     await sleep(10000)
     await this.elementToContainText(CONTENT,'AHWR')
   }
   async nameOfBusiness(){
