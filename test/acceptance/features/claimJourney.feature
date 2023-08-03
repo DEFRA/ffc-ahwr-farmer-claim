@@ -58,8 +58,8 @@ Feature: claim journey landing page
 
   Scenario: submit the claim after confirming the information provided is correct
     Given user is on the final page
-    When user check the information displayed
-#    Then user submit the claim
+    # When user check the information displayed
+  # Then user submit the claim
 
 #  Scenario: agreement number is displayed after completing the claim
 #    When user is on submit claim page
