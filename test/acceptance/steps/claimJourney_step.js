@@ -50,9 +50,7 @@ When(/^user input valid data$/, async function () {
  await claimJourney.validData()
 });
 //.......org-review
-Given(/^user confirm to be on business page$/, async function () {
- await claimJourney.visitReviewPage()
-});
+
 When(/^the agreement number is shown$/, async function () {
  await claimJourney.agreementNumber()
 });
