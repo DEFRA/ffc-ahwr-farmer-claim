@@ -1,0 +1,8 @@
+{{- include "ffc-helm-library.deployment" (list . "ffc-ahwr-farmer-claim.deployment") -}}
+{{- define "ffc-ahwr-farmer-claim.deployment" -}}
+spec:
+  template:
+    spec:
+      containers:
+      - {{ include "ffc-helm-library.container" (list . "ffc-ahwr-farmer-claim.container") }}
+{{- end -}}

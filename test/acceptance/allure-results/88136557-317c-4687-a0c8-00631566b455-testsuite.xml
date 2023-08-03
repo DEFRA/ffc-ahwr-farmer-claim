@@ -1,0 +1,217 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1690982591743' stop='1690982606100'>
+    <name>claim journey landing page</name>
+    <title>claim journey landing page</title>
+    <test-cases>
+        <test-case start='1690982591896' status='passed' stop='1690982595034'>
+            <name>claim with valid credentials</name>
+            <title>claim with valid credentials</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-1'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690982591908' status='passed' stop='1690982593023'>
+                    <name>Given user is on the /claim landing page</name>
+                    <title>Given user is on the /claim landing page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='4665f9bf-6eec-4dec-86bd-0e34fa0ca354-attachment.png' type='image/png' size='128025'/>
+                        <attachment title='Console Logs' source='ce1cec83-44c6-4064-bec6-72f4781fd5d5-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982593024' status='passed' stop='1690982593161'>
+                    <name>And user check the page title</name>
+                    <title>And user check the page title</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='087d8030-cef3-4e83-9767-c2d35a81f467-attachment.png' type='image/png' size='128025'/>
+                        <attachment title='Console Logs' source='125702e7-56db-425d-a4f1-b8a596f49d2d-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982593161' status='passed' stop='1690982594337'>
+                    <name>When user start the application</name>
+                    <title>When user start the application</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='0d133cff-d180-4945-8496-d95883739509-attachment.png' type='image/png' size='8125'/>
+                        <attachment title='Console Logs' source='ab90a92c-82d3-4043-aa99-43c36b5d2918-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982594338' status='passed' stop='1690982594476'>
+                    <name>When redirected to Defra ID page</name>
+                    <title>When redirected to Defra ID page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='a0705ab7-3f35-4619-bcf1-917cbc1378fd-attachment.png' type='image/png' size='8125'/>
+                        <attachment title='Console Logs' source='07f36ea9-2136-433c-ac71-1f69e0b0f032-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982594477' status='passed' stop='1690982594856'>
+                    <name>When user input valid data</name>
+                    <title>When user input valid data</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='90158e56-85e4-4079-b8f3-386175a7ac36-attachment.png' type='image/png' size='99927'/>
+                        <attachment title='Console Logs' source='d332a2fb-402d-49a4-8d59-37da097ca62c-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982594856' status='passed' stop='1690982595033'>
+                    <name>Then user click on sign in button</name>
+                    <title>Then user click on sign in button</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='5ea1b458-da8d-418e-8eae-67d51971edc7-attachment.png' type='image/png' size='84868'/>
+                        <attachment title='Console Logs' source='f66774d7-8b00-4f17-a277-3c36bd9061de-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='30b96c93-5fd1-4c32-91da-928ad40a35f7-attachment.html' type='text/html' size='332'/>
+            </attachments>
+        </test-case>
+        <test-case start='1690982595034' status='passed' stop='1690982604823'>
+            <name>user check all business details</name>
+            <title>user check all business details</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-1'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690982595037' status='passed' stop='1690982595152'>
+                    <name>Given user confirm to be on business page</name>
+                    <title>Given user confirm to be on business page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='3522da7a-dbe6-471a-8b03-0e0278019f01-attachment.png' type='image/png' size='84868'/>
+                        <attachment title='Console Logs' source='f28ef426-c41a-4a10-92d3-0a6605a10aac-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982595152' status='passed' stop='1690982603918'>
+                    <name>When the agreement number is shown</name>
+                    <title>When the agreement number is shown</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='d78b666b-738e-454a-b7a4-2507f3ce432a-attachment.png' type='image/png' size='113556'/>
+                        <attachment title='Console Logs' source='07df49f7-d1aa-4c2c-ac87-a950cf7bcbd9-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982603918' status='passed' stop='1690982604066'>
+                    <name>When the business name is correct</name>
+                    <title>When the business name is correct</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='3b83703c-61b6-44ee-923e-393d74b2f826-attachment.png' type='image/png' size='113556'/>
+                        <attachment title='Console Logs' source='ed6b744c-0698-4c94-b3b2-8aa7ed883922-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982604067' status='passed' stop='1690982604201'>
+                    <name>When user type of review is correct</name>
+                    <title>When user type of review is correct</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='3d97c9eb-dfee-40fa-a99a-9fe8369658be-attachment.png' type='image/png' size='113556'/>
+                        <attachment title='Console Logs' source='bd2236b3-6c55-4a4a-baa1-c649c6a3b978-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982604202' status='passed' stop='1690982604375'>
+                    <name>When user accept the displayed business details to be correct</name>
+                    <title>When user accept the displayed business details to be correct</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='b7c87816-4f2b-4801-ba55-904d3e28f74d-attachment.png' type='image/png' size='77047'/>
+                        <attachment title='Console Logs' source='70d89595-7412-4dba-a8f8-a83d604ad4f6-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982604375' status='passed' stop='1690982604823'>
+                    <name>Then user continue to claim</name>
+                    <title>Then user continue to claim</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='dde3c384-3fcd-4dca-b605-eb49c60197f6-attachment.png' type='image/png' size='125327'/>
+                        <attachment title='Console Logs' source='c0ab7869-956c-4c04-a708-ec6da4c5b494-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='e6676b98-d1b7-4a62-bbca-9d8c805a8f98-attachment.html' type='text/html' size='332'/>
+            </attachments>
+        </test-case>
+        <test-case start='1690982604824' status='passed' stop='1690982606099'>
+            <name>To validate the error "The date of testing must be in the past"</name>
+            <title>To validate the error "The date of testing must be in the past"</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-1'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690982604826' status='passed' stop='1690982604956'>
+                    <name>Given user is on vet visit date page</name>
+                    <title>Given user is on vet visit date page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='1679f68a-576c-4313-b784-5f5b107e6263-attachment.png' type='image/png' size='125327'/>
+                        <attachment title='Console Logs' source='28ee4075-40eb-4fdf-a766-37ccbb651404-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982604956' status='passed' stop='1690982605103'>
+                    <name>When asked about the date the review was completed</name>
+                    <title>When asked about the date the review was completed</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='26393453-0eb4-47cc-9dfc-0f9f67127ab5-attachment.png' type='image/png' size='125327'/>
+                        <attachment title='Console Logs' source='8a94f350-8a5e-4d1d-95dc-a306dfbd72fc-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982605103' status='passed' stop='1690982605592'>
+                    <name>And enter the future date to check if the error message is displayed</name>
+                    <title>And enter the future date to check if the error message is displayed</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='7721581b-39d2-4c42-9a9a-3d8424dd8784-attachment.png' type='image/png' size='66989'/>
+                        <attachment title='Console Logs' source='dd6a46b5-a734-45cf-92e3-30e07b635b72-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982605593' status='passed' stop='1690982605949'>
+                    <name>Then clicked on continue button</name>
+                    <title>Then clicked on continue button</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='6f4ea8cb-85e7-4b47-bdb2-3722b0322ed1-attachment.png' type='image/png' size='101917'/>
+                        <attachment title='Console Logs' source='9b1cbcab-4331-4998-b93d-e0b0fa2f432d-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690982605949' status='passed' stop='1690982606097'>
+                    <name>Then validate the error message</name>
+                    <title>Then validate the error message</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='8e1f9621-42a5-4605-aead-67e1d578d20e-attachment.png' type='image/png' size='101917'/>
+                        <attachment title='Console Logs' source='64bb04d6-bfe5-422c-a311-452729a0a27c-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='71c9e5bd-6186-454e-b86d-a32732018633-attachment.html' type='text/html' size='332'/>
+            </attachments>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

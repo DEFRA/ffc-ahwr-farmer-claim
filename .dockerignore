@@ -1,0 +1,21 @@
+# dotfiles
+.dockerignore
+.gitignore
+.pre-commit-config.yaml
+.secrets.baseline
+.snyk
+.vscode
+
+# files
+npm-debug.log
+docker-compose*
+jsconfig.json
+Dockerfile
+LICENCE
+README.md
+
+# directories
+docs
+helm
+node_modules
+test-output

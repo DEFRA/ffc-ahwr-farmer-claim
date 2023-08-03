@@ -1,0 +1,50 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}{{ serviceName }}{% endblock %}
+
+{% block content %}
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">You cannot claim for a livestock review for this business</h1>
+
+    {% if (error.name === 'InvalidPermissionsError') %}
+      <p class="govuk-body">You do not have the required permission to act for {{ organisationName }}{{ sbiText }}.</p>
+    
+      <h2 class="govuk-heading-m">What to do next</h2>
+
+      <p class="govuk-body">To claim for this business, the business owner must give you either:</p>
+      <ul class='govuk-list govuk-list--bullet'>
+        <li>full permission level for business details</li>
+        <li>‘submit’ permission level for the basic payment scheme</li>
+      </ul>
+    {% endif %}
+
+    {% if (error.name === 'NoApplicationFound') %}
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has not applied for an annual health and welfare review of livestock.</p>
+
+      <h2 class="govuk-heading-m">What to do next</h2>
+    {% endif %}
+
+    {% if (error.name === 'ClaimHasAlreadyBeenMade') %}
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has already claimed for an annual health and welfare review of livestock.</p>
+    
+      <h2 class="govuk-heading-m">What to do next</h2>
+    {% endif %}
+
+    {% if (error.name === 'ClaimHasExpired') %}
+      <p class="govuk-body">{{ organisationName }}{{ sbiText }} has no valid agreement you can claim funding for at this time.</p>
+      <p>Claims must be made within 6 months from the date you accept your agreement offer.</p>  
+      <h2 class="govuk-heading-m">What to do next</h2>
+    {% endif %}
+
+    <p class="govuk-body">If you have a question about this claim, contact the Rural Payments Agency by email or phone.</p>
+   
+    {{ rpaContactDetails(ruralPaymentsAgency) }}
+
+    {% if hasMultipleBusinesses %}
+      <h2 class="govuk-heading-m">Claim for another business</h2>
+      <p>You can <a href='{{backLink}}'>claim for another business</a> that has applied for a review.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

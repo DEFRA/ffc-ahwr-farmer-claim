@@ -1,0 +1,5 @@
+{{- if .Values.aadPodIdentity }}
+{{- include "ffc-helm-library.azure-identity" (list . "ffc-ahwr-farmer-claim.azure-identity") -}}
+{{- end }}
+{{- define "ffc-ahwr-farmer-claim.azure-identity" -}}
+{{- end -}}

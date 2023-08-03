@@ -1,0 +1,38 @@
+{{- include "ffc-helm-library.container-config-map" (list . "ffc-ahwr-farmer-claim.config-map") -}}
+{{- define "ffc-ahwr-farmer-claim.config-map" -}}
+data:
+  NODE_ENV: {{ quote .Values.environment }}
+  PORT: {{ quote .Values.container.port }}
+  NAMESPACE: {{ quote .Values.namespace }}
+  APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
+  APPLICATIONREQUEST_QUEUE_ADDRESS: {{ quote .Values.container.applicationRequestQueueAddress }}
+  APPLICATIONRESPONSE_QUEUE_ADDRESS: {{ quote .Values.container.applicationResponseQueueAddress }}
+  EVENT_QUEUE_ADDRESS: {{ .Values.container.eventQueueAddress }}
+  GOOGLE_TAG_MANAGER_KEY: {{ quote .Values.container.googleTagManagerKey}}
+  MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
+  {{- if .Values.container.redisHostname }}
+  REDIS_HOSTNAME: {{ quote .Values.container.redisHostname }}
+  {{- end }}
+  {{- if .Values.pr }}
+  REDIS_PARTITION: {{ .Values.container.redisPartition }}-{{ .Values.pr }}
+  {{ else }}
+  REDIS_PARTITION: {{ quote .Values.container.redisPartition }}
+  {{- end }}
+  REDIS_PORT: {{ quote .Values.container.redisPort }}
+  SERVICE_URI: {{ quote .Values.container.serviceUri }}
+  APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
+  APPLICATION_API_URI: {{ quote .Values.container.applicationApiUri }}
+  DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
+  DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
+  DEFRA_ID_REDIRECT_URI: {{ quote .Values.container.defraIdRedirectUri }}
+  DEFRA_ID_JWT_ISSUER_ID: {{ quote .Values.container.defraIdJwtIssuerId }}
+  RPA_HOST_NAME: {{ quote .Values.container.rpaHostname }}
+  RPA_GET_PERSON_SUMMARY_URL: {{ quote .Values.container.rpaGetPersonSummaryUrl }}
+  RPA_GET_ORGANISATION_PERMISSIONS_URL: {{ quote .Values.container.rpaGetOrganisationPermissionsUrl }}
+  RPA_GET_ORGANISATION_URL: {{ quote .Values.container.rpaGetOrganisationUrl }}
+  APIM_HOST_NAME: {{ quote .Values.container.apimHostname }}
+  APIM_OAUTH_PATH: {{ quote .Values.container.apimOAuthPath }}
+  APIM_SCOPE: {{ quote .Values.container.apimScope }}
+  WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
+  DATE_OF_TESTING_ENABLED: {{ quote .Values.container.dateOfTestingEnabled }}
+{{- end -}}
