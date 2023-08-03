@@ -30,10 +30,8 @@ Then(/^error message is displayed on the screen$/, async function () {
 When(/^user input valid data$/, async function () {
  await claimJourney.validData()
 });
-//.......org-review
-Given(/^user confirm to be on business page$/, async function () {
- await claimJourney.visitReviewPage()
-});
+//......org-review
+
 When(/^the agreement number is shown$/, async function () {
  await claimJourney.agreementNumber()
 });
@@ -59,6 +57,9 @@ When(/^asked about the date the review was completed$/, async function () {
 When(/^user input the date in correct order$/, async function () {
  await claimJourney.inputCurrentDate()
 });
+When(/^click on the option when vet visited the farm to carry out the review$/, async function () {
+ await claimJourney.clickOnSameDay()
+})
 Then(/^clicked on continue button$/, async function () {
  await claimJourney.continueAfterInputData()
 });

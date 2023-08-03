@@ -10,7 +10,6 @@ Feature: claim journey landing page
     Then user click on sign in button
 
   Scenario: user check all business details
-    Given user confirm to be on business page
     When the agreement number is shown
     When the business name is correct
     When user type of review is correct
@@ -21,6 +20,7 @@ Feature: claim journey landing page
     Given user is on vet visit date page
     When asked about the date the review was completed
     When user input the date in correct order
+    And click on the option when vet visited the farm to carry out the review
     Then clicked on continue button
 
   Scenario: identifying the vet full name
@@ -53,7 +53,7 @@ Feature: claim journey landing page
     Given user is on the final page
     When user check the information displayed
 #    Then user submit the claim
-#
+
 #  Scenario: agreement number is displayed after completing the claim
 #    When user is on submit claim page
 #    When User complete the claim

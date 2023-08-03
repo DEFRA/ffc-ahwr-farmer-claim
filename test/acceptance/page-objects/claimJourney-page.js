@@ -21,6 +21,7 @@ const HEADING = '.govuk-fieldset__heading'
 const VISIT_DAY = '#visit-date-day'
 const VISIT_MONTH = '#visit-date-month'
 const VISIT_YEAR = '#visit-date-year'
+const SAME_AS_REVIEW_RADIO ='#whenTestingWasCarriedOut'
 const DATE_CONTINUE = '#continue'
 const VET_QUESTION_ElEMENT = '#main-content h1'
 const VET_QUESTION = 'What is the vet’s name'
@@ -70,16 +71,16 @@ class StartPageActions extends CommonActions {
   }
 
   async validData(){
-    await this.inputValidCrn(process.env.CRN_USERNAME)
+    const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+    await sleep(5000)
+    await this.inputValidCrn(process.env.CRN_CLAIM)
     await this.inputPassword(process.env.CRN_PASSWORD)
   }
   //....org review
 
-
-  async visitReviewPage(){
-    await this.urlContain('dcidm')
-  }
   async agreementNumber(){
+    const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+    await sleep(10000)
     await this.elementToContainText(CONTENT,'AHWR')
   }
   async nameOfBusiness(){
@@ -109,6 +110,9 @@ class StartPageActions extends CommonActions {
     await this.sendKey(VISIT_DAY,day)
     await this.sendKey(VISIT_MONTH,month)
     await this.sendKey(VISIT_YEAR,year)
+  }
+  async clickOnSameDay(){
+    await this.clickOn(SAME_AS_REVIEW_RADIO)
   }
  async continueAfterInputData(){
     await this.clickOn(DATE_CONTINUE)
