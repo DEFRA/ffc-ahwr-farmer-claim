@@ -94,9 +94,9 @@ module.exports = [{
                       );
                     }
                     if (!isValidDate(
-                      helpers.state.ancestors[0][labels.year],
-                      helpers.state.ancestors[0][labels.month],
-                      helpers.state.ancestors[0][labels.day]
+                      +helpers.state.ancestors[0][labels.year],
+                      +helpers.state.ancestors[0][labels.month],
+                      +helpers.state.ancestors[0][labels.day]
                     )) {
                       return value
                     }
@@ -175,6 +175,23 @@ module.exports = [{
                       if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
                         return value
                       }
+
+                      const isValidDate = (year, month, day) => {
+                        const dateObject = new Date(year, month - 1, day);
+                        return (
+                          dateObject.getFullYear() === year &&
+                          dateObject.getMonth() === month - 1 &&
+                          dateObject.getDate() === day
+                        );
+                      }
+                      if (!isValidDate(
+                        +helpers.state.ancestors[0]['on-another-date-year'],
+                        +helpers.state.ancestors[0]['on-another-date-month'],
+                        +helpers.state.ancestors[0]['on-another-date-day']
+                      )) {
+                        return value
+                      }
+
                       const dateOfTesting = new Date(
                         helpers.state.ancestors[0]['on-another-date-year'],
                         helpers.state.ancestors[0]['on-another-date-month'] - 1,
@@ -235,9 +252,9 @@ module.exports = [{
                     );
                   }
                   if (!isValidDate(
-                    helpers.state.ancestors[0][labels.year],
-                    helpers.state.ancestors[0][labels.month],
-                    helpers.state.ancestors[0][labels.day]
+                    +helpers.state.ancestors[0][labels.year],
+                    +helpers.state.ancestors[0][labels.month],
+                    +helpers.state.ancestors[0][labels.day]
                   )) {
                     return value
                   }
@@ -290,7 +307,7 @@ module.exports = [{
           error.details = error.details
             .filter(e => !e.context.label.startsWith('visit-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
         }
-        if (error.details.filter(e => e.context.label.startsWith('visit-date').length)) {
+        if (error.details.filter(e => e.context.label.startsWith('visit-date')).length) {
           errorSummary.push({
             text: error.details.find(e => e.context.label.startsWith('visit-date')).message,
             href: '#when-was-the-review-completed'
@@ -303,14 +320,21 @@ module.exports = [{
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
+        if (
+          error.details
+            .filter(e => e.context.label.startsWith('on-another-date'))
+            .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+            .length
+        ) {
+          error.details = error.details
+            .filter(e => !e.context.label.startsWith('on-another-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+        }
         if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
           errorSummary.push({
             text: error.details.find(e => e.context.label.startsWith('on-another-date')).message,
             href: '#when-was-endemic-disease-or-condition-testing-carried-out'
           })
         }
-
-        console.log(error.details)
 
         return h
           .view(templatePath, {

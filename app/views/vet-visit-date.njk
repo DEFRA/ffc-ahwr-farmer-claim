@@ -136,6 +136,9 @@
             {{ govukDateInput({
               id: "on-another-date",
               namePrefix: "on-another-date",
+              hint: {
+                html: "For example, 27 3 2022"
+              },
               errorMessage: whenTestingWasCarriedOut.onAnotherDate.errorMessage,
               items: [onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear]
             }) }}
