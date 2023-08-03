@@ -149,9 +149,9 @@ describe('Vet, enter date of visit', () => {
       const allErrorHighlights = [labels.day, labels.month, labels.year]
 
       test.each([
-        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `The date the review was completed must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `Date of review must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-        { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date of review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date the vet completed the review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
         { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
         { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
@@ -343,12 +343,12 @@ describe('Vet, enter date of visit', () => {
           month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1,
           year: yesterday.getFullYear(),
           whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-          errorMessage: `The date the review was completed must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorMessage: `Date of review must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
           errorHighlights: allErrorHighlights,
           applicationCreationDate: today
         },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-        { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date of review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date the vet completed the review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
         { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
         { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
@@ -365,7 +365,7 @@ describe('Vet, enter date of visit', () => {
           errorHighlights: [],
           applicationCreationDate: today
         },
-        { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: '', errorMessage: 'Enter the date of testing', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
+        { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: '', errorMessage: 'Enter the date the vet completed testing', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Date of testing must include a day and a month', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Date of testing must include a month', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, onAnotherDateYear: '', errorMessage: 'Date of testing must include a year', errorHighlights: ['on-another-date-year'], applicationCreationDate: today },
@@ -391,7 +391,7 @@ describe('Vet, enter date of visit', () => {
           onAnotherDateDay: 29,
           onAnotherDateMonth: 2,
           onAnotherDateYear: '2020',
-          errorMessage: `The date of testing must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorMessage: `Date of testing must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
           errorHighlights: ['on-another-date-day'],
           applicationCreationDate: today
         },
@@ -404,7 +404,7 @@ describe('Vet, enter date of visit', () => {
           onAnotherDateDay: tomorrow.getDate(),
           onAnotherDateMonth: tomorrow.getMonth() + 1,
           onAnotherDateYear: tomorrow.getFullYear(),
-          errorMessage: 'The date of testing must be in the past',
+          errorMessage: 'Date of testing must be in the past',
           errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
           applicationCreationDate: today
         },
@@ -417,7 +417,7 @@ describe('Vet, enter date of visit', () => {
           onAnotherDateDay: yesterday.getDate(),
           onAnotherDateMonth: yesterday.getMonth() + 1,
           onAnotherDateYear: yesterday.getFullYear(),
-          errorMessage: `The date of testing must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorMessage: `Date of testing must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
           errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
           applicationCreationDate: today
         }

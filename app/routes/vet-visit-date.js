@@ -66,7 +66,9 @@ module.exports = [{
 
             [labels.day]: Joi.when('dateOfAgreementAccepted', {
               switch: [
-                { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review') }
+                { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review').messages({
+                  'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review',
+                }) }
               ]
             }),
 
@@ -81,7 +83,7 @@ module.exports = [{
                 {
                   is: Joi.exist(),
                   then: validateDateInputYear('visit-date', 'Date of review', (value, helpers) => {
-                    if (value.length !== 4) {
+                    if (value > 9999 || value < 1000) {
                       return value
                     }
 
@@ -130,7 +132,7 @@ module.exports = [{
                     return value
                   }, {
                     'dateOfReview.future': 'The date the review was completed must be in the past',
-                    'dateOfReview.beforeAccepted': 'The date the review was completed must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                    'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                     'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
                   })
                 }
@@ -147,7 +149,9 @@ module.exports = [{
             'on-another-date-day': Joi
               .when('whenTestingWasCarriedOut', {
                 switch: [
-                  { is: 'onAnotherDate', then: validateDateInputDay('on-another-date', 'Date of testing') },
+                  { is: 'onAnotherDate', then: validateDateInputDay('on-another-date', 'Date of testing').messages({
+                    'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed testing',
+                  }) },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
                 ],
                 otherwise: Joi.allow('')
@@ -168,7 +172,7 @@ module.exports = [{
                   {
                     is: 'onAnotherDate',
                     then: validateDateInputYear('on-another-date', 'Date of testing', (value, helpers) => {
-                      if (value.length !== 4) {
+                      if (value > 9999 || value < 1000) {
                         return value
                       }
 
@@ -210,8 +214,8 @@ module.exports = [{
                       }
                       return value
                     }, {
-                      'dateOfTesting.future': 'The date of testing must be in the past',
-                      'dateOfTesting.beforeAccepted': 'The date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                      'dateOfTesting.future': 'Date of testing must be in the past',
+                      'dateOfTesting.beforeAccepted': 'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
                     })
                   },
                   { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -224,7 +228,9 @@ module.exports = [{
 
           [labels.day]: Joi.when('dateOfAgreementAccepted', {
             switch: [
-              { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review') }
+              { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review').messages({
+                'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review',
+              }) }
             ]
           }),
 
@@ -239,7 +245,7 @@ module.exports = [{
               {
                 is: Joi.exist(),
                 then: validateDateInputYear('visit-date', 'Date of review', (value, helpers) => {
-                  if (value.length !== 4) {
+                  if (value > 9999 || value < 1000) {
                     return value
                   }
 
@@ -288,7 +294,7 @@ module.exports = [{
                   return value
                 }, {
                   'dateOfReview.future': 'The date the review was completed must be in the past',
-                  'dateOfReview.beforeAccepted': 'The date the review was completed must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                  'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                   'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
                 })
               }
