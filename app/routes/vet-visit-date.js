@@ -129,8 +129,8 @@ module.exports = [{
 
                     return value
                   }, {
-                    'dateOfReview.future': 'Date of review must be in the past',
-                    'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                    'dateOfReview.future': 'The date the review was completed must be in the past',
+                    'dateOfReview.beforeAccepted': 'The date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                     'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
                   })
                 }
@@ -287,8 +287,8 @@ module.exports = [{
 
                   return value
                 }, {
-                  'dateOfReview.future': 'Date of review must be in the past',
-                  'dateOfReview.beforeAccepted': 'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                  'dateOfReview.future': 'The date the review was completed must be in the past',
+                  'dateOfReview.beforeAccepted': 'The date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                   'dateOfReview.expired': 'The date the review was completed must be within six months of agreement date'
                 })
               }

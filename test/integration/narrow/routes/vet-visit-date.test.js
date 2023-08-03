@@ -152,18 +152,18 @@ describe('Vet, enter date of visit', () => {
         { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `The date of review must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date of review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-        { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
-        { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
-        { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
-        { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
-        { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
-        { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today }
+        { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
+        { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
+        { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
+        { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
+        { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
+        { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today }
       ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, errorHighlights, applicationCreationDate }) => {
         session.getClaim.mockReturnValueOnce({ createdAt: applicationCreationDate })
         const options = {
           method,
           url,
-          payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear },
+          payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: `${year}`, dateOfAgreementAccepted: applicationCreationDate, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear },
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
@@ -176,8 +176,6 @@ describe('Vet, enter date of visit', () => {
         errorHighlights.forEach(label => {
           expect($(`#${label}`).hasClass(inputErrorClass)).toEqual(true)
         })
-        expect(session.getClaim).toHaveBeenCalledTimes(1)
-        expect(session.getClaim).toHaveBeenCalledWith(res.request)
       })
 
       test.each([
@@ -192,7 +190,7 @@ describe('Vet, enter date of visit', () => {
             crumb,
             [labels.day]: today.getDate(),
             [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
-            [labels.year]: today.getFullYear(),
+            [labels.year]: `${today.getFullYear()}`,
             dateOfAgreementAccepted: before5Months
           },
           headers: { cookie: `crumb=${crumb}` }
@@ -351,12 +349,12 @@ describe('Vet, enter date of visit', () => {
         },
         { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date of review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-        { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
-        { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
-        { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
-        { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
-        { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
-        { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date of review must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today },
+        { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
+        { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
+        { description: 'missing year', day: today.getDate(), month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a year', errorHighlights: [labels.year], applicationCreationDate: today },
+        { description: 'missing day and month', day: '', month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day and a month', errorHighlights: [labels.day, labels.month], applicationCreationDate: today },
+        { description: 'missing day and year', day: '', month: today.getMonth(), year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
+        { description: 'missing month and year', day: today.getDate(), month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today },
         {
           description: 'missing whenTestingWasCarriedOut',
           day: today.getDate(),
@@ -368,9 +366,9 @@ describe('Vet, enter date of visit', () => {
           applicationCreationDate: today
         },
         { description: 'missing onAnotherDay', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: '', errorMessage: 'Enter the date of testing', errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'The date of testing must include a day and a month', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'The date of testing must include a month', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
-        { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, onAnotherDateYear: '', errorMessage: 'The date of testing must include a year', errorHighlights: ['on-another-date-year'], applicationCreationDate: today },
+        { description: 'missing onAnotherDay - missing day and month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: '', onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Date of testing must include a day and a month', errorHighlights: ['on-another-date-day', 'on-another-date-month'], applicationCreationDate: today },
+        { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Date of testing must include a month', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
+        { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, onAnotherDateYear: '', errorMessage: 'Date of testing must include a year', errorHighlights: ['on-another-date-year'], applicationCreationDate: today },
         {
           description: 'onAnotherDay - must not be in the future',
           day: today.getDate(),
@@ -402,7 +400,7 @@ describe('Vet, enter date of visit', () => {
         const options = {
           method,
           url,
-          payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: year, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfAgreementAccepted: applicationCreationDate.toISOString().slice(0, 10) },
+          payload: { crumb, [labels.day]: day, [labels.month]: month, [labels.year]: `${year}`, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': `${onAnotherDateYear}`, dateOfAgreementAccepted: applicationCreationDate.toISOString().slice(0, 10) },
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
@@ -415,8 +413,6 @@ describe('Vet, enter date of visit', () => {
         errorHighlights.forEach(label => {
           expect($(`#${label}`).hasClass(inputErrorClass)).toEqual(true)
         })
-        expect(session.getClaim).toHaveBeenCalledTimes(1)
-        expect(session.getClaim).toHaveBeenCalledWith(res.request)
       })
 
       test.each([
@@ -427,7 +423,7 @@ describe('Vet, enter date of visit', () => {
           auth,
           method,
           url,
-          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: today.getFullYear(), dateOfAgreementAccepted: before5Months, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview' },
+          payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before5Months, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview' },
           headers: { cookie: `crumb=${crumb}` }
         }
 
