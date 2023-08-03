@@ -4,7 +4,7 @@ const isYearEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${nameP
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
 const isLeapYear = (year) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
 
-const validateDateInputDay = (namePrefix, whateverItIs) => {
+const validateDateInputDay = (namePrefix, dateName) => {
   return Joi.when(`${namePrefix}-day`, {
     switch: [
       {
@@ -44,13 +44,13 @@ const validateDateInputDay = (namePrefix, whateverItIs) => {
       }
     ]
   }).messages({
-    'number.base': `${whateverItIs} must be a real date`,
-    'number.min': `${whateverItIs} must be a real date`,
-    'number.max': `${whateverItIs} must be a real date`,
-    'dateInputDay.ifTheDateEnteredCannotBeCorrect': `${whateverItIs} must be a real date`,
-    'dateInputDay.ifTheDateIsIncomplete.dayAndYear': `${whateverItIs} must include a day and a year`,
-    'dateInputDay.ifTheDateIsIncomplete.dayAndMonth': `${whateverItIs} must include a day and a month`,
-    'dateInputDay.ifTheDateIsIncomplete.day': `${whateverItIs} must include a day`
+    'number.base': `${dateName} must be a real date`,
+    'number.min': `${dateName} must be a real date`,
+    'number.max': `${dateName} must be a real date`,
+    'dateInputDay.ifTheDateEnteredCannotBeCorrect': `${dateName} must be a real date`,
+    'dateInputDay.ifTheDateIsIncomplete.dayAndYear': `${dateName} must include a day and a year`,
+    'dateInputDay.ifTheDateIsIncomplete.dayAndMonth': `${dateName} must include a day and a month`,
+    'dateInputDay.ifTheDateIsIncomplete.day': `${dateName} must include a day`
   })
 }
 

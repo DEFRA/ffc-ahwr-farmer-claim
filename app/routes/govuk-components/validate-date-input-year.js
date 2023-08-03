@@ -3,7 +3,7 @@ const Joi = require('joi')
 const isDayEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-day`] === ''
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
 
-const validateDateInputYear = (namePrefix, whateverItIs, customValidation, customMessages) => {
+const validateDateInputYear = (namePrefix, dateName, customValidation, customMessages) => {
   return Joi.when(`${namePrefix}-year`, {
     switch: [
       {
@@ -36,10 +36,10 @@ const validateDateInputYear = (namePrefix, whateverItIs, customValidation, custo
   }).messages({
     'number.min': 'Year must include 4 numbers',
     'number.max': 'Year must include 4 numbers',
-    'dateInputYear.ifNothingIsEntered': `Enter ${whateverItIs.toLowerCase()}`,
-    'dateInputYear.ifTheDateIsIncomplete.dayAndYear': `${whateverItIs} must include a day and a year`,
-    'dateInputYear.ifTheDateIsIncomplete.monthAndYear': `${whateverItIs} must include a month and a year`,
-    'dateInputYear.ifTheDateIsIncomplete.year': `${whateverItIs} must include a year`,
+    'dateInputYear.ifNothingIsEntered': `Enter ${dateName.toLowerCase()}`,
+    'dateInputYear.ifTheDateIsIncomplete.dayAndYear': `${dateName} must include a day and a year`,
+    'dateInputYear.ifTheDateIsIncomplete.monthAndYear': `${dateName} must include a month and a year`,
+    'dateInputYear.ifTheDateIsIncomplete.year': `${dateName} must include a year`,
     ...customMessages
   })
 }
