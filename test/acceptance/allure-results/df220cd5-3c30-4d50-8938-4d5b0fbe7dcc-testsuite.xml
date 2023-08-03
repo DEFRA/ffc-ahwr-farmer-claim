@@ -1,0 +1,653 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1690992931802' stop='1690992948655'>
+    <name>claim journey landing page</name>
+    <title>claim journey landing page</title>
+    <test-cases>
+        <test-case start='1690992932239' status='broken' stop='1690992947403'>
+            <name>claim with valid credentials</name>
+            <title>claim with valid credentials</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992932283' status='broken' stop='1690992947402'>
+                    <name>Given user is on the /claim landing page</name>
+                    <title>Given user is on the /claim landing page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='a934997e-558e-4825-85e4-2414fe03628c-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992947411' status='canceled' stop='1690992947415'>
+                    <name>And user check the page title</name>
+                    <title>And user check the page title</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947417' status='canceled' stop='1690992947419'>
+                    <name>When user start the application</name>
+                    <title>When user start the application</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947419' status='canceled' stop='1690992947420'>
+                    <name>When redirected to Defra ID page</name>
+                    <title>When redirected to Defra ID page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947421' status='canceled' stop='1690992947423'>
+                    <name>When user input valid data</name>
+                    <title>When user input valid data</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947424' status='canceled' stop='1690992947425'>
+                    <name>Then user click on sign in button</name>
+                    <title>Then user click on sign in button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='e5b4b360-c303-4717-982c-d7cba663b808-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: read ECONNRESET</message>
+                <stack-trace>RequestError: read ECONNRESET
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCP.onStreamRead (node:internal/stream_base_commons:217:20)
+                    at TCP.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992947439' status='broken' stop='1690992947544'>
+            <name>user check all business details</name>
+            <title>user check all business details</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992947457' status='broken' stop='1690992947544'>
+                    <name>Given user confirm to be on business page</name>
+                    <title>Given user confirm to be on business page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='e977073d-ddea-40f5-b0f7-29d4f7f0e0f7-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992947546' status='canceled' stop='1690992947546'>
+                    <name>When the agreement number is shown</name>
+                    <title>When the agreement number is shown</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947547' status='canceled' stop='1690992947549'>
+                    <name>When the business name is correct</name>
+                    <title>When the business name is correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947549' status='canceled' stop='1690992947549'>
+                    <name>When user type of review is correct</name>
+                    <title>When user type of review is correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947550' status='canceled' stop='1690992947551'>
+                    <name>When user accept the displayed business details to be correct</name>
+                    <title>When user accept the displayed business details to be correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947551' status='canceled' stop='1690992947552'>
+                    <name>Then user continue to claim</name>
+                    <title>Then user continue to claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='955528e0-806a-4718-ae48-42fb8df34890-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992947556' status='broken' stop='1690992947670'>
+            <name>farmer input the date of the last visit to the farm for review</name>
+            <title>farmer input the date of the last visit to the farm for review</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992947585' status='broken' stop='1690992947670'>
+                    <name>Given user is on vet visit date page</name>
+                    <title>Given user is on vet visit date page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='3f8472d4-4c13-4967-9134-bad0dd80b763-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992947671' status='canceled' stop='1690992947673'>
+                    <name>When asked about the date the review was completed</name>
+                    <title>When asked about the date the review was completed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947673' status='canceled' stop='1690992947673'>
+                    <name>When user input the date in correct order</name>
+                    <title>When user input the date in correct order</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947673' status='canceled' stop='1690992947674'>
+                    <name>And click on the option when vet visited the farm to carry out the review</name>
+                    <title>And click on the option when vet visited the farm to carry out the review</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='e940eacc-cb8a-4d3d-9ac9-c0384529ccd6-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992947683' status='broken' stop='1690992947804'>
+            <name>farmer input the date of the last visit to the farm for review as different date</name>
+            <title>farmer input the date of the last visit to the farm for review as different date</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992947695' status='broken' stop='1690992947804'>
+                    <name>Given user is on vet visit date page</name>
+                    <title>Given user is on vet visit date page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='c82a750e-41a5-4719-b3eb-6ff9c59789fa-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992947805' status='canceled' stop='1690992947807'>
+                    <name>When asked about the date the review was completed</name>
+                    <title>When asked about the date the review was completed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947807' status='canceled' stop='1690992947808'>
+                    <name>When user input the date in correct order</name>
+                    <title>When user input the date in correct order</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947808' status='canceled' stop='1690992947808'>
+                    <name>Then click on another date</name>
+                    <title>Then click on another date</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947809' status='canceled' stop='1690992947810'>
+                    <name>Then clicked on continue button</name>
+                    <title>Then clicked on continue button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='f10a24c1-e22c-4e6b-84bf-5c36f6250376-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992947817' status='broken' stop='1690992947950'>
+            <name>identifying the vet full name</name>
+            <title>identifying the vet full name</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992947827' status='broken' stop='1690992947949'>
+                    <name>Given user is on vet name page</name>
+                    <title>Given user is on vet name page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='aaa08bb6-4995-4c9f-ab49-2a4d6dc890c7-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992947950' status='canceled' stop='1690992947951'>
+                    <name>When check the question on the page</name>
+                    <title>When check the question on the page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947952' status='canceled' stop='1690992947952'>
+                    <name>When enter vet's full name</name>
+                    <title>When enter vet's full name</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992947953' status='canceled' stop='1690992947955'>
+                    <name>Then click to continue the claim</name>
+                    <title>Then click to continue the claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='9f39f11a-0325-4d2f-a661-2438a3aa18dd-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992947989' status='broken' stop='1690992948163'>
+            <name>Farmer input the vet's Royal college of veterinary surgeons (RCVS) number</name>
+            <title>Farmer input the vet's Royal college of veterinary surgeons (RCVS) number</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992948010' status='broken' stop='1690992948163'>
+                    <name>Given user navigate to vet rcvs page</name>
+                    <title>Given user navigate to vet rcvs page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='a3e465f4-1cfb-4dd4-8e39-2662f1f0bbe5-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992948164' status='canceled' stop='1690992948168'>
+                    <name>When user read the question</name>
+                    <title>When user read the question</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948170' status='canceled' stop='1690992948171'>
+                    <name>When user enter the rcvs number</name>
+                    <title>When user enter the rcvs number</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948171' status='canceled' stop='1690992948171'>
+                    <name>Then proceed to next page</name>
+                    <title>Then proceed to next page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='33259ee6-a42c-4dfe-9554-357e404363a2-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992948174' status='broken' stop='1690992948279'>
+            <name>test result unique reference number</name>
+            <title>test result unique reference number</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992948188' status='broken' stop='1690992948279'>
+                    <name>Given user is on urn result page</name>
+                    <title>Given user is on urn result page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='aaddaf2b-f763-4a4f-ac9b-62f25f7cdba2-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992948282' status='canceled' stop='1690992948284'>
+                    <name>When check what's required</name>
+                    <title>When check what's required</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948284' status='canceled' stop='1690992948285'>
+                    <name>When user input the test unique reference number</name>
+                    <title>When user input the test unique reference number</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948285' status='canceled' stop='1690992948289'>
+                    <name>Then proceed to next page</name>
+                    <title>Then proceed to next page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='6890566a-cefd-4586-a6db-3a2a703cf8ec-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992948295' status='broken' stop='1690992948399'>
+            <name>check all answer provided by the farmer is correct and match the business details</name>
+            <title>check all answer provided by the farmer is correct and match the business details</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992948313' status='broken' stop='1690992948399'>
+                    <name>Given user confirm to be on check answer page</name>
+                    <title>Given user confirm to be on check answer page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='5788daca-0e0b-46a5-a804-db809065aa6f-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992948399' status='canceled' stop='1690992948400'>
+                    <name>When user is required to go through the answer provided</name>
+                    <title>When user is required to go through the answer provided</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948400' status='canceled' stop='1690992948401'>
+                    <name>When confirm the business name to be true</name>
+                    <title>When confirm the business name to be true</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948401' status='canceled' stop='1690992948402'>
+                    <name>When correct sbi number is displayed</name>
+                    <title>When correct sbi number is displayed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948403' status='canceled' stop='1690992948406'>
+                    <name>When confirm to have the minimum require livestock for the review</name>
+                    <title>When confirm to have the minimum require livestock for the review</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948408' status='canceled' stop='1690992948409'>
+                    <name>Then continue to next page</name>
+                    <title>Then continue to next page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='5220a9b3-52a2-4b3d-b86d-d8b70f93cbe6-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992948416' status='broken' stop='1690992948521'>
+            <name>submit the claim after confirming the information provided is correct</name>
+            <title>submit the claim after confirming the information provided is correct</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992948430' status='broken' stop='1690992948521'>
+                    <name>Given user is on the final page</name>
+                    <title>Given user is on the final page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='eee00eb7-7856-417d-9ae5-fafcaa18f1a1-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992948523' status='canceled' stop='1690992948524'>
+                    <name>When user check the information displayed</name>
+                    <title>When user check the information displayed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948524' status='canceled' stop='1690992948526'>
+                    <name>Then user submit the claim</name>
+                    <title>Then user submit the claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='5e235c20-a5ba-46a3-abbe-7c4f7f4ad062-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992948532' status='broken' stop='1690992948643'>
+            <name>agreement number is displayed after completing the claim</name>
+            <title>agreement number is displayed after completing the claim</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992948543' status='broken' stop='1690992948643'>
+                    <name>When user is on submit claim page</name>
+                    <title>When user is on submit claim page</title>
+                    <attachments>
+                        <attachment title='Console Logs' source='768ebe49-9f3f-4539-8694-5c7cbbfe3d29-attachment.html' type='text/html' size='328'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992948644' status='canceled' stop='1690992948647'>
+                    <name>When User complete the claim</name>
+                    <title>When User complete the claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948647' status='canceled' stop='1690992948648'>
+                    <name>When success message is displayed</name>
+                    <title>When success message is displayed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992948648' status='canceled' stop='1690992948648'>
+                    <name>Then the agreement number is presented</name>
+                    <title>Then the agreement number is presented</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='81d0eaa9-78b3-45f3-849a-825b7fe78f61-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>RequestError: connect ECONNREFUSED 127.0.0.1:9515</message>
+                <stack-trace>RequestError: connect ECONNREFUSED 127.0.0.1:9515
+                    at ClientRequest.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\got\dist\source\core\index.js:970:111)
+                    at Object.onceWrapper (node:events:628:26)
+                    at ClientRequest.emit (node:events:525:35)
+                    at ClientRequest.emit (node:domain:489:12)
+                    at ClientRequest.origin.emit (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\node_modules\@szmarczak\http-timer\dist\source\index.js:43:20)
+                    at Socket.socketErrorListener (node:_http_client:502:9)
+                    at Socket.emit (node:events:513:28)
+                    at Socket.emit (node:domain:489:12)
+                    at emitErrorNT (node:internal/streams/destroy:151:8)
+                    at emitErrorCloseNT (node:internal/streams/destroy:116:3)
+                    at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1494:16)
+                    at TCPConnectWrap.callbackTrampoline (node:internal/async_hooks:130:17)</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

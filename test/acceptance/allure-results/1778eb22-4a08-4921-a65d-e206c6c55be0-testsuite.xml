@@ -1,0 +1,588 @@
+<?xml version='1.0'?>
+<ns2:test-suite xmlns:ns2='urn:model.allure.qatools.yandex.ru' start='1690992546872' stop='1690992564167'>
+    <name>claim journey landing page</name>
+    <title>claim journey landing page</title>
+    <test-cases>
+        <test-case start='1690992547202' status='broken' stop='1690992561750'>
+            <name>claim with valid credentials</name>
+            <title>claim with valid credentials</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992547231' status='broken' stop='1690992561749'>
+                    <name>Given user is on the /claim landing page</name>
+                    <title>Given user is on the /claim landing page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='33cbf8c1-48d8-431b-a957-dcd4e3abff81-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='37d0265b-6635-4876-b0b8-b034809fbae2-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992561751' status='canceled' stop='1690992561752'>
+                    <name>And user check the page title</name>
+                    <title>And user check the page title</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992561752' status='canceled' stop='1690992561753'>
+                    <name>When user start the application</name>
+                    <title>When user start the application</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992561753' status='canceled' stop='1690992561755'>
+                    <name>When redirected to Defra ID page</name>
+                    <title>When redirected to Defra ID page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992561755' status='canceled' stop='1690992561755'>
+                    <name>When user input valid data</name>
+                    <title>When user input valid data</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992561756' status='canceled' stop='1690992561756'>
+                    <name>Then user click on sign in button</name>
+                    <title>Then user click on sign in button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='beff29ed-4aff-45d7-a816-4271ab2fa59a-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>unknown error: unknown error: net::ERR_NAME_NOT_RESOLVED</message>
+                <stack-trace>unknown error: unknown error: net::ERR_NAME_NOT_RESOLVED
+                  (Session info: chrome=115.0.5790.110)
+                    at getErrorFromResponseBody (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\utils.js:198:12)
+                    at NodeJSRequest._request (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\webdriver\build\request\index.js:166:60)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async Browser.wrapCommandFn (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\@wdio\utils\build\shim.js:137:29)
+                    at async Browser.wrapCommandFn (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\node_modules\@wdio\utils\build\shim.js:137:29)
+                    at async StartPageActions.open (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:14:5)
+                    at async StartPageActions.getHomepage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:48:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:11:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992561762' status='failed' stop='1690992562034'>
+            <name>user check all business details</name>
+            <title>user check all business details</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992561776' status='failed' stop='1690992562034'>
+                    <name>Given user confirm to be on business page</name>
+                    <title>Given user confirm to be on business page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='b50cd0c2-5248-426c-bad1-449487c54fac-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='d66a2801-55ea-443d-b430-c254fdbc63d2-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992562035' status='canceled' stop='1690992562036'>
+                    <name>When the agreement number is shown</name>
+                    <title>When the agreement number is shown</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562036' status='canceled' stop='1690992562038'>
+                    <name>When the business name is correct</name>
+                    <title>When the business name is correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562038' status='canceled' stop='1690992562038'>
+                    <name>When user type of review is correct</name>
+                    <title>When user type of review is correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562039' status='canceled' stop='1690992562040'>
+                    <name>When user accept the displayed business details to be correct</name>
+                    <title>When user accept the displayed business details to be correct</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562040' status='canceled' stop='1690992562041'>
+                    <name>Then user continue to claim</name>
+                    <title>Then user continue to claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='b779f6eb-2bd4-4f38-a02c-877fc1498f92-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'dcidm'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'dcidm'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.visitReviewPage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:84:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:57:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992562045' status='failed' stop='1690992562343'>
+            <name>farmer input the date of the last visit to the farm for review</name>
+            <title>farmer input the date of the last visit to the farm for review</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992562056' status='failed' stop='1690992562343'>
+                    <name>Given user is on vet visit date page</name>
+                    <title>Given user is on vet visit date page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='87e6757f-f7c7-48f8-9f44-6aa52130c929-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='fa205c5a-8d98-495a-aa04-6783610d2132-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992562344' status='canceled' stop='1690992562346'>
+                    <name>When asked about the date the review was completed</name>
+                    <title>When asked about the date the review was completed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562347' status='canceled' stop='1690992562347'>
+                    <name>When user input the date in correct order</name>
+                    <title>When user input the date in correct order</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562347' status='canceled' stop='1690992562348'>
+                    <name>And click on the option when vet visited the farm to carry out the review</name>
+                    <title>And click on the option when vet visited the farm to carry out the review</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='2b8d28d3-921d-4252-a9a4-95b65a15ffd4-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'vet-visit-date'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'vet-visit-date'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.visitDatePage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:102:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:76:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992562351' status='failed' stop='1690992562578'>
+            <name>farmer input the date of the last visit to the farm for review as different date</name>
+            <title>farmer input the date of the last visit to the farm for review as different date</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992562359' status='failed' stop='1690992562578'>
+                    <name>Given user is on vet visit date page</name>
+                    <title>Given user is on vet visit date page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='88ed7797-a676-41e6-a9be-3388148504ff-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='dec95047-e652-4d3a-8a21-b239a2be8267-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992562578' status='canceled' stop='1690992562579'>
+                    <name>When asked about the date the review was completed</name>
+                    <title>When asked about the date the review was completed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562579' status='canceled' stop='1690992562579'>
+                    <name>When user input the date in correct order</name>
+                    <title>When user input the date in correct order</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562580' status='canceled' stop='1690992562580'>
+                    <name>Then click on another date</name>
+                    <title>Then click on another date</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562580' status='canceled' stop='1690992562580'>
+                    <name>Then clicked on continue button</name>
+                    <title>Then clicked on continue button</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='d7d7882e-9ae1-41ca-ad82-230cd7f78db0-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'vet-visit-date'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'vet-visit-date'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.visitDatePage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:102:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:76:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992562583' status='failed' stop='1690992562819'>
+            <name>identifying the vet full name</name>
+            <title>identifying the vet full name</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992562593' status='failed' stop='1690992562819'>
+                    <name>Given user is on vet name page</name>
+                    <title>Given user is on vet name page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='1e8d0a50-5347-4207-b6ad-115311036a82-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='42b2d62c-da72-4b63-8215-dcff26b07433-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992562819' status='canceled' stop='1690992562820'>
+                    <name>When check the question on the page</name>
+                    <title>When check the question on the page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562821' status='canceled' stop='1690992562822'>
+                    <name>When enter vet's full name</name>
+                    <title>When enter vet's full name</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992562822' status='canceled' stop='1690992562822'>
+                    <name>Then click to continue the claim</name>
+                    <title>Then click to continue the claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='acd9182b-280a-4646-a404-a8fc71c3c34f-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'vet-name'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'vet-name'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.vetNamePage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:150:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:89:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992562826' status='failed' stop='1690992563059'>
+            <name>Farmer input the vet's Royal college of veterinary surgeons (RCVS) number</name>
+            <title>Farmer input the vet's Royal college of veterinary surgeons (RCVS) number</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992562834' status='failed' stop='1690992563059'>
+                    <name>Given user navigate to vet rcvs page</name>
+                    <title>Given user navigate to vet rcvs page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='2c2f716f-05c4-489a-9c30-5468f1279fd3-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='ed6f153c-19cf-4b09-929f-76168e71a3a4-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992563059' status='canceled' stop='1690992563060'>
+                    <name>When user read the question</name>
+                    <title>When user read the question</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563060' status='canceled' stop='1690992563061'>
+                    <name>When user enter the rcvs number</name>
+                    <title>When user enter the rcvs number</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563061' status='canceled' stop='1690992563061'>
+                    <name>Then proceed to next page</name>
+                    <title>Then proceed to next page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='2f5dc3a7-026d-40fa-956f-57a9175b7f79-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'vet-rcvs'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'vet-rcvs'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.vet_rcvsPage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:159:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:101:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992563064' status='failed' stop='1690992563315'>
+            <name>test result unique reference number</name>
+            <title>test result unique reference number</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992563073' status='failed' stop='1690992563315'>
+                    <name>Given user is on urn result page</name>
+                    <title>Given user is on urn result page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='2db5410f-5fa1-4b4a-b57e-d104737958c8-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='457573ef-0ee5-4d84-80fc-85cf4dede805-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992563316' status='canceled' stop='1690992563316'>
+                    <name>When check what's required</name>
+                    <title>When check what's required</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563316' status='canceled' stop='1690992563317'>
+                    <name>When user input the test unique reference number</name>
+                    <title>When user input the test unique reference number</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563317' status='canceled' stop='1690992563317'>
+                    <name>Then proceed to next page</name>
+                    <title>Then proceed to next page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='7b25d6ff-7acd-466c-97ea-3f45082ea6b5-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'urn-result'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'urn-result'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.urnPage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:168:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:113:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992563320' status='failed' stop='1690992563589'>
+            <name>check all answer provided by the farmer is correct and match the business details</name>
+            <title>check all answer provided by the farmer is correct and match the business details</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992563329' status='failed' stop='1690992563589'>
+                    <name>Given user confirm to be on check answer page</name>
+                    <title>Given user confirm to be on check answer page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='a70484c5-c5e9-44db-8833-a33f6e581f9d-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='6bc0b434-c1e8-48c5-9651-8d1ab0e01c0e-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992563590' status='canceled' stop='1690992563590'>
+                    <name>When user is required to go through the answer provided</name>
+                    <title>When user is required to go through the answer provided</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563590' status='canceled' stop='1690992563590'>
+                    <name>When confirm the business name to be true</name>
+                    <title>When confirm the business name to be true</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563591' status='canceled' stop='1690992563591'>
+                    <name>When correct sbi number is displayed</name>
+                    <title>When correct sbi number is displayed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563591' status='canceled' stop='1690992563591'>
+                    <name>When confirm to have the minimum require livestock for the review</name>
+                    <title>When confirm to have the minimum require livestock for the review</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563591' status='canceled' stop='1690992563591'>
+                    <name>Then continue to next page</name>
+                    <title>Then continue to next page</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='f21a0f7f-3e99-46df-a382-ad2ab5b2d8ca-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'check-answers'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'check-answers'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.checkAnswerPage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:177:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:123:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992563596' status='failed' stop='1690992563861'>
+            <name>submit the claim after confirming the information provided is correct</name>
+            <title>submit the claim after confirming the information provided is correct</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992563606' status='failed' stop='1690992563861'>
+                    <name>Given user is on the final page</name>
+                    <title>Given user is on the final page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='d023eba2-fcb5-4d07-8298-7c14530312b7-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='340fa846-1ea0-4639-bc01-c8f795d54a15-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992563862' status='canceled' stop='1690992563863'>
+                    <name>When user check the information displayed</name>
+                    <title>When user check the information displayed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992563863' status='canceled' stop='1690992563863'>
+                    <name>Then user submit the claim</name>
+                    <title>Then user submit the claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='700462d5-30ae-452f-9d72-91a1031721f6-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'submit-claim'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'submit-claim'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.submitClaimUrl (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:195:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:141:3)</stack-trace>
+            </failure>
+        </test-case>
+        <test-case start='1690992563868' status='failed' stop='1690992564159'>
+            <name>agreement number is displayed after completing the claim</name>
+            <title>agreement number is displayed after completing the claim</title>
+            <labels>
+                <label name='language' value='javascript'/>
+                <label name='framework' value='wdio'/>
+                <label name='thread' value='0-0'/>
+                <label name='feature' value='claim journey landing page'/>
+                <label name='feature' value='undefined'/>
+            </labels>
+            <parameters>
+                <parameter kind='argument' name='browser' value='chrome-115.0.5790.110'/>
+            </parameters>
+            <steps>
+                <step start='1690992563877' status='failed' stop='1690992564158'>
+                    <name>When user is on submit claim page</name>
+                    <title>When user is on submit claim page</title>
+                    <attachments>
+                        <attachment title='Screenshot' source='d42bc1c4-0297-4610-b5a4-6ba3040e4140-attachment.png' type='image/png' size='52148'/>
+                        <attachment title='Console Logs' source='1ef055cd-ab34-473c-8750-e64139524fa9-attachment.html' type='text/html' size='329'/>
+                    </attachments>
+                    <steps/>
+                </step>
+                <step start='1690992564159' status='canceled' stop='1690992564160'>
+                    <name>When User complete the claim</name>
+                    <title>When User complete the claim</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992564160' status='canceled' stop='1690992564160'>
+                    <name>When success message is displayed</name>
+                    <title>When success message is displayed</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+                <step start='1690992564161' status='canceled' stop='1690992564161'>
+                    <name>Then the agreement number is presented</name>
+                    <title>Then the agreement number is presented</title>
+                    <attachments/>
+                    <steps/>
+                </step>
+            </steps>
+            <attachments>
+                <attachment title='Console Logs' source='962921bb-9491-4267-80f8-f9e63b32251a-attachment.html' type='text/html' size='332'/>
+            </attachments>
+            <failure>
+                <message>AssertionError: expected 'http://undefined/claim' to include 'submit-claim'</message>
+                <stack-trace>AssertionError: expected 'http://undefined/claim' to include 'submit-claim'
+                    at StartPageActions.urlContain (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\common-actions.js:38:26)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+                    at async StartPageActions.completeClaimPage (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\page-objects\claimJourney-page.js:204:5)
+                    at async World.&lt;anonymous> (C:\Users\sramasub\OneDrive - Capgemini\Desktop\ClaimNew\ffc-ahwr-farmer-claim\test\acceptance\steps\claimJourney_step.js:150:3)</stack-trace>
+            </failure>
+        </test-case>
+    </test-cases>
+</ns2:test-suite>

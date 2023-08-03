@@ -14,7 +14,7 @@ When(/^user start the application$/, async function () {
 When(/^click on the option when vet visited the farm to carry out the review$/, async function () {
   await claimJourney.clickonSameDay()
 });
-When(/^click on another date$/, async function () {
+Then(/^click on another date$/, async function () {
   await claimJourney.clickonAnotherDay()
 });
 When(/^redirected to Defra ID page$/, async function () {

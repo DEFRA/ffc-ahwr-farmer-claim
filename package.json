@@ -91,9 +91,9 @@
     ],
     "ignore": [
       "app/frontend/dist/**/*.js",
-      "test/acceptance-disabled/**/*.js",
-      "test/acceptance-disabled/**/*.mjs",
-      "test/acceptance-disabled/**/*.cjs"
+      "test/acceptance/**/*.js",
+      "test/acceptance/**/*.mjs",
+      "test/acceptance/**/*.cjs"
     ]
   },
   "nodemonConfig": {
