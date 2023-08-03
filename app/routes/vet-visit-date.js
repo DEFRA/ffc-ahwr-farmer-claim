@@ -69,13 +69,13 @@ module.exports = [{
                 { is: Joi.exist(), then: validateDateInputDay('visit-date', 'Date of review') }
               ]
             }),
-  
+
             [labels.month]: Joi.when('dateOfAgreementAccepted', {
               switch: [
                 { is: Joi.exist(), then: validateDateInputMonth('visit-date', 'Date of review') }
               ]
             }),
-  
+
             [labels.year]: Joi.when('dateOfAgreementAccepted', {
               switch: [
                 {
@@ -86,12 +86,12 @@ module.exports = [{
                     }
 
                     const isValidDate = (year, month, day) => {
-                      const dateObject = new Date(year, month - 1, day);
+                      const dateObject = new Date(year, month - 1, day)
                       return (
                         dateObject.getFullYear() === year &&
                         dateObject.getMonth() === month - 1 &&
                         dateObject.getDate() === day
-                      );
+                      )
                     }
                     if (!isValidDate(
                       +helpers.state.ancestors[0][labels.year],
@@ -100,7 +100,7 @@ module.exports = [{
                     )) {
                       return value
                     }
-  
+
                     const dateOfReview = new Date(Date.UTC(
                       helpers.state.ancestors[0][labels.year],
                       helpers.state.ancestors[0][labels.month] - 1,
@@ -109,24 +109,24 @@ module.exports = [{
 
                     const currentDate = new Date()
                     const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
-  
+
                     if (dateOfReview > currentDate) {
                       return helpers.error('dateOfReview.future')
                     }
-  
+
                     if (dateOfReview < dateOfAgreementAccepted) {
                       return helpers.error('dateOfReview.beforeAccepted', {
                         dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
                           .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
                       })
                     }
-  
+
                     const endDate = new Date(dateOfAgreementAccepted)
                     endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
                     if (dateOfReview > endDate) {
                       return helpers.error('dateOfReview.expired')
                     }
-  
+
                     return value
                   }, {
                     'dateOfReview.future': 'Date of review must be in the past',
@@ -177,12 +177,12 @@ module.exports = [{
                       }
 
                       const isValidDate = (year, month, day) => {
-                        const dateObject = new Date(year, month - 1, day);
+                        const dateObject = new Date(year, month - 1, day)
                         return (
                           dateObject.getFullYear() === year &&
                           dateObject.getMonth() === month - 1 &&
                           dateObject.getDate() === day
-                        );
+                        )
                       }
                       if (!isValidDate(
                         +helpers.state.ancestors[0]['on-another-date-year'],
@@ -244,12 +244,12 @@ module.exports = [{
                   }
 
                   const isValidDate = (year, month, day) => {
-                    const dateObject = new Date(year, month - 1, day);
+                    const dateObject = new Date(year, month - 1, day)
                     return (
                       dateObject.getFullYear() === year &&
                       dateObject.getMonth() === month - 1 &&
                       dateObject.getDate() === day
-                    );
+                    )
                   }
                   if (!isValidDate(
                     +helpers.state.ancestors[0][labels.year],
