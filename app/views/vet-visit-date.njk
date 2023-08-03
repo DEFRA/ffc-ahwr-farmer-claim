@@ -27,7 +27,49 @@
 
         <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
 
-        <div id="when-was-the-review-completed" class="govuk-form-group {% if errorMessage %}govuk-form-group--error{% endif %}">
+        <div id="when-was-the-review-completed" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
+          {% if dateOfReview.day.error %}
+            {% set dateOfReviewDay = {
+              name: 'day',
+              value: dateOfReview.day.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set dateOfReviewDay = {
+              name: 'day',
+              value: dateOfReview.day.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if dateOfReview.month.error %}
+            {% set dateOfReviewMonth = {
+              name: 'month',
+              value: dateOfReview.month.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set dateOfReviewMonth = {
+              name: 'month',
+              value: dateOfReview.month.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if dateOfReview.year.error %}
+            {% set dateOfReviewYear = {
+              name: 'year',
+              value: dateOfReview.year.value,
+              classes: 'govuk-input--width-4 govuk-input--error'
+            } %}
+          {% else %}
+            {% set dateOfReviewYear = {
+              name: 'year',
+              value: dateOfReview.year.value,
+              classes: 'govuk-input--width-4'
+            } %}
+          {% endif %}
+
           {{ govukDateInput({
             id: "visit-date",
             namePrefix: "visit-date",
@@ -41,8 +83,8 @@
             hint: {
               html: "This is the date when the vet last visited the farm to carry out the review.<br>For example, 27 3 2022"
             },
-            errorMessage: errorMessage,
-            items: items
+            errorMessage: dateOfReview.errorMessage,
+            items: [dateOfReviewDay, dateOfReviewMonth, dateOfReviewYear]
           }) }}
         </div>
 
@@ -94,6 +136,9 @@
             {{ govukDateInput({
               id: "on-another-date",
               namePrefix: "on-another-date",
+              hint: {
+                html: "For example, 27 3 2022"
+              },
               errorMessage: whenTestingWasCarriedOut.onAnotherDate.errorMessage,
               items: [onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear]
             }) }}
