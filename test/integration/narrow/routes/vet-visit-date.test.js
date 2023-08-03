@@ -370,6 +370,32 @@ describe('Vet, enter date of visit', () => {
         { description: 'missing onAnotherDay - missing month', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: '', onAnotherDateYear: 2023, errorMessage: 'Date of testing must include a month', errorHighlights: ['on-another-date-month'], applicationCreationDate: today },
         { description: 'missing onAnotherDay - missing year', day: today.getDate(), month: today.getMonth() + 1, year: today.getFullYear(), whenTestingWasCarriedOut: 'onAnotherDate', onAnotherDateDay: 10, onAnotherDateMonth: 10, onAnotherDateYear: '', errorMessage: 'Date of testing must include a year', errorHighlights: ['on-another-date-year'], applicationCreationDate: today },
         {
+          description: 'onAnotherDay - must be a real date',
+          day: today.getDate(),
+          month: today.getMonth() + 1,
+          year: today.getFullYear(),
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          onAnotherDateDay: 29,
+          onAnotherDateMonth: 2,
+          onAnotherDateYear: '2023',
+          errorMessage: 'Date of testing must be a real date',
+          errorHighlights: ['on-another-date-day'],
+          applicationCreationDate: today
+        },
+        {
+          description: 'onAnotherDay (leap year) - must be a real date',
+          day: today.getDate(),
+          month: today.getMonth() + 1,
+          year: today.getFullYear(),
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          onAnotherDateDay: 29,
+          onAnotherDateMonth: 2,
+          onAnotherDateYear: '2020',
+          errorMessage: `The date of testing must be the same or after ${today.toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+          errorHighlights: ['on-another-date-day'],
+          applicationCreationDate: today
+        },
+        {
           description: 'onAnotherDay - must not be in the future',
           day: today.getDate(),
           month: today.getMonth() + 1,
