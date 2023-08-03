@@ -24,9 +24,12 @@ const validateDateInputDay = (namePrefix, whateverItIs) => {
         otherwise: Joi.number().min(1).when(`${namePrefix}-month`, {
           switch: [
             {
-              is: 2,
+              is: Joi.number().valid(2),
               then: Joi.number().custom((value, helpers) => {
                 const year = helpers.state.ancestors[0][`${namePrefix}-year`]
+
+                console.log(year)
+
                 if (isLeapYear(year)) {
                   return value <= 29 ? value : helpers.error('dateInputDay.ifTheDateEnteredCannotBeCorrect')
                 } else {
