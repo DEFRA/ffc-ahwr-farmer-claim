@@ -57,6 +57,24 @@ When(/^asked about the date the review was completed$/, async function () {
 When(/^user input the date in correct order$/, async function () {
  await claimJourney.inputCurrentDate()
 });
+When(/^enter the future date to check if the error message is displayed$/, async function () {
+ await claimJourney.VerifyError_PastDate()
+});
+Then(/^validate the error message$/, async function () {
+ await claimJourney.validate_Error()
+
+});
+When(/^enter the past date to check if the error message is displayed$/, async function () {
+ await claimJourney.VerifyError_BeforeApplicationDate()
+});
+Then(/^validation of the error message$/, async function () {
+ await claimJourney.validate_Application_DateError()
+});
+
+Then(/^click on another date$/, async function () {
+ await claimJourney.clickOnAnotherDay()
+});
+
 When(/^click on the option when vet visited the farm to carry out the review$/, async function () {
  await claimJourney.clickOnSameDay()
 })
