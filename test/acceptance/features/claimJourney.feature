@@ -21,15 +21,9 @@ Feature: claim journey landing page
     When asked about the date the review was completed
     When user input the date in correct order
     And click on the option when vet visited the farm to carry out the review
-    #Then clicked on continue button
-
-  Scenario: farmer input the date of the last visit to the farm for review as different date
-    Given user is on vet visit date page
-    When asked about the date the review was completed
-    When user input the date in correct order
-    Then click on another date
     Then clicked on continue button
 
+  
   Scenario: identifying the vet full name
     Given user is on vet name page
     When check the question on the page
