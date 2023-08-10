@@ -54,16 +54,46 @@ Given(/^user is on vet visit date page$/, async function () {
 When(/^asked about the date the review was completed$/, async function () {
  await claimJourney.visitHeadings()
 });
-When(/^user input the date in correct order$/, async function () {
- await claimJourney.inputCurrentDate()
-});
-When(/^enter the future date to check if the error message is displayed$/, async function () {
- await claimJourney.VerifyError_PastDate()
-});
+When(/^user input the date in (.*) order$/, async function (dateFormat) {
+ await claimJourney.inputCurrentDate(dateFormat)
+})
+
+When(/^enter the (.*) date to check if the error message is displayed$/, async function (day) {
+  await claimJourney.verifyDate_Error(day)
+ });
 Then(/^validate the error message$/, async function () {
  await claimJourney.validate_Error()
-
 });
+When(/^user input missing (.*) or (.*) or (.*)$/, async function (day,month,year) {
+await claimJourney.invalidDateFormat(day, month,year)
+});
+
+Then(/^validation of error message Date of review must include a day and a year$/, async function(){
+await claimJourney.dateAndYearmissing_Error_Validation()
+});
+Then(/^validation of error message Date of review must include a day and a month$/, async function(){
+  await claimJourney.dateAndMonthmissing_Error_Validation()
+  });
+Then(/^validation of error message Date of review must include a month and a year$/, async function(){
+    await claimJourney.yearAndMonthmissing_Error_Validation()
+    });
+Then(/^validation of error message Date of review must include a month$/, async function(){
+    await claimJourney.monthmissing_Error_Validation()
+     });
+Then(/^validation of error message Date of review must include a year$/, async function(){
+      await claimJourney.yearmissing_Error_Validation()
+       });
+Then(/^validation of error message Date of review must include a date$/, async function(){
+        await claimJourney.datemissing_Error_Validation()
+         });
+
+Then(/^validation of invalid error message$/, async function () {
+  await claimJourney.invalidDateValidate()
+ });
+
+When(/^validation of Error$/, async function () {
+  await claimJourney.blankErrorValidation()
+ });
 When(/^enter the past date to check if the error message is displayed$/, async function () {
  await claimJourney.VerifyError_BeforeApplicationDate()
 });
@@ -154,4 +184,7 @@ When(/^success message is displayed$/, async function () {
 });
 Then(/^the agreement number is presented$/, async function () {
  await claimJourney.claimAgreementNumber()
+});
+Then(/^click on the back button$/, async function () {
+  await claimJourney.click_BackButton();
 });
