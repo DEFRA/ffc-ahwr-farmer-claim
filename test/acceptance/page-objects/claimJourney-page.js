@@ -122,15 +122,6 @@ class StartPageActions extends CommonActions {
     await this.elementToContainText(HEADING, 'completed?')
   }
 
-  // async inputCurrentDate(){
-  //   const currentDate = new Date();
-  //   const day = currentDate.getDate();
-  //   const month = currentDate.getMonth() + 1;
-  //   const year = currentDate.getFullYear();
-  //   await this.sendKey(VISIT_DAY,day)
-  //   await this.sendKey(VISIT_MONTH,month)
-  //   await this.sendKey(VISIT_YEAR,year)
-  // }
 
 
   async inputCurrentDate(dateFormat){
@@ -205,26 +196,6 @@ class StartPageActions extends CommonActions {
   }
   }
 
-  // async VerifyError_PastDate() {
-  //   await this.clickOn(ANOTHER_DAY_BUTTON)
-  //   const currentDate = new Date();
-  //   const day = currentDate.getDate() + 1;
-  //   const month = currentDate.getMonth() + 1;
-  //   const year = currentDate.getFullYear();
-  //   await this.sendKey(DIFFERENT_DAY, day)
-  //   await this.sendKey(DIFFERENT_MONTH, month)
-  //   await this.sendKey(DIFFERENT_YEAR, year)
-  // }
-  // async VerifyError_BeforeApplicationDate() {
-  //   await this.clickOn(ANOTHER_DAY_BUTTON)
-  //   const currentDate = new Date();
-  //   const day = currentDate.getDate() + 1;
-  //   const month = currentDate.getMonth() - 1;
-  //   const year = currentDate.getFullYear();
-  //   await this.sendKey(DIFFERENT_DAY, day)
-  //   await this.sendKey(DIFFERENT_MONTH, month)
-  //   await this.sendKey(DIFFERENT_YEAR, year)
-  // }
   async validate_Application_DateError(){
     await this.elementToContainText(PAST_DATE_ERROR,APPLICATION_DATE_ERROR_EXPECTED)
   }

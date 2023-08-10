@@ -110,9 +110,6 @@ Scenario Outline: To validate the error "Date of review must include a date"
     |     |  08   | 2023 |      
 
 
-
-      # TO check
-
   Scenario: To validate the error "The date of testing must be in the past" when On another day is clicked
 #     Given user is on vet visit date page
     When asked about the date the review was completed
