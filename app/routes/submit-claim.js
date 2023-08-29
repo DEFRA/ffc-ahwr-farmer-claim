@@ -5,6 +5,7 @@ const states = require('../constants/states')
 const { clearAuthCookie } = require('../auth')
 const preDoubleSubmitHandler = require('./utils/pre-submission-handler')
 const config = require('../../app/config/index')
+const appInsights = require('applicationinsights')
 
 function updateSession (request, claimed, claimStatus) {
   session.setClaim(request, claimed, claimStatus)
@@ -41,7 +42,13 @@ module.exports = [{
       }
       const submission = { reference, data: claim.data }
       const state = await submitClaim(submission, request.yar.id)
-
+      appInsights.defaultClient.trackEvent({
+        name: 'claim-submitted',
+        properties: {
+          reference: reference,
+          state: state
+        }
+      })
       switch (state) {
         case states.alreadyClaimed:
           updateSession(request, claimed, states.alreadyClaimed)
