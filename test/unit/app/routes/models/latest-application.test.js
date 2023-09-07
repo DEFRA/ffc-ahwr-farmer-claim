@@ -1,4 +1,4 @@
-const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpired } = require('../../../../../app/exceptions')
+const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpiredError } = require('../../../../../app/exceptions')
 
 describe('Latest Applications Tests', () => {
   let applicationApiMock
@@ -371,7 +371,7 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        error: new ClaimHasExpired('Claim has expired for reference - AHWR-5C1C-AAAA')
+        error: new ClaimHasExpiredError('Claim has expired for reference - AHWR-5C1C-AAAA')
       }
     }
   ])('%s', async (testCase) => {

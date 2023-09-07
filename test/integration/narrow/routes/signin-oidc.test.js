@@ -13,7 +13,7 @@ const sendExceptionEventMock = require('../../../../app/event/raise-ineligibilit
 jest.mock('../../../../app/event/raise-ineligibility-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
-const { NoApplicationFound, InvalidStateError, ClaimHasExpired, ClaimHasAlreadyBeenMade } = require('../../../../app/exceptions')
+const { NoApplicationFound, InvalidStateError, ClaimHasExpiredError, ClaimHasAlreadyBeenMade } = require('../../../../app/exceptions')
 
 describe('FarmerApply defra ID redirection test', () => {
   jest.mock('../../../../app/config', () => ({
@@ -189,7 +189,7 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpired('Claim has expired for reference - AHWR-1111-3213'))
+      latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpiredError('Claim has expired for reference - AHWR-1111-3213'))
 
       const res = await global.__SERVER__.inject(options)
 
@@ -255,7 +255,7 @@ describe('FarmerApply defra ID redirection test', () => {
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
 
-    test('returns 400 and cannot claim for review view when invalid persmissions', async () => {
+    test('returns 400 and cannot claim for review view when invalid permissions', async () => {
       const baseUrl = `${url}?code=432432&state=83d2b160-74ce-4356-9709-3f8da7868e35`
       const options = {
         method: 'GET',

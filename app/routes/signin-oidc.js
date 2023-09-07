@@ -6,7 +6,7 @@ const sessionKeys = require('../session/keys')
 const latestApplicationForSbi = require('./models/latest-application')
 const { farmerClaim } = require('../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../exceptions')
+const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
 const { raiseIneligibilityEvent } = require('../event')
 const appInsights = require('applicationinsights')
 
@@ -83,31 +83,41 @@ module.exports = [{
           case error instanceof InvalidStateError:
             return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
           case error instanceof InvalidPermissionsError:
+            break
           case error instanceof NoApplicationFound:
+            break
           case error instanceof ClaimHasAlreadyBeenMade:
-          case error instanceof ClaimHasExpired:
-            await raiseIneligibilityEvent(
-              request.yar.id,
-              organisation?.sbi,
-              crn,
-              organisation?.email,
-              error.name
-            )
-            return h.view('you-cannot-claim-for-a-livestock-review', {
-              error,
-              organisationName: organisation?.name,
-              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
-              ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backLink: auth.requestAuthorizationCodeUrl(session, request),
-              hasMultipleBusinesses: attachedToMultipleBusinesses
-            }).code(400).takeover()
+            break
+          case error instanceof ClaimHasExpiredError:
+            break
           default:
             return h.view('verify-login-failed', {
               backLink: auth.requestAuthorizationCodeUrl(session, request),
               ruralPaymentsAgency: config.ruralPaymentsAgency
             }).code(400).takeover()
         }
+        await raiseIneligibilityEvent(
+          request.yar.id,
+          organisation?.sbi,
+          crn,
+          organisation?.email,
+          error.name
+        )
+        return h.view('you-cannot-claim-for-a-livestock-review', {
+          permissionError: error instanceof InvalidPermissionsError,
+          noApplicationError: error instanceof NoApplicationFound,
+          claimAlreadyMadeError: error instanceof ClaimHasAlreadyBeenMade,
+          claimHasExpiredError: error instanceof ClaimHasExpiredError,
+          organisationName: organisation?.name,
+          sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
+          ruralPaymentsAgency: config.ruralPaymentsAgency,
+          backLink: auth.requestAuthorizationCodeUrl(session, request),
+          hasMultipleBusinesses: attachedToMultipleBusinesses,
+          lastApplicationDate: error.lastApplicationDate,
+          claimExpiredDate: error.claimExpiredDate
+        }).code(400).takeover()
       }
     }
   }
-}]
+}
+]

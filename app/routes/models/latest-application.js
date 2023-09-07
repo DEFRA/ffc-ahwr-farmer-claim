@@ -1,7 +1,20 @@
 const applicationApi = require('../../api-requests/application-service-api')
 const applicationStatus = require('../../constants/application-status')
 const { claimHasExpired } = require('../../lib/claim-has-expired')
-const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpired } = require('../../exceptions')
+const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpiredError } = require('../../exceptions')
+
+function formatDate (date) {
+  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+function claimTimeLimitDates (latestApplication) {
+  const start = new Date(latestApplication.createdAt)
+  const end = new Date(start)
+  // TODO: switch to config value
+  end.setMonth(end.getMonth() + 6)
+  end.setHours(24, 0, 0, 0) // set to midnight of agreement end day
+  return { startDate: start, endDate: end }
+}
 
 async function getLatestApplicationForSbi (sbi, name = '') {
   const latestApplicationsForSbi = await applicationApi.getLatestApplicationsBySbi(sbi)
@@ -15,17 +28,21 @@ async function getLatestApplicationForSbi (sbi, name = '') {
     )
   }
   const latestApplication = latestApplicationsForSbi.reduce((a, b) => {
+    // TODO: Check - Doesn't this need to be the createdAt date, not updatedAt?
     return new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
   })
   switch (latestApplication.statusId) {
     case applicationStatus.AGREED_STATUS:
       if (claimHasExpired(latestApplication)) {
-        throw new ClaimHasExpired(`Claim has expired for reference - ${latestApplication.reference}`,
+        const dates = claimTimeLimitDates(latestApplication)
+        throw new ClaimHasExpiredError(`Claim has expired for reference - ${latestApplication.reference}`,
           {
             sbi,
             name,
             reference: latestApplication.reference
-          }
+          },
+          formatDate(dates.startDate),
+          formatDate(dates.endDate)
         )
       }
       return latestApplication
