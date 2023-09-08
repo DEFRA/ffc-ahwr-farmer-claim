@@ -42,7 +42,7 @@
 
     {{ rpaContactDetails(ruralPaymentsAgency) }}
 
-    {% if (claimAlreadyMadeError || claimHasExpiredError) %}
+    {% if (claimAlreadyMadeError or claimHasExpiredError) %}
       <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
     {% endif %}
 

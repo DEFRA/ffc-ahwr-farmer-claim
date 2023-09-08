@@ -105,7 +105,7 @@ module.exports = [{
         )
         return h.view('you-cannot-claim-for-a-livestock-review', {
           permissionError: error instanceof InvalidPermissionsError,
-          noApplicationError: error instanceof NoApplicationFound,
+          noApplicationFoundError: error instanceof NoApplicationFound,
           claimAlreadyMadeError: error instanceof ClaimHasAlreadyBeenMade,
           claimHasExpiredError: error instanceof ClaimHasExpiredError,
           organisationName: organisation?.name,
@@ -113,7 +113,7 @@ module.exports = [{
           ruralPaymentsAgency: config.ruralPaymentsAgency,
           backLink: auth.requestAuthorizationCodeUrl(session, request),
           hasMultipleBusinesses: attachedToMultipleBusinesses,
-          lastApplicationDate: error.lastApplicationDate,
+          latestApplicationDate: error.latestApplicationDate,
           claimExpiredDate: error.claimExpiredDate
         }).code(400).takeover()
       }
