@@ -6,7 +6,7 @@ const sessionKeys = require('../session/keys')
 const latestApplicationForSbi = require('./models/latest-application')
 const { farmerClaim } = require('../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
+const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMadeError, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
 const { raiseIneligibilityEvent } = require('../event')
 const appInsights = require('applicationinsights')
 
@@ -84,9 +84,9 @@ module.exports = [{
             return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
           case error instanceof InvalidPermissionsError:
             break
-          case error instanceof NoApplicationFound:
+          case error instanceof NoApplicationFoundError:
             break
-          case error instanceof ClaimHasAlreadyBeenMade:
+          case error instanceof ClaimHasAlreadyBeenMadeError:
             break
           case error instanceof ClaimHasExpiredError:
             break
@@ -105,8 +105,8 @@ module.exports = [{
         )
         return h.view('you-cannot-claim-for-a-livestock-review', {
           permissionError: error instanceof InvalidPermissionsError,
-          noApplicationFoundError: error instanceof NoApplicationFound,
-          claimAlreadyMadeError: error instanceof ClaimHasAlreadyBeenMade,
+          noApplicationFoundError: error instanceof NoApplicationFoundError,
+          claimHasAlreadyBeenMadeError: error instanceof ClaimHasAlreadyBeenMadeError,
           claimHasExpiredError: error instanceof ClaimHasExpiredError,
           organisationName: organisation?.name,
           sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,

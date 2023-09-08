@@ -13,7 +13,7 @@ const sendExceptionEventMock = require('../../../../app/event/raise-ineligibilit
 jest.mock('../../../../app/event/raise-ineligibility-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
-const { NoApplicationFound, InvalidStateError, ClaimHasExpiredError, ClaimHasAlreadyBeenMade } = require('../../../../app/exceptions')
+const { NoApplicationFoundError, InvalidStateError, ClaimHasExpiredError, ClaimHasAlreadyBeenMadeError } = require('../../../../app/exceptions')
 
 describe('FarmerApply defra ID redirection test', () => {
   jest.mock('../../../../app/config', () => ({
@@ -137,7 +137,7 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new NoApplicationFound('No application found for SBI - 101122201'))
+      latestApplicationMock.mockRejectedValueOnce(new NoApplicationFoundError('No application found for SBI - 101122201'))
 
       const res = await global.__SERVER__.inject(options)
 
@@ -146,7 +146,7 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect(latestApplicationMock).toBeCalledTimes(1)
       expect(sendExceptionEventMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'NoApplicationFound')
+      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'NoApplicationFoundError')
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
@@ -241,7 +241,7 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new ClaimHasAlreadyBeenMade('Claim has already been made'))
+      latestApplicationMock.mockRejectedValueOnce(new ClaimHasAlreadyBeenMadeError('Claim has already been made'))
 
       const res = await global.__SERVER__.inject(options)
 
@@ -250,7 +250,7 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect(latestApplicationMock).toBeCalledTimes(1)
       expect(sendExceptionEventMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasAlreadyBeenMade')
+      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasAlreadyBeenMadeError')
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })

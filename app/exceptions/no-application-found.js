@@ -1,9 +1,9 @@
-class NoApplicationFound extends Error {
+class NoApplicationFoundError extends Error {
   constructor (message, organisation) {
     super(message)
-    this.name = 'NoApplicationFound'
+    this.name = 'NoApplicationFoundError'
     this.organisation = organisation
   }
 }
 
-module.exports = NoApplicationFound
+module.exports = NoApplicationFoundError

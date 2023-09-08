@@ -1,4 +1,4 @@
-const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpiredError } = require('../../../../../app/exceptions')
+const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../../../../app/exceptions')
 
 describe('Latest Applications Tests', () => {
   let applicationApiMock
@@ -259,7 +259,7 @@ describe('Latest Applications Tests', () => {
         latestApplications: []
       },
       expect: {
-        error: new NoApplicationFound('No application found for SBI - 111111111')
+        error: new NoApplicationFoundError('No application found for SBI - 111111111')
       }
     },
     {
@@ -296,7 +296,7 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        error: new NoApplicationFound('No claimable application found for SBI - 111111111')
+        error: new NoApplicationFoundError('No claimable application found for SBI - 111111111')
       }
     },
     {
@@ -333,7 +333,7 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        error: new ClaimHasAlreadyBeenMade('Claim has already been made for SBI - 111111111')
+        error: new ClaimHasAlreadyBeenMadeError('Claim has already been made for SBI - 111111111')
       }
     },
     {
