@@ -189,7 +189,7 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpiredError('Claim has expired for reference - AHWR-1111-3213'))
+      latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpiredError('Claim has expired for reference - AHWR-1111-3213', {}, '1 Jan 2023', '2 Jun 2023'))
 
       const res = await global.__SERVER__.inject(options)
 
@@ -201,6 +201,8 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasExpired')
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
+      expect($('.govuk-body').text()).toContain('You accepted your annual health and welfare agreement offer on 1 Jan 2023.')
+      expect($('.govuk-body').text()).toContain('The 6 month deadline for this review was 2 Jun 2023')
     })
 
     test('returns 400 and cannot claim for review view when claim already made', async () => {
