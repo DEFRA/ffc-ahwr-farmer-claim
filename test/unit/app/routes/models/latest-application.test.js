@@ -142,6 +142,32 @@ describe('Latest Applications Tests', () => {
             updatedBy: 'David Jones'
           },
           {
+            claimed: false,
+            createdAt: '2023-01-17 13:55:20',
+            createdBy: 'David Jones',
+            data: {
+              confirmCheckDetails: 'yes',
+              declaration: true,
+              eligibleSpecies: 'yes',
+              offerStatus: 'accepted',
+              organisation: {
+                address: '1 Example Road',
+                crn: 2222222222,
+                email: 'business@email.com',
+                farmerName: 'Mr Farmer',
+                name: 'My Amazing Farm',
+                sbi: 222222222
+              },
+              reference: 'string',
+              whichReview: 'sheep'
+            },
+            id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+            reference: 'AHWR-5C1C-EEEE',
+            statusId: 1,
+            updatedAt: '2023-01-17 13:55:20',
+            updatedBy: 'David Jones'
+          },
+          {
             claimed: true,
             createdAt: '2022-01-17 14:55:20',
             createdBy: 'David Jones',
