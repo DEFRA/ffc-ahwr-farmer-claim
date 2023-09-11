@@ -18,6 +18,7 @@ function claimTimeLimitDates (latestApplication) {
 
 async function getLatestApplicationForSbi (sbi, name = '') {
   const latestApplicationsForSbi = await applicationApi.getLatestApplicationsBySbi(sbi)
+  console.log('latestApplicationsForSbi', latestApplicationsForSbi)
   if (!latestApplicationsForSbi || !Array.isArray(latestApplicationsForSbi) || latestApplicationsForSbi.length === 0) {
     throw new NoApplicationFoundError(
       `No application found for SBI - ${sbi}`,
@@ -29,7 +30,7 @@ async function getLatestApplicationForSbi (sbi, name = '') {
   }
   const latestApplication = latestApplicationsForSbi.reduce((a, b) => {
     // TODO: Check - Doesn't this need to be the createdAt date, not updatedAt?
-    return new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
+    return new Date(a.createdAt) > new Date(b.createdAt) ? a : b
   })
   switch (latestApplication.statusId) {
     case applicationStatus.AGREED_STATUS:
