@@ -2,6 +2,7 @@ const applicationApi = require('../../api-requests/application-service-api')
 const applicationStatus = require('../../constants/application-status')
 const { claimHasExpired } = require('../../lib/claim-has-expired')
 const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../exceptions')
+const { claimExpiryTimeMonths } = require('../../config')
 
 function formatDate (date) {
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
@@ -10,8 +11,7 @@ function formatDate (date) {
 function claimTimeLimitDates (latestApplication) {
   const start = new Date(latestApplication.createdAt)
   const end = new Date(start)
-  // TODO: switch to config value
-  end.setMonth(end.getMonth() + 6)
+  end.setMonth(end.getMonth() + claimExpiryTimeMonths)
   end.setHours(24, 0, 0, 0) // set to midnight of agreement end day
   return { startDate: start, endDate: end }
 }
@@ -29,7 +29,6 @@ async function getLatestApplicationForSbi (sbi, name = '') {
     )
   }
   const latestApplication = latestApplicationsForSbi.reduce((a, b) => {
-    // TODO: Check - Doesn't this need to be the createdAt date, not updatedAt?
     return new Date(a.createdAt) > new Date(b.createdAt) ? a : b
   })
   switch (latestApplication.statusId) {
