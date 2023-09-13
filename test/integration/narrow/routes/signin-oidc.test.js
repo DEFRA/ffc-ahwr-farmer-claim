@@ -11,6 +11,7 @@ const organisationMock = require('../../../../app/api-requests/rpa-api/organisat
 jest.mock('../../../../app/api-requests/rpa-api/organisation')
 const sendExceptionEventMock = require('../../../../app/event/raise-ineligibility-event')
 jest.mock('../../../../app/event/raise-ineligibility-event')
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 const { NoApplicationFound, InvalidStateError, ClaimHasExpired, ClaimHasAlreadyBeenMade } = require('../../../../app/exceptions')
 

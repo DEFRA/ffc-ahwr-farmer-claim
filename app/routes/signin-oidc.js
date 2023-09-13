@@ -8,6 +8,7 @@ const { farmerClaim } = require('../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
 const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../exceptions')
 const { raiseIneligibilityEvent } = require('../event')
+const appInsights = require('applicationinsights')
 
 module.exports = [{
   method: 'GET',
@@ -23,6 +24,7 @@ module.exports = [{
       }),
       failAction (request, h, err) {
         console.log(`Validation error caught during DEFRA ID redirect - ${err.message}.`)
+        appInsights.defaultClient.trackException({ exception: err })
         return h.view('verify-login-failed', {
           backLink: auth.requestAuthorizationCodeUrl(session, request),
           ruralPaymentsAgency: config.ruralPaymentsAgency
@@ -62,6 +64,15 @@ module.exports = [{
         Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
         session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
         auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
+
+        appInsights.defaultClient.trackEvent({
+          name: 'login',
+          properties: {
+            sbi: organisationSummary.organisation.sbi,
+            crn: session.getCustomer(request, sessionKeys.customer.crn),
+            email: personSummary.email
+          }
+        })
         return h.redirect('/claim/visit-review')
       } catch (error) {
         console.error(`Received error with name ${error.name} and message ${error.message}.`)
