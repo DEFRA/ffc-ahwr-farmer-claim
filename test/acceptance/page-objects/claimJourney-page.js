@@ -278,7 +278,7 @@ async sbiIsCorrect(){
     await this.elementToContainText(HINT,'SBI')
 }
 async livestockNumberCorrect(){
-    await this.elementToContainText(ANIMAL,'21 or more sheep')
+    await this.elementToContainText(ANIMAL,'11 or more cattle')
 }
 async continueToSubmitClaim(){
     await this.clickOn(PROCEED_TO_SUBMIT)
