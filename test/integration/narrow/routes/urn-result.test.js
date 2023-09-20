@@ -125,7 +125,7 @@ describe('Enter URN test result test', () => {
       { urn: undefined, errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
       { urn: null, errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
       { urn: '', errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
-      { urn: 'a'.repeat(101), errorMessage: urnErrorMessages.urnLength, expectedVal: 'a'.repeat(101) }
+      { urn: 'a'.repeat(51), errorMessage: urnErrorMessages.urnLength, expectedVal: 'a'.repeat(51) }
     ])('returns 400 when payload is invalid - %p', async ({ urn, errorMessage, expectedVal }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
@@ -147,8 +147,8 @@ describe('Enter URN test result test', () => {
 
     test.each([
       { urn: 'a' },
-      { urn: 'a'.repeat(100) },
-      { urn: `  ${'a'.repeat(100)}  ` }
+      { urn: 'a'.repeat(50) },
+      { urn: `  ${'a'.repeat(50)}  ` }
     ])('returns 200 when payload is valid and stores in session (urn = $urn)', async ({ urn }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },

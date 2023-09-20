@@ -6,15 +6,16 @@ module.exports = {
   name: {
     enterName: 'Enter the vet\'s name',
     nameLength: 'Name must be 50 characters or fewer',
-    namePattern: "Special characters allowed only include an ampersand(&), comma(,), hyphen(-), apostrophe('), space, brackets([], ()) or forward slash(/)"
+    namePattern: "Special characters allowed include an ampersand(&), comma(,), hyphen(-), apostrophe('), space, brackets() or forward slash(/)"
   },
-  practice: {
-    enterName: 'Enter the vet practice name',
-    nameLength: 'Practice name must be 100 characters or fewer'
-  },
+  // practice: {
+  //   enterName: 'Enter the vet practice name',
+  //   nameLength: 'Practice name must be 100 characters or fewer'
+  // },
   urn: {
     enterUrn: 'Enter the URN',
-    urnLength: 'URN must be 100 characters or fewer'
+    urnLength: 'URN must be 50 characters or fewer',
+    urnPattern: 'Enter a valid URN'
   },
   rcvs: {
     enterRCVS: 'Enter the RCVS number',
