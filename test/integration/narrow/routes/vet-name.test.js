@@ -125,7 +125,9 @@ describe('Vet, enter name test', () => {
       { name: undefined, errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
       { name: null, errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
       { name: '', errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
-      { name: 'a'.repeat(51), errorMessage: nameErrorMessages.nameLength, expectedVal: 'a'.repeat(51) }
+      { name: 'a'.repeat(51), errorMessage: nameErrorMessages.nameLength, expectedVal: 'a'.repeat(51) },
+      { name: 'aa11', errorMessage: nameErrorMessages.namePattern, expectedVal: 'aa11' },
+      { name: 'aa%%', errorMessage: nameErrorMessages.namePattern, expectedVal: 'aa%%' }
     ])('returns 400 when payload is invalid - %p', async ({ name, errorMessage, expectedVal }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
@@ -148,7 +150,8 @@ describe('Vet, enter name test', () => {
     test.each([
       { name: 'a' },
       { name: 'a'.repeat(50) },
-      { name: `  ${'a'.repeat(50)}  ` }
+      { name: `  ${'a'.repeat(50)}  ` },
+      { name: "a&,' -/()" }
     ])('returns 200 when payload is valid and stores in session (name = $name)', async ({ name }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
