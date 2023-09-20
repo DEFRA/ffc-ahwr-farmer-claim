@@ -5,7 +5,8 @@ module.exports = {
   },
   name: {
     enterName: 'Enter the vet\'s name',
-    nameLength: 'Name must be 100 characters or fewer'
+    nameLength: 'Name must be 50 characters or fewer',
+    namePattern: "Special characters allowed only include an ampersand(&), comma(,), hyphen(-), apostrophe('), space, brackets([], ()) or forward slash(/)"
   },
   practice: {
     enterName: 'Enter the vet practice name',
