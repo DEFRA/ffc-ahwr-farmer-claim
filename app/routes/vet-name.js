@@ -19,7 +19,6 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         name: Joi.string().trim().max(50).pattern(/^[A-Za-z&,' \-/()]+$/).required()
-        // name: Joi.string().trim().max(50).pattern(new RegExp(/^[A-Za-z&,' -/()]+$/)).required()
           .messages({
             'any.required': nameErrorMessages.enterName,
             'string.base': nameErrorMessages.enterName,
