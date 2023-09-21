@@ -19,8 +19,15 @@ class CommonActions {
     await locator.setValue(text)
   }
 
+async elementGetText(element){
+  const locator = await browser.$(element)
+  let Text =await locator.getText()
+  return Text
+}
+
   async elementToContainText (element, text) {
     const locator = await browser.$(element)
+    await locator.getText()
     expect(await locator.getText()).to.include(text)
   }
 
