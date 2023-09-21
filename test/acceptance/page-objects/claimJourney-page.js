@@ -53,6 +53,7 @@ const MISSING_MONTH_AND_YEAR='Date of review must include a month and a year'
 const MISSING_MONTH='Date of review must include a month'
 const MISSING_DATE='Date of review must include a day'
 const MISSING_YEAR='Date of review must include a year'
+const TYPEOF_REVIEW='//dt[contains(text(),"Type")]/following-sibling::dd'
 var another_day;
 var another_month;
 var another_year;
@@ -278,7 +279,22 @@ async sbiIsCorrect(){
     await this.elementToContainText(HINT,'SBI')
 }
 async livestockNumberCorrect(){
-    await this.elementToContainText(ANIMAL,'11 or more cattle')
+  let liveStockName= await this.elementGetText(TYPEOF_REVIEW)
+  switch(liveStockName){
+    case 'Sheep':
+      await this.elementToContainText(ANIMAL,'21 or more sheep')
+      break;
+    case 'Beef cattle':
+      await this.elementToContainText(ANIMAL,'11 or more cattle')
+      break;
+    case 'Pigs':
+      await this.elementToContainText(ANIMAL,'51 or more pigs')
+      break;
+    case 'Dairy cattle':
+      await this.elementToContainText(ANIMAL,'11 or more cattle')
+      break;
+  }
+   
 }
 async continueToSubmitClaim(){
     await this.clickOn(PROCEED_TO_SUBMIT)
