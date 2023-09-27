@@ -6,7 +6,7 @@ module.exports = {
   name: {
     enterName: 'Enter the vet\'s name',
     nameLength: "Vet's name must be 50 characters or fewer",
-    namePattern: "Vet's name must only include letters a to z, and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash"
+    namePattern: "Vet's name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash"
   },
   urn: {
     enterUrn: 'Enter the URN',
@@ -15,7 +15,7 @@ module.exports = {
   },
   rcvs: {
     enterRCVS: 'Enter the RCVS number',
-    validRCVS: 'RCVS number must be 7 characters and only include numbers or letters a to z, like 1234567'
+    validRCVS: 'RCVS number must be 7 characters and only include letters a to z and numbers, like 1234567'
   },
   visitDate: {
     startDateOrAfter: (createdAt) => `The date of review must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
