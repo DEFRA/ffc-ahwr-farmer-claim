@@ -81,7 +81,7 @@ describe('Enter URN test result test', () => {
     })
 
     test('loads urn if in session', async () => {
-      const urn = 'fekeurn'
+      const urn = 'fakeurn'
       const options = {
         method: 'GET',
         url,
