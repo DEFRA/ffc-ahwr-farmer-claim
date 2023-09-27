@@ -6,7 +6,7 @@ Feature: claim journey landing page
     And user check the page title
     When user start the application
     When redirected to Defra ID page
-    When user input valid data
+    And user login with Single business crn and password(for DefraId)
     Then user click on sign in button
 
   Scenario: user check all business details
