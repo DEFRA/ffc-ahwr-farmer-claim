@@ -1,9 +1,11 @@
-class ClaimHasExpired extends Error {
-  constructor (message, organisation) {
+class ClaimHasExpiredError extends Error {
+  constructor (message, organisation, latestApplicationDate, claimExpiredDate) {
     super(message)
     this.name = 'ClaimHasExpired'
     this.organisation = organisation
+    this.latestApplicationDate = latestApplicationDate
+    this.claimExpiredDate = claimExpiredDate
   }
 }
 
-module.exports = ClaimHasExpired
+module.exports = ClaimHasExpiredError
