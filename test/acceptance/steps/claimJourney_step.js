@@ -27,8 +27,8 @@ Then(/^user click on sign in button$/, async function () {
 Then(/^error message is displayed on the screen$/, async function () {
  await claimJourney.errorMessage()
 });
-When(/^user input valid data$/, async function () {
- await claimJourney.validData()
+When(/^user login with (.*) business crn and password\(for DefraId\)$/, async function (business) {
+ await claimJourney.validData(business)
 });
 //......org-review
 
@@ -187,4 +187,24 @@ Then(/^the agreement number is presented$/, async function () {
 });
 Then(/^click on the back button$/, async function () {
   await claimJourney.click_BackButton();
+});
+//Exception
+
+When(/^validate the error message in the Header$/,async function(){
+  await claimJourney.validateExceptionHeader()
+})
+When(/^validate exception error message for (.*)$/,async function(typeOfException){
+  await claimJourney.exceptionErrorMessage(typeOfException)
+})
+When(/^validate call charges screen$/,async function(){
+  await claimJourney.validateCallCharges()
+})
+
+//MultiBusiness
+
+When(/^select the (.*) for application$/, async function (businessName) {
+  await claimJourney.clickOnBusiness(businessName)
+});
+When(/^click on continue button$/, async function () {
+  await claimJourney.clickOnContinue()
 });

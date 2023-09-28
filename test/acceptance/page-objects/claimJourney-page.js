@@ -54,10 +54,20 @@ const MISSING_MONTH='Date of review must include a month'
 const MISSING_DATE='Date of review must include a day'
 const MISSING_YEAR='Date of review must include a year'
 const TYPEOF_REVIEW='//dt[contains(text(),"Type")]/following-sibling::dd'
+const MUTLIPLE_BUSINESS_CONTINUE = '#continueReplacement'
 var another_day;
 var another_month;
 var another_year;
-
+//Exception
+const EXCEPTION_HEADER='.govuk-heading-l'
+const HEADER_ERROR_MESSAGE_EXPECTED='You cannot claim for a livestock review for this business'
+const EXCEPTION_ERROR_MESSAGE='.govuk-heading-l+.govuk-body'
+const EXCEPTION_ERROR_MESSAGE_EXPECTED='You do not have the required permission to act for Test Estate - SBI 114441446.'
+const EXCEPTION_ERROR_MESSAGE_EXPECTED_NOT_APPLIED='Mr A Slack - SBI 106864909 has not applied for an annual health and welfare review of livestock.'
+const EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_PERMISSION='You do not have the required permission to act for Dale Hitchens - SBI 107224622.'
+const EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_APPLIED='Michael Dixon - SBI 114293653 has not applied for an annual health and welfare review of livestock.'
+const CALL_CHARGES='.govuk-grid-column-full>p>.govuk-link'
+const CALL_CHARGES_TITLE='Call charges and phone numbers - GOV.UK'
 class StartPageActions extends CommonActions {
 
   async getHomepage(page){
@@ -91,11 +101,29 @@ class StartPageActions extends CommonActions {
     await this.sendKey(DEFRA_PASSWORD, password)
   }
 
-  async validData(){
+  async validData(business){
     const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
     await sleep(5000)
+    if(business=='Single') {
     await this.inputValidCrn(process.env.CRN_CLAIM)
-    await this.inputPassword(process.env.CRN_PASSWORD)
+    await this.inputPassword(process.env.CRN_PASSWORD)}
+    else if (business=='Exception-SB-NP'){
+      console.log(process.env.CRN_EXCEPTION_USERNAME)
+      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME)
+      await this.inputPassword(process.env.CRN_EXCEPTION_PASSWORD)
+    } else if (business=='Exception-SB-NA'){
+      console.log(process.env.CRN_EXCEPTION_USERNAME)
+      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_NONA)
+      await this.inputPassword(process.env.CRN_PASSWORD)
+    } else if (business=='Exception-MB-NP'){
+      console.log(process.env.CRN_EXCEPTION_USERNAME)
+      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_MB_NP)
+      await this.inputPassword(process.env.CRN_PASSWORD)
+    }else if (business=='Exception-MB-NA'){
+      console.log(process.env.CRN_EXCEPTION_USERNAME)
+      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_MB_NONA)
+      await this.inputPassword(process.env.CRN_PASSWORD)
+    }
   }
   //....org review
 
@@ -325,5 +353,54 @@ async claimSuccessMessage(){
 async claimAgreementNumber(){
     await this.elementToContainText(AGREEMENT_NUMBER,'AHWR-')
 }
+
+//Exception
+async validateExceptionHeader(){
+  const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+  await sleep(10000)
+   await this.elementToContainText(EXCEPTION_HEADER,HEADER_ERROR_MESSAGE_EXPECTED)
+     }
+
+async exceptionErrorMessage(typeOfException){
+  const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+  await sleep(10000)
+     if(typeOfException=='SB-NO Permission'){
+      await this.elementToContainText(EXCEPTION_ERROR_MESSAGE,EXCEPTION_ERROR_MESSAGE_EXPECTED)
+     }else if (typeOfException=='SB-NOT Applied'){
+      await this.elementToContainText(EXCEPTION_ERROR_MESSAGE,EXCEPTION_ERROR_MESSAGE_EXPECTED_NOT_APPLIED)
+     }else if (typeOfException=='MB-NO Permission'){
+      await this.elementToContainText(EXCEPTION_ERROR_MESSAGE,EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_PERMISSION)
+     }else if (typeOfException=='MB-NOT Applied'){
+      await this.elementToContainText(EXCEPTION_ERROR_MESSAGE,EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_APPLIED)
+     }
+        }
+async validateCallCharges(){
+      await this.clickOn(CALL_CHARGES)
+      const windowHandles = await browser.getWindowHandles();
+      await browser.switchToWindow(windowHandles[1]);
+      let expectedPageTitle =await this.getPageTitle(CALL_CHARGES_TITLE)
+      console.log(expectedPageTitle)
+      await browser.closeWindow();
+      await browser.switchToWindow(windowHandles[0]);
+}
+  //MultiBusiness
+
+async clickOnBusiness(businessName) {
+  const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+  await sleep(5000)
+    // Define the xPath function
+    function xPath(businessName) {
+      return `//*[@id="resultsContainer"]/div/fieldset/div/div[label[contains(text(),"${businessName}")]]/label`;
+    }
+    // Generate the XPath expression using the xPath function
+    const xPathExpression = xPath(businessName);
+    // Now you can use the xPathExpression in your WebDriverIO code
+    const radio_Button = await $(xPathExpression);
+    await this.clickOn(radio_Button)
+  }    
+    
+  async clickOnContinue() {
+    await this.clickOn(MUTLIPLE_BUSINESS_CONTINUE)
+  } 
 }
 module.exports = StartPageActions
