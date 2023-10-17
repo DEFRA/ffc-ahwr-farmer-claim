@@ -1,12 +1,26 @@
 const applicationApi = require('../../api-requests/application-service-api')
 const applicationStatus = require('../../constants/application-status')
 const { claimHasExpired } = require('../../lib/claim-has-expired')
-const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpired } = require('../../exceptions')
+const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../exceptions')
+const { claimExpiryTimeMonths } = require('../../config')
+
+function formatDate (date) {
+  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+function claimTimeLimitDates (latestApplication) {
+  const start = new Date(latestApplication.createdAt)
+  const end = new Date(start)
+  end.setMonth(end.getMonth() + claimExpiryTimeMonths)
+  end.setHours(24, 0, 0, 0) // set to midnight of agreement end day
+  return { startDate: start, endDate: end }
+}
 
 async function getLatestApplicationForSbi (sbi, name = '') {
   const latestApplicationsForSbi = await applicationApi.getLatestApplicationsBySbi(sbi)
+  console.log('latestApplicationsForSbi', latestApplicationsForSbi)
   if (!latestApplicationsForSbi || !Array.isArray(latestApplicationsForSbi) || latestApplicationsForSbi.length === 0) {
-    throw new NoApplicationFound(
+    throw new NoApplicationFoundError(
       `No application found for SBI - ${sbi}`,
       {
         sbi,
@@ -15,24 +29,27 @@ async function getLatestApplicationForSbi (sbi, name = '') {
     )
   }
   const latestApplication = latestApplicationsForSbi.reduce((a, b) => {
-    return new Date(a.updatedAt) > new Date(b.updatedAt) ? a : b
+    return new Date(a.createdAt) > new Date(b.createdAt) ? a : b
   })
   switch (latestApplication.statusId) {
     case applicationStatus.AGREED_STATUS:
       if (claimHasExpired(latestApplication)) {
-        throw new ClaimHasExpired(`Claim has expired for reference - ${latestApplication.reference}`,
+        const dates = claimTimeLimitDates(latestApplication)
+        throw new ClaimHasExpiredError(`Claim has expired for reference - ${latestApplication.reference}`,
           {
             sbi,
             name,
             reference: latestApplication.reference
-          }
+          },
+          formatDate(dates.startDate),
+          formatDate(dates.endDate)
         )
       }
       return latestApplication
     case applicationStatus.IN_CHECK:
     case applicationStatus.READY_TO_PAY:
     case applicationStatus.REJECTED:
-      throw new ClaimHasAlreadyBeenMade(
+      throw new ClaimHasAlreadyBeenMadeError(
         `Claim has already been made for SBI - ${sbi}`,
         {
           sbi,
@@ -41,7 +58,7 @@ async function getLatestApplicationForSbi (sbi, name = '') {
         }
       )
     default:
-      throw new NoApplicationFound(
+      throw new NoApplicationFoundError(
         `No claimable application found for SBI - ${sbi}`,
         {
           sbi,
