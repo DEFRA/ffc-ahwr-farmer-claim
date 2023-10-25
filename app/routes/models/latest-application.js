@@ -47,6 +47,7 @@ async function getLatestApplicationForSbi (sbi, name = '') {
       }
       return latestApplication
     case applicationStatus.IN_CHECK:
+    case applicationStatus.ON_HOLD:
     case applicationStatus.READY_TO_PAY:
     case applicationStatus.REJECTED:
       throw new ClaimHasAlreadyBeenMadeError(

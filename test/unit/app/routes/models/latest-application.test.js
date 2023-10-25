@@ -311,6 +311,80 @@ describe('Latest Applications Tests', () => {
       }
     },
     {
+      toString: () => 'IN_CHECK application found',
+      given: {
+        sbi: 111111111
+      },
+      when: {
+        latestApplications: [{
+          claimed: true,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 5,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }]
+      },
+      expect: {
+        error: new ClaimHasAlreadyBeenMadeError('Claim has already been made for SBI - 111111111')
+      }
+    },
+    {
+      toString: () => 'ON_HOLD application found',
+      given: {
+        sbi: 111111111
+      },
+      when: {
+        latestApplications: [{
+          claimed: true,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 11,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }]
+      },
+      expect: {
+        error: new ClaimHasAlreadyBeenMadeError('Claim has already been made for SBI - 111111111')
+      }
+    },
+    {
       toString: () => 'AGREED but expired application found',
       given: {
         sbi: 111111111
