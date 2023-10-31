@@ -27,8 +27,32 @@ async elementGetText(element){
 
   async elementToContainText (element, text) {
     const locator = await browser.$(element)
-    await locator.getText()
+    let errormessage=await locator.getText()
+    console.log(errormessage)
     expect(await locator.getText()).to.include(text)
+  }
+
+  async elementToContainErrorText (element, text) {
+    const locator = await browser.$(element)
+    let errormessage=await locator.getText()
+    console.log(errormessage)
+      const cleanedMessage = await errormessage.replace(/^Error:\n/, '');
+    console.log(cleanedMessage);
+     let final_text = await cleanedMessage.replace(/Vet's/g, "Vet’s");
+// Output the updated string
+    console.log(final_text);
+    await expect(final_text).to.include(text)
+
+  }
+  async elementToContainSplCharError(element, text) {
+    const locator = await browser.$(element)
+    let errormessage=await locator.getText()
+    console.log(errormessage)
+         let final_text = await errormessage.replace(/Vet's/g, "Vet’s");
+// Output the updated string
+    console.log(final_text);
+    await expect(final_text).to.include(text)
+
   }
 
   async elementTextShouldBe (element, text) {

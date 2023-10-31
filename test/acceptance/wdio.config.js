@@ -1,15 +1,15 @@
 import allureReporter from '@wdio/allure-reporter'
-import cucumberJson from 'wdio-cucumberjs-json-reporter';
-require("dotenv").config({path:`.env.${process.env.ENV}`})
+import cucumberJson from 'wdio-cucumberjs-json-reporter'
+require('dotenv').config({ path: `.env.${process.env.ENV}` })
 const envRoot = (process.env.TEST_ENVIRONMENT_ROOT_URL)
 
-let allure_config = {
+const allure_config = {
   outputDir: 'allure-results',
   disableWebdriverStepsReporting: true,
   disableWebdriverScreenshotsReporting: false,
   useCucumberStepReporter: true,
   addConsoleLogs: true
-};
+}
 
 exports.config = {
   //
@@ -46,16 +46,16 @@ exports.config = {
     {
       maxInstances: 1,
       acceptInsecureCerts: true,
-      browserName: "chrome",
-      "google:chromeOptions": {
+      browserName: 'chrome',
+      'goog:chromeOptions': {
         args: [
-          "--no-sandbox",
-          "--disable-gpu",
-          "--disable-dev-shm-usage",
-          "--window-size=1920,1080",
-        ],
-      },
-    },
+          '--no-sandbox',
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--window-size=1920,1080'
+        ]
+      }
+    }
   ],
   //
   // ===================
@@ -64,7 +64,7 @@ exports.config = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: "debug",
+  logLevel: 'debug',
   //
   // Set specific log levels per logger
   // loggers:
@@ -104,14 +104,12 @@ exports.config = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ["chromedriver"],
-
-  //services: ['selenium-standalone'],
+  services: ['chromedriver'],
   // services: [],
-  hostname: process.env.HOST_NAME || "localhost",
+  hostname: process.env.HOST_NAME || 'localhost',
   port: 4444,
-  path: "/wd/hub/",
-  protocol: "http",
+  path: '/wd/hub/',
+  protocol: 'http',
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -119,7 +117,7 @@ exports.config = {
   //
   // Make sure you have the wdio adapter package for the specific framework installed
   // before running any tests.
-  framework: "cucumber",
+  framework: 'cucumber',
   //
   // The number of times to retry the entire specfile when it fails as a whole
   // specFileRetries: 1,
@@ -133,12 +131,24 @@ exports.config = {
   // Test reporter for stdout.
   // The only one supported by default is 'dot'
   // see also: https://webdriver.io/docs/dot-reporter
-  reporters: ["spec", ['allure', allure_config],
+  // reporters: ['spec', ['allure', allure_config],
 
-    ['cucumberjs-json', {
-      jsonFolder: 'reporter/json/',
-      language: 'en',
-    },],
+  //   ['cucumberjs-json', {
+  //     jsonFolder: 'reporter/json/',
+  //     language: 'en'
+  //   }]
+  // ],
+
+  reporters: ['spec',
+    [HtmlReporter, {
+      debug: false,
+      outputDir: './html-reports/',
+      filename: 'feature-report.html',
+      reportTitle: 'Feature Test Report',
+      showInBrowser: false,
+      useOnAfterCommandForScreenshot: false,
+      LOG: logger
+    }]
   ],
 
   //
@@ -155,7 +165,7 @@ exports.config = {
     // <boolean> abort the run on first failure
     failFast: false,
     // <string[]> (type[:path]) specify the output format, optionally supply PATH to redirect formatter output (repeatable)
-    format: ["pretty"],
+    format: ['pretty'],
     // <boolean> hide step definition snippets for pending steps
     snippets: true,
     // <boolean> hide source uris
@@ -165,11 +175,11 @@ exports.config = {
     // <boolean> fail if there are any undefined or pending steps
     strict: false,
     // <string> (expression) only execute the features or scenarios with tags matching the expression
-    tagExpression: "",
+    tagExpression: '',
     // <number> timeout for step definitions
     timeout: 60000,
     // <boolean> Enable this config to treat undefined definitions as warnings.
-    ignoreUndefinedDefinitions: false,
+    ignoreUndefinedDefinitions: false
   },
 
   //
@@ -234,10 +244,9 @@ exports.config = {
    * @param {GherkinDocument.IFeature} feature  Cucumber feature object
    */
   beforeFeature: async function (uri, feature) {
+    allureReporter.addStep('Starting Fetaure : ' + feature.name)
 
-    allureReporter.addStep("Starting Fetaure : " + feature.name);
-
-    await browser.maximizeWindow();
+    await browser.maximizeWindow()
   },
   /**
    *
@@ -245,8 +254,7 @@ exports.config = {
    * @param {ITestCaseHookParameter} world world object containing information on pickle and test step
    */
   beforeScenario: async function (world) {
-
-    await allureReporter.addFeature(world.name);
+    await allureReporter.addFeature(world.name)
   },
   /**
    *
@@ -267,9 +275,8 @@ exports.config = {
    * @param {number}             result.duration duration of scenario in milliseconds
    */
   afterStep: async function (step, scenario, result) {
-
-    cucumberJson.attach(await browser.takeScreenshot(), 'image/png');
-  },
+    cucumberJson.attach(await browser.takeScreenshot(), 'image/png')
+  }
   /**
    *
    * Runs before a Cucumber Scenario.
@@ -331,6 +338,6 @@ exports.config = {
    * @param {String} oldSessionId session ID of the old session
    * @param {String} newSessionId session ID of the new session
    */
-  //onReload: function(oldSessionId, newSessionId) {
-  //}
-};
+  // onReload: function(oldSessionId, newSessionId) {
+  // }
+}

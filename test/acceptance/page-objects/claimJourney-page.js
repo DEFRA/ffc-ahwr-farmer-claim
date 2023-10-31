@@ -68,6 +68,11 @@ const EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_PERMISSION='You do not have the req
 const EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_APPLIED='Michael Dixon - SBI 114293653 has not applied for an annual health and welfare review of livestock.'
 const CALL_CHARGES='.govuk-grid-column-full>p>.govuk-link'
 const CALL_CHARGES_TITLE='Call charges and phone numbers - GOV.UK'
+const REAL_DATE_ERROR='Date of review must be a real date'
+const VET_NAME_ERROR_MESSAGE='Vet’s name must be 50 characters or fewer'
+const VET_FULL_NAME='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
+const VET_NAME_ERROR='#name-error'
+const VET_NAME_SPLCHARACTER_ERRORMESSAGE='Vet’s name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash'
 class StartPageActions extends CommonActions {
 
   async getHomepage(page){
@@ -242,6 +247,9 @@ class StartPageActions extends CommonActions {
   async dateAndYearmissing_Error_Validation(){
     await this.elementToContainText(DATE_ERROR,MISSING_YEAR_AND_DATE)
   }
+  async realDate_Error_Validation(){
+    await this.elementToContainText(DATE_ERROR,REAL_DATE_ERROR)
+  }
   async dateAndMonthmissing_Error_Validation(){
     await this.elementToContainText(DATE_ERROR,MISSING_DATE_AND_MONTH)
   }
@@ -402,5 +410,23 @@ async clickOnBusiness(businessName) {
   async clickOnContinue() {
     await this.clickOn(MUTLIPLE_BUSINESS_CONTINUE)
   } 
-}
+
+  async errorVetName(){
+          await this.sendKey(VET_NAME,VET_FULL_NAME)
+   }  
+   
+  async name_error_validation(){
+          await this.elementToContainErrorText(VET_NAME_ERROR, VET_NAME_ERROR_MESSAGE)
+   }
+
+   async errorVetNameSplCharacters(){
+    await this.sendKey(VET_NAME,'££££££')
+    }  
+
+    async errorValidationVetNameSplCharacters(){
+    await this.elementToContainSplCharError(VET_NAME_ERROR, VET_NAME_SPLCHARACTER_ERRORMESSAGE)
+    }
+
+  }
+
 module.exports = StartPageActions

@@ -71,6 +71,16 @@ await claimJourney.invalidDateFormat(day, month,year)
 Then(/^validation of error message Date of review must include a day and a year$/, async function(){
 await claimJourney.dateAndYearmissing_Error_Validation()
 });
+Then(/^validation of error message Date of review must be a real date$/, async function(){
+  await claimJourney.realDate_Error_Validation()
+  });
+
+  Then(/^enter the name with more than 50 characters$/, async function(){
+  await claimJourney.errorVetName()
+  });
+  Then(/^validation for more characters in vets visits name$/, async function(){
+    await claimJourney.name_error_validation()
+  });  
 Then(/^validation of error message Date of review must include a day and a month$/, async function(){
   await claimJourney.dateAndMonthmissing_Error_Validation()
   });
@@ -207,4 +217,12 @@ When(/^select the (.*) for application$/, async function (businessName) {
 });
 When(/^click on continue button$/, async function () {
   await claimJourney.clickOnContinue()
+});
+
+Then(/^validation of special characters in the vets visits name$/, async function () {
+  await claimJourney.errorVetNameSplCharacters()
+});
+
+Then(/^validation of error message for special characters in the vets visits name$/, async function () {
+  await claimJourney.errorValidationVetNameSplCharacters()
 });
