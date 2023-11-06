@@ -27,13 +27,11 @@ Then(/^user click on sign in button$/, async function () {
 Then(/^error message is displayed on the screen$/, async function () {
  await claimJourney.errorMessage()
 });
-When(/^user input valid data$/, async function () {
- await claimJourney.validData()
+When(/^user login with (.*) business crn and password\(for DefraId\)$/, async function (business) {
+ await claimJourney.validData(business)
 });
-//.......org-review
-Given(/^user confirm to be on business page$/, async function () {
- await claimJourney.visitReviewPage()
-});
+//......org-review
+
 When(/^the agreement number is shown$/, async function () {
  await claimJourney.agreementNumber()
 });
@@ -56,9 +54,60 @@ Given(/^user is on vet visit date page$/, async function () {
 When(/^asked about the date the review was completed$/, async function () {
  await claimJourney.visitHeadings()
 });
-When(/^user input the date in correct order$/, async function () {
- await claimJourney.inputCurrentDate()
+When(/^user input the date in (.*) order$/, async function (dateFormat) {
+ await claimJourney.inputCurrentDate(dateFormat)
+})
+
+When(/^enter the (.*) date to check if the error message is displayed$/, async function (day) {
+  await claimJourney.verifyDate_Error(day)
+ });
+Then(/^validate the error message$/, async function () {
+ await claimJourney.validate_Error()
 });
+When(/^user input missing (.*) or (.*) or (.*)$/, async function (day,month,year) {
+await claimJourney.invalidDateFormat(day, month,year)
+});
+
+Then(/^validation of error message Date of review must include a day and a year$/, async function(){
+await claimJourney.dateAndYearmissing_Error_Validation()
+});
+Then(/^validation of error message Date of review must include a day and a month$/, async function(){
+  await claimJourney.dateAndMonthmissing_Error_Validation()
+  });
+Then(/^validation of error message Date of review must include a month and a year$/, async function(){
+    await claimJourney.yearAndMonthmissing_Error_Validation()
+    });
+Then(/^validation of error message Date of review must include a month$/, async function(){
+    await claimJourney.monthmissing_Error_Validation()
+     });
+Then(/^validation of error message Date of review must include a year$/, async function(){
+      await claimJourney.yearmissing_Error_Validation()
+       });
+Then(/^validation of error message Date of review must include a date$/, async function(){
+        await claimJourney.datemissing_Error_Validation()
+         });
+
+Then(/^validation of invalid error message$/, async function () {
+  await claimJourney.invalidDateValidate()
+ });
+
+When(/^validation of Error$/, async function () {
+  await claimJourney.blankErrorValidation()
+ });
+When(/^enter the past date to check if the error message is displayed$/, async function () {
+ await claimJourney.VerifyError_BeforeApplicationDate()
+});
+Then(/^validation of the error message$/, async function () {
+ await claimJourney.validate_Application_DateError()
+});
+
+Then(/^click on another date$/, async function () {
+ await claimJourney.clickOnAnotherDay()
+});
+
+When(/^click on the option when vet visited the farm to carry out the review$/, async function () {
+ await claimJourney.clickOnSameDay()
+})
 Then(/^clicked on continue button$/, async function () {
  await claimJourney.continueAfterInputData()
 });
@@ -135,4 +184,27 @@ When(/^success message is displayed$/, async function () {
 });
 Then(/^the agreement number is presented$/, async function () {
  await claimJourney.claimAgreementNumber()
+});
+Then(/^click on the back button$/, async function () {
+  await claimJourney.click_BackButton();
+});
+//Exception
+
+When(/^validate the error message in the Header$/,async function(){
+  await claimJourney.validateExceptionHeader()
+})
+When(/^validate exception error message for (.*)$/,async function(typeOfException){
+  await claimJourney.exceptionErrorMessage(typeOfException)
+})
+When(/^validate call charges screen$/,async function(){
+  await claimJourney.validateCallCharges()
+})
+
+//MultiBusiness
+
+When(/^select the (.*) for application$/, async function (businessName) {
+  await claimJourney.clickOnBusiness(businessName)
+});
+When(/^click on continue button$/, async function () {
+  await claimJourney.clickOnContinue()
 });

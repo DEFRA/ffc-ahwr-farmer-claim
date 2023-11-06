@@ -1,4 +1,4 @@
-const { NoApplicationFound, ClaimHasAlreadyBeenMade, ClaimHasExpired } = require('../../../../../app/exceptions')
+const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../../../../app/exceptions')
 
 describe('Latest Applications Tests', () => {
   let applicationApiMock
@@ -83,7 +83,7 @@ describe('Latest Applications Tests', () => {
       }
     },
     {
-      toString: () => 'Agreed application is returned - multiple records',
+      toString: () => 'Latest Agreed application is returned - multiple records',
       given: {
         sbi: 111111111
       },
@@ -143,58 +143,6 @@ describe('Latest Applications Tests', () => {
           },
           {
             claimed: false,
-            createdAt: '2023-01-17 15:55:20',
-            createdBy: 'David Jones',
-            data: {
-              confirmCheckDetails: 'yes',
-              declaration: true,
-              eligibleSpecies: 'yes',
-              offerStatus: 'accepted',
-              organisation: {
-                address: '1 Example Road',
-                crn: 2222222222,
-                email: 'business@email.com',
-                farmerName: 'Mr Farmer',
-                name: 'My Amazing Farm',
-                sbi: 222222222
-              },
-              reference: 'string',
-              whichReview: 'sheep'
-            },
-            id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
-            reference: 'AHWR-5C1C-CCCC',
-            statusId: 1,
-            updatedAt: '2023-01-17 13:55:20',
-            updatedBy: 'David Jones'
-          },
-          {
-            claimed: false,
-            createdAt: '2023-01-17 16:55:20',
-            createdBy: 'David Jones',
-            data: {
-              confirmCheckDetails: 'yes',
-              declaration: true,
-              eligibleSpecies: 'yes',
-              offerStatus: 'accepted',
-              organisation: {
-                address: '1 Example Road',
-                crn: 2222222222,
-                email: 'business@email.com',
-                farmerName: 'Mr Farmer',
-                name: 'My Amazing Farm',
-                sbi: 222222222
-              },
-              reference: 'string',
-              whichReview: 'sheep'
-            },
-            id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
-            reference: 'AHWR-5C1C-DDDD',
-            statusId: 1,
-            updatedAt: '2023-01-17 13:55:20',
-            updatedBy: 'David Jones'
-          },
-          {
-            claimed: false,
             createdAt: '2023-01-17 13:55:20',
             createdBy: 'David Jones',
             data: {
@@ -217,6 +165,32 @@ describe('Latest Applications Tests', () => {
             reference: 'AHWR-5C1C-EEEE',
             statusId: 1,
             updatedAt: '2023-01-17 13:55:20',
+            updatedBy: 'David Jones'
+          },
+          {
+            claimed: true,
+            createdAt: '2022-01-17 14:55:20',
+            createdBy: 'David Jones',
+            data: {
+              confirmCheckDetails: 'yes',
+              declaration: true,
+              eligibleSpecies: 'yes',
+              offerStatus: 'accepted',
+              organisation: {
+                address: '1 Example Road',
+                crn: 1111111111,
+                email: 'business@email.com',
+                farmerName: 'Mr Farmer',
+                name: 'My Amazing Farm',
+                sbi: 111111111
+              },
+              reference: 'string',
+              whichReview: 'sheep'
+            },
+            id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+            reference: 'AHWR-5C1C-AAAA',
+            statusId: 9,
+            updatedAt: '2022-01-17 14:55:20',
             updatedBy: 'David Jones'
           }
         ]
@@ -259,7 +233,7 @@ describe('Latest Applications Tests', () => {
         latestApplications: []
       },
       expect: {
-        error: new NoApplicationFound('No application found for SBI - 111111111')
+        error: new NoApplicationFoundError('No application found for SBI - 111111111')
       }
     },
     {
@@ -296,7 +270,7 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        error: new NoApplicationFound('No claimable application found for SBI - 111111111')
+        error: new NoApplicationFoundError('No claimable application found for SBI - 111111111')
       }
     },
     {
@@ -333,7 +307,81 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        error: new ClaimHasAlreadyBeenMade('Claim has already been made for SBI - 111111111')
+        error: new ClaimHasAlreadyBeenMadeError('Claim has already been made for SBI - 111111111')
+      }
+    },
+    {
+      toString: () => 'IN_CHECK application found',
+      given: {
+        sbi: 111111111
+      },
+      when: {
+        latestApplications: [{
+          claimed: true,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 5,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }]
+      },
+      expect: {
+        error: new ClaimHasAlreadyBeenMadeError('Claim has already been made for SBI - 111111111')
+      }
+    },
+    {
+      toString: () => 'ON_HOLD application found',
+      given: {
+        sbi: 111111111
+      },
+      when: {
+        latestApplications: [{
+          claimed: true,
+          createdAt: '2023-01-17 14:55:20',
+          createdBy: 'David Jones',
+          data: {
+            confirmCheckDetails: 'yes',
+            declaration: true,
+            eligibleSpecies: 'yes',
+            offerStatus: 'accepted',
+            organisation: {
+              address: '1 Example Road',
+              crn: 1111111111,
+              email: 'business@email.com',
+              farmerName: 'Mr Farmer',
+              name: 'My Amazing Farm',
+              sbi: 111111111
+            },
+            reference: 'string',
+            whichReview: 'sheep'
+          },
+          id: 'eaf9b180-9993-4f3f-a1ec-4422d48edf92',
+          reference: 'AHWR-5C1C-AAAA',
+          statusId: 11,
+          updatedAt: '2023-01-17 14:55:20',
+          updatedBy: 'David Jones'
+        }]
+      },
+      expect: {
+        error: new ClaimHasAlreadyBeenMadeError('Claim has already been made for SBI - 111111111')
       }
     },
     {
@@ -371,7 +419,7 @@ describe('Latest Applications Tests', () => {
         }]
       },
       expect: {
-        error: new ClaimHasExpired('Claim has expired for reference - AHWR-5C1C-AAAA')
+        error: new ClaimHasExpiredError('Claim has expired for reference - AHWR-5C1C-AAAA')
       }
     }
   ])('%s', async (testCase) => {

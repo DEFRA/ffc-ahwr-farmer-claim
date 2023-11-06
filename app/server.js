@@ -66,6 +66,7 @@ async function createServer () {
         { key: 'Strict-Transport-Security', value: 'max-age=31536000;' },
         { key: 'Cache-Control', value: 'no-cache' },
         { key: 'Referrer-Policy', value: 'no-referrer' },
+        { key: 'Permissions-Policy', value: 'Interest-Cohort=()' },
         {
           key: 'Content-Security-Policy',
           value: getSecurityPolicy()

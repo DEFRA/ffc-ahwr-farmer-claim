@@ -15,25 +15,166 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
+      {% if errorSummary.length %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errorSummary
+        }) }}
+      {% endif %}
+
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        {{ govukDateInput({
-          id: "visit-date",
-          namePrefix: "visit-date",
-          fieldset: {
-            legend: {
-              text: "When was the review completed?",
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--l"
-            }
-          },
-          hint: {
-            html: "This is the date of the last visit to the farm for the review<br>For example, 27 3 2022"
-          },
-          errorMessage: errorMessage,
-          items: items
-        }) }}
+        <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
+
+        <div id="when-was-the-review-completed" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
+          {% if dateOfReview.day.error %}
+            {% set dateOfReviewDay = {
+              name: 'day',
+              value: dateOfReview.day.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set dateOfReviewDay = {
+              name: 'day',
+              value: dateOfReview.day.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if dateOfReview.month.error %}
+            {% set dateOfReviewMonth = {
+              name: 'month',
+              value: dateOfReview.month.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set dateOfReviewMonth = {
+              name: 'month',
+              value: dateOfReview.month.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if dateOfReview.year.error %}
+            {% set dateOfReviewYear = {
+              name: 'year',
+              value: dateOfReview.year.value,
+              classes: 'govuk-input--width-4 govuk-input--error'
+            } %}
+          {% else %}
+            {% set dateOfReviewYear = {
+              name: 'year',
+              value: dateOfReview.year.value,
+              classes: 'govuk-input--width-4'
+            } %}
+          {% endif %}
+
+          {{ govukDateInput({
+            id: "visit-date",
+            namePrefix: "visit-date",
+            fieldset: {
+              legend: {
+                text: "When was the review completed?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
+            hint: {
+              html: "This is the date when the vet last visited the farm to carry out the review.<br>For example, 27 3 2022"
+            },
+            errorMessage: dateOfReview.errorMessage,
+            items: [dateOfReviewDay, dateOfReviewMonth, dateOfReviewYear]
+          }) }}
+        </div>
+
+        {% if dateOfTestingEnabled %}
+        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingWasCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+          {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
+            {% set onAnotherDateDay = {
+              name: 'day',
+              value: whenTestingWasCarriedOut.onAnotherDate.day.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set onAnotherDateDay = {
+              name: 'day',
+              value: whenTestingWasCarriedOut.onAnotherDate.day.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if whenTestingWasCarriedOut.onAnotherDate.month.error %}
+            {% set onAnotherDateMonth = {
+              name: 'month',
+              value: whenTestingWasCarriedOut.onAnotherDate.month.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set onAnotherDateMonth = {
+              name: 'month',
+              value: whenTestingWasCarriedOut.onAnotherDate.month.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if whenTestingWasCarriedOut.onAnotherDate.year.error %}
+            {% set onAnotherDateYear = {
+              name: 'year',
+              value: whenTestingWasCarriedOut.onAnotherDate.year.value,
+              classes: 'govuk-input--width-4 govuk-input--error'
+            } %}
+          {% else %}
+            {% set onAnotherDateYear = {
+              name: 'year',
+              value: whenTestingWasCarriedOut.onAnotherDate.year.value,
+              classes: 'govuk-input--width-4'
+            } %}
+          {% endif %}
+
+          {% set onAnotherDate %}
+            {{ govukDateInput({
+              id: "on-another-date",
+              namePrefix: "on-another-date",
+              hint: {
+                html: "For example, 27 3 2022"
+              },
+              errorMessage: whenTestingWasCarriedOut.onAnotherDate.errorMessage,
+              items: [onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear]
+            }) }}
+          {% endset %}
+
+          {{ govukRadios({
+            name: "whenTestingWasCarriedOut",
+            fieldset: {
+              legend: {
+                text: "When was endemic disease or condition testing carried out?",
+                isPageHeading: false,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              text: "This is the date the vet completed testing."
+            },
+            errorMessage: whenTestingWasCarriedOut.errorMessage,
+            items: [
+              {
+                value: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+                text: "When the vet visited the farm to carry out the review",
+                checked: whenTestingWasCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+              },
+              {
+                value: "onAnotherDate",
+                text: "On another date",
+                checked: whenTestingWasCarriedOut.value === 'onAnotherDate',
+                conditional: {
+                  html: onAnotherDate
+                }
+              }
+            ]
+          }) }}
+        </div>
+        {% endif %}
 
         {{ govukButton({
           text: "Continue",

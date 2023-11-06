@@ -12,6 +12,7 @@ const maxInstances = process.env.MAX_INSTANCES ? Number(process.env.MAX_INSTANCE
 const user = process.env.BROWSERSTACK_USERNAME
 const key = process.env.BROWSERSTACK_ACCESS_KEY
 const parallel = process.env.BROWSERSTACK_PARALLEL_RUNS ? Number(process.env.BROWSERSTACK_PARALLEL_RUNS) : 1
+const automationEnabled = process.env.FFC_AHWR_AUTOMATION_ENABLED
 
 exports.config = {
   hostname: 'hub-cloud.browserstack.com',
@@ -200,7 +201,7 @@ exports.config = {
   // Test Configurations
   // ===================
   // Define all options that are relevant for the WebdriverIO instance here
-  logLevel: 'warn',
+  logLevel: 'info',
   bail: 0,
   baseUrl: envRoot,
   waitforTimeout: 10000,
@@ -242,6 +243,10 @@ exports.config = {
   // Hooks
   // =====
   onPrepare: function (config, capabilities) {
+    if (automationEnabled === 'false') {
+      console.log('Automation tests disabled, exiting tests.')
+      process.exit(0)
+    }
     const reportAggregator = new ReportAggregator({
       outputDir: './html-reports/',
       filename: 'acceptance-test-suite-report.html',
