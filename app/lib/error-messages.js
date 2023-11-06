@@ -5,26 +5,20 @@ module.exports = {
   },
   name: {
     enterName: 'Enter the vet\'s name',
-    nameLength: 'Name must be 100 characters or fewer'
-  },
-  practice: {
-    enterName: 'Enter the vet practice name',
-    nameLength: 'Practice name must be 100 characters or fewer'
+    nameLength: "Vet's name must be 50 characters or fewer",
+    namePattern: "Vet's name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash"
   },
   urn: {
     enterUrn: 'Enter the URN',
-    urnLength: 'URN must be 100 characters or fewer'
+    urnLength: 'URN must be 50 characters or fewer',
+    urnPattern: 'URN must only include letters a to z, numbers and a hyphen'
   },
   rcvs: {
     enterRCVS: 'Enter the RCVS number',
-    validRCVS: 'Enter a valid RCVS number'
+    validRCVS: 'RCVS number must be 7 characters and only include letters a to z and numbers, like 1234567'
   },
   visitDate: {
-    emptyValues: (val1, val2) => `Date must include a ${val1}${val2 ? ' and a ' + val2 : ''}`,
-    enterDate: 'Enter the date of the visit',
-    realDate: 'Date must be a real date',
-    startDateOrAfter: (createdAt) => `Date must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when the application was made`,
-    todayOrPast: 'The date the review was completed must be in the past',
-    shouldBeLessThan6MonthAfterAgreement: 'The date the review was completed must be within six months of agreement date.'
+    startDateOrAfter: (createdAt) => `The date of review must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
+    todayOrPast: 'The date the review was completed must be in the past'
   }
 }

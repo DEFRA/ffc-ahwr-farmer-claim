@@ -2,5 +2,6 @@ module.exports = {
   AGREED_STATUS: 1,
   IN_CHECK: 5,
   READY_TO_PAY: 9,
-  REJECTED: 10
+  REJECTED: 10,
+  ON_HOLD: 11
 }

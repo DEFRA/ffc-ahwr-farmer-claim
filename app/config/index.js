@@ -4,6 +4,7 @@ const authConfig = require('./auth')
 
 const schema = Joi.object({
   appInsights: Joi.object(),
+  namespace: Joi.string().optional(),
   cache: {
     expiresIn: Joi.number().default(1000 * 3600 * 24 * 3), // 3 days
     options: {
@@ -65,6 +66,7 @@ const schema = Joi.object({
 
 const config = {
   appInsights: require('applicationinsights'),
+  namespace: process.env.NAMESPACE,
   cache: {
     options: {
       host: process.env.REDIS_HOSTNAME,

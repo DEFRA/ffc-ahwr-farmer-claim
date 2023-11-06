@@ -1,9 +1,9 @@
-class ClaimHasAlreadyBeenMade extends Error {
+class ClaimHasAlreadyBeenMadeError extends Error {
   constructor (message, organisation) {
     super(message)
-    this.name = 'ClaimHasAlreadyBeenMade'
+    this.name = 'ClaimHasAlreadyBeenMadeError'
     this.organisation = organisation
   }
 }
 
-module.exports = ClaimHasAlreadyBeenMade
+module.exports = ClaimHasAlreadyBeenMadeError

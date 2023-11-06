@@ -6,8 +6,9 @@ const sessionKeys = require('../session/keys')
 const latestApplicationForSbi = require('./models/latest-application')
 const { farmerClaim } = require('../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
-const { NoApplicationFound, InvalidPermissionsError, ClaimHasAlreadyBeenMade, InvalidStateError, ClaimHasExpired } = require('../exceptions')
+const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMadeError, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
 const { raiseIneligibilityEvent } = require('../event')
+const appInsights = require('applicationinsights')
 
 module.exports = [{
   method: 'GET',
@@ -17,12 +18,13 @@ module.exports = [{
     validate: {
       query: Joi.object({
         code: Joi.string().required(),
-        state: Joi.string().uuid().required()
+        state: Joi.string().required()
       }).options({
         stripUnknown: true
       }),
       failAction (request, h, err) {
         console.log(`Validation error caught during DEFRA ID redirect - ${err.message}.`)
+        appInsights.defaultClient.trackException({ exception: err })
         return h.view('verify-login-failed', {
           backLink: auth.requestAuthorizationCodeUrl(session, request),
           ruralPaymentsAgency: config.ruralPaymentsAgency
@@ -62,6 +64,15 @@ module.exports = [{
         Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
         session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
         auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
+
+        appInsights.defaultClient.trackEvent({
+          name: 'login',
+          properties: {
+            sbi: organisationSummary.organisation.sbi,
+            crn: session.getCustomer(request, sessionKeys.customer.crn),
+            email: personSummary.email
+          }
+        })
         return h.redirect('/claim/visit-review')
       } catch (error) {
         console.error(`Received error with name ${error.name} and message ${error.message}.`)
@@ -72,31 +83,41 @@ module.exports = [{
           case error instanceof InvalidStateError:
             return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
           case error instanceof InvalidPermissionsError:
-          case error instanceof NoApplicationFound:
-          case error instanceof ClaimHasAlreadyBeenMade:
-          case error instanceof ClaimHasExpired:
-            await raiseIneligibilityEvent(
-              request.yar.id,
-              organisation?.sbi,
-              crn,
-              organisation?.email,
-              error.name
-            )
-            return h.view('you-cannot-claim-for-a-livestock-review', {
-              error,
-              organisationName: organisation?.name,
-              sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
-              ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backLink: auth.requestAuthorizationCodeUrl(session, request),
-              hasMultipleBusinesses: attachedToMultipleBusinesses
-            }).code(400).takeover()
+            break
+          case error instanceof NoApplicationFoundError:
+            break
+          case error instanceof ClaimHasAlreadyBeenMadeError:
+            break
+          case error instanceof ClaimHasExpiredError:
+            break
           default:
             return h.view('verify-login-failed', {
               backLink: auth.requestAuthorizationCodeUrl(session, request),
               ruralPaymentsAgency: config.ruralPaymentsAgency
             }).code(400).takeover()
         }
+        await raiseIneligibilityEvent(
+          request.yar.id,
+          organisation?.sbi,
+          crn,
+          organisation?.email,
+          error.name
+        )
+        return h.view('you-cannot-claim-for-a-livestock-review', {
+          permissionError: error instanceof InvalidPermissionsError,
+          noApplicationFoundError: error instanceof NoApplicationFoundError,
+          claimHasAlreadyBeenMadeError: error instanceof ClaimHasAlreadyBeenMadeError,
+          claimHasExpiredError: error instanceof ClaimHasExpiredError,
+          organisationName: organisation?.name,
+          sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
+          ruralPaymentsAgency: config.ruralPaymentsAgency,
+          backLink: auth.requestAuthorizationCodeUrl(session, request),
+          hasMultipleBusinesses: attachedToMultipleBusinesses,
+          latestApplicationDate: error.latestApplicationDate,
+          claimExpiredDate: error.claimExpiredDate
+        }).code(400).takeover()
       }
     }
   }
-}]
+}
+]

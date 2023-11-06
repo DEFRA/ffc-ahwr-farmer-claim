@@ -18,12 +18,13 @@ module.exports = [{
   options: {
     validate: {
       payload: Joi.object({
-        urn: Joi.string().trim().max(100).required()
+        urn: Joi.string().trim().max(50).pattern(/^[A-Za-z0-9-]+$/).required()
           .messages({
             'any.required': urnErrorMessages.enterUrn,
             'string.base': urnErrorMessages.enterUrn,
             'string.empty': urnErrorMessages.enterUrn,
-            'string.max': urnErrorMessages.urnLength
+            'string.max': urnErrorMessages.urnLength,
+            'string.pattern.base': urnErrorMessages.urnPattern
           })
       }),
       failAction: async (request, h, error) => {

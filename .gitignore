@@ -30,3 +30,4 @@ layout.njk
 /test/acceptance/reporter/cucumber_report.html.json
 /test/acceptance/.env.dev
 /test/acceptance/.env.test
+/test/acceptance/.env.pre

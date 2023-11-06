@@ -5,5 +5,5 @@ name: ffc-ahwr-farmer-claim
 version: 1.0.0
 dependencies:
 - name: ffc-helm-library
-  version: ^3.3.2
+  version: 4.0.0
   repository: https://raw.githubusercontent.com/defra/ffc-helm-repository/master/

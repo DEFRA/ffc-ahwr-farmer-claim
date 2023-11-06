@@ -1,12 +1,18 @@
 const { v4: uuidv4 } = require('uuid')
+const config = require('../../config')
 const session = require('../../session')
 const { tokens } = require('../../session/keys')
 const InvalidStateError = require('../../exceptions/invalid-state-error')
 
 const generate = (request) => {
-  const state = uuidv4()
-  session.setToken(request, tokens.state, state)
-  return state
+  const state = {
+    id: uuidv4(),
+    namespace: config.namespace
+  }
+
+  const base64EncodedState = Buffer.from(JSON.stringify(state)).toString('base64')
+  session.setToken(request, tokens.state, base64EncodedState)
+  return base64EncodedState
 }
 
 const verify = (request) => {
@@ -33,8 +39,9 @@ const verify = (request) => {
           }
         })}`)
     }
-    const savedState = session.getToken(request, tokens.state)
-    if (state !== savedState) {
+    const decodedState = JSON.parse(Buffer.from(state, 'base64').toString('ascii'))
+    const savedState = JSON.parse(Buffer.from(session.getToken(request, tokens.state), 'base64').toString('ascii'))
+    if (decodedState.id !== savedState.id) {
       throw new InvalidStateError(`State mismatch: ${JSON.stringify({
           request: {
             yar: {
