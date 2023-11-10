@@ -10,6 +10,7 @@ const entryKey = 'organisation'
 const key = 'test'
 const value = 'test value'
 const ip = '1.1.1.1'
+const reference = 'AHWR-TEMP-IDE'
 
 describe('Send event on session set', () => {
   beforeEach(async () => {
@@ -31,32 +32,33 @@ describe('Send event on session set', () => {
   })
 
   test('should call raiseEvent when a valid event is received', async () => {
-    await sendSessionEvent(organisation, sessionId, entryKey, key, value, ip)
+    await sendSessionEvent(organisation, reference, sessionId, entryKey, key, value, ip)
     expect(raiseEvent).toHaveBeenCalled()
   })
 
   test('should call raiseEvent with event including sessionId', async () => {
     event = {
       ...event,
+      reference,
       sbi: organisation.sbi,
       email: organisation.email,
       cph: 'n/a',
       id: sessionId,
       ip,
-      data: { [key]: value }
+      data: { reference, [key]: value }
     }
 
-    await sendSessionEvent(organisation, sessionId, entryKey, key, value, ip)
+    await sendSessionEvent(organisation, reference, sessionId, entryKey, key, value, ip)
     expect(raiseEvent).toHaveBeenCalledWith(event)
   })
 
   test('should not call raiseEvent when an event with a null sessionId is received', async () => {
-    await sendSessionEvent(organisation, null, entryKey, key, value, ip)
+    await sendSessionEvent(organisation, reference, null, entryKey, key, value, ip)
     expect(raiseEvent).not.toHaveBeenCalled()
   })
 
   test('should not call raiseEvent when an event with a null organisation is received', async () => {
-    await sendSessionEvent(null, sessionId, entryKey, key, value, ip)
+    await sendSessionEvent(null, reference, sessionId, entryKey, key, value, ip)
     expect(raiseEvent).not.toHaveBeenCalled()
   })
 })
