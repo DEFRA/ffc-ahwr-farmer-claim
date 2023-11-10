@@ -74,246 +74,246 @@ module.exports = [
       validate: {
         payload: config.dateOfTesting.enabled
           ? Joi.object({
-            dateOfAgreementAccepted: Joi.string().required(),
+              dateOfAgreementAccepted: Joi.string().required(),
 
-            [labels.day]: Joi.when('dateOfAgreementAccepted', {
-              switch: [
-                {
-                  is: Joi.exist(),
-                  then: validateDateInputDay(
-                    'visit-date',
-                    'Date of review'
-                  ).messages({
-                    'dateInputDay.ifNothingIsEntered':
-                        'Enter the date the vet completed the review'
-                  })
-                }
-              ]
-            }),
-
-            [labels.month]: Joi.when('dateOfAgreementAccepted', {
-              switch: [
-                {
-                  is: Joi.exist(),
-                  then: validateDateInputMonth(
-                    'visit-date',
-                    'Date of review'
-                  )
-                }
-              ]
-            }),
-
-            [labels.year]: Joi.when('dateOfAgreementAccepted', {
-              switch: [
-                {
-                  is: Joi.exist(),
-                  then: validateDateInputYear(
-                    'visit-date',
-                    'Date of review',
-                    (value, helpers) => {
-                      if (value > 9999 || value < 1000) {
-                        return value
-                      }
-
-                      const isValidDate = (year, month, day) => {
-                        const dateObject = new Date(year, month - 1, day)
-                        return (
-                          dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
-                        )
-                      }
-                      if (
-                        !isValidDate(
-                          +helpers.state.ancestors[0][labels.year],
-                          +helpers.state.ancestors[0][labels.month],
-                          +helpers.state.ancestors[0][labels.day]
-                        )
-                      ) {
-                        return value
-                      }
-
-                      const dateOfReview = new Date(
-                        Date.UTC(
-                          helpers.state.ancestors[0][labels.year],
-                          helpers.state.ancestors[0][labels.month] - 1,
-                          helpers.state.ancestors[0][labels.day]
-                        )
-                      )
-
-                      const currentDate = new Date()
-                      const dateOfAgreementAccepted = new Date(
-                        helpers.state.ancestors[0].dateOfAgreementAccepted
-                      )
-
-                      if (dateOfReview > currentDate) {
-                        return helpers.error('dateOfReview.future')
-                      }
-
-                      if (dateOfReview < dateOfAgreementAccepted) {
-                        return helpers.error('dateOfReview.beforeAccepted', {
-                          dateOfAgreementAccepted: new Date(
-                            dateOfAgreementAccepted
-                          ).toLocaleString('en-GB', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
-                          })
-                        })
-                      }
-
-                      const endDate = new Date(dateOfAgreementAccepted)
-                      endDate.setMonth(
-                        endDate.getMonth() + config.claimExpiryTimeMonths
-                      )
-                      if (dateOfReview > endDate) {
-                        return helpers.error('dateOfReview.expired')
-                      }
-
-                      return value
-                    },
-                    {
-                      'dateOfReview.future':
-                          'The date the review was completed must be in the past',
-                      'dateOfReview.beforeAccepted':
-                          'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
-                      'dateOfReview.expired':
-                          'The date the review was completed must be within six months of agreement date'
-                    }
-                  )
-                }
-              ]
-            }),
-
-            whenTestingWasCarriedOut: Joi.string()
-              .valid(
-                'whenTheVetVisitedTheFarmToCarryOutTheReview',
-                'onAnotherDate'
-              )
-              .required()
-              .messages({
-                'any.required':
-                    'Select if testing was carried out when the vet visited the farm or on another date'
+              [labels.day]: Joi.when('dateOfAgreementAccepted', {
+                switch: [
+                  {
+                    is: Joi.exist(),
+                    then: validateDateInputDay(
+                      'visit-date',
+                      'Date of review'
+                    ).messages({
+                      'dateInputDay.ifNothingIsEntered':
+                          'Enter the date the vet completed the review'
+                    })
+                  }
+                ]
               }),
 
-            'on-another-date-day': Joi.when('whenTestingWasCarriedOut', {
-              switch: [
-                {
-                  is: 'onAnotherDate',
-                  then: validateDateInputDay(
-                    'on-another-date',
-                    'Date of testing'
-                  ).messages({
-                    'dateInputDay.ifNothingIsEntered':
-                        'Enter the date the vet completed testing'
-                  })
-                },
-                {
-                  is: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-                  then: Joi.allow('')
-                }
-              ],
-              otherwise: Joi.allow('')
-            }),
+              [labels.month]: Joi.when('dateOfAgreementAccepted', {
+                switch: [
+                  {
+                    is: Joi.exist(),
+                    then: validateDateInputMonth(
+                      'visit-date',
+                      'Date of review'
+                    )
+                  }
+                ]
+              }),
 
-            'on-another-date-month': Joi.when('whenTestingWasCarriedOut', {
-              switch: [
-                {
-                  is: 'onAnotherDate',
-                  then: validateDateInputMonth(
-                    'on-another-date',
-                    'Date of testing'
-                  )
-                },
-                {
-                  is: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-                  then: Joi.allow('')
-                }
-              ],
-              otherwise: Joi.allow('')
-            }),
+              [labels.year]: Joi.when('dateOfAgreementAccepted', {
+                switch: [
+                  {
+                    is: Joi.exist(),
+                    then: validateDateInputYear(
+                      'visit-date',
+                      'Date of review',
+                      (value, helpers) => {
+                        if (value > 9999 || value < 1000) {
+                          return value
+                        }
 
-            'on-another-date-year': Joi.when('whenTestingWasCarriedOut', {
-              switch: [
-                {
-                  is: 'onAnotherDate',
-                  then: validateDateInputYear(
-                    'on-another-date',
-                    'Date of testing',
-                    (value, helpers) => {
-                      if (value > 9999 || value < 1000) {
-                        return value
-                      }
+                        const isValidDate = (year, month, day) => {
+                          const dateObject = new Date(year, month - 1, day)
+                          return (
+                            dateObject.getFullYear() === year &&
+                              dateObject.getMonth() === month - 1 &&
+                              dateObject.getDate() === day
+                          )
+                        }
+                        if (
+                          !isValidDate(
+                            +helpers.state.ancestors[0][labels.year],
+                            +helpers.state.ancestors[0][labels.month],
+                            +helpers.state.ancestors[0][labels.day]
+                          )
+                        ) {
+                          return value
+                        }
 
-                      if (
-                        value.whenTestingWasCarriedOut ===
-                          'whenTheVetVisitedTheFarmToCarryOutTheReview'
-                      ) {
-                        return value
-                      }
-
-                      const isValidDate = (year, month, day) => {
-                        const dateObject = new Date(year, month - 1, day)
-                        return (
-                          dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
+                        const dateOfReview = new Date(
+                          Date.UTC(
+                            helpers.state.ancestors[0][labels.year],
+                            helpers.state.ancestors[0][labels.month] - 1,
+                            helpers.state.ancestors[0][labels.day]
+                          )
                         )
-                      }
-                      if (
-                        !isValidDate(
-                          +helpers.state.ancestors[0]['on-another-date-year'],
-                          +helpers.state.ancestors[0][
-                            'on-another-date-month'
-                          ],
-                          +helpers.state.ancestors[0]['on-another-date-day']
-                        )
-                      ) {
-                        return value
-                      }
 
-                      const dateOfTesting = new Date(
-                        helpers.state.ancestors[0]['on-another-date-year'],
-                        helpers.state.ancestors[0]['on-another-date-month'] -
-                            1,
-                        helpers.state.ancestors[0]['on-another-date-day']
-                      )
-                      const currentDate = new Date()
-                      if (dateOfTesting > currentDate) {
-                        return helpers.error('dateOfTesting.future')
-                      }
-                      const dateOfAgreementAccepted = new Date(
-                        helpers.state.ancestors[0].dateOfAgreementAccepted
-                      )
-                      if (dateOfTesting < dateOfAgreementAccepted) {
-                        return helpers.error('dateOfTesting.beforeAccepted', {
-                          dateOfAgreementAccepted: new Date(
-                            dateOfAgreementAccepted
-                          ).toLocaleString('en-GB', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
+                        const currentDate = new Date()
+                        const dateOfAgreementAccepted = new Date(
+                          helpers.state.ancestors[0].dateOfAgreementAccepted
+                        )
+
+                        if (dateOfReview > currentDate) {
+                          return helpers.error('dateOfReview.future')
+                        }
+
+                        if (dateOfReview < dateOfAgreementAccepted) {
+                          return helpers.error('dateOfReview.beforeAccepted', {
+                            dateOfAgreementAccepted: new Date(
+                              dateOfAgreementAccepted
+                            ).toLocaleString('en-GB', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric'
+                            })
                           })
-                        })
+                        }
+
+                        const endDate = new Date(dateOfAgreementAccepted)
+                        endDate.setMonth(
+                          endDate.getMonth() + config.claimExpiryTimeMonths
+                        )
+                        if (dateOfReview > endDate) {
+                          return helpers.error('dateOfReview.expired')
+                        }
+
+                        return value
+                      },
+                      {
+                        'dateOfReview.future':
+                            'The date the review was completed must be in the past',
+                        'dateOfReview.beforeAccepted':
+                            'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                        'dateOfReview.expired':
+                            'The date the review was completed must be within six months of agreement date'
                       }
-                      return value
-                    },
-                    {
-                      'dateOfTesting.future':
-                          'Date of testing must be in the past',
-                      'dateOfTesting.beforeAccepted':
-                          'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
-                    }
-                  )
-                },
-                {
-                  is: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-                  then: Joi.allow('')
-                }
-              ],
-              otherwise: Joi.allow('')
+                    )
+                  }
+                ]
+              }),
+
+              whenTestingWasCarriedOut: Joi.string()
+                .valid(
+                  'whenTheVetVisitedTheFarmToCarryOutTheReview',
+                  'onAnotherDate'
+                )
+                .required()
+                .messages({
+                  'any.required':
+                      'Select if testing was carried out when the vet visited the farm or on another date'
+                }),
+
+              'on-another-date-day': Joi.when('whenTestingWasCarriedOut', {
+                switch: [
+                  {
+                    is: 'onAnotherDate',
+                    then: validateDateInputDay(
+                      'on-another-date',
+                      'Date of testing'
+                    ).messages({
+                      'dateInputDay.ifNothingIsEntered':
+                          'Enter the date the vet completed testing'
+                    })
+                  },
+                  {
+                    is: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+                    then: Joi.allow('')
+                  }
+                ],
+                otherwise: Joi.allow('')
+              }),
+
+              'on-another-date-month': Joi.when('whenTestingWasCarriedOut', {
+                switch: [
+                  {
+                    is: 'onAnotherDate',
+                    then: validateDateInputMonth(
+                      'on-another-date',
+                      'Date of testing'
+                    )
+                  },
+                  {
+                    is: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+                    then: Joi.allow('')
+                  }
+                ],
+                otherwise: Joi.allow('')
+              }),
+
+              'on-another-date-year': Joi.when('whenTestingWasCarriedOut', {
+                switch: [
+                  {
+                    is: 'onAnotherDate',
+                    then: validateDateInputYear(
+                      'on-another-date',
+                      'Date of testing',
+                      (value, helpers) => {
+                        if (value > 9999 || value < 1000) {
+                          return value
+                        }
+
+                        if (
+                          value.whenTestingWasCarriedOut ===
+                            'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                        ) {
+                          return value
+                        }
+
+                        const isValidDate = (year, month, day) => {
+                          const dateObject = new Date(year, month - 1, day)
+                          return (
+                            dateObject.getFullYear() === year &&
+                              dateObject.getMonth() === month - 1 &&
+                              dateObject.getDate() === day
+                          )
+                        }
+                        if (
+                          !isValidDate(
+                            +helpers.state.ancestors[0]['on-another-date-year'],
+                            +helpers.state.ancestors[0][
+                              'on-another-date-month'
+                            ],
+                            +helpers.state.ancestors[0]['on-another-date-day']
+                          )
+                        ) {
+                          return value
+                        }
+
+                        const dateOfTesting = new Date(
+                          helpers.state.ancestors[0]['on-another-date-year'],
+                          helpers.state.ancestors[0]['on-another-date-month'] -
+                              1,
+                          helpers.state.ancestors[0]['on-another-date-day']
+                        )
+                        const currentDate = new Date()
+                        if (dateOfTesting > currentDate) {
+                          return helpers.error('dateOfTesting.future')
+                        }
+                        const dateOfAgreementAccepted = new Date(
+                          helpers.state.ancestors[0].dateOfAgreementAccepted
+                        )
+                        if (dateOfTesting < dateOfAgreementAccepted) {
+                          return helpers.error('dateOfTesting.beforeAccepted', {
+                            dateOfAgreementAccepted: new Date(
+                              dateOfAgreementAccepted
+                            ).toLocaleString('en-GB', {
+                              day: 'numeric',
+                              month: 'long',
+                              year: 'numeric'
+                            })
+                          })
+                        }
+                        return value
+                      },
+                      {
+                        'dateOfTesting.future':
+                            'Date of testing must be in the past',
+                        'dateOfTesting.beforeAccepted':
+                            'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                      }
+                    )
+                  },
+                  {
+                    is: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+                    then: Joi.allow('')
+                  }
+                ],
+                otherwise: Joi.allow('')
+              })
             })
-          })
           : Joi.object({
             dateOfAgreementAccepted: Joi.string().required(),
 
