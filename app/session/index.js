@@ -16,7 +16,7 @@ function set (request, entryKey, key, value) {
   const claim = getClaim(request)
   const xForwardedForHeader = request.headers['x-forwarded-for']
   const ip = xForwardedForHeader ? xForwardedForHeader.split(',')[0] : request.info.remoteAddress
-  claim && sendSessionEvent(claim.organisation, request.yar.id, entryKey, key, value, ip)
+  claim && sendSessionEvent(claim.organisation, claim.reference, request.yar.id, entryKey, key, value, ip)
 }
 
 function get (request, entryKey, key) {
