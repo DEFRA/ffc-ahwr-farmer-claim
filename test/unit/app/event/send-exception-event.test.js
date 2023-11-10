@@ -29,7 +29,7 @@ describe('Send event on exception', () => {
       id: sessionId,
       sbi,
       cph: 'n/a',
-      email: email,
+      email,
       name: 'send-ineligibility-event',
       type: 'ineligibility-event',
       message: `Claim: ${exception}`,
