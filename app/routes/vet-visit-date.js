@@ -3,6 +3,7 @@ const { labels } = require('../config/visit-date')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
 const config = require('../../app/config')
+// const { getClaimType } = require('../lib/get-claim-type')
 
 const validateDateInputDay = require('./govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('./govuk-components/validate-date-input-month')
@@ -422,7 +423,13 @@ module.exports = [{
         session.setClaim(request, sessionKeys.farmerApplyData.dateOfTesting, dateOfTesting)
       }
 
-      return h.redirect('/claim/vet-name')
+      const claimType = session.getClaim(request)
+
+      return !!claimType.data &&
+        !!claimType.data.whichReview &&
+        claimType.data.whichReview === 'dairy'
+        ? h.redirect('/claim/vet-name')
+        : h.redirect('/claim/animals-tested')
     }
   }
 }]

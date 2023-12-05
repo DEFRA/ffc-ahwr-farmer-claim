@@ -36,6 +36,7 @@ module.exports = [{
       claim.data.vetName = claim.vetName
       claim.data.vetRcvs = claim.vetRcvs
       claim.data.urnResult = claim.urnResult
+      claim.data.animalsTested = claim.animalsTested
       claim.data.dateOfClaim = new Date().toISOString()
       if (config.dateOfTesting.enabled) {
         claim.data.dateOfTesting = claim.dateOfTesting

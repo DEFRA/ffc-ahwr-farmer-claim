@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   claim: {
+    animalsTested: 'animalsTested',
     detailsCorrect: 'detailsCorrect',
     claimed: 'claimed'
   },
@@ -37,5 +38,10 @@ module.exports = {
     crn: 'crn',
     organisationId: 'organisationId',
     attachedToMultipleBusinesses: 'attachedToMultipleBusinesses'
+  },
+  thresholdPerClaimType: {
+    beef: 5,
+    pigs: 30,
+    sheep: 10
   }
 }

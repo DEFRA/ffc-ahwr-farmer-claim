@@ -25,7 +25,7 @@ Feature: claim journey landing page
     Then click on the back button
     Then user continue to claim
 
-Scenario: To validate the error in review completed "Date of review must be a real date"
+Scenario: To validate the error in review completed "The date the review was completed must be in the past"
   
     When asked about the date the review was completed
     When user input the date in invalid order
