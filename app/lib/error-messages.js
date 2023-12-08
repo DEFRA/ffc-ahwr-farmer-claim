@@ -5,7 +5,7 @@ module.exports = {
   },
   animalsTested: {
     enterNumber: 'Enter the number of animals tested',
-    numberMax: 'The number of animals tested should no exceed 99999'
+    numberMax: 'The number of animals tested should not exceed 99999'
   },
   name: {
     enterName: 'Enter the vet\'s name',

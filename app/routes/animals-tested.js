@@ -1,7 +1,8 @@
 const Joi = require('joi')
 const session = require('../session')
-const { claim: { animalsTested: animalsTestedKey }, thresholdPerClaimType } = require('../session/keys')
+const { claim: { animalsTested: animalsTestedKey } } = require('../session/keys')
 const { animalsTested: atErrorMessages } = require('../../app/lib/error-messages')
+const { thresholdPerClaimType } = require('../constants/claim')
 
 module.exports = [{
   method: 'GET',

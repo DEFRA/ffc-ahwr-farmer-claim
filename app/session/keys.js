@@ -38,10 +38,5 @@ module.exports = {
     crn: 'crn',
     organisationId: 'organisationId',
     attachedToMultipleBusinesses: 'attachedToMultipleBusinesses'
-  },
-  thresholdPerClaimType: {
-    beef: 5,
-    pigs: 30,
-    sheep: 10
   }
 }
