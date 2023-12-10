@@ -20,7 +20,18 @@ module.exports = {
   },
   claim: {
     detailsCorrect: 'detailsCorrect',
-    claimed: 'claimed'
+    claimed: 'claimed',
+    type : 'type',
+    species: 'species',
+    herdFlock: 'herdFlock',
+    eligibleSpecies : 'eligibleSpecies',
+    confirmCheckDetails: 'confirmCheckDetails',
+    reference: 'reference',
+    urnResult: 'urnResult',
+    vetName: 'vetName',
+    vetRcvs: 'vetRcvs',
+    visitDate: 'visitDate',
+    dateOfTesting: 'dateOfTesting'
   },
   pkcecodes: {
     verifier: 'verifier'
