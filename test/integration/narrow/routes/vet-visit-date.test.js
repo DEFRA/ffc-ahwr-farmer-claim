@@ -107,6 +107,7 @@ describe('Vet, enter date of visit', () => {
         expect($(`#${labels.day}`).val()).toEqual(date.getDate().toString())
         expect($(`#${labels.month}`).val()).toEqual((date.getMonth() + 1).toString())
         expect($(`#${labels.year}`).val()).toEqual(date.getFullYear().toString())
+        session.getClaim.mockRestore()
       })
     })
 
@@ -150,7 +151,7 @@ describe('Vet, enter date of visit', () => {
 
       test.each([
         { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: `Date of review must be the same or after ${(new Date(today)).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`, errorHighlights: allErrorHighlights, applicationCreationDate: today },
-        { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 1, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date the vet completed the review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
         { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
@@ -176,22 +177,23 @@ describe('Vet, enter date of visit', () => {
         errorHighlights.forEach(label => {
           expect($(`#${label}`).hasClass(inputErrorClass)).toEqual(true)
         })
+        session.getClaim.mockRestore()
       })
 
       test.each([
         { description: 'application created before 5 months, visit date today', applicationCreationDate: before5Months }
       ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate }) => {
-        session.getClaim.mockReturnValueOnce({ data: { whichReview: 'pigs' }, createdAt: applicationCreationDate })
+        session.getClaim.mockReturnValue({ data: { whichReview: 'dairy' }, createdAt: applicationCreationDate })
         const options = {
           auth,
           method,
           url,
           payload: {
             crumb,
-            [labels.day]: today.getDate(),
-            [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
-            [labels.year]: `${today.getFullYear()}`,
-            dateOfAgreementAccepted: before5Months
+            [labels.day]: 5,
+            [labels.month]: 6,
+            [labels.year]: 2023,
+            dateOfAgreementAccepted: new Date('1 January 2023') // before5Months
           },
           headers: { cookie: `crumb=${crumb}` }
         }
@@ -200,6 +202,32 @@ describe('Vet, enter date of visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/vet-name')
+        session.getClaim.mockRestore()
+      })
+
+      test.each([
+        { description: 'application created before 5 months, visit date today and no dairy', applicationCreationDate: before5Months }
+      ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate }) => {
+        session.getClaim.mockReturnValue({ data: { whichReview: 'other' }, createdAt: applicationCreationDate })
+        const options = {
+          auth,
+          method,
+          url,
+          payload: {
+            crumb,
+            [labels.day]: 5,
+            [labels.month]: 6,
+            [labels.year]: 2023,
+            dateOfAgreementAccepted: new Date('1 January 2023') // before5Months
+          },
+          headers: { cookie: `crumb=${crumb}` }
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location).toEqual('/claim/animals-tested')
+        session.getClaim.mockRestore()
       })
     })
   })
@@ -295,6 +323,7 @@ describe('Vet, enter date of visit', () => {
         expect($(`#${labels.day}`).val()).toEqual(date.getDate().toString())
         expect($(`#${labels.month}`).val()).toEqual((date.getMonth() + 1).toString())
         expect($(`#${labels.year}`).val()).toEqual(date.getFullYear().toString())
+        session.getClaim.mockRestore()
       })
     })
 
@@ -347,7 +376,7 @@ describe('Vet, enter date of visit', () => {
           errorHighlights: allErrorHighlights,
           applicationCreationDate: today
         },
-        { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 2, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+        { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 1, year: tomorrow.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'The date the review was completed must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day and month and year', day: '', month: '', year: '', whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Enter the date the vet completed the review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
         { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
         { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', errorMessage: 'Date of review must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
@@ -439,12 +468,13 @@ describe('Vet, enter date of visit', () => {
         errorHighlights.forEach(label => {
           expect($(`#${label}`).hasClass(inputErrorClass)).toEqual(true)
         })
+        session.getClaim.mockRestore()
       })
 
       test.each([
         { description: 'application created before 5 months, visit date today', applicationCreationDate: before5Months }
-      ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate }) => {
-        session.getClaim.mockReturnValueOnce({ data: { whichReview: 'pigs' }, createdAt: applicationCreationDate })
+      ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate, description }) => {
+        session.getClaim.mockReturnValue({ data: { whichReview: 'dairy' }, createdAt: applicationCreationDate })
         const options = {
           auth,
           method,
@@ -457,6 +487,7 @@ describe('Vet, enter date of visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/vet-name')
+        session.getClaim.mockRestore()
       })
     })
   })
