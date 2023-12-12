@@ -58,6 +58,7 @@ describe('Check Answers test', () => {
         }
       }
       sessionMock.getClaim.mockReturnValueOnce('XYZ')
+        .mockReturnValueOnce(25)
         .mockReturnValueOnce('2015-03-25')
         .mockReturnValueOnce('2015-03-26')
         .mockReturnValueOnce('1234567')
@@ -76,6 +77,7 @@ describe('Check Answers test', () => {
       expect($('.govuk-summary-list__key').text()).toContain('11 or more cattle')
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
       expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
+      expect($('.govuk-summary-list__key').text()).toContain('Number of animals tested')
       expect($('.govuk-summary-list__key').text()).toContain('Vet\'s name')
       expect($('.govuk-summary-list__key').text()).toContain('Vet\'s RCVS number')
       expect($('.govuk-summary-list__key').text()).toContain('Test results URN')

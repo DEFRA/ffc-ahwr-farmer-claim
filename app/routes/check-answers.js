@@ -1,5 +1,5 @@
 const session = require('../session')
-const { farmerApplyData } = require('../session/keys')
+const { farmerApplyData, claim } = require('../session/keys')
 const backLink = '/claim/urn-result'
 const { getEligibleNumberRowForDisplay, getTypeOfReviewRowForDisplay } = require('../lib/display-helpers')
 const dateOfTestingEnabled = require('../config').dateOfTesting.enabled
@@ -10,12 +10,13 @@ module.exports = {
   options: {
     handler: async (request, h) => {
       const name = session.getClaim(request, farmerApplyData.vetName)
+      const animalsTested = session.getClaim(request, claim.animalsTested) + ''
       const visitDate = session.getClaim(request, farmerApplyData.visitDate)
       const dateOfTesting = session.getClaim(request, farmerApplyData.dateOfTesting)
       const rcvsNumber = session.getClaim(request, farmerApplyData.vetRcvs)
       const urn = session.getClaim(request, farmerApplyData.urnResult)
       const organisation = session.getClaim(request, farmerApplyData.organisation)
-      const claim = session.getClaim(request)
+      const claimData = session.getClaim(request)
 
       let rows = [
         {
@@ -26,8 +27,8 @@ module.exports = {
           key: { text: 'SBI' },
           value: { html: organisation.sbi }
         },
-        getEligibleNumberRowForDisplay(claim.data),
-        getTypeOfReviewRowForDisplay(claim.data),
+        getEligibleNumberRowForDisplay(claimData.data),
+        getTypeOfReviewRowForDisplay(claimData.data),
         {
           key: { text: 'Date of visit' },
           value: { html: (new Date(visitDate)).toLocaleDateString('en-GB') },
@@ -37,6 +38,11 @@ module.exports = {
           key: { text: 'Date of testing' },
           value: { html: (new Date(dateOfTesting)).toLocaleDateString('en-GB') },
           actions: { items: [{ href: '/claim/vet-visit-date', text: 'Change', visuallyHiddenText: 'change date of testing' }] }
+        },
+        {
+          key: { text: 'Number of animals tested' },
+          value: { html: animalsTested },
+          actions: { items: [{ href: '/claim/animals-tested', text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
         },
         {
           key: { text: 'Vet\'s name' },
