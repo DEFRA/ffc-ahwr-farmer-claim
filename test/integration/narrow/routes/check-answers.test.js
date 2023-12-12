@@ -41,7 +41,7 @@ describe('Check Answers test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200', async () => {
+    test('returns 200 when includes animals tested', async () => {
       const options = {
         method: 'GET',
         url,
@@ -58,7 +58,7 @@ describe('Check Answers test', () => {
         }
       }
       sessionMock.getClaim.mockReturnValueOnce('XYZ')
-        .mockReturnValueOnce(25)
+        .mockReturnValueOnce(23)
         .mockReturnValueOnce('2015-03-25')
         .mockReturnValueOnce('2015-03-26')
         .mockReturnValueOnce('1234567')
@@ -78,6 +78,49 @@ describe('Check Answers test', () => {
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
       expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
       expect($('.govuk-summary-list__key').text()).toContain('Number of animals tested')
+      expect($('.govuk-summary-list__key').text()).toContain('Vet\'s name')
+      expect($('.govuk-summary-list__key').text()).toContain('Vet\'s RCVS number')
+      expect($('.govuk-summary-list__key').text()).toContain('Test results URN')
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('returns 200 when it does not include animals tested', async () => {
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const organisation = {
+        name: 'org-name',
+        sbi: '1324243'
+      }
+      const claim = {
+        data: {
+          whichReview: 'beef'
+        }
+      }
+      sessionMock.getClaim.mockReturnValueOnce('XYZ')
+        .mockReturnValueOnce(undefined)
+        .mockReturnValueOnce('2015-03-25')
+        .mockReturnValueOnce('2015-03-26')
+        .mockReturnValueOnce('1234567')
+        .mockReturnValueOnce('URNREF')
+        .mockReturnValueOnce(organisation)
+        .mockReturnValueOnce(claim)
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('Check your answers')
+      expect($('title').text()).toEqual('Check your answers - Annual health and welfare review of livestock')
+      expect($('.govuk-summary-list__key').text()).toContain('Business name')
+      expect($('.govuk-summary-list__key').text()).toContain('SBI')
+      expect($('.govuk-summary-list__key').text()).toContain('11 or more cattle')
+      expect($('.govuk-summary-list__key').text()).toContain('Type of review')
+      expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
       expect($('.govuk-summary-list__key').text()).toContain('Vet\'s name')
       expect($('.govuk-summary-list__key').text()).toContain('Vet\'s RCVS number')
       expect($('.govuk-summary-list__key').text()).toContain('Test results URN')
