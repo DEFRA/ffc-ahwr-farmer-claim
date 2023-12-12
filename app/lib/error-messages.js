@@ -3,6 +3,10 @@ module.exports = {
     enterEmail: 'Enter an email address',
     validEmail: 'Enter an email address in the correct format, like name@example.com'
   },
+  animalsTested: {
+    enterNumber: 'Enter the number of animals tested',
+    numberMax: 'The number of animals tested should not exceed 99999'
+  },
   name: {
     enterName: 'Enter the vet\'s name',
     nameLength: "Vet's name must be 50 characters or fewer",

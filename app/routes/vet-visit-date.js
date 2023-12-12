@@ -615,8 +615,14 @@ module.exports = [
           )
         }
 
-        return h.redirect('/claim/vet-name')
-      }
+      const claimType = session.getClaim(request)
+
+      return !!claimType.data &&
+        !!claimType.data.whichReview &&
+        claimType.data.whichReview === 'dairy'
+        ? h.redirect('/claim/vet-name')
+        : h.redirect('/claim/animals-tested')
+    }
     }
   }
 ]

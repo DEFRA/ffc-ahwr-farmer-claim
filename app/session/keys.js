@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   claim: {
+    animalsTested: 'animalsTested',
     detailsCorrect: 'detailsCorrect',
     claimed: 'claimed'
   },

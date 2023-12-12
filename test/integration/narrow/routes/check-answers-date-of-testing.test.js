@@ -58,6 +58,7 @@ describe('Check Answers test ', () => {
         }
       }
       sessionMock.getClaim.mockReturnValueOnce('XYZ')
+        .mockReturnValueOnce(25)
         .mockReturnValueOnce('2015-03-25')
         .mockReturnValueOnce('2015-03-26')
         .mockReturnValueOnce('1234567')

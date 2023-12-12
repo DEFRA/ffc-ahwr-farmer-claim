@@ -10,6 +10,7 @@ const routes = [].concat(
   require('../routes/submit-claim'),
   require('../routes/urn-result'),
   require('../routes/vet-name'),
+  require('../routes/animals-tested'),
   require('../routes/vet-rcvs'),
   require('../routes/vet-visit-date'),
   require('../routes/signin-oidc')
