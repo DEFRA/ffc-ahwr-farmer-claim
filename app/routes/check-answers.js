@@ -10,7 +10,7 @@ module.exports = {
   options: {
     handler: async (request, h) => {
       const name = session.getClaim(request, farmerApplyData.vetName)
-      const animalsTested = session.getClaim(request, claim.animalsTested) + ''
+      const animalsTested = session.getClaim(request, claim.animalsTested)
       const visitDate = session.getClaim(request, farmerApplyData.visitDate)
       const dateOfTesting = session.getClaim(request, farmerApplyData.dateOfTesting)
       const rcvsNumber = session.getClaim(request, farmerApplyData.vetRcvs)
@@ -41,7 +41,7 @@ module.exports = {
         },
         {
           key: { text: 'Number of animals tested' },
-          value: { html: animalsTested },
+          value: { html: animalsTested + '' },
           actions: { items: [{ href: '/claim/animals-tested', text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
         },
         {
@@ -63,6 +63,10 @@ module.exports = {
 
       if (!dateOfTestingEnabled) {
         rows = rows.filter(row => row.key.text !== 'Date of testing')
+      }
+
+      if (!animalsTested) {
+        rows = rows.filter(row => row.key.text !== 'Number of animals tested')
       }
 
       return h.view('check-answers', { listData: { rows }, backLink })
