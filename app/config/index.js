@@ -61,6 +61,9 @@ const schema = Joi.object({
   claimExpiryTimeMonths: Joi.number(),
   dateOfTesting: {
     enabled: Joi.bool().default(false)
+  },
+  endemics: {
+    enabled: Joi.bool().default(false)
   }
 })
 
@@ -115,6 +118,9 @@ const config = {
   claimExpiryTimeMonths: 6,
   dateOfTesting: {
     enabled: process.env.DATE_OF_TESTING_ENABLED
+  },
+  endemics: {
+    enabled: process.env.ENDEMICS_ENABLED
   }
 }
 
