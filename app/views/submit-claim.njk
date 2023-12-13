@@ -3,6 +3,13 @@
 {% block pageTitle %}Submit your claim - {{ serviceName }}{% endblock %}
 
 {% block content %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/claim/check-answers",
+    attributes: {
+      id: "back"
+    }
+  }) }}
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">Submit your claim</h1>
@@ -11,6 +18,7 @@
     <ul class="govuk-list govuk-list--bullet">
       <li>all the information you've provided in this claim is correct to the best of your knowledge</li>
       <li>the vet carried out disease and endemic condition testing to recommended standards - they tested the required number of animals and testing was done after the agreement date</li>
+      <li>the vet tested the required number of animals</li>
       <li>the vet has given you a written report</li>
       <li>the vet has given you a signed and dated review summary</li>
       <li>the review was carried out in accordance with the terms and conditions</li>
