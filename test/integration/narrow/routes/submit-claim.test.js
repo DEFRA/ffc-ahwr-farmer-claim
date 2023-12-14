@@ -13,11 +13,26 @@ const data = {
   offerStatus: 'accepted'
 }
 
-sessionMock.getClaim.mockReturnValue({ reference, data, visitDate: '2022-11-07T00:00:00.000Z', dateOfClaim: '2022-11-08T00:00:00.000Z', vetName: 'testvetname', vetRcvs: '1234234', detailsCorrect: 'yes', urnResult: '134242' })
-
 describe('Farmer claim - submit claim page test', () => {
   const url = '/claim/submit-claim'
   const auth = { credentials: { reference: '1111', sbi: '111111111' }, strategy: 'cookie' }
+
+  beforeEach(() => {
+    sessionMock.getClaim.mockReturnValue({
+      reference,
+      data,
+      visitDate: '2022-11-07T00:00:00.000Z',
+      dateOfClaim: '2022-11-08T00:00:00.000Z',
+      vetName: 'testvetname',
+      vetRcvs: '1234234',
+      detailsCorrect: 'yes',
+      urnResult: '134242'
+    })
+  })
+
+  afterEach(() => {
+    sessionMock.getClaim.mockRestore()
+  })
 
   describe(`GET ${url} route when logged in`, () => {
     test('returns 200', async () => {
@@ -33,6 +48,40 @@ describe('Farmer claim - submit claim page test', () => {
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toEqual('Submit your claim')
       expectPhaseBanner.ok($)
+    })
+
+    test.each([
+      { liContent: 'the vet tested the required number of animals' }
+    ])('return 200 including $liContent', async ({ liContent }) => {
+      const options = {
+        auth,
+        method: 'GET',
+        url
+      }
+
+      sessionMock.getClaim.mockReturnValue(34)
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-list').text()).toContain(liContent)
+    })
+
+    test('return 200 no including the vet tested the required number of animals', async () => {
+      const options = {
+        auth,
+        method: 'GET',
+        url
+      }
+
+      sessionMock.getClaim.mockReturnValue(undefined)
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-list').text()).not.toContain('the vet tested the required number of animals')
     })
   })
 
