@@ -18,7 +18,7 @@
     <ul class="govuk-list govuk-list--bullet">
       <li>all the information you've provided in this claim is correct to the best of your knowledge</li>
       <li>the vet carried out disease and endemic condition testing to recommended standards - they tested the required number of animals and testing was done after the agreement date</li>
-      <li>the vet tested the required number of animals</li>
+      {% if animalsTested %}<li>the vet tested the required number of animals</li>{% endif %}
       <li>the vet has given you a written report</li>
       <li>the vet has given you a signed and dated review summary</li>
       <li>the review was carried out in accordance with the terms and conditions</li>

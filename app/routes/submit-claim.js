@@ -6,6 +6,7 @@ const { clearAuthCookie } = require('../auth')
 const preDoubleSubmitHandler = require('./utils/pre-submission-handler')
 const config = require('../../app/config/index')
 const appInsights = require('applicationinsights')
+const { claim: { animalsTested: animalsTestedKey } } = require('../session/keys')
 
 function updateSession (request, claimed, claimStatus) {
   session.setClaim(request, claimed, claimStatus)
@@ -17,8 +18,9 @@ module.exports = [{
   method: 'GET',
   path: '/claim/submit-claim',
   options: {
-    handler: async (_, h) => {
-      return h.view('submit-claim')
+    handler: async (request, h) => {
+      const animalsTested = session.getClaim(request, animalsTestedKey)
+      return h.view('submit-claim', { animalsTested: !!animalsTested })
     }
   }
 },
