@@ -95,7 +95,7 @@ describe('Number of animals tested', () => {
       const $ = cheerio.load(res.payload)
       expectPageContentOk($)
       expectPhaseBanner.ok($)
-      expect($('#animalsTested').val()).toEqual(animalsTested)
+      expect($('#number-of-animals-tested').val()).toEqual(animalsTested)
 
       session.getClaim.mockRestore()
     })
@@ -126,7 +126,8 @@ describe('Number of animals tested', () => {
     test.each([
       { animalsTested: null, errorMessage: atErrorMessages.enterNumber, expectedVal: undefined },
       { animalsTested: '', errorMessage: atErrorMessages.enterNumber, expectedVal: undefined },
-      { animalsTested: '99999999', errorMessage: atErrorMessages.numberMax, expectedVal: '99999999' }
+      { animalsTested: '99999999', errorMessage: atErrorMessages.numberMax, expectedVal: '99999999' },
+      { animalsTested: '9AndLeters', errorMessage: atErrorMessages.numberPattern, expectedVal: '9AndLeters' }
     ])('returns 400 when payload is invalid - %p', async ({ animalsTested, errorMessage, expectedVal }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
@@ -143,17 +144,17 @@ describe('Number of animals tested', () => {
       expectPageContentOk($)
       expectPhaseBanner.ok($)
       pageExpects.errors($, errorMessage)
-      expect($('#animalsTested').val()).toEqual(expectedVal)
+      expect($('#number-of-animals-tested').val()).toEqual(expectedVal)
     })
 
     test.each([
-      { whichReview: 'beef', animalsTested: 5, nextPage: '/claim/vet-name' },
-      { whichReview: 'sheep', animalsTested: 10, nextPage: '/claim/vet-name' },
-      { whichReview: 'pigs', animalsTested: 30, nextPage: '/claim/vet-name' },
-      { whichReview: 'beef', animalsTested: 4, nextPage: '/claim/number-of-animals-ineligible' },
-      { whichReview: 'sheep', animalsTested: 9, nextPage: '/claim/number-of-animals-ineligible' },
-      { whichReview: 'pigs', animalsTested: 29, nextPage: '/claim/number-of-animals-ineligible' }
-    ])('returns 200 and redirect to $nextPage when whichReview: $whichReview and animalsTested: $animalsTested.', async ({ whichReview, animalsTested, nextPage }) => {
+      { whichReview: 'beef', animalsTested: '5', nextPage: '/claim/vet-name' },
+      { whichReview: 'sheep', animalsTested: '10', nextPage: '/claim/vet-name' },
+      { whichReview: 'pigs', animalsTested: '30', nextPage: '/claim/vet-name' },
+      { whichReview: 'beef', animalsTested: '4', nextPage: '/claim/number-of-animals-ineligible' },
+      { whichReview: 'sheep', animalsTested: '9', nextPage: '/claim/number-of-animals-ineligible' },
+      { whichReview: 'pigs', animalsTested: '29', nextPage: '/claim/number-of-animals-ineligible' }
+    ])('returns 302 and redirect to $nextPage when whichReview: $whichReview and animalsTested: $animalsTested.', async ({ whichReview, animalsTested, nextPage }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
         method,
@@ -169,7 +170,7 @@ describe('Number of animals tested', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPage)
       expect(session.setClaim).toHaveBeenCalledTimes(1)
-      expect(session.setClaim).toHaveBeenCalledWith(res.request, animalsTestedKey, animalsTested * 1)
+      expect(session.setClaim).toHaveBeenCalledWith(res.request, animalsTestedKey, animalsTested)
 
       session.getClaim.mockRestore()
     })
