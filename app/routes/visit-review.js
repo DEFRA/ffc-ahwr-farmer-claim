@@ -1,9 +1,9 @@
 const Joi = require('joi')
 const boom = require('@hapi/boom')
-const session = require('.')
+const session = require('../session')
 const auth = require('../auth')
-const getClaimViewData = require('../routes/models/claim')
-const { detailsCorrect } = require('./keys').claim
+const getClaimViewData = require('./models/claim')
+const { detailsCorrect } = require('../session/keys').claim
 
 const errorMessage = 'Select yes if these details are correct'
 

@@ -5,7 +5,7 @@ const routes = [].concat(
   require('../routes/healthy'),
   require('../routes/healthz'),
   require('../routes/index'),
-  require('../session/visit-review'),
+  require('../routes/visit-review'),
   require('../routes/details-incorrect'),
   require('../routes/submit-claim'),
   require('../routes/urn-result'),
