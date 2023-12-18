@@ -12,7 +12,7 @@ function expectPageContentOk ($) {
   expect($('title').text()).toEqual('What is the vet’s name? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/vet-visit-date')
+  expect(backLink.attr('href')).toMatch('/claim/animals-tested')
 }
 
 const session = require('../../../../app/session')
