@@ -5,14 +5,14 @@ const pageExpects = require('../../../utils/page-expects')
 const { name: nameErrorMessages } = require('../../../../app/lib/error-messages')
 const { farmerApplyData: { vetName: nameKey } } = require('../../../../app/session/keys')
 
-function expectPageContentOk ($) {
+function expectPageContentOk ($, backLinkUrl = '/claim/animals-tested') {
   expect($('.govuk-heading-l').text()).toEqual('What is the vet’s name?')
   expect($('label[for=name]').text()).toMatch('Vet\'s full name')
   expect($('.govuk-button').text()).toMatch('Continue')
   expect($('title').text()).toEqual('What is the vet’s name? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/vet-visit-date')
+  expect(backLink.attr('href')).toMatch(backLinkUrl)
 }
 
 const session = require('../../../../app/session')
@@ -71,6 +71,7 @@ describe('Vet, enter name test', () => {
         url,
         auth
       }
+      session.getClaim.mockReturnValue({})
 
       const res = await global.__SERVER__.inject(options)
 
@@ -82,18 +83,38 @@ describe('Vet, enter name test', () => {
 
     test('loads name if in session', async () => {
       const name = 'vet name'
+      const mockClaim = { data: { whichReview: 'beef' }, [`${nameKey}`]: name }
       const options = {
         method: 'GET',
         url,
         auth
       }
-      session.getClaim.mockReturnValue(name)
+      session.getClaim.mockReturnValue(mockClaim)
 
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expectPageContentOk($)
+      expectPhaseBanner.ok($)
+      expect($('#name').val()).toEqual(name)
+    })
+
+    test('back to vet visit date if dairy', async () => {
+      const name = 'vet name'
+      const mockClaim = { data: { whichReview: 'dairy' }, [`${nameKey}`]: name }
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+      session.getClaim.mockReturnValue(mockClaim)
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expectPageContentOk($, '/claim/vet-visit-date')
       expectPhaseBanner.ok($)
       expect($('#name').val()).toEqual(name)
     })

@@ -19,14 +19,22 @@ module.exports = [{
   options: {
     validate: {
       payload: Joi.object({
-        animalsTested: Joi.number().integer().max(99999).required()
+        animalsTested: Joi.string().pattern(/^\d+$/).max(6).required()
           .messages({
-            'number.base': atErrorMessages.enterNumber,
-            'number.max': atErrorMessages.numberMax
+            'string.base': atErrorMessages.enterNumber,
+            'string.empty': atErrorMessages.enterNumber,
+            'string.max': atErrorMessages.numberMax,
+            'string.pattern.base': atErrorMessages.numberPattern
           })
       }),
       failAction: async (request, h, error) => {
-        return h.view('animals-tested', { ...request.payload, errorMessage: { text: error.details[0].message } }).code(400).takeover()
+        return h.view('animals-tested', {
+          ...request.payload,
+          errorMessage: {
+            text: error.details[0].message,
+            href: '#number-of-animals-tested'
+          }
+        }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
