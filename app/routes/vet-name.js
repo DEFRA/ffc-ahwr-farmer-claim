@@ -9,8 +9,8 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const claim = session.getClaim(request)
-      const name = claim[`${nameKey}`]
-      const backToVetVisitDate = claim.data.whichReview === 'dairy'
+      const name = claim?.[`${nameKey}`]
+      const backToVetVisitDate = claim?.data?.whichReview === 'dairy'
       return h.view('vet-name', { name, backToVetVisitDate })
     }
   }

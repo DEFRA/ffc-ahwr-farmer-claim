@@ -71,6 +71,7 @@ describe('Vet, enter name test', () => {
         url,
         auth
       }
+      session.getClaim.mockReturnValue({})
 
       const res = await global.__SERVER__.inject(options)
 
