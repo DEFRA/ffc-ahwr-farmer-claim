@@ -5,7 +5,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "/claim/vet-visit-date",
+    href: "/claim/vet-visit-date" if backToVetVisitDate else "/claim/animals-tested",
     attributes: {
       id: "back"
     }

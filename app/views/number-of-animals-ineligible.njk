@@ -1,0 +1,48 @@
+{% extends './layouts/layout.njk' %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: "/claim/animals-tested",
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+
+{% block content %}
+<div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim at this time</h1>
+      <p class="govuk-body">The number of animals you have entered does not meet the minimum required for the type of review you are claiming for.</p>
+      <h2 class="govuk-heading-m">What to do next</h2>
+      <h3 class="govuk-heading-s">If the vet has not tested the minimum required number of animals</h3>
+      <p class="govuk-body">Ask the vet to carry out testing again on the minimum number.</p>
+      <p class="govuk-body">The number required for each species is included in the guidance:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li><a rel="external" href="/apply/test-cattle" class="govuk-link">cattle: testing required for an annual health and welfare review</a></li>
+        <li><a rel="external" href="/apply/test-sheep" class="govuk-link">sheep: testing required for an annual health and welfare review</a></li>
+        <li><a rel="external" href="/apply/test-pigs" class="govuk-link">pigs: testing required for an annual health and welfare review</a></li>
+      </ul>
+      <p class="govuk-body">When the vet has tested the required number, start your claim again.</p>
+      <h3 class="govuk-heading-s">If you have entered the wrong number</h3>
+      <p class="govuk-body">You’ll need to go back and enter the correct number.</p>
+      <p><a rel="external" href="/claim/animals-tested" class="govuk-link">Enter the number of animals tested</a></p>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+            <span class="govuk-warning-text__assistive">Warning</span>
+            Your claim will be checked by our team.
+        </strong>
+      </div>
+      <h2 class="govuk-heading-m">Get help with your claim</h2>
+      <p class="govuk-body">If you need help, contact the Rural Payments Agency by email or phone.</p>
+      <p class="govuk-body">Email: <a href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></p>
+      <p class="govuk-body">Telephone: 03000 200 301<br>Monday to Friday, 8:30am to 5pm, except bank holidays</p>
+      <p><a rel="external" href="https://www.gov.uk/call-charges" class="govuk-link" target="_blank">Find out about call charges (opens in a new window)</a></p>
+      <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
+    </div>
+  </div>
+</div> 
+{% endblock %}
