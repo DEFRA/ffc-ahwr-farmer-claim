@@ -76,6 +76,7 @@ module.exports = [{
         return h.redirect('/claim/visit-review')
       } catch (error) {
         console.error(`Received error with name ${error.name} and message ${error.message}.`)
+        console.log('error', error)
         const crn = session.getCustomer(request, sessionKeys.customer.crn)
         const attachedToMultipleBusinesses = session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses)
         const organisation = session.getClaim(request, sessionKeys.farmerApplyData.organisation)
@@ -101,6 +102,7 @@ module.exports = [{
           organisation?.sbi,
           crn,
           organisation?.email,
+          error.organisation?.reference,
           error.name
         )
         return h.view('you-cannot-claim-for-a-livestock-review', {
