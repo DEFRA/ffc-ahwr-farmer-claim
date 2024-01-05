@@ -1,6 +1,6 @@
 const raiseEvent = require('./raise-event')
 
-const raiseIneligibilityEvent = async (sessionId, sbi, crn, email, reference = '', exception, status = 'alert') => {
+const raiseIneligibilityEvent = async (sessionId, sbi, crn, email, exception, reference = '', status = 'alert') => {
   if (sessionId && exception) {
     const event = {
       id: sessionId,

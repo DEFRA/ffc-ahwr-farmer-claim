@@ -102,8 +102,8 @@ module.exports = [{
           organisation?.sbi,
           crn,
           organisation?.email,
-          error.organisation?.reference,
-          error.name
+          error.name,
+          error.organisation?.reference
         )
         return h.view('you-cannot-claim-for-a-livestock-review', {
           permissionError: error instanceof InvalidPermissionsError,
