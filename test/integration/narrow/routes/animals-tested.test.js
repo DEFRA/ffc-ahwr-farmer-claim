@@ -150,11 +150,8 @@ describe('Number of animals tested', () => {
     test.each([
       { whichReview: 'beef', animalsTested: '5', nextPage: '/claim/vet-name' },
       { whichReview: 'sheep', animalsTested: '10', nextPage: '/claim/vet-name' },
-      { whichReview: 'pigs', animalsTested: '30', nextPage: '/claim/vet-name' },
-      { whichReview: 'beef', animalsTested: '4', nextPage: '/claim/number-of-animals-ineligible' },
-      { whichReview: 'sheep', animalsTested: '9', nextPage: '/claim/number-of-animals-ineligible' },
-      { whichReview: 'pigs', animalsTested: '29', nextPage: '/claim/number-of-animals-ineligible' }
-    ])('returns 302 and redirect to $nextPage when whichReview: $whichReview and animalsTested: $animalsTested.', async ({ whichReview, animalsTested, nextPage }) => {
+      { whichReview: 'pigs', animalsTested: '30', nextPage: '/claim/vet-name' }
+    ])('returns 302 and redirect to /claim/vet-name when whichReview: $whichReview and animalsTested: $animalsTested.', async ({ whichReview, animalsTested }) => {
       const options = {
         headers: { cookie: `crumb=${crumb}` },
         method,
@@ -168,9 +165,34 @@ describe('Number of animals tested', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual(nextPage)
+      expect(res.headers.location).toEqual('/claim/vet-name')
       expect(session.setClaim).toHaveBeenCalledTimes(1)
       expect(session.setClaim).toHaveBeenCalledWith(res.request, animalsTestedKey, animalsTested)
+
+      session.getClaim.mockRestore()
+    })
+
+    test.each([
+      { whichReview: 'beef', animalsTested: '4' },
+      { whichReview: 'sheep', animalsTested: '9' },
+      { whichReview: 'pigs', animalsTested: '29' }
+    ])('returns 302 and redirect to $nextPage when whichReview: $whichReview and animalsTested: $animalsTested.', async ({ whichReview, animalsTested, nextPage, status }) => {
+      const options = {
+        headers: { cookie: `crumb=${crumb}` },
+        method,
+        payload: { crumb, animalsTested },
+        url,
+        auth
+      }
+
+      session.getClaim.mockReturnValue({ whichReview })
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/number-of-animals-ineligible')
+      expect(session.setClaim).toHaveBeenCalledTimes(1)
+      expect(session.setClaim).toHaveBeenCalledWith(res.request, animalsTestedKey, animalsTested, 'fail-threshold')
 
       session.getClaim.mockRestore()
     })
