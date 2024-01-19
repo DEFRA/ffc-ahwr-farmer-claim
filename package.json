@@ -47,15 +47,7 @@
   },
   "overrides": {
     "notifications-node-client": {
-<<<<<<< HEAD
       "jsonwebtoken": "9.0.0"
-=======
-      "jsonwebtoken": "9.0.0",
-      "axios": "1.6.0"
-<<<<<<< HEAD
->>>>>>> 44f6267 (Increase jest coverage threshold to 90%)
-=======
->>>>>>> 250447b4e579464697d706f79818af4573463f3e
     },
     "@azure/identity": {
       "jsonwebtoken": "9.0.0"
