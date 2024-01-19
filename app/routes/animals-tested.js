@@ -39,15 +39,19 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { animalsTested } = request.payload
-      session.setClaim(request, animalsTestedKey, animalsTested)
       const claimType = session.getClaim(request, 'data')
       if (
         !!claimType &&
         !!claimType.whichReview &&
         Object.prototype.hasOwnProperty.call(thresholdPerClaimType, claimType.whichReview) &&
         thresholdPerClaimType[claimType.whichReview] <= animalsTested
-      ) return h.redirect('/claim/vet-name')
-      else return h.redirect('/claim/number-of-animals-ineligible')
+      ) {
+        session.setClaim(request, animalsTestedKey, animalsTested)
+        return h.redirect('/claim/vet-name')
+      } else {
+        session.setClaim(request, animalsTestedKey, animalsTested, 'fail-threshold')
+        return h.redirect('/claim/number-of-animals-ineligible')
+      }
     }
   }
 }]
