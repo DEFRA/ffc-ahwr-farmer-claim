@@ -25,12 +25,13 @@ describe('Send event on exception', () => {
   })
 
   test('should call raiseEvent with event including sessionId', async () => {
+    const reference = 'ABC123'
     event = {
       id: sessionId,
       sbi,
       cph: 'n/a',
       email,
-      name: 'send-ineligibility-event',
+      name: 'send-session-event',
       type: 'ineligibility-event',
       message: `Claim: ${exception}`,
       data: {
@@ -38,12 +39,14 @@ describe('Send event on exception', () => {
         crn,
         exception,
         raisedAt: MOCK_NOW,
-        journey: 'claim'
+        journey: 'claim',
+        reference
       },
       status: 'alert'
     }
 
-    await raiseIneligibilityEvent(sessionId, sbi, crn, email, exception)
+    await raiseIneligibilityEvent(sessionId, sbi, crn, email, exception, reference)
+    expect(raiseEvent).toHaveBeenCalledTimes(2)
     expect(raiseEvent).toHaveBeenCalledWith(event, 'alert')
   })
 
