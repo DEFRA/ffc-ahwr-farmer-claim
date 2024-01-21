@@ -49,7 +49,7 @@ describe('Send event on session set', () => {
     }
 
     await sendSessionEvent(organisation, reference, sessionId, entryKey, key, value, ip)
-    expect(raiseEvent).toHaveBeenCalledWith(event)
+    expect(raiseEvent).toHaveBeenCalledWith(event, 'success')
   })
 
   test('should not call raiseEvent when an event with a null sessionId is received', async () => {

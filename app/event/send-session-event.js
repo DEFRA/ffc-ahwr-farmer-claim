@@ -1,6 +1,6 @@
 const raiseEvent = require('./raise-event')
 
-const sendSessionEvent = async (organisation, reference, sessionId, entryKey, key, value, ip) => {
+const sendSessionEvent = async (organisation, reference, sessionId, entryKey, key, value, ip, status = 'success') => {
   if (sessionId && organisation) {
     const event = {
       id: sessionId,
@@ -14,7 +14,7 @@ const sendSessionEvent = async (organisation, reference, sessionId, entryKey, ke
       data: { reference, [key]: value },
       ip
     }
-    await raiseEvent(event)
+    await raiseEvent(event, status)
   }
 }
 
