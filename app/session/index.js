@@ -48,11 +48,11 @@ function getClaim (request, key) {
 }
 
 function setEndemicsClaim (request, key, value, status) {
-  set(request, entries.claim, key, value, status)
+  set(request, entries.endemicsClaim, key, value, status)
 }
 
 function getEndemicsClaim (request, key) {
-  return get(request, entries.claim, key)
+  return get(request, entries.endemicsClaim, key)
 }
 
 function setToken (request, key, value) {

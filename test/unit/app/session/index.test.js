@@ -2,6 +2,7 @@ const session = require('../../../../app/session')
 
 describe('session', () => {
   const applicationSectionKey = 'application'
+  const endemicsClaimKey = 'endemicsClaim'
   const claimKey = 'claim'
   const tokensSectionKey = 'tokens'
   const customerSectionKey = 'customer'
@@ -13,6 +14,7 @@ describe('session', () => {
   const getFunctionsToTest = [
     { func: 'getApplication', expectedSectionKey: applicationSectionKey },
     { func: 'getClaim', expectedSectionKey: claimKey },
+    { func: 'getEndemicsClaim', expectedSectionKey: endemicsClaimKey },
     { func: 'getToken', expectedSectionKey: tokensSectionKey },
     { func: 'getCustomer', expectedSectionKey: customerSectionKey },
     { func: 'getPkcecodes', expectedSectionKey: pkcecodesSectionKey }
@@ -20,6 +22,7 @@ describe('session', () => {
 
   const setFunctionsToTest = [
     { func: 'setApplication', expectedSectionKey: applicationSectionKey },
+    { func: 'setEndemicsClaim', expectedSectionKey: endemicsClaimKey },
     { func: 'setClaim', expectedSectionKey: claimKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
