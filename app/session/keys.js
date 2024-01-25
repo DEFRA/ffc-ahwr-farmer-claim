@@ -18,6 +18,20 @@ module.exports = {
     visitDate: 'visitDate',
     dateOfTesting: 'dateOfTesting'
   },
+  endemicsClaim: {
+    vetsName: 'vetsName',
+    testResult: 'testResult',
+    typeOfReview: 'typeOfReview',
+    dateOfVisit: 'dateOfVisit',
+    organisation: 'organisation',
+    dateOfTesting: 'dateOfTesting',
+    vetRCVSNumber: 'vetRCVSNumber',
+    laboratoryURN: 'laboratoryURN',
+    typeOfLivestock: 'typeOfLivestock',
+    numberAnimalsTested: 'numberAnimalsTested',
+    numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+    minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired'
+  },
   claim: {
     animalsTested: 'animalsTested',
     detailsCorrect: 'detailsCorrect',
