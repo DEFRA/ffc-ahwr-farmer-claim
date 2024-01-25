@@ -3,6 +3,7 @@ const { sendSessionEvent } = require('../event')
 const entries = {
   application: 'application',
   claim: 'claim',
+  endemicsClaim: 'endemicsClaim',
   organisation: 'organisation',
   pkcecodes: 'pkcecodes',
   tokens: 'tokens',
@@ -25,8 +26,13 @@ function get (request, entryKey, key) {
 
 function clear (request) {
   request.yar.clear(entries.claim)
+  request.yar.clear(entries.endemicsClaim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
+}
+
+function getApplication (request, key) {
+  return get(request, entries.application, key)
 }
 
 function setApplication (request, key, value) {
@@ -37,11 +43,15 @@ function setClaim (request, key, value, status) {
   set(request, entries.claim, key, value, status)
 }
 
-function getApplication (request, key) {
-  return get(request, entries.application, key)
+function getClaim (request, key) {
+  return get(request, entries.claim, key)
 }
 
-function getClaim (request, key) {
+function setEndemicsClaim (request, key, value, status) {
+  set(request, entries.claim, key, value, status)
+}
+
+function getEndemicsClaim (request, key) {
   return get(request, entries.claim, key)
 }
 
@@ -71,9 +81,11 @@ function getPkcecodes (request, key) {
 
 module.exports = {
   getApplication,
-  getClaim,
   setApplication,
+  getClaim,
   setClaim,
+  getEndemicsClaim,
+  setEndemicsClaim,
   clear,
   getToken,
   setToken,
