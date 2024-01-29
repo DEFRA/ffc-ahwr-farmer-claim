@@ -20,7 +20,9 @@ let routes = [].concat(
 )
 
 if (config.endemics.enabled) {
-  routes = routes.concat()
+  routes = routes.concat(
+    require('../routes/endemics/test-results')
+  )
 }
 
 module.exports = {
