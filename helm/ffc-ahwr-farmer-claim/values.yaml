@@ -70,7 +70,8 @@ container:
   apimClientSecret:
   apimScope:
   dateOfTestingEnabled:
-  
+  endemicsEnabled:
+
 ingress:
   class: nginx
   endpoint: ffc-ahwr-farmer
