@@ -1,4 +1,6 @@
-const routes = [].concat(
+const config = require('../config')
+
+let routes = [].concat(
   require('../routes/assets'),
   require('../routes/cookies'),
   require('../routes/check-answers'),
