@@ -17,6 +17,10 @@ const routes = [].concat(
   require('../routes/signin-oidc')
 )
 
+if (config.endemics.enabled) {
+  routes = routes.concat()
+}
+
 module.exports = {
   plugin: {
     name: 'router',
