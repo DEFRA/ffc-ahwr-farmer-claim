@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const getClaimMock = require('../../../../../app/session').getClaim
 jest.mock('../../../../../app/session')
 
 describe('Test Results test', () => {
@@ -8,6 +9,8 @@ describe('Test Results test', () => {
   const url = '/claim/endemics/test-results'
 
   beforeAll(() => {
+    getClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } });
+
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -56,6 +59,28 @@ describe('Test Results test', () => {
       expect($('title').text()).toEqual('Test Results - Annual health and welfare review of livestock')
 
       expectPhaseBanner.ok($)
+    })
+
+    test.each([
+        { typeOfLivestock: 'beef', backLink: '/claim/laboratory-urn' },
+        { typeOfLivestock: 'dairy', backLink: '/claim/laboratory-urn' },
+        { typeOfLivestock: 'sheep', backLink: '/claim/laboratory-urn' },
+        { typeOfLivestock: 'pigs', backLink: '/claim/number-of-tests' }
+    ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
+        getClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } });
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+  
+        const res = await global.__SERVER__.inject(options)
+  
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+        expect($('.govuk-back-link').attr('href')).toContain(backLink)
+  
+        expectPhaseBanner.ok($)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -119,7 +144,10 @@ describe('Test Results test', () => {
             const res = await global.__SERVER__.inject(options)
 
             expect(res.statusCode).toBe(400)
-            expect(res.headers.location.toString()).toEqual(expect.stringContaining(url))
+            const $ = cheerio.load(res.payload)
+            expect($('h1').text()).toMatch('What was the test result?')
+            expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
+            expect($('#testResults-error').text()).toMatch('Select a test result')
         })
     })
 })

@@ -7,7 +7,6 @@ const radios = require('../models/form-component/radios')
 const pageRoute = 'endemics/test-results'
 const pageUrl = `${urlPrefix}/${pageRoute}`
 
-const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
 
 module.exports = [{
   method: 'GET',
@@ -15,6 +14,7 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, testResults } = session.getClaim(request)
+      const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
       const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/number-of-tests` : `${urlPrefix}/laboratory-urn`
       return h.view(pageRoute, { testResults, backLink, ...positiveNegativeRadios })
     }
@@ -29,6 +29,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { typeOfLivestock } = session.getClaim(request)
+        const positiveNegativeRadios = radios('', 'testResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/number-of-tests` : `${urlPrefix}/laboratory-urn`
         return h.view(pageRoute, {
           ...request.payload,
@@ -36,7 +37,7 @@ module.exports = [{
           ...positiveNegativeRadios,
           errorMessage: {
             text: 'Select a test result',
-            href: '#test-results'
+            href: '#testResults'
           }
         }).code(400).takeover()
       }
