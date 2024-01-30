@@ -43,4 +43,4 @@ services:
       APIM_CLIENT_SECRET: ${APIM_CLIENT_SECRET:-changeme}
       APIM_SCOPE: ${APIM_SCOPE:-api://dev-futuretrade-int.defra.gov.uk/.default}
       DATE_OF_TESTING_ENABLED: ${DATE_OF_TESTING_ENABLED:-false}
-      ENDEMICS_ENABLED: ${ENDEMICS_ENABLED:-false}
+      ENDEMICS_ENABLED: ${ENDEMICS_ENABLED:-true}
