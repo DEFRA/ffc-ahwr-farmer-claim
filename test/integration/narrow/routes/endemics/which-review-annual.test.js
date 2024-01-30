@@ -8,7 +8,7 @@ const { getEndemicsClaim } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/session')
 describe('Endemics which review annual test', () => {
-  const url = `/claim/endemics/${endemicsWhichReviewAnnual}`
+  const url = `/claim/${endemicsWhichReviewAnnual}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'

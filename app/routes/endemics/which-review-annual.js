@@ -7,8 +7,8 @@ const {
 } = require('../../config/routes')
 const Joi = require('joi')
 
-const pageUrl = `/claim/endemics/${endemicsWhichReviewAnnual}`
-const pageView = `endemics/${endemicsWhichReviewAnnual}`
+const pageUrl = `/claim/${endemicsWhichReviewAnnual}`
+const pageView = endemicsWhichReviewAnnual
 const backLink = {
   href: vetVisits
 }
