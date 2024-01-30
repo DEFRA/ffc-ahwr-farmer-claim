@@ -20,7 +20,10 @@ let routes = [].concat(
 )
 
 if (config.endemics.enabled) {
-  routes = routes.concat()
+  routes = routes.concat(
+    require('../routes/endemics/date-of-visit'),
+    require('../routes/endemics/which-review-annual')
+  )
 }
 
 module.exports = {

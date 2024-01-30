@@ -1,0 +1,74 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Choose your livestock - {{ serviceName }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+        text: "Back",
+        href: backLink.href
+      }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList:[{
+            text: errorMessage.text,
+              href: "#typeOfLivestock"
+          }]
+        }) }}
+      {% endif %}
+      <h1 class="govuk-heading-l">Choose your livestock</h1>
+      <p class="govuk-body"><a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers" class="govuk-link">All your future reviews and follow-ups must be for the same species you are claiming for.</a></p>
+
+    <form method="POST" autocomplete="off" novalidate="novalidate">
+      <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+      {{ govukRadios({
+          id: "typeOfLivestock",
+          name: "typeOfLivestock",
+          fieldset: {
+            legend: {
+              text: "Which livestock are you claiming for?",
+              isPageHeading: true,
+              classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
+            }
+          },
+          errorMessage: errorMessage,
+          items: [
+            {
+              value: "beef",
+              text: "Beef cattle",
+              checked: previousAnswer === "beef"
+            },
+            {
+              value: "dairy",
+              text: "Dairy cattle",
+              checked: previousAnswer === "dairy"
+            },
+            {
+              value: "sheep",
+              text: "Sheep",
+              checked: previousAnswer === "sheep"
+            },
+            {
+              value: "pigs",
+              text: "Pigs",
+              checked: previousAnswer === "pigs"
+            }
+          ]
+        }) 
+      }}
+      {{ govukButton({
+          text: "Continue",
+          attributes: {id: "btnContinue"},
+          preventDoubleClick: true
+        }) 
+      }}
+    </form>
+  </div>
+{% endblock %}
