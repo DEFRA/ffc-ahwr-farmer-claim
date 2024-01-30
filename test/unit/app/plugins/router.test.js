@@ -18,7 +18,8 @@ describe('routes plugin test', () => {
     server.table().forEach((element) => {
       routePaths.push(element.path)
     })
-    expect(routePaths).toEqual(['/claim',
+    expect(routePaths).toEqual([
+      '/claim',
       '/healthy',
       '/healthz',
       '/claim/animals-tested',
@@ -41,7 +42,8 @@ describe('routes plugin test', () => {
       '/claim/vet-name',
       '/claim/vet-rcvs',
       '/claim/vet-visit-date',
-      '/claim/visit-review'])
+      '/claim/visit-review'
+    ])
   })
 
   test('routes included - endemics enabled', async () => {
@@ -58,7 +60,8 @@ describe('routes plugin test', () => {
     server.table().forEach((element) => {
       routePaths.push(element.path)
     })
-    expect(routePaths).toEqual(['/claim',
+    expect(routePaths).toEqual([
+      '/claim',
       '/healthy',
       '/healthz',
       '/claim/animals-tested',
@@ -74,7 +77,9 @@ describe('routes plugin test', () => {
       '/claim/vet-visit-date',
       '/claim/visit-review',
       '/claim/assets/{path*}',
+      '/claim/endemics/date-of-visit',
       '/claim/endemics/test-results',
+      '/claim/endemics/which-review-annual',
       '/claim/animals-tested',
       '/claim/cookies',
       '/claim/submit-claim',
@@ -83,6 +88,8 @@ describe('routes plugin test', () => {
       '/claim/vet-rcvs',
       '/claim/vet-visit-date',
       '/claim/visit-review',
-      '/claim/endemics/test-results'])
+      '/claim/endemics/test-results',
+      '/claim/endemics/which-review-annual'
+    ])
   })
 })

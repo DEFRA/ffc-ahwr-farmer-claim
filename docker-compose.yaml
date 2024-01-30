@@ -23,6 +23,7 @@ services:
       REDIS_PASSWORD: ""
       SERVICE_URI: http://localhost:3004/claim
       APPLY_SERVICE_URI: http://localhost:3000/apply
+      DASHBOARD_SERVICE_URI: http://localhost:3003/vet-visits
       APPLICATION_API_URI: http://host.docker.internal:3001/api
       DEFRA_ID_TENANT: ${DEFRA_ID_TENANT:-azdcuspoc5}
       DEFRA_ID_POLICY: ${DEFRA_ID_POLICY:-B2C_1A_SIGNUPSIGNINSFI}
@@ -42,4 +43,4 @@ services:
       APIM_CLIENT_SECRET: ${APIM_CLIENT_SECRET:-changeme}
       APIM_SCOPE: ${APIM_SCOPE:-api://dev-futuretrade-int.defra.gov.uk/.default}
       DATE_OF_TESTING_ENABLED: ${DATE_OF_TESTING_ENABLED:-false}
-      ENDEMICS_ENABLED: ${ENDEMICS_ENABLED:-false}
+      ENDEMICS_ENABLED: ${ENDEMICS_ENABLED:-true}
