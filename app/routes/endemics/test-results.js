@@ -4,7 +4,7 @@ const urlPrefix = require('../../config').urlPrefix
 const {
   endemicsTestResults,
   endemicsCheckAnswers,
-  endemicsLaboratoryUrn,
+  endemicsTestUrn,
   endemicsNumberOfTests
 } = require('../../config/routes')
 const { endemicsClaim: { testResults: testResultsKey } } = require('../../session/keys')
@@ -17,10 +17,10 @@ module.exports = [{
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { typeOfLivestock, testResults } = session.getClaim(request)
-      const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
-      const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsLaboratoryUrn}`
-      return h.view(endemicsTestResults, { testResults, backLink, ...positiveNegativeRadios })
+      const { typeOfLivestock, testResults } = session.getEndemicsClaim(request)
+      const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive', checked: testResults === "positive" }, { value: 'negative', text: 'Negative', checked: testResults === "negative" }])
+      const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsTestUrn}`
+      return h.view(endemicsTestResults, { backLink, ...positiveNegativeRadios })
     }
   }
 }, {
@@ -32,9 +32,9 @@ module.exports = [{
         testResults: Joi.string().valid('positive', 'negative').required()
       }),
       failAction: async (request, h, error) => {
-        const { typeOfLivestock } = session.getClaim(request)
+        const { typeOfLivestock } = session.getEndemicsClaim(request)
         const positiveNegativeRadios = radios('', 'testResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
-        const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsLaboratoryUrn}`
+        const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsTestUrn}`
         return h.view(endemicsTestResults, {
           ...request.payload,
           backLink,
@@ -49,7 +49,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { testResults } = request.payload
 
-      session.setClaim(request, testResultsKey, testResults)
+      session.setEndemicsClaim(request, testResultsKey, testResults)
       return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
     }
   }
