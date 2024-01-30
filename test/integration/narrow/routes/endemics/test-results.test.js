@@ -62,10 +62,10 @@ describe('Test Results test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', backLink: '/claim/laboratory-urn' },
-      { typeOfLivestock: 'dairy', backLink: '/claim/laboratory-urn' },
-      { typeOfLivestock: 'sheep', backLink: '/claim/laboratory-urn' },
-      { typeOfLivestock: 'pigs', backLink: '/claim/number-of-tests' }
+      { typeOfLivestock: 'beef', backLink: '/claim/endemics/laboratory-urn' },
+      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/laboratory-urn' },
+      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/laboratory-urn' },
+      { typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-tests' }
     ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
       getClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
       const options = {

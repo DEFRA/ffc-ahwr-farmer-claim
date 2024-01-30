@@ -1,11 +1,16 @@
 const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
+const {
+  endemicsTestResults,
+  endemicsCheckAnswers,
+  endemicsLaboratoryUrn,
+  endemicsNumberOfTests
+} = require('../../config/routes')
 const { endemicsClaim: { testResults: testResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
 
-const pageRoute = 'endemics/test-results'
-const pageUrl = `${urlPrefix}/${pageRoute}`
+const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 
 module.exports = [{
   method: 'GET',
@@ -14,8 +19,8 @@ module.exports = [{
     handler: async (request, h) => {
       const { typeOfLivestock, testResults } = session.getClaim(request)
       const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
-      const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/number-of-tests` : `${urlPrefix}/laboratory-urn`
-      return h.view(pageRoute, { testResults, backLink, ...positiveNegativeRadios })
+      const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsLaboratoryUrn}`
+      return h.view(endemicsTestResults, { testResults, backLink, ...positiveNegativeRadios })
     }
   }
 }, {
@@ -29,8 +34,8 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const { typeOfLivestock } = session.getClaim(request)
         const positiveNegativeRadios = radios('', 'testResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
-        const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/number-of-tests` : `${urlPrefix}/laboratory-urn`
-        return h.view(pageRoute, {
+        const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsLaboratoryUrn}`
+        return h.view(endemicsTestResults, {
           ...request.payload,
           backLink,
           ...positiveNegativeRadios,
@@ -45,7 +50,7 @@ module.exports = [{
       const { testResults } = request.payload
 
       session.setClaim(request, testResultsKey, testResults)
-      return h.redirect('/claim/endemics/check-answers')
+      return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
     }
   }
 }]
