@@ -1,9 +1,10 @@
+const urlPrefix = require('../../config').urlPrefix
 const { endemicsWhichReviewAnnual, endemicsDateOfVisit } = require('../../config/routes')
 
-const pageUrl = `/claim/endemics/${endemicsDateOfVisit}`
-const pageView = `endemics/${endemicsDateOfVisit}`
+const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
+const pageView = endemicsDateOfVisit
 const backLink = {
-  href: `/claim/endemics/${endemicsWhichReviewAnnual}`
+  href: `${urlPrefix}/${endemicsWhichReviewAnnual}`
 }
 
 module.exports = {

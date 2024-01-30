@@ -78,6 +78,7 @@ describe('routes plugin test', () => {
       '/claim/visit-review',
       '/claim/assets/{path*}',
       '/claim/endemics/date-of-visit',
+      '/claim/endemics/test-results',
       '/claim/endemics/which-review-annual',
       '/claim/animals-tested',
       '/claim/cookies',
@@ -87,6 +88,7 @@ describe('routes plugin test', () => {
       '/claim/vet-rcvs',
       '/claim/vet-visit-date',
       '/claim/visit-review',
+      '/claim/endemics/test-results',
       '/claim/endemics/which-review-annual'
     ])
   })
