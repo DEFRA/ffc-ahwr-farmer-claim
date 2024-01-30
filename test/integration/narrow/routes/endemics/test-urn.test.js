@@ -131,7 +131,7 @@ describe('Test URN test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('What’s the laboratory unique reference number (URN) for the test results?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the URN')
-      expect($('#testResults-error').text()).toMatch('Enter the URN')
+      expect($('#laboratoryURN-error').text()).toMatch('Enter the URN')
     })
   })
 })
