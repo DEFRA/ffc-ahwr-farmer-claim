@@ -12,12 +12,23 @@ const entries = {
 
 function set (request, entryKey, key, value, status) {
   const entryValue = request.yar?.get(entryKey) || {}
-  entryValue[key] = typeof (value) === 'string' ? value.trim() : value
+  entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
   const claim = getClaim(request)
   const xForwardedForHeader = request.headers['x-forwarded-for']
-  const ip = xForwardedForHeader ? xForwardedForHeader.split(',')[0] : request.info.remoteAddress
-  claim && sendSessionEvent(claim.organisation, request.yar.id, entryKey, key, value, ip, status)
+  const ip = xForwardedForHeader
+    ? xForwardedForHeader.split(',')[0]
+    : request.info.remoteAddress
+  claim &&
+    sendSessionEvent(
+      claim.organisation,
+      request.yar.id,
+      entryKey,
+      key,
+      value,
+      ip,
+      status
+    )
 }
 
 function get (request, entryKey, key) {
@@ -55,6 +66,10 @@ function getEndemicsClaim (request, key) {
   return get(request, entries.endemicsClaim, key)
 }
 
+function clearEndemicsClaim (request) {
+  request.yar.clear(entries.endemicsClaim)
+}
+
 function setToken (request, key, value) {
   set(request, entries.tokens, key, value)
 }
@@ -86,6 +101,7 @@ module.exports = {
   setClaim,
   getEndemicsClaim,
   setEndemicsClaim,
+  clearEndemicsClaim,
   clear,
   getToken,
   setToken,
