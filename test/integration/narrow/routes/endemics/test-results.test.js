@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getClaimMock = require('../../../../../app/session').getClaim
+const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
 
 describe('Test Results test', () => {
@@ -9,7 +9,7 @@ describe('Test Results test', () => {
   const url = '/claim/endemics/test-results'
 
   beforeAll(() => {
-    getClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -62,12 +62,12 @@ describe('Test Results test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', backLink: '/claim/endemics/urn-result' },
-      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/urn-result' },
-      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/urn-result' },
+      { typeOfLivestock: 'beef', backLink: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-tests' }
     ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
-      getClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
       const options = {
         method: 'GET',
         url,

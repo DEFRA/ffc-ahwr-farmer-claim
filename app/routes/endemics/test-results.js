@@ -18,7 +18,7 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, testResults } = session.getEndemicsClaim(request)
-      const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive', checked: testResults === "positive" }, { value: 'negative', text: 'Negative', checked: testResults === "negative" }])
+      const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
       const backLink = typeOfLivestock === 'pigs' ? `${urlPrefix}/${endemicsNumberOfTests}` : `${urlPrefix}/${endemicsTestUrn}`
       return h.view(endemicsTestResults, { backLink, ...positiveNegativeRadios })
     }

@@ -21,7 +21,7 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { typeOfLivestock, laboratoryURN } = session.getEndemicsClaim(request)
+        const { laboratoryURN } = session.getEndemicsClaim(request)
         return h.view(endemicsTestUrn, {
           laboratoryURN,
           backLink: `${urlPrefix}/${endemicsVetRCVS}`
