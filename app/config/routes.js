@@ -6,7 +6,9 @@ module.exports = {
   endemicsDateOfTesting: 'endemics/date-of-testing',
   endemicsTestResults: 'endemics/test-results',
   endemicsCheckAnswers: 'endemics/check-answers',
-  endemicsLaboratoryUrn: 'endemics/laboratory-urn',
+  endemicsVetName: 'endemics/vet-name',
+  endemicsVetRCVS: 'endemics/vet-rcvs',
+  endemicsTestUrn: 'endemics/test-urn',
   endemicsNumberOfTests: 'endemics/number-of-tests',
   endemicsWhichReviewAnnual: 'endemics/which-review-annual'
 }
