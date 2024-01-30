@@ -7,7 +7,6 @@ const radios = require('../models/form-component/radios')
 const pageRoute = 'endemics/test-results'
 const pageUrl = `${urlPrefix}/${pageRoute}`
 
-
 module.exports = [{
   method: 'GET',
   path: pageUrl,
