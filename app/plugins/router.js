@@ -14,7 +14,10 @@ const routes = [].concat(
   require('../routes/number-of-animals-ineligible'),
   require('../routes/vet-rcvs'),
   require('../routes/vet-visit-date'),
-  require('../routes/signin-oidc')
+  require('../routes/signin-oidc'),
+  require('../routes/endemics/species-numbers'),
+  require('../routes/endemics/eligible'),
+  require('../routes/endemics/ineligible')
 )
 
 module.exports = {
