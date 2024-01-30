@@ -36,6 +36,7 @@ const schema = Joi.object({
   env: Joi.string().valid('development', 'test', 'production').default(
     'development'
   ),
+  vetVisits: Joi.string().uri(),
   googleTagManagerKey: Joi.string().allow(null, ''),
   isDev: Joi.boolean().default(false),
   port: Joi.number().default(3000),
@@ -60,6 +61,9 @@ const schema = Joi.object({
   },
   claimExpiryTimeMonths: Joi.number(),
   dateOfTesting: {
+    enabled: Joi.bool().default(false)
+  },
+  endemics: {
     enabled: Joi.bool().default(false)
   }
 })
@@ -91,6 +95,7 @@ const config = {
     password: process.env.COOKIE_PASSWORD
   },
   env: process.env.NODE_ENV,
+  vetVisits: process.env.DASHBOARD_SERVICE_URI,
   googleTagManagerKey: process.env.GOOGLE_TAG_MANAGER_KEY,
   isDev: process.env.NODE_ENV === 'development',
   port: process.env.PORT,
@@ -115,6 +120,9 @@ const config = {
   claimExpiryTimeMonths: 6,
   dateOfTesting: {
     enabled: process.env.DATE_OF_TESTING_ENABLED
+  },
+  endemics: {
+    enabled: process.env.ENDEMICS_ENABLED
   }
 }
 
