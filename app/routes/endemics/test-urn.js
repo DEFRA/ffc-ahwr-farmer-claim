@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
-const { urn: urnErrorMessages } = require('../../lib/error-messages')
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
@@ -41,11 +40,11 @@ module.exports = [
             .pattern(/^[A-Za-z0-9-]+$/)
             .required()
             .messages({
-              'any.required': urnErrorMessages.enterUrn,
-              'string.base': urnErrorMessages.enterUrn,
-              'string.empty': urnErrorMessages.enterUrn,
-              'string.max': urnErrorMessages.urnLength,
-              'string.pattern.base': urnErrorMessages.urnPattern
+              'any.required': 'Enter the URN',
+              'string.base': 'Enter the URN',
+              'string.empty': 'Enter the URN',
+              'string.max': 'URN must be 50 characters or fewer',
+              'string.pattern.base': 'URN must only include letters a to z, numbers and a hyphen'
             })
         }),
         failAction: async (request, h, error) => {
