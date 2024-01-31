@@ -57,7 +57,7 @@ module.exports = [
         clearEndemicsClaim(request)
         setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
 
-        return h.redirect(endemicsDateOfVisit)
+        return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
     }
   }
