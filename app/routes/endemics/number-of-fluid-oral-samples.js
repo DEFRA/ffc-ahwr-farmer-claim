@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
+const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const {
   endemicsTestUrn,
@@ -57,7 +58,7 @@ module.exports = [
         session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
         if (numberOfOralFluidSamples < 5) {
-          return h.view(endemicsNumberOfOralFluidSamplesException).code(400).takeover()
+          return h.view(endemicsNumberOfOralFluidSamplesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
         return h.redirect(`${urlPrefix}/${endemicsTestResults}`)
