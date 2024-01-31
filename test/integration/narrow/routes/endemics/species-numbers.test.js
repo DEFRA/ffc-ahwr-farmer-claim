@@ -133,7 +133,8 @@ describe('Species numbers test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
 
-    test.only('shows error when payload is invalid', async () => {
+    test('shows error when payload is invalid', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
       const options = {
         method: 'POST',
         url,
@@ -149,5 +150,21 @@ describe('Species numbers test', () => {
       expect($('h1').text().trim()).toMatch('Did you have 11 or more cattle  on the date of the review?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a response')
     })
+    test('redirect the user to 404 page in fail action and no claim object', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, speciesNumbers: undefined },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+      getEndemicsClaimMock.mockReturnValue(undefined)
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(404)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text().trim()).toMatch('404 - Not Found')
     })
   })
+})
