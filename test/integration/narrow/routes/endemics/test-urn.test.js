@@ -99,7 +99,7 @@ describe('Test URN test', () => {
       { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/test-results' },
       { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/test-results' },
       { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/check-answers' },
-      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-tests' }
+      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
       const options = {
