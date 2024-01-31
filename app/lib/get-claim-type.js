@@ -1,12 +1,12 @@
 function getClaimType (claimData, isEndemicsClaims = false) {
-  const { whichReview, typeOfLivestock } = claimData
   if (!isEndemicsClaims) {
+    const { whichReview } = claimData
     if (whichReview) {
       return whichReview
     }
     throw new Error('No claim type found, \'whichReview\' property empty.')
   }
-  console.log('££££££££££££££££££', typeOfLivestock, isEndemicsClaims)
+  const { typeOfLivestock } = claimData
   if (typeOfLivestock && isEndemicsClaims) {
     return typeOfLivestock
   }
