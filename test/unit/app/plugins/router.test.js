@@ -78,6 +78,9 @@ describe('routes plugin test', () => {
       '/claim/visit-review',
       '/claim/assets/{path*}',
       '/claim/endemics/date-of-visit',
+      '/claim/endemics/eligible',
+      '/claim/endemics/ineligible',
+      '/claim/endemics/species-numbers',
       '/claim/endemics/test-results',
       '/claim/endemics/test-urn',
       '/claim/endemics/which-review-annual',
@@ -89,6 +92,7 @@ describe('routes plugin test', () => {
       '/claim/vet-rcvs',
       '/claim/vet-visit-date',
       '/claim/visit-review',
+      '/claim/endemics/species-numbers',
       '/claim/endemics/test-results',
       '/claim/endemics/test-urn',
       '/claim/endemics/which-review-annual'

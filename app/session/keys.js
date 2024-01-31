@@ -30,7 +30,8 @@ module.exports = {
     typeOfLivestock: 'typeOfLivestock',
     numberAnimalsTested: 'numberAnimalsTested',
     numberOfOralFluidSamples: 'numberOfOralFluidSamples',
-    minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired'
+    minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired',
+    speciesNumbers: 'speciesNumbers'
   },
   claim: {
     animalsTested: 'animalsTested',

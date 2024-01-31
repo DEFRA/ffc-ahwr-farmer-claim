@@ -10,5 +10,8 @@ module.exports = {
   endemicsVetRCVS: 'endemics/vet-rcvs',
   endemicsTestUrn: 'endemics/test-urn',
   endemicsNumberOfTests: 'endemics/number-of-tests',
-  endemicsWhichReviewAnnual: 'endemics/which-review-annual'
+  endemicsWhichReviewAnnual: 'endemics/which-review-annual',
+  endemicsSpeciesNumbersUrl: 'endemics/species-numbers',
+  endemicsEligibility: 'endemics/eligible',
+  endemicsIneligibility: 'endemics/ineligible'
 }
