@@ -128,5 +128,20 @@ describe('Number of fluid oral samples test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
     })
+
+    test('shows error page when number of tests is >= 5', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberOfOralFluidSamples: '5' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual('/claim/endemics/test-results')
+    })
   })
 })
