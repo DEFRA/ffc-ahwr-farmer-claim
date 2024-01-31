@@ -16,10 +16,7 @@ let routes = [].concat(
   require('../routes/number-of-animals-ineligible'),
   require('../routes/vet-rcvs'),
   require('../routes/vet-visit-date'),
-  require('../routes/signin-oidc'),
-  require('../routes/endemics/species-numbers'),
-  require('../routes/endemics/eligible'),
-  require('../routes/endemics/ineligible')
+  require('../routes/signin-oidc')
 )
 
 if (config.endemics.enabled) {
@@ -27,7 +24,11 @@ if (config.endemics.enabled) {
     require('../routes/endemics/test-urn'),
     require('../routes/endemics/test-results'),
     require('../routes/endemics/date-of-visit'),
-    require('../routes/endemics/which-review-annual')
+    require('../routes/endemics/which-review-annual'),
+    require('../routes/endemics/eligible'),
+    require('../routes/endemics/ineligible'),
+    require('../routes/endemics/species-numbers')
+
   )
 }
 
