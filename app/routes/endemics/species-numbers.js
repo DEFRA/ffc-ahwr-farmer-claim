@@ -3,16 +3,18 @@ const boom = require('@hapi/boom')
 const urlPrefix = require('../../config').urlPrefix
 const session = require('../../session')
 const {
-  speciesNumbersUrl,
-  eligibility,
-  ineligibility,
-  vetName
+  endemicsSpeciesNumbersUrl,
+  endemicsEligibility,
+  endemicsIneligibility,
+  endemicsVetName,
+  endemicsDateOfTesting
 } = require('../../config/routes')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligbileNumberForDisplay } = require('../../lib/display-helpers')
+const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
-const pageUrl = `${urlPrefix}/${speciesNumbersUrl}`
+const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbersUrl}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const legendText = 'Did you have $ on the date of the review?'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
@@ -31,7 +33,8 @@ module.exports = [
         }
         const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
         return h.view(
-          speciesNumbersUrl, {
+          endemicsSpeciesNumbersUrl, {
+            backLink,
             ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
           }
         )
@@ -53,8 +56,9 @@ module.exports = [
           }
           const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
           return h.view(
-            speciesNumbersUrl,
+            endemicsSpeciesNumbersUrl,
             {
+              backLink,
               errorMessage: { text: errorMessageText },
               ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), errorMessageText, radioOptions)
             }
@@ -70,11 +74,11 @@ module.exports = [
 
         if (answer === 'yes') {
           if (claim.typeOfLivestock === 'dairy') {
-            return h.redirect(`${urlPrefix}/${vetName}`)
+            return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
-          return h.redirect(`${urlPrefix}/${eligibility}`)
+          return h.redirect(`${urlPrefix}/${endemicsEligibility}`)
         }
-        return h.redirect(`${urlPrefix}/${ineligibility}`)
+        return h.redirect(`${urlPrefix}/${endemicsIneligibility}`)
       }
     }
   }
