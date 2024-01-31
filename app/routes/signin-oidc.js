@@ -96,7 +96,7 @@ module.exports = [{
               ruralPaymentsAgency: config.ruralPaymentsAgency
             }).code(400).takeover()
         }
-        await raiseIneligibilityEvent(
+        raiseIneligibilityEvent(
           request.yar.id,
           organisation?.sbi,
           crn,

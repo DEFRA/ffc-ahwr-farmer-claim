@@ -20,7 +20,7 @@ module.exports = {
   },
   endemicsClaim: {
     vetsName: 'vetsName',
-    testResult: 'testResult',
+    testResults: 'testResults',
     typeOfReview: 'typeOfReview',
     dateOfVisit: 'dateOfVisit',
     organisation: 'organisation',
