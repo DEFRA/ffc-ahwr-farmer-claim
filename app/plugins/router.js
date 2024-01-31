@@ -28,7 +28,6 @@ if (config.endemics.enabled) {
     require('../routes/endemics/eligible'),
     require('../routes/endemics/ineligible'),
     require('../routes/endemics/species-numbers')
-
   )
 }
 
