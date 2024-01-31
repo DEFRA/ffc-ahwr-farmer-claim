@@ -132,7 +132,37 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
+    test('Continue to eligible page if user select yes', async () => {
+      const options = {
+        method: 'POST',
+        payload: { crumb, speciesNumbers: 'yes' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
 
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/eligible')
+    })
+    test('Continue to ineligible page if user select no', async () => {
+      const options = {
+        method: 'POST',
+        payload: { crumb, speciesNumbers: 'no' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/ineligible')
+    })
     test('shows error when payload is invalid', async () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
       const options = {
