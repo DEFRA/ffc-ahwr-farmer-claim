@@ -4,12 +4,12 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
 
-describe('Test Results test', () => {
+describe('Number of fluid oral samples test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/test-results'
+  const url = '/claim/endemics/number-of-fluid-oral-samples'
 
   beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -55,30 +55,8 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
-      expect($('title').text()).toEqual('Test Results - Annual health and welfare review of livestock')
-
-      expectPhaseBanner.ok($)
-    })
-
-    test.each([
-      { typeOfLivestock: 'beef', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-fluid-oral-samples' }
-    ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-back-link').attr('href')).toContain(backLink)
+      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
+      expect($('title').text()).toEqual('Oral fluid samples - Annual health and welfare review of livestock')
 
       expectPhaseBanner.ok($)
     })
@@ -95,6 +73,7 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
   })
+
   describe(`POST ${url} route`, () => {
     let crumb
 
@@ -106,7 +85,7 @@ describe('Test Results test', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, testResults: 'positive' },
+        payload: { crumb, numberOfOralFluidSamples: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -116,27 +95,12 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
 
-    test('redirects to check answers page when payload is valid', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, testResults: 'positive' },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/check-answers'))
-    })
-
     test('shows error when payload is invalid', async () => {
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, testResults: undefined },
+        payload: { crumb, numberOfOralFluidSamples: '' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -144,9 +108,40 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
-      expect($('#testResults-error').text()).toMatch('Select a test result')
+      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of oral fluid samples collected')
+      expect($('#numberOfOralFluidSamples-error').text()).toMatch('Enter the number of oral fluid samples collected')
+    })
+
+    test('shows error page when number of tests is < 5', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberOfOralFluidSamples: '1' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
+    })
+
+    test('shows error page when number of tests is >= 5', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberOfOralFluidSamples: '5' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual('/claim/endemics/test-results')
     })
   })
 })

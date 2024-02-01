@@ -5,7 +5,7 @@ const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
   endemicsTestUrn,
-  endemicsNumberOfTests,
+  endemicsNumberOfOralFluidSamples,
   endemicsTestResults
 } = require('../../config/routes')
 const {
@@ -67,7 +67,7 @@ module.exports = [
         if (typeOfLivestock === 'beef' || typeOfLivestock === 'dairy') {
           return h.redirect(`${urlPrefix}/${endemicsTestResults}`)
         } else if (typeOfLivestock === 'pigs') {
-          return h.redirect(`${urlPrefix}/${endemicsNumberOfTests}`)
+          return h.redirect(`${urlPrefix}/${endemicsNumberOfOralFluidSamples}`)
         }
         // else if (typeOfLivestock === "sheep") {
         return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
