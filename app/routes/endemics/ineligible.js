@@ -1,12 +1,12 @@
 
 const urlPrefix = require('../../config').urlPrefix
 const {
-  endemicsSpeciesNumbersUrl,
+  endemicsSpeciesNumbers,
   endemicsIneligibility
 } = require('../../config/routes')
 
 const pageUrl = `${urlPrefix}/${endemicsIneligibility}`
-const backLink = `${urlPrefix}/${endemicsSpeciesNumbersUrl}`
+const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 
 module.exports = {
   method: 'GET',

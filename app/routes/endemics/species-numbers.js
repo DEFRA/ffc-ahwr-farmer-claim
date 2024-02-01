@@ -3,7 +3,7 @@ const boom = require('@hapi/boom')
 const urlPrefix = require('../../config').urlPrefix
 const session = require('../../session')
 const {
-  endemicsSpeciesNumbersUrl,
+  endemicsSpeciesNumbers,
   endemicsEligibility,
   endemicsIneligibility,
   endemicsVetName,
@@ -14,7 +14,7 @@ const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligbileNumberForDisplay } = require('../../lib/display-helpers')
 const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
-const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbersUrl}`
+const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const legendText = 'Did you have $ on the date of the review?'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
@@ -33,7 +33,7 @@ module.exports = [
         }
         const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
         return h.view(
-          endemicsSpeciesNumbersUrl, {
+          endemicsSpeciesNumbers, {
             backLink,
             ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
           }
@@ -56,7 +56,7 @@ module.exports = [
           }
           const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
           return h.view(
-            endemicsSpeciesNumbersUrl,
+            endemicsSpeciesNumbers,
             {
               backLink,
               errorMessage: { text: errorMessageText },
