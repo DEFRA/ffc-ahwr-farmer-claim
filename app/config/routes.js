@@ -12,4 +12,8 @@ module.exports = {
   endemicsNumberOfOralFluidSamples: 'endemics/number-of-fluid-oral-samples',
   endemicsNumberOfOralFluidSamplesException: 'endemics/number-of-fluid-oral-samples-exception',
   endemicsWhichReviewAnnual: 'endemics/which-review-annual'
+  endemicsNumberOfTests: 'endemics/number-of-tests',
+  endemicsSpeciesNumbersUrl: 'endemics/species-numbers',
+  endemicsEligibility: 'endemics/eligible',
+  endemicsIneligibility: 'endemics/ineligible'
 }

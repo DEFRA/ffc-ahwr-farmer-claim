@@ -9,13 +9,13 @@ function getTypeOfReviewForDisplay (claimData) {
   }[getClaimType(claimData)]
 }
 
-function getSpeciesEligbileNumberForDisplay (claimData) {
+function getSpeciesEligbileNumberForDisplay (claimData, isEndemicsClaims = false) {
   return {
     beef: '11 or more cattle ',
     dairy: '11 or more cattle ',
     pigs: '51 or more pigs',
     sheep: '21 or more sheep'
-  }[getClaimType(claimData)]
+  }[getClaimType(claimData, isEndemicsClaims)]
 }
 
 function getTypeOfReviewRowForDisplay (claimData) {
@@ -33,5 +33,7 @@ function upperFirstLetter (str) {
 module.exports = {
   getTypeOfReviewRowForDisplay,
   getEligibleNumberRowForDisplay,
-  upperFirstLetter
+  upperFirstLetter,
+  getSpeciesEligbileNumberForDisplay,
+  getTypeOfReviewForDisplay
 }
