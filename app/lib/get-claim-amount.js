@@ -1,4 +1,4 @@
-const amounts = require('../constants/amounts')
+const { amounts } = require('../constants/amounts')
 const { getClaimType } = require('./get-claim-type')
 
 function getClaimAmount (claimData) {

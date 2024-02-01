@@ -11,6 +11,7 @@ const {
 const {
   endemicsClaim: { numberOfOralFluidSamples: numberOfOralFluidSamplesKey }
 } = require('../../session/keys')
+const { thresholds: { minimumNumberFluidOralSamples } } = require('../../constants/amounts')
 
 const pageUrl = `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
 
@@ -57,7 +58,7 @@ module.exports = [
         const { numberOfOralFluidSamples } = request.payload
         session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
-        if (numberOfOralFluidSamples < 5) {
+        if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
           return h.view(endemicsNumberOfOralFluidSamplesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
