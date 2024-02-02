@@ -116,6 +116,25 @@ describe('Eligibility test', () => {
       expect($('#numberAnimalsTested-error').text()).toMatch(error)
     })
     test.each([
+      { typeOfLivestock: 'beef', numberAnimalsTested: '5' },
+      { typeOfLivestock: 'pigs', numberAnimalsTested: '30' },
+      { typeOfLivestock: 'sheep', numberAnimalsTested: '10' }
+    ])('Continue to vet name screen if the number of animals is  eligible', async ({ typeOfLivestock, numberAnimalsTested }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberAnimalsTested },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/vet-name')
+    })
+    test.each([
       { typeOfLivestock: 'beef', numberAnimalsTested: '4' },
       { typeOfLivestock: 'pigs', numberAnimalsTested: '6' },
       { typeOfLivestock: 'sheep', numberAnimalsTested: '9' }
@@ -134,7 +153,6 @@ describe('Eligibility test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
-      jest.clearAllMocks()
     })
   })
 })
