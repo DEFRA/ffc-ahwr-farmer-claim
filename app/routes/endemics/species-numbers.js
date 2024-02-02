@@ -78,7 +78,7 @@ module.exports = [
           }
           return h.redirect(`${urlPrefix}/${endemicsEligibility}`)
         }
-        return h.redirect(`${urlPrefix}/${endemicsIneligibility}`)
+        return h.view(endemicsIneligibility, { backLink: pageUrl }).code(400).takeover()
       }
     }
   }
