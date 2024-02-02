@@ -160,8 +160,9 @@ describe('Species numbers test', () => {
 
       const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/ineligible')
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
     })
     test('shows error when payload is invalid', async () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
