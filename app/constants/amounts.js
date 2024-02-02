@@ -6,7 +6,10 @@ const amounts = {
 }
 
 const thresholds = {
-  minimumNumberFluidOralSamples: 5
+  minimumNumberFluidOralSamples: 5,
+  minimumNumberOFBeefTested: 5,
+  minimumNumberOFPigsTested: 30,
+  minimumNumberOFSheepTested: 10
 }
 
 module.exports = { amounts, thresholds }
