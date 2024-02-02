@@ -67,7 +67,6 @@ module.exports = [
         const eligibleSheep = livestockTypes.sheep === typeOfLivestock && numberAnimalsTested >= minimumNumberOFSheepTested
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
-        console.log('&&&&&&&&&&&&&&&&', eligibleBeef, eligiblePigs, eligibleSheep, typeOfLivestock, numberAnimalsTested)
 
         if (eligibleBeef || eligiblePigs || eligibleSheep) {
           return h.redirect(`${urlPrefix}/${endemicsVetName}`)
