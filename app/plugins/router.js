@@ -27,8 +27,8 @@ if (config.endemics.enabled) {
     require('../routes/endemics/which-review-annual'),
     require('../routes/endemics/number-of-fluid-oral-samples'),
     require('../routes/endemics/eligible'),
-    require('../routes/endemics/ineligible'),
-    require('../routes/endemics/species-numbers')
+    require('../routes/endemics/species-numbers'),
+    require('../routes/endemics/vet-name')
   )
 }
 
