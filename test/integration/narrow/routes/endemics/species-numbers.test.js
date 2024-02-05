@@ -113,10 +113,10 @@ describe('Species numbers test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/eligible' },
+      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/number-of-species-tested' },
       { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/vet-name' },
-      { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/eligible' },
-      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/eligible' }
+      { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
       const options = {
@@ -146,7 +146,7 @@ describe('Species numbers test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/eligible')
+      expect(res.headers.location).toEqual('/claim/endemics/number-of-species-tested')
     })
     test('Continue to ineligible page if user select no', async () => {
       const options = {
@@ -160,8 +160,9 @@ describe('Species numbers test', () => {
 
       const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/ineligible')
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
     })
     test('shows error when payload is invalid', async () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
