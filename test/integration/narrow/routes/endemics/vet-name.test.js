@@ -1,5 +1,5 @@
 describe('Ineligibility test', () => {
-  const url = '/claim/endemics/ineligible'
+  const url = '/claim/endemics/vet-name'
   const auth = { credentials: {}, strategy: 'cookie' }
 
   test('returns 200', async () => {
