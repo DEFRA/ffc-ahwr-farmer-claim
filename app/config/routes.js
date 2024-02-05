@@ -15,5 +15,5 @@ module.exports = {
   endemicsWhichReviewAnnual: 'endemics/which-review-annual',
   endemicsSpeciesNumbers: 'endemics/species-numbers',
   endemicsEligibility: 'endemics/number-of-species-tested',
-  endemicsIneligibility: 'endemics/number-of-animals-exception'
+  endemicsIneligibility: 'endemics/number-of-species-exception'
 }

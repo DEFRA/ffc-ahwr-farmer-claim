@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
+const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const {
   endemicsSpeciesNumbers,
@@ -71,7 +72,7 @@ module.exports = [
         if (eligibleBeef || eligiblePigs || eligibleSheep) {
           return h.redirect(`${urlPrefix}/${endemicsVetName}`)
         }
-        return h.view(endemicsIneligibility, { backLink: pageUrl }).code(400).takeover()
+        return h.view(endemicsIneligibility, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
     }
   }
