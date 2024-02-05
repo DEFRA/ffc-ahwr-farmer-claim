@@ -6,7 +6,7 @@ jest.mock('../../../../../app/session')
 
 describe('Eligibility test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/eligible'
+  const url = '/claim/endemics/number-of-species-tested'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
