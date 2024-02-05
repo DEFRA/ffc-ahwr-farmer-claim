@@ -68,6 +68,7 @@ describe('routes plugin test', () => {
       '/claim/check-answers',
       '/claim/cookies',
       '/claim/details-incorrect',
+      '/claim/endemics',
       '/claim/number-of-animals-ineligible',
       '/claim/signin-oidc',
       '/claim/submit-claim',

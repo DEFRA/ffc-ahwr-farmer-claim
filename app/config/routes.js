@@ -2,6 +2,7 @@ const config = require('../config')
 
 module.exports = {
   vetVisits: config.vetVisits,
+  endemicsIndex: 'endemics',
   endemicsDateOfVisit: 'endemics/date-of-visit',
   endemicsDateOfTesting: 'endemics/date-of-testing',
   endemicsTestResults: 'endemics/test-results',
