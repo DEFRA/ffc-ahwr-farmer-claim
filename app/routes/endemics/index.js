@@ -1,7 +1,25 @@
-const session = require('../../session')
+const { REJECTED } = require('../../constants/application-status')
 const config = require('../../config')
-const { requestAuthorizationCodeUrl } = require('../../auth')
+const session = require('../../session')
+const urlPrefix = require('../../config').urlPrefix
 const { endemicsIndex } = require('../../config/routes')
+const { requestAuthorizationCodeUrl } = require('../../auth')
+const {
+  getLatestApplicationsBySbi
+} = require('../../api-requests/application-service-api')
+const {
+  isWithInLastTenMonths,
+  getClaimsByApplicationReference
+} = require('../../api-requests/claim-service-api')
+const {
+  endemicsWhichReviewAnnual,
+  endemicsWhichTypeOfReview,
+  endemicsYouCannotClaim
+} = require('../../config/routes')
+
+const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
+const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
+const endemicsWhichReviewAnnualURI = `${urlPrefix}/${endemicsWhichReviewAnnual}`
 
 module.exports = {
   method: 'GET',
@@ -11,6 +29,44 @@ module.exports = {
     handler: async (request, h) => {
       request.cookieAuth.clear()
       session.clear(request)
+
+      if (request.query?.from === 'dashboard' && request.query?.sbi) {
+        const application = await getLatestApplicationsBySbi(request.query?.sbi)
+        const latestApplication = application.find((application) => {
+          return application.type === 'EE'
+        })
+        const claims = await getClaimsByApplicationReference(
+          latestApplication.reference
+        )
+        const latestClaim = claims.find((claim) => {
+          return claim.type === 'R' || claim.type === 'E'
+        })
+
+        if (
+          isWithInLastTenMonths(latestApplication) &&
+          latestApplication?.statusId === REJECTED
+        ) {
+          return h.redirect(endemicsYouCannotClaimURI)
+        }
+
+        if (
+          isWithInLastTenMonths(latestClaim) &&
+          latestClaim?.statusId === REJECTED
+        ) {
+          return h.redirect(endemicsYouCannotClaimURI)
+        }
+
+        if (claims.length) {
+          return h.redirect(endemicsWhichTypeOfReviewURI)
+        }
+        if (isWithInLastTenMonths(latestApplication)) {
+          return h.redirect(endemicsWhichTypeOfReviewURI)
+        }
+
+        if (!isWithInLastTenMonths(latestApplication)) {
+          return h.redirect(endemicsWhichReviewAnnualURI)
+        }
+      }
       return h.view(`${endemicsIndex}/index`, {
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
         ruralPaymentsAgency: config.ruralPaymentsAgency

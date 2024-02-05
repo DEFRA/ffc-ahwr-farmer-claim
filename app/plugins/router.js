@@ -29,7 +29,9 @@ if (config.endemics.enabled) {
     require('../routes/endemics/number-of-fluid-oral-samples'),
     require('../routes/endemics/eligible'),
     require('../routes/endemics/ineligible'),
-    require('../routes/endemics/species-numbers')
+    require('../routes/endemics/species-numbers'),
+    require('../routes/endemics/which-type-of-review'),
+    require('../routes/endemics/you-cannot-claim')
   )
 }
 
