@@ -1,0 +1,47 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      <br>
+      <p class="govuk-body">
+      You do not have the <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers">minimum number of livestock</a>.
+    </p>
+      <p class="govuk-body">If you selected the wrong option, you’ll need to change your answer.</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href={{ endemicsWhichReviewAnnualPageUrl }}>Change your answer for number of livestock</a>
+      </p>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+           Your claim will be checked by our team.
+        </strong>
+      </div>
+            <h2 class="govuk-heading-m">Get help with your claim</h2>
+      <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
+      <p class="govuk-body">
+        Email: <a href="mailto:{{ ruralPaymentsAgency.email }}" class="govuk-link">ruralpayments@defra.gov.uk</a>
+      </p>
+      <p class="govuk-body">Telephone: {{ ruralPaymentsAgency.telephone }}<br>Monday to Friday, 8:30am to 5pm, except bank holidays</p>
+      <p class="govuk-body">
+        <a href="https://www.gov.uk/call-charges" class="govuk-link" rel="noreferrer noopener" target="_blank">Find out about call charges (opens in a new tab)</a>
+      </p>
+      <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
+    </div>
+  </div>
+{% endblock %}

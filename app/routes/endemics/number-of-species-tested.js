@@ -4,8 +4,8 @@ const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const {
   endemicsSpeciesNumbers,
-  endemicsEligibility,
-  endemicsIneligibility,
+  endemicsNumberOfSpeciesTested,
+  endemicsNumberOfSpeciesException,
   endemicsVetName
 } = require('../../config/routes')
 const {
@@ -19,7 +19,7 @@ const {
   }
 } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
-const pageUrl = `${urlPrefix}/${endemicsEligibility}`
+const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 
 module.exports = [
@@ -29,7 +29,7 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { numberAnimalsTested } = session.getEndemicsClaim(request)
-        return h.view(endemicsEligibility, {
+        return h.view(endemicsNumberOfSpeciesTested, {
           numberAnimalsTested,
           backLink
         })
@@ -52,8 +52,9 @@ module.exports = [
         }),
         failAction: async (request, h, error) => {
           return h
-            .view(endemicsEligibility, {
+            .view(endemicsNumberOfSpeciesTested, {
               ...request.payload,
+              backLink,
               errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}}` }
             })
             .code(400)
@@ -72,7 +73,7 @@ module.exports = [
         if (eligibleBeef || eligiblePigs || eligibleSheep) {
           return h.redirect(`${urlPrefix}/${endemicsVetName}`)
         }
-        return h.view(endemicsIneligibility, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+        return h.view(endemicsNumberOfSpeciesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
     }
   }
