@@ -2,12 +2,14 @@ const Joi = require('joi')
 const boom = require('@hapi/boom')
 const urlPrefix = require('../../config').urlPrefix
 const session = require('../../session')
+const config = require('../../config')
 const {
   endemicsSpeciesNumbers,
-  endemicsEligibility,
-  endemicsIneligibility,
+  endemicsNumberOfSpeciesTested,
+  endemicsSpeciesNumbersException,
   endemicsVetName,
-  endemicsDateOfTesting
+  endemicsDateOfTesting,
+  endemicsWhichReviewAnnual
 } = require('../../config/routes')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
@@ -15,6 +17,7 @@ const { getSpeciesEligbileNumberForDisplay } = require('../../lib/display-helper
 const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
+const endemicsWhichReviewAnnualPageUrl = `${urlPrefix}/${endemicsWhichReviewAnnual}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const legendText = 'Did you have $ on the date of the review?'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
@@ -34,9 +37,9 @@ module.exports = [
         const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
         return h.view(
           endemicsSpeciesNumbers, {
-            backLink,
-            ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
-          }
+          backLink,
+          ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
+        }
         )
       }
     }
@@ -76,9 +79,9 @@ module.exports = [
           if (claim.typeOfLivestock === 'dairy') {
             return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
-          return h.redirect(`${urlPrefix}/${endemicsEligibility}`)
+          return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
         }
-        return h.view(endemicsIneligibility, { backLink: pageUrl }).code(400).takeover()
+        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, endemicsWhichReviewAnnualPageUrl }).code(400).takeover()
       }
     }
   }
