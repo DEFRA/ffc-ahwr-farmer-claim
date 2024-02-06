@@ -99,6 +99,7 @@ describe('routes plugin test', () => {
       '/claim/endemics/species-numbers',
       '/claim/endemics/test-results',
       '/claim/endemics/test-urn',
+      '/claim/endemics/vet-name',
       '/claim/endemics/which-review-annual'
     ])
   })
