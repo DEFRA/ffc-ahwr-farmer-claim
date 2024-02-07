@@ -7,7 +7,8 @@ const InvalidStateError = require('../../exceptions/invalid-state-error')
 const generate = (request) => {
   const state = {
     id: uuidv4(),
-    namespace: config.namespace
+    namespace: config.namespace,
+    source: 'claim'
   }
 
   const base64EncodedState = Buffer.from(JSON.stringify(state)).toString('base64')

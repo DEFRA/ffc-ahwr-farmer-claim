@@ -25,6 +25,7 @@ data:
   DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
   DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
   DEFRA_ID_REDIRECT_URI: {{ quote .Values.container.defraIdRedirectUri }}
+  DEFRA_ID_DASHBOARD_REDIRECT_URI: {{ quote .Values.container.defraIdDashboardRedirectUri }}
   DEFRA_ID_JWT_ISSUER_ID: {{ quote .Values.container.defraIdJwtIssuerId }}
   RPA_HOST_NAME: {{ quote .Values.container.rpaHostname }}
   RPA_GET_PERSON_SUMMARY_URL: {{ quote .Values.container.rpaGetPersonSummaryUrl }}
