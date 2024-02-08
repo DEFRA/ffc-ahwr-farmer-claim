@@ -30,8 +30,6 @@ module.exports = {
       request.cookieAuth.clear()
       session.clear(request)
 
-      request.query.sbi = 113557240;
-      request.query.from = 'dashboard';
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
         const latestApplication = application.find((application) => {
