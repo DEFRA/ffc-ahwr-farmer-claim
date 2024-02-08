@@ -1,9 +1,6 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
-const {
-  endemicsWhichReviewAnnual,
-  endemicsDateOfVisit
-} = require('../../../../../app/config/routes')
+const { endemicsWhichReviewAnnual } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/session')
@@ -66,6 +63,6 @@ describe('Endemics which review annual test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual(endemicsDateOfVisit)
+    expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
   })
 })

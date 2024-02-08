@@ -33,6 +33,7 @@ describe('Auth config', () => {
           oAuthAuthorisePath: '/oauth2/v2.0/authorize',
           policy: 'testpolicy',
           redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
           clientId: 'dummyclientid',
           clientSecret: 'dummyclientsecret',
           jwtIssuerId: 'dummyissuer',
@@ -60,6 +61,7 @@ describe('Auth config', () => {
     process.env.DEFRA_ID_TENANT = testCase.processEnv.tenant
     process.env.DEFRA_ID_POLICY = testCase.processEnv.policy
     process.env.DEFRA_ID_REDIRECT_URI = testCase.processEnv.redirectUri
+    process.env.DEFRA_ID_DASHBOARD_REDIRECT_URI = testCase.config.defraId.dashboardRedirectUri
     process.env.DEFRA_ID_CLIENT_ID = testCase.processEnv.clientId
     process.env.DEFRA_ID_CLIENT_SECRET = testCase.processEnv.clientSecret
     process.env.DEFRA_ID_JWT_ISSUER_ID = testCase.processEnv.jwtIssuerId

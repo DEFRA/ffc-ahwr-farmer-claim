@@ -4,9 +4,9 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
 
-describe('Test Results test', () => {
+describe('Test URN test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/test-results'
+  const url = '/claim/endemics/test-urn'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
@@ -55,30 +55,8 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
-      expect($('title').text()).toEqual('Test Results - Annual health and welfare review of livestock')
-
-      expectPhaseBanner.ok($)
-    })
-
-    test.each([
-      { typeOfLivestock: 'beef', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-fluid-oral-samples' }
-    ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-back-link').attr('href')).toContain(backLink)
+      expect($('h1').text()).toMatch('What’s the laboratory unique reference number (URN) for the test results?')
+      expect($('title').text()).toEqual('Laboratory URN - Annual health and welfare review of livestock')
 
       expectPhaseBanner.ok($)
     })
@@ -95,6 +73,7 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
   })
+
   describe(`POST ${url} route`, () => {
     let crumb
 
@@ -106,7 +85,7 @@ describe('Test Results test', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, testResults: 'positive' },
+        payload: { crumb, laboratoryURN: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -116,19 +95,25 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
 
-    test('redirects to check answers page when payload is valid', async () => {
+    test.each([
+      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/check-answers' },
+      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' }
+    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, testResults: 'positive' },
+        payload: { crumb, laboratoryURN: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/check-answers'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
 
     test('shows error when payload is invalid', async () => {
@@ -136,7 +121,7 @@ describe('Test Results test', () => {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, testResults: undefined },
+        payload: { crumb, laboratoryURN: undefined },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -144,9 +129,9 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
-      expect($('#testResults-error').text()).toMatch('Select a test result')
+      expect($('h1').text()).toMatch('What’s the laboratory unique reference number (URN) for the test results?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the URN')
+      expect($('#laboratoryURN-error').text()).toMatch('Enter the URN')
     })
   })
 })

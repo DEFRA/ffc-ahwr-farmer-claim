@@ -4,12 +4,12 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
 
-describe('Test Results test', () => {
+describe('Eligibility test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/test-results'
+  const url = '/claim/endemics/number-of-species-tested'
 
   beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -55,31 +55,8 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
-      expect($('title').text()).toEqual('Test Results - Annual health and welfare review of livestock')
-
-      expectPhaseBanner.ok($)
-    })
-
-    test.each([
-      { typeOfLivestock: 'beef', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-fluid-oral-samples' }
-    ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-back-link').attr('href')).toContain(backLink)
-
+      expect($('h1').text()).toMatch('How many animals did the vet test?')
+      expect($('title').text().trim()).toEqual('How many animals did the vet test? - Annual health and welfare review of livestock')
       expectPhaseBanner.ok($)
     })
 
@@ -95,6 +72,7 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
   })
+
   describe(`POST ${url} route`, () => {
     let crumb
 
@@ -106,7 +84,7 @@ describe('Test Results test', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, testResults: 'positive' },
+        payload: { crumb, numberAnimalsTested: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -115,28 +93,17 @@ describe('Test Results test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
-
-    test('redirects to check answers page when payload is valid', async () => {
+    test.each([
+      { numberAnimalsTested: '%%%%%%%%%%', error: 'Number of animals tested must only include numbers' },
+      { numberAnimalsTested: '6697979779779', error: 'The number of animals tested should not exceed 9999' },
+      { numberAnimalsTested: '', error: 'Enter the number of animals tested' }
+    ])('show error message when the number of animals tested is not valid', async ({ numberAnimalsTested, error }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, testResults: 'positive' },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/check-answers'))
-    })
-
-    test('shows error when payload is invalid', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, testResults: undefined },
+        payload: { crumb, numberAnimalsTested },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -144,9 +111,48 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
-      expect($('#testResults-error').text()).toMatch('Select a test result')
+      expect($('h1').text()).toMatch('How many animals did the vet test?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(error)
+      expect($('#numberAnimalsTested-error').text()).toMatch(error)
+    })
+    test.each([
+      { typeOfLivestock: 'beef', numberAnimalsTested: '5' },
+      { typeOfLivestock: 'pigs', numberAnimalsTested: '30' },
+      { typeOfLivestock: 'sheep', numberAnimalsTested: '10' }
+    ])('Continue to vet name screen if the number of animals is  eligible', async ({ typeOfLivestock, numberAnimalsTested }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberAnimalsTested },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/vet-name')
+    })
+    test.each([
+      { typeOfLivestock: 'beef', numberAnimalsTested: '4' },
+      { typeOfLivestock: 'pigs', numberAnimalsTested: '6' },
+      { typeOfLivestock: 'sheep', numberAnimalsTested: '9' }
+    ])('shows error page when number of animals to be tested is not eligible', async ({ typeOfLivestock, numberAnimalsTested }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberAnimalsTested },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
     })
   })
 })

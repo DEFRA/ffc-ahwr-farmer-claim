@@ -20,7 +20,7 @@ module.exports = {
   },
   endemicsClaim: {
     vetsName: 'vetsName',
-    testResults: 'testResult',
+    testResults: 'testResults',
     typeOfReview: 'typeOfReview',
     dateOfVisit: 'dateOfVisit',
     organisation: 'organisation',
@@ -30,7 +30,8 @@ module.exports = {
     typeOfLivestock: 'typeOfLivestock',
     numberAnimalsTested: 'numberAnimalsTested',
     numberOfOralFluidSamples: 'numberOfOralFluidSamples',
-    minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired'
+    minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired',
+    speciesNumbers: 'speciesNumbers'
   },
   claim: {
     animalsTested: 'animalsTested',

@@ -53,6 +53,7 @@ container:
   applyServiceUri:
   applicationApiUri:
   defraIdTenant:
+  defraIdDashboardRedirectUri:
   defraIdRedirectUri:
   defraIdClientId:
   defraIdClientSecret:

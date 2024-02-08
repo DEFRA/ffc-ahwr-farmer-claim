@@ -10,7 +10,7 @@ const requestAuthorizationCodeUrl = (session, request, useProofKeyForCodeExchang
   url.searchParams.append('p', config.authConfig.defraId.policy)
   url.searchParams.append('client_id', config.authConfig.defraId.clientId)
   url.searchParams.append('nonce', nonce.generate(request))
-  url.searchParams.append('redirect_uri', config.authConfig.defraId.redirectUri)
+  url.searchParams.append('redirect_uri', config.endemics.enabled ? config.authConfig.defraId.dashboardRedirectUri : config.authConfig.defraId.redirectUri)
   url.searchParams.append('scope', config.authConfig.defraId.scope)
   url.searchParams.append('response_type', 'code')
   url.searchParams.append('serviceId', config.authConfig.defraId.serviceId)

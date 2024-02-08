@@ -21,9 +21,17 @@ let routes = [].concat(
 
 if (config.endemics.enabled) {
   routes = routes.concat(
+    require('../routes/endemics/index'),
+    require('../routes/endemics/test-urn'),
     require('../routes/endemics/test-results'),
     require('../routes/endemics/date-of-visit'),
-    require('../routes/endemics/which-review-annual')
+    require('../routes/endemics/which-review-annual'),
+    require('../routes/endemics/number-of-fluid-oral-samples'),
+    require('../routes/endemics/species-numbers'),
+    require('../routes/endemics/which-type-of-review'),
+    require('../routes/endemics/you-cannot-claim'),
+    require('../routes/endemics/number-of-species-tested'),
+    require('../routes/endemics/vet-name')
   )
 }
 
