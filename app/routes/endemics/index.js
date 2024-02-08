@@ -1,4 +1,5 @@
 const { REJECTED } = require('../../constants/application-status')
+const { claimType } = require('../../constants/claim')
 const config = require('../../config')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
@@ -38,9 +39,6 @@ module.exports = {
         const claims = await getClaimsByApplicationReference(
           latestApplication.reference
         )
-        const latestClaim = claims.find((claim) => {
-          return claim.type === 'R' || claim.type === 'E'
-        })
 
         if (
           isWithInLastTenMonths(latestApplication) &&
@@ -49,16 +47,18 @@ module.exports = {
           return h.redirect(endemicsYouCannotClaimURI)
         }
 
-        if (
-          isWithInLastTenMonths(latestClaim) &&
-          latestClaim?.statusId === REJECTED
-        ) {
-          return h.redirect(endemicsYouCannotClaimURI)
+        if (claims?.length) {
+          const latestClaim = claims.find((claim) => {
+            return claim.type === claimType.review || claim.type === claimType.endemics
+          })
+
+          if (isWithInLastTenMonths(latestClaim) && latestClaim?.statusId === REJECTED) {
+            return h.redirect(endemicsYouCannotClaimURI)
+          } else {
+            return h.redirect(endemicsWhichTypeOfReviewURI)
+          }
         }
 
-        if (claims.length) {
-          return h.redirect(endemicsWhichTypeOfReviewURI)
-        }
         if (isWithInLastTenMonths(latestApplication)) {
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
