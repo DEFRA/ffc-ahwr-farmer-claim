@@ -33,6 +33,7 @@ describe('Auth config', () => {
           oAuthAuthorisePath: '/oauth2/v2.0/authorize',
           policy: 'testpolicy',
           redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
           clientId: 'dummyclientid',
           clientSecret: 'dummyclientsecret',
           jwtIssuerId: 'dummyissuer',
