@@ -1,4 +1,5 @@
 const { REJECTED } = require('../../constants/application-status')
+const { claimType } = require('../../constants/claim')
 const config = require('../../config')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
@@ -48,7 +49,7 @@ module.exports = {
 
         if (claims?.length) {
           const latestClaim = claims.find((claim) => {
-            return claim.type === 'R' || claim.type === 'E'
+            return claim.type === claimType.review || claim.type === claimType.endemics
           })
 
           if (isWithInLastTenMonths(latestClaim) && latestClaim?.statusId === REJECTED) {
