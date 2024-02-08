@@ -30,6 +30,8 @@ module.exports = {
       request.cookieAuth.clear()
       session.clear(request)
 
+      request.query.sbi = 113557240;
+      request.query.from = 'dashboard';
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
         const latestApplication = application.find((application) => {
@@ -38,9 +40,6 @@ module.exports = {
         const claims = await getClaimsByApplicationReference(
           latestApplication.reference
         )
-        const latestClaim = claims.find((claim) => {
-          return claim.type === 'R' || claim.type === 'E'
-        })
 
         if (
           isWithInLastTenMonths(latestApplication) &&
@@ -49,16 +48,18 @@ module.exports = {
           return h.redirect(endemicsYouCannotClaimURI)
         }
 
-        if (
-          isWithInLastTenMonths(latestClaim) &&
-          latestClaim?.statusId === REJECTED
-        ) {
-          return h.redirect(endemicsYouCannotClaimURI)
+        if (claims?.length) {
+          const latestClaim = claims.find((claim) => {
+            return claim.type === 'R' || claim.type === 'E'
+          })
+
+          if (isWithInLastTenMonths(latestClaim) && latestClaim?.statusId === REJECTED) {
+            return h.redirect(endemicsYouCannotClaimURI)
+          } else {
+            return h.redirect(endemicsWhichTypeOfReviewURI)
+          }
         }
 
-        if (claims.length) {
-          return h.redirect(endemicsWhichTypeOfReviewURI)
-        }
         if (isWithInLastTenMonths(latestApplication)) {
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
