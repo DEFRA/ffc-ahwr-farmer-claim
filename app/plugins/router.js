@@ -31,7 +31,8 @@ if (config.endemics.enabled) {
     require('../routes/endemics/which-type-of-review'),
     require('../routes/endemics/you-cannot-claim'),
     require('../routes/endemics/number-of-species-tested'),
-    require('../routes/endemics/vet-name')
+    require('../routes/endemics/vet-name'),
+    require('../routes/endemics/vet-rcvs')
   )
 }
 
