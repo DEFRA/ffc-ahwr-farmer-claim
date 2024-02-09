@@ -71,6 +71,16 @@ await claimJourney.invalidDateFormat(day, month,year)
 Then(/^validation of error message Date of review must include a day and a year$/, async function(){
 await claimJourney.dateAndYearmissing_Error_Validation()
 });
+Then(/^validation of error message Date of review must be a real date$/, async function(){
+  await claimJourney.realDate_Error_Validation()
+  });
+
+  Then(/^enter the name with more than 50 characters$/, async function(){
+  await claimJourney.errorVetName()
+  });
+  Then(/^validation for more characters in vets visits name$/, async function(){
+    await claimJourney.name_error_validation()
+  });  
 Then(/^validation of error message Date of review must include a day and a month$/, async function(){
   await claimJourney.dateAndMonthmissing_Error_Validation()
   });
@@ -115,6 +125,9 @@ Then(/^clicked on continue button$/, async function () {
 Given(/^user is on vet name page$/, async function () {
  await  claimJourney.vetNamePage()
 });
+Given(/^user enters the (.*) name and (.*)$/, async function (species,value) {
+  await  claimJourney.animalTestingValidation(species,value)
+ });
 When(/^check the question on the page$/, async function () {
  await claimJourney.pageQuestion()
 });
@@ -124,6 +137,9 @@ When(/^enter vet's full name$/, async function () {
 Then(/^click to continue the claim$/, async function () {
  await claimJourney.continueAfterInputData()
 });
+Then(/^validate the error for (.*) error message$/, async function (type) {
+  await claimJourney.noOfSpeciesErrorValidation(type)
+});  
 Given(/^user navigate to vet rcvs page$/, async function () {
  await claimJourney.vet_rcvsPage()
 });
@@ -207,4 +223,37 @@ When(/^select the (.*) for application$/, async function (businessName) {
 });
 When(/^click on continue button$/, async function () {
   await claimJourney.clickOnContinue()
+});
+
+Then(/^validation of special characters in the vets visits name$/, async function () {
+  await claimJourney.errorVetNameSplCharacters()
+});
+
+Then(/^validation of error message for special characters in the vets visits name$/, async function () {
+  await claimJourney.errorValidationVetNameSplCharacters()
+});
+
+
+Then(/^user enter the rcvs number with (.*) characters$/, async function (condition) {
+  await claimJourney.numberBoxError(condition)
+});
+
+Then(/^Validation of RCVS error message$/, async function () {
+  await claimJourney.errorValidationRCVS()
+});
+
+When(/^Enter URN field with (.*)$/, async function (condition) {
+  await claimJourney.urnInputFieldError(condition)
+});
+
+Then(/^Validation of URN error message for (.*) characters$/, async function (condition) {
+  await claimJourney.errorValidationURN(condition)
+});
+
+Then(/^Create an Entry in the database$/,async function (){
+  await claimJourney.connectTODatabase()
+});
+
+Then(/^update the date to after 24 hours$/,async function() {
+  await claimJourney.generateDate()
 });
