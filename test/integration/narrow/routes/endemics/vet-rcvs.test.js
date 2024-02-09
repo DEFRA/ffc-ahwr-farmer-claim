@@ -2,11 +2,12 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const { rcvs: rcvsErrorMessages } = require('../../../../../app/lib/error-messages')
 jest.mock('../../../../../app/session')
 
-describe('Number of fluid oral samples test', () => {
+describe('Vet name test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/number-of-fluid-oral-samples'
+  const url = '/claim/endemics/vet-rcvs'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
@@ -55,9 +56,8 @@ describe('Number of fluid oral samples test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
-      expect($('title').text()).toEqual('Oral fluid samples - Annual health and welfare review of livestock')
-
+      expect($('h1 > label').text().trim()).toMatch('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
+      expect($('title').text().trim()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Annual health and welfare review of livestock')
       expectPhaseBanner.ok($)
     })
 
@@ -85,7 +85,7 @@ describe('Number of fluid oral samples test', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, numberOfOralFluidSamples: '123' },
+        payload: { crumb, vetRCVSNumber: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -95,12 +95,19 @@ describe('Number of fluid oral samples test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
 
-    test('shows error when payload is invalid', async () => {
+    test.each([
+      { vetRCVSNumber: undefined, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
+      { vetRCVSNumber: null, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
+      { vetRCVSNumber: '', errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
+      { vetRCVSNumber: 'not-valid-ref', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: 'not-valid-ref' },
+      { vetRCVSNumber: '123456A', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '123456A' },
+      { vetRCVSNumber: '12345678', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '12345678' }
+    ])('returns 400 when payload is invalid - %p', async ({ vetRCVSNumber, errorMessage, expectedVal }) => {
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, numberOfOralFluidSamples: '' },
+        payload: { crumb, vetRCVSNumber },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -108,40 +115,28 @@ describe('Number of fluid oral samples test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of oral fluid samples collected')
-      expect($('#numberOfOralFluidSamples-error').text()).toMatch('Enter the number of oral fluid samples collected')
+      expect($('h1 > label').text().trim()).toMatch('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#vetRCVSNumber').val()).toEqual(expectedVal)
     })
 
-    test('shows error page when number of tests is < 5', async () => {
+    test.each([
+      { vetRCVSNumber: '1234567' },
+      { vetRCVSNumber: '123456X' },
+      { vetRCVSNumber: '  123456X  ' }
+    ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber }) => {
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, numberOfOralFluidSamples: '1' },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(400)
-      const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('You cannot continue with your claim')
-    })
-
-    test('redirects to next page when number of tests is >= 5', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, numberOfOralFluidSamples: '5' },
+        payload: { crumb, vetRCVSNumber },
         headers: { cookie: `crumb=${crumb}` }
       }
 
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual('/claim/endemics/test-results')
+      expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
   })
 })
