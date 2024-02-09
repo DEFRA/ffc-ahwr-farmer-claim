@@ -85,7 +85,7 @@ describe('Vet name test', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, numberAnimalsTested: '123' },
+        payload: { crumb, vetRCVSNumber: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
