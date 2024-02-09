@@ -4,7 +4,7 @@ const urlPrefix = require('../../config').urlPrefix
 const { livestockTypes } = require('../../constants/claim')
 const { getSpeciesEligbileNumberForDisplay } = require('../../lib/display-helpers')
 
-const pageUrl =`${urlPrefix}/${routes.endemicsCheckAnswers}`
+const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
 module.exports = [
   {
