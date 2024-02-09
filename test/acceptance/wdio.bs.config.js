@@ -1,4 +1,4 @@
-const browserstack = require('browserstack-local')
+//const browserstack = require('browserstack-local')
 const { ReportAggregator, HtmlReporter } = require('@rpii/wdio-html-reporter')
 const log4js = require('@log4js-node/log4js-api')
 const allureReporter = require('@wdio/allure-reporter')
@@ -247,28 +247,28 @@ exports.config = {
       console.log('Automation tests disabled, exiting tests.')
       process.exit(0)
     }
-    const reportAggregator = new ReportAggregator({
-      outputDir: './html-reports/',
-      filename: 'acceptance-test-suite-report.html',
-      reportTitle: 'Acceptance Tests Report',
-      browserName: capabilities.browserName
-    })
-    reportAggregator.clean()
-    global.reportAggregator = reportAggregator
-    console.log('Connecting local')
-    return new Promise(function (resolve, reject) {
-      exports.bs_local = new browserstack.Local()
-      const bsLocalArgs = {
-        key,
-        verbose: 'true',
-        onlyAutomate: 'true'
-      }
-      exports.bs_local.start(bsLocalArgs, function (error) {
-        if (error) return reject(error)
-        console.log('Connected. Now testing...')
-        resolve()
-      })
-    })
+    // const reportAggregator = new ReportAggregator({
+    //   outputDir: './html-reports/',
+    //   filename: 'acceptance-test-suite-report.html',
+    //   reportTitle: 'Acceptance Tests Report',
+    //   browserName: capabilities.browserName
+    // })
+    // reportAggregator.clean()
+    // global.reportAggregator = reportAggregator
+    // console.log('Connecting local')
+    // return new Promise(function (resolve, reject) {
+    //   exports.bs_local = new browserstack.Local()
+    //   const bsLocalArgs = {
+    //     key,
+    //     verbose: 'true',
+    //     onlyAutomate: 'true'
+    //   }
+    //   exports.bs_local.start(bsLocalArgs, function (error) {
+    //     if (error) return reject(error)
+    //     console.log('Connected. Now testing...')
+    //     resolve()
+    //   })
+    // })
   },
 
   onComplete: function (exitCode, config, capabilities, results) {

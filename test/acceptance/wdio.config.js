@@ -1,7 +1,11 @@
-import allureReporter from '@wdio/allure-reporter'
-import cucumberJson from 'wdio-cucumberjs-json-reporter'
+//import allureReporter from '@wdio/allure-reporter'
+const allureReporter = require('@wdio/allure-reporter').default
+const allure = require('allure-commandline')
+//import cucumberJson from 'wdio-cucumberjs-json-reporter'
+//import { ReportAggregator, HtmlReporter} from '@rpii/wdio-html-reporter' ;
 require('dotenv').config({ path: `.env.${process.env.ENV}` })
 const envRoot = (process.env.TEST_ENVIRONMENT_ROOT_URL)
+
 
 const allure_config = {
   outputDir: 'allure-results',
@@ -10,6 +14,8 @@ const allure_config = {
   useCucumberStepReporter: true,
   addConsoleLogs: true
 }
+
+
 
 exports.config = {
   //
@@ -131,25 +137,18 @@ exports.config = {
   // Test reporter for stdout.
   // The only one supported by default is 'dot'
   // see also: https://webdriver.io/docs/dot-reporter
-  // reporters: ['spec', ['allure', allure_config],
+  
+    // ...
+    reporters: [['allure', {
+      outputDir: 'allure-results',
+      disableWebdriverStepsReporting: false,
+      disableWebdriverScreenshotsReporting: false,
+  }],'spec'],
+   
+    // ...
 
-  //   ['cucumberjs-json', {
-  //     jsonFolder: 'reporter/json/',
-  //     language: 'en'
-  //   }]
-  // ],
 
-  reporters: ['spec',
-    [HtmlReporter, {
-      debug: false,
-      outputDir: './html-reports/',
-      filename: 'feature-report.html',
-      reportTitle: 'Feature Test Report',
-      showInBrowser: false,
-      useOnAfterCommandForScreenshot: false,
-      LOG: logger
-    }]
-  ],
+ 
 
   //
   // If you are using Cucumber you need to specify the location of your step definitions.
@@ -177,7 +176,7 @@ exports.config = {
     // <string> (expression) only execute the features or scenarios with tags matching the expression
     tagExpression: '',
     // <number> timeout for step definitions
-    timeout: 60000,
+    timeout: 120000,
     // <boolean> Enable this config to treat undefined definitions as warnings.
     ignoreUndefinedDefinitions: false
   },
@@ -225,10 +224,10 @@ exports.config = {
    * @param {Array.<String>} specs        List of spec file paths that are to be run
    * @param {Object}         browser      instance of created browser/device session
    */
-  // before: async function (capabilities, specs) {
+  //  before: async function (capabilities, specs) {
 
-  //    allureReporter.addLabel("Initial configuration");
-  // },
+  //     allureReporter.addLabel("Initial configuration");
+  //  },
   /**
    * Runs before a WebdriverIO command gets executed.
    * @param {String} commandName hook command name
@@ -244,7 +243,7 @@ exports.config = {
    * @param {GherkinDocument.IFeature} feature  Cucumber feature object
    */
   beforeFeature: async function (uri, feature) {
-    allureReporter.addStep('Starting Fetaure : ' + feature.name)
+   allureReporter.addStep('Starting Fetaure : ' + feature.name)
 
     await browser.maximizeWindow()
   },
@@ -254,7 +253,15 @@ exports.config = {
    * @param {ITestCaseHookParameter} world world object containing information on pickle and test step
    */
   beforeScenario: async function (world) {
-    await allureReporter.addFeature(world.name)
+    
+   //
+   //
+   //
+   //
+   //
+   allureReporter.addFeature(world.name)
+
+
   },
   /**
    *
@@ -262,8 +269,10 @@ exports.config = {
    * @param {Pickle.IPickleStep} step     step data
    * @param {IPickle}            scenario scenario pickle
    */
-  // beforeStep: function (step, scenario) {
-  // },
+   beforeStep: function (step, scenario) {
+    
+    
+},
   /**
    *
    * Runs after a Cucumber Step.
@@ -275,8 +284,33 @@ exports.config = {
    * @param {number}             result.duration duration of scenario in milliseconds
    */
   afterStep: async function (step, scenario, result) {
-    cucumberJson.attach(await browser.takeScreenshot(), 'image/png')
-  }
+      // cucumberJson.attach(await browser.takeScreenshot(), 'image/png')
+   const zoomPercentage = 80;
+   browser.execute((zoom) => {
+     document.body.style.zoom = `${zoom}%`;
+ }, zoomPercentage);
+   var date=Date.now();
+   await browser.saveScreenshot('./screenShots/chrome-'+date+'.png')
+   const zoomPercentage1 = 100;
+   browser.execute((zoom) => {
+     document.body.style.zoom = `${zoom}%`;
+ }, zoomPercentage1);
+ 
+  },
+  afterTest: async function (test, context, { error, result, duration, passed, retries }) {
+   
+//     const originalWidth = 1200;  // Replace with your original width
+// const originalHeight = 800;  // Replace with your original height
+// const zoomPercentage = 80;
+
+// const widthWithZoom = (originalWidth * zoomPercentage) / 100;
+// const heightWithZoom = (originalHeight * zoomPercentage) / 100;
+
+// browser.setWindowSize(widthWithZoom, heightWithZoom);
+
+//       await browser.takeScreenshot();
+      
+  },
   /**
    *
    * Runs before a Cucumber Scenario.
@@ -331,8 +365,32 @@ exports.config = {
    * @param {Array.<Object>} capabilities list of capabilities details
    * @param {<Object>} results object containing test results
    */
-  // onComplete: function(exitCode, config, capabilities, results) {
-  // },
+   onComplete: function(exitCode, config, capabilities, results) {
+   
+        // ...
+     
+            // const reportError = new Error('Could not generate Allure report')
+            // const generation = allure(['generate', 'allure-results', '--clean'])
+            // return new Promise((resolve, reject) => {
+            //     const generationTimeout = setTimeout(
+            //         () => reject(reportError),
+            //         5000)
+    
+            //     generation.on('exit', function(exitCode) {
+            //         clearTimeout(generationTimeout)
+    
+            //         if (exitCode !== 0) {
+            //             return reject(reportError)
+            //         }
+    
+            //         console.log('Allure report successfully generated')
+            //         resolve()
+            //     })
+            // })
+        },
+        // ...
+    
+  
   /**
    * Gets executed when a refresh happens.
    * @param {String} oldSessionId session ID of the old session
@@ -340,4 +398,4 @@ exports.config = {
    */
   // onReload: function(oldSessionId, newSessionId) {
   // }
-}
+  }

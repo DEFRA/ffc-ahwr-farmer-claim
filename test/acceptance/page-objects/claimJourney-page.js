@@ -1,6 +1,31 @@
 const CommonActions = require('./common-actions')
+const pgp = require('pg-promise')();
 // const { submitClaim } = require('../../../app/messaging/application')
+const databaseConfig = {
+  user: 'adminuser@sndffcdbssq1002',
+  host: 'sndffcdbssq1002.postgres.database.azure.com',
+  port: 5432,
+  database: 'ffc_ahwr_application',
+  sslMode:'true',
+};
+// const databaseConfig = {
+//   user: 'adminuser@devffcdbssq1001',
+//   host: 'devffcdbssq1001.postgres.database.azure.com',
+//   port: 5432,
+//   database: 'ffc-ahwr-application-dev',
+//   sslMode:'true',
+// };
 
+//const db = pgp('postgres://adminuser@devffcdbssq1001:ufj2Wm3CQpXj@devffcdbssq1001.postgres.database.azure.com:5432/ffc-ahwr-application-dev');
+// Dynamically set the password based on your requirements
+const password = process.env.DB_PASSWORD;
+
+
+// Create the connection string
+const connectionString = `postgres://${databaseConfig.user}:${password}@${databaseConfig.host}:${databaseConfig.port}/${databaseConfig.database}?sslmode=require`;
+
+// Create the database connection
+const db = pgp(connectionString);
 // page element
 const START = '[role="button"]'
 const PAGE_TITLE = 'Claim funding - Annual health and welfare review of livestock'
@@ -60,6 +85,7 @@ var another_month;
 var another_year;
 //Exception
 const EXCEPTION_HEADER='.govuk-heading-l'
+const NO_OF_ANIMAL_TESTED='#number-of-animals-tested'
 const HEADER_ERROR_MESSAGE_EXPECTED='You cannot claim for a livestock review for this business'
 const EXCEPTION_ERROR_MESSAGE='.govuk-heading-l+.govuk-body'
 const EXCEPTION_ERROR_MESSAGE_EXPECTED='You do not have the required permission to act for Test Estate - SBI 114441446.'
@@ -72,7 +98,19 @@ const REAL_DATE_ERROR='Date of review must be a real date'
 const VET_NAME_ERROR_MESSAGE='Vet’s name must be 50 characters or fewer'
 const VET_FULL_NAME='AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 const VET_NAME_ERROR='#name-error'
+const RCVS_ERROR='#rcvs-error'
+const URN_ERROR='#urn-error'
+const RCVS_ERRORMESSAGE='RCVS number must be 7 characters and only include letters a to z and numbers, like 1234567'
+const URN_SPL_CHARACTERERRORMESSAGE='URN must only include letters a to z, numbers and a hyphen'
+const URN_ERRORMESSAGE='URN must be 50 characters or fewer'
+const URN_EMPTY_ERRORMESSAGE='Enter the URN'
 const VET_NAME_SPLCHARACTER_ERRORMESSAGE='Vet’s name must only include letters a to z, numbers and special characters such as hyphens, spaces, apostrophes, ampersands, commas, brackets or a forward slash'
+const EXPECTED_NOOFSPECIES_ERRORMESSAGE='The number of animals you have entered does not meet the minimum required for the type of review you are claiming for.'
+const ACTUAL_NOOFSPECIES_ERRORMESSAGE='body > div:nth-child(7) > main:nth-child(2) > div:nth-child(1) > div:nth-child(1) > p:nth-child(2)'
+const EXPECTED_ONLYNUMBERS_ERRORMESSAGE='Number of animals tested must only include numbers'
+const ACTUAL_ERRORMESSAGE='a[href="#number-of-animals-tested"]'
+const EXPECTED_BLANK_ERRORMESSAGE='Enter the number of animals tested'
+
 class StartPageActions extends CommonActions {
 
   async getHomepage(page){
@@ -96,6 +134,9 @@ class StartPageActions extends CommonActions {
   async signIn(){
     await this.clickOn(SUBMIT)
   }
+  async back(){
+    await this.clickOn(SUBMIT)
+  }
   async errorMessage(){
     await this.elementToContainText(ERROR_MESSAGE,DISPLAYED_ERROR)
   }
@@ -108,27 +149,53 @@ class StartPageActions extends CommonActions {
 
   async validData(business){
     const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
-    await sleep(5000)
-    if(business=='Single') {
-    await this.inputValidCrn(process.env.CRN_CLAIM)
-    await this.inputPassword(process.env.CRN_PASSWORD)}
-    else if (business=='Exception-SB-NP'){
-      console.log(process.env.CRN_EXCEPTION_USERNAME)
-      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME)
-      await this.inputPassword(process.env.CRN_EXCEPTION_PASSWORD)
-    } else if (business=='Exception-SB-NA'){
-      console.log(process.env.CRN_EXCEPTION_USERNAME)
-      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_NONA)
-      await this.inputPassword(process.env.CRN_PASSWORD)
-    } else if (business=='Exception-MB-NP'){
-      console.log(process.env.CRN_EXCEPTION_USERNAME)
-      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_MB_NP)
-      await this.inputPassword(process.env.CRN_PASSWORD)
-    }else if (business=='Exception-MB-NA'){
-      console.log(process.env.CRN_EXCEPTION_USERNAME)
-      await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_MB_NONA)
-      await this.inputPassword(process.env.CRN_PASSWORD)
+    switch (business) {
+      case 'Single':
+        await this.inputValidCrn(process.env.CRN_CLAIM);
+        await this.inputPassword(process.env.CRN_PASSWORD);
+        break;
+
+      case 'Pigs':
+        
+        await this.inputValidCrn(process.env.CRN_CLAIM_PIGS);
+        await this.inputPassword(process.env.CRN_PASSWORD);
+        break;
+
+      case 'Beef':
+        
+        await this.inputValidCrn(process.env.CRN_CLAIM_BEEF);
+        await this.inputPassword(process.env.CRN_PASSWORD);
+        break;
+    
+      case 'Exception-SB-NP':
+        console.log(process.env.CRN_EXCEPTION_USERNAME);
+        await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME);
+        await this.inputPassword(process.env.CRN_EXCEPTION_PASSWORD);
+        break;
+    
+      case 'Exception-SB-NA':
+        console.log(process.env.CRN_EXCEPTION_USERNAME);
+        await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_NONA);
+        await this.inputPassword(process.env.CRN_PASSWORD);
+        break;
+    
+      case 'Exception-MB-NP':
+        console.log(process.env.CRN_EXCEPTION_USERNAME);
+        await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_MB_NP);
+        await this.inputPassword(process.env.CRN_PASSWORD);
+        break;
+    
+      case 'Exception-MB-NA':
+        console.log(process.env.CRN_EXCEPTION_USERNAME);
+        await this.inputValidCrn(process.env.CRN_EXCEPTION_USERNAME_MB_NONA);
+        await this.inputPassword(process.env.CRN_PASSWORD);
+        break;
+    
+      default:
+        // Handle default case if necessary
+        break;
     }
+    
   }
   //....org review
 
@@ -427,6 +494,158 @@ async clickOnBusiness(businessName) {
     await this.elementToContainSplCharError(VET_NAME_ERROR, VET_NAME_SPLCHARACTER_ERRORMESSAGE)
     }
 
+    async numberBoxError(condition){
+      if(condition='more'){
+      await this.sendKey(RCVS_BOX,12345672333)
+      }else if(condition='less'){
+        await this.sendKey(RCVS_BOX,12345672333)
+      }else if(condition='specialcharacters'){
+        await this.sendKey(RCVS_BOX,'$%^&&&&&')
+  }
+}
+  async errorValidationRCVS(){
+    await this.elementToContainSplCharError(RCVS_ERROR,RCVS_ERRORMESSAGE)
+    }
+    async urnInputFieldError(condition){
+      if(condition='50 characters'){
+      await this.sendKey(URN_FIELD,'wererrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr	')
+    }else if(condition='empty'){
+      await this.sendKey(URN_FIELD,'')
+    }else if(condition='specialcharacters'){
+      await this.sendKey(URN_FIELD,'automation')
+    }
+  }
+  
+  async errorValidationURN(condition){
+     
+    if(condition='more'){
+      await this.elementToContainSplCharError(URN_ERROR,URN_ERRORMESSAGE)
+    }else if(condition='specialcharacters'){
+      await this.elementToContainSplCharError(URN_ERROR,URN_SPL_CHARACTERERRORMESSAGE)
+    }  else if(condition='empty'){
+      await this.elementToContainSplCharError(URN_ERROR,URN_EMPTY_ERRORMESSAGE)
+    }
+}
+
+
+
+async connectTODatabase() {
+  const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+  await sleep(5000)
+  try {
+    // Step 1: Define the Azure SQL Database connection configuration
+   // await db.connect();
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().replace('T', ' ').substring(0, 23) + '+00';
+    console.log('*****************************'+formattedDate);
+
+    const updateStatusQuery = `INSERT INTO public.application ("id","reference","data","createdAt","updatedAt","createdBy","updatedBy","claimed","statusId")
+    VALUES 
+      ('5fc79fd8-7952-45ec-8c02-d71d5e09592e', 'AHWR-5FC7-9FD8',
+       '{"reference": null, "declaration": true, "offerStatus": "accepted", "whichReview": "beef",
+        "organisation": {""sbi"": ""113744304"", ""name"": ""Mrs Heather Tyler"", ""email"": ""judithmuird@riumhtidujl.com.test"", ""address"": ""35e Lower South Wraxall,NORTH DEIGHTON,MARKET DRAYTON,WR10 3LH,United Kingdom"", ""farmerName"": ""Judith Anthony Muir""}, 
+        "eligibleSpecies": "yes", "confirmCheckDetails": "yes"}',
+        '${formattedDate}', '${formattedDate}','admin','admin','false','11','VV');`
+    
+        
+
+       db.none(updateStatusQuery)
+  .then(() => {
+    console.log('Status updated successfully.');
+  })
+  .catch(error => {
+    console.error('Error updating status:', error);
+  })
+  .finally(() => {
+    // Close the database connection (optional)
+   
+  });
+  }
+catch(err){
+await console.log(err)
+}
+
+}
+async generateDate() {
+// Get the current date
+let currentDate = new Date();
+
+// Add one day to the current date
+currentDate.setDate(currentDate.getDate() + 1);
+
+// Format the date as a string in the desired format (YYYY-MM-DD HH:mm:ss)
+let formattedDate = currentDate.toISOString().slice(0, 19).replace("T", " ");
+
+console.log(formattedDate);
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+await sleep(5000)
+try {
+  // Step 1: Define the Azure SQL Database connection configuration
+  const conn = await db.connect();
+
+  let query = `
+UPDATE public.application
+SET "createdAt" = $1,
+    "updatedAt" = $1'
+WHERE reference = AHWR-89D1-4456;
+`;
+//AGREEMENT_NUMBER_VALUE='AHWR-8092-E593'
+db.none(query, [formattedDate])
+.then(() => {
+  console.log('Status updated successfully.');
+})
+.catch(error => {
+  console.error('Error updating status:', error);
+})
+.finally(() => {
+  // Close the database connection (optional)
+ 
+});
+
+  } catch (err) {
+  console.error('Error:', err);
+}
+
+// Close the WebDriverIO browser session when done
+await browser.deleteSession();
+}
+ 
+
+
+//Animal testing
+
+
+async animalTestingValidation(species,noOfSpecies){
+  switch (species) {
+    case 'Sheep':
+      await this.sendKey(NO_OF_ANIMAL_TESTED, noOfSpecies);
+      break;
+    case 'Beef':
+      await this.sendKey(NO_OF_ANIMAL_TESTED, noOfSpecies);
+      break;
+    case 'Pigs':
+      await this.sendKey(NO_OF_ANIMAL_TESTED, noOfSpecies);
+      break;
+    // Add additional cases as needed
+      }
+  
+}
+
+async noOfSpeciesErrorValidation(type){
+  switch(type) {
+    case 'invalidspecies':
+      await this.elementToContainText(ACTUAL_NOOFSPECIES_ERRORMESSAGE,EXPECTED_NOOFSPECIES_ERRORMESSAGE)
+      break;
+    case 'blank':
+      await this.elementToContainText(ACTUAL_ERRORMESSAGE,EXPECTED_BLANK_ERRORMESSAGE)
+      break;
+    case 'specialcharacter':
+      await this.elementToContainText(ACTUAL_ERRORMESSAGE,EXPECTED_ONLYNUMBERS_ERRORMESSAGE)
+      break;
+  
   }
 
+}
+}
 module.exports = StartPageActions
+
