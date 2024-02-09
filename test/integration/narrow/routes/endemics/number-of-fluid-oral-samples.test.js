@@ -129,7 +129,7 @@ describe('Number of fluid oral samples test', () => {
       expect($('h1').text()).toMatch('You cannot continue with your claim')
     })
 
-    test('shows error page when number of tests is >= 5', async () => {
+    test('redirects to next page when number of tests is >= 5', async () => {
       const options = {
         method: 'POST',
         url,
