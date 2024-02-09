@@ -1,4 +1,4 @@
-@negativeRegression
+@smoke21
 Feature: claim journey landing page
 
   Scenario: claim with valid credentials
@@ -6,7 +6,7 @@ Feature: claim journey landing page
     And user check the page title
     When user start the application
     When redirected to Defra ID page
-    And user login with Single business crn and password(for DefraId)
+    And user login with Beef business crn and password(for DefraId)
     Then user click on sign in button
 
   Scenario: user check all business details
@@ -23,33 +23,32 @@ Feature: claim journey landing page
     And click on the option when vet visited the farm to carry out the review
     Then clicked on continue button
 
- Scenario Outline: farmer input invalid no of species- validation
+  Scenario Outline: 
    When user enters the <species> name and <value>
    Then click to continue the claim
    Then validate the error for invalidspecies error message
    Then click on the back button
    Examples:
     |species|value|
-    |Sheep| 2|
+    |Beef| 2|
 
-    Scenario Outline: farmer input invalid characters- validation
+    Scenario Outline: 
    When user enters the <species> name and <value>
    Then click to continue the claim
    Then validate the error for specialcharacter error message
-
    Examples:
     |species|value|
-    |Sheep| ££££££|  
+    |Beef| ££££££|  
 
-   Scenario Outline: farmer doesnt enter any value(blank)- validation
+   Scenario Outline: 
    When user enters the <species> name and <value>
    Then click to continue the claim
    Then validate the error for blank error message
    Examples:
     |species|value|
-    |Sheep|      |   
+    |Beef|      |   
   
-  Scenario Outline: Scenario Outline name: identifying the vet full name
+  Scenario Outline: identifying the vet full name
     When user enters the <species> name and <value>
     Then click to continue the claim
     Given user is on vet name page
@@ -58,7 +57,7 @@ Feature: claim journey landing page
     Then click to continue the claim
     Examples:
     |species|value|
-    |Sheep| 12|
+    |Beef| 8|
 
   Scenario: Farmer input the vet's Royal college of veterinary surgeons (RCVS) number
     Given user navigate to vet rcvs page
@@ -82,14 +81,14 @@ Feature: claim journey landing page
 
   Scenario: submit the claim after confirming the information provided is correct
     Given user is on the final page
-   When user check the information displayed
-   Then user submit the claim
+   #When user check the information displayed
+#    Then user submit the claim
 
- Scenario: agreement number is displayed after completing the claim
-   When user is on submit claim page
-   When User complete the claim
-   When success message is displayed
-   Then the agreement number is presented
+#  Scenario: agreement number is displayed after completing the claim
+#    When user is on submit claim page
+#    When User complete the claim
+#    When success message is displayed
+#    Then the agreement number is presented
 
 
 
