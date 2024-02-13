@@ -12,7 +12,7 @@ const backLink = vetVisits
 
 const getTypeOfLivestockFromPastClaims = async (sbi) => {
   const applications = await getLatestApplicationsBySbi(sbi)
-  console.log('sbi applcaitions', sbi, applications)
+
   const latestApplication = applications[0]
   const { reference } = latestApplication
   const claims = await getClaimsByApplicationReference(reference)
