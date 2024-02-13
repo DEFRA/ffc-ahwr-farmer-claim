@@ -79,6 +79,7 @@ describe('routes plugin test', () => {
       '/claim/visit-review',
       '/claim/assets/{path*}',
       '/claim/endemics/check-answers',
+      '/claim/endemics/confirmation',
       '/claim/endemics/date-of-visit',
       '/claim/endemics/number-of-fluid-oral-samples',
       '/claim/endemics/number-of-species-tested',
