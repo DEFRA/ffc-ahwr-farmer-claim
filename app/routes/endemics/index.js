@@ -40,11 +40,13 @@ module.exports = {
           latestApplication.reference
         )
 
-        if (
-          isWithInLastTenMonths(latestVetVisitApplication) &&
-          latestVetVisitApplication?.statusId === REJECTED
-        ) {
-          return h.redirect(endemicsYouCannotClaimURI)
+        if (latestVetVisitApplication) {
+          if (
+            isWithInLastTenMonths(latestVetVisitApplication) &&
+            latestVetVisitApplication?.statusId === REJECTED
+          ) {
+            return h.redirect(endemicsYouCannotClaimURI)
+          }
         }
 
         if (Array.isArray(claims) && claims?.length) {
