@@ -1,5 +1,4 @@
 const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const applicationServiceApiMock = require('../../../../../app/api-requests/application-service-api')
@@ -13,7 +12,6 @@ describe('Claim endemics home page test', () => {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'
   }
-  let crumb
 
   beforeAll(() => {
     jest.mock('../../../../../app/config', () => {
@@ -50,7 +48,6 @@ describe('Claim endemics home page test', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks()
-    crumb = await getCrumbs(global.__SERVER__)
   })
 
   test('Redirects us to endemicsYouCannotClaimURI if latest VV application is within 10 months and status is rejected', async () => {
@@ -207,6 +204,5 @@ describe('Claim endemics home page test', () => {
     expect($('h1').text().trim()).toMatch('Claim for funding for livestock health and welfare reviews and endemic disease follow-ups')
     expect($('title').text().trim()).toEqual('Claim funding - Annual health and welfare review of livestock')
     expectPhaseBanner.ok($)
-    
   })
 })
