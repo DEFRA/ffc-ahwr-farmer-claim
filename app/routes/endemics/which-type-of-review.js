@@ -37,7 +37,7 @@ module.exports = [
         return h.view(endemicsWhichTypeOfReview, {
           backLink,
           typeOfLivestock: formattedTypeOfLivestock,
-          previousAnswer: typeOfReview,
+          previousAnswer: typeOfReview
         })
       }
     }

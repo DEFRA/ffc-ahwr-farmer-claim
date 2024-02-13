@@ -10,7 +10,6 @@ jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/application-service-api')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
-
 describe('Which type of review test', () => {
   const url = `${urlPrefix}/${endemicsWhichTypeOfReview}`
   const auth = {
@@ -18,9 +17,9 @@ describe('Which type of review test', () => {
     strategy: 'cookie'
   }
   let crumb
-  
+
   beforeAll(() => {
-      jest.mock('../../../../../app/config', () => {
+    jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
@@ -52,33 +51,32 @@ describe('Which type of review test', () => {
     jest.resetAllMocks()
   })
 
-  
   describe('GET', () => {
     beforeEach(async () => {
       jest.clearAllMocks()
       crumb = await getCrumbs(global.__SERVER__)
     })
-  
+
     test('Returns 200 and gets typeOfLivestock from past claim', async () => {
       sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
-              reference: 'AHWR-2470-6BA9',
-              createdAt: Date.now(),
-              statusId: 10,
-              type: 'EE'
-            }])
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 10,
+        type: 'EE'
+      }])
       claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([
-            {
-              reference: 'AHWR-C2EA-C718',
-              applicationReference: 'AHWR-2470-6BA9',
-              statusId: 1,
-              type: 'R',
-              createdAt: '2023-12-19T10:25:11.318Z',
-              data: {
-                typeOfLivestock: 'beef'
-              }
-            }
-          ])
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2023-12-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef'
+          }
+        }
+      ])
       const options = {
         method: 'GET',
         url,
@@ -97,14 +95,14 @@ describe('Which type of review test', () => {
     test('Returns 200 and gets typeOfLivestock from past application claim', async () => {
       sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
-              reference: 'AHWR-2470-6BA9',
-              createdAt: Date.now(),
-              statusId: 10,
-              type: 'EE',
-              data: {
-                whichReview: 'beef'
-              }
-            }])
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 10,
+        type: 'EE',
+        data: {
+          whichReview: 'beef'
+        }
+      }])
 
       claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
       const options = {
@@ -123,21 +121,21 @@ describe('Which type of review test', () => {
     })
 
     test.each([
-      {typeOfLivestock: 'beef', content: 'beef cattle'},
-      {typeOfLivestock: 'dairy', content: 'dairy cattle'},
-      {typeOfLivestock: 'sheep', content: 'sheep'},
-      {typeOfLivestock: 'pigs', content: 'pigs'},
+      { typeOfLivestock: 'beef', content: 'beef cattle' },
+      { typeOfLivestock: 'dairy', content: 'dairy cattle' },
+      { typeOfLivestock: 'sheep', content: 'sheep' },
+      { typeOfLivestock: 'pigs', content: 'pigs' }
     ])('Returns 200 and formats content correct from typeOfLivestock $typeOfLivestock', async ({ typeOfLivestock, content }) => {
       sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
-              reference: 'AHWR-2470-6BA9',
-              createdAt: Date.now(),
-              statusId: 10,
-              type: 'EE',
-              data: {
-                whichReview: typeOfLivestock
-              }
-            }])
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 10,
+        type: 'EE',
+        data: {
+          whichReview: typeOfLivestock
+        }
+      }])
 
       claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
       const options = {
@@ -161,7 +159,7 @@ describe('Which type of review test', () => {
       jest.clearAllMocks()
       crumb = await getCrumbs(global.__SERVER__)
     })
-      
+
     test('Returns 400 and shows error message when payload is invalid', async () => {
       const options = {
         method: 'POST',
@@ -182,8 +180,8 @@ describe('Which type of review test', () => {
     })
 
     test.each([
-      { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit'},
-      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit'} // todo update for endemics claim
+      { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
+      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' } // todo update for endemics claim
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
       const options = {
         method: 'POST',
@@ -200,7 +198,6 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
-      
     })
   })
 })
