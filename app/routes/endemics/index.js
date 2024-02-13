@@ -28,26 +28,26 @@ module.exports = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      request.cookieAuth.clear()
-      session.clear(request)
-
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
         const latestApplication = application.find((application) => {
           return application.type === 'EE'
+        })
+        const latestVetVisitApplication = application.find((application) => {
+          return application.type === 'VV'
         })
         const claims = await getClaimsByApplicationReference(
           latestApplication.reference
         )
 
         if (
-          isWithInLastTenMonths(latestApplication) &&
-          latestApplication?.statusId === REJECTED
+          isWithInLastTenMonths(latestVetVisitApplication) &&
+          latestVetVisitApplication?.statusId === REJECTED
         ) {
           return h.redirect(endemicsYouCannotClaimURI)
         }
 
-        if (claims?.length) {
+        if (Array.isArray(claims) && claims?.length) {
           const latestClaim = claims.find((claim) => {
             return claim.type === claimType.review || claim.type === claimType.endemics
           })
@@ -67,6 +67,10 @@ module.exports = {
           return h.redirect(endemicsWhichReviewAnnualURI)
         }
       }
+
+      request.cookieAuth.clear()
+      session.clear(request)
+
       return h.view(`${endemicsIndex}/index`, {
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
         ruralPaymentsAgency: config.ruralPaymentsAgency

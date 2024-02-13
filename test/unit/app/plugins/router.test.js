@@ -107,7 +107,8 @@ describe('routes plugin test', () => {
       '/claim/endemics/test-urn',
       '/claim/endemics/vet-name',
       '/claim/endemics/vet-rcvs',
-      '/claim/endemics/which-review-annual'
+      '/claim/endemics/which-review-annual',
+      '/claim/endemics/which-type-of-review'
     ])
   })
 })
