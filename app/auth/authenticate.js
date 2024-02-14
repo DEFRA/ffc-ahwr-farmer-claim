@@ -1,7 +1,7 @@
 const state = require('./auth-code-grant/state')
 const redeemAuthorizationCodeForAccessToken = require('./auth-code-grant/redeem-authorization-code-for-access-token')
 const jwtVerify = require('./token-verify/jwt-verify')
-const jwtDecode = require('./token-verify/jwt-decode')
+const decodeJwt = require('./token-verify/jwt-decode')
 const jwtVerifyIss = require('./token-verify/jwt-verify-iss')
 const nonce = require('./id-token/nonce')
 const expiresIn = require('./auth-code-grant/expires-in')
@@ -16,8 +16,8 @@ const authenticate = async (request) => {
   }
   const redeemResponse = await redeemAuthorizationCodeForAccessToken(request)
   await jwtVerify(redeemResponse.access_token)
-  const accessToken = jwtDecode(redeemResponse.access_token)
-  const idToken = jwtDecode(redeemResponse.id_token)
+  const accessToken = decodeJwt(redeemResponse.access_token)
+  const idToken = decodeJwt(redeemResponse.id_token)
   await jwtVerifyIss(accessToken.iss)
   nonce.verify(request, idToken)
 
