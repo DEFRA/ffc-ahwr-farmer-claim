@@ -48,8 +48,8 @@ module.exports = [{
       appInsights.defaultClient.trackEvent({
         name: 'claim-submitted',
         properties: {
-          reference: reference,
-          state: state
+          reference,
+          state
         }
       })
       switch (state) {

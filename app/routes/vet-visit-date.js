@@ -11,6 +11,55 @@ const validateDateInputYear = require('./govuk-components/validate-date-input-ye
 const templatePath = 'vet-visit-date'
 const path = `/claim/${templatePath}`
 
+function isValidDate (year, month, day) {
+  const dateObject = new Date(year, month - 1, day)
+  return (
+    dateObject.getFullYear() === year &&
+    dateObject.getMonth() === month - 1 &&
+    dateObject.getDate() === day
+  )
+}
+
+function checkForError (error) {
+  const errorSummary = []
+
+  if (error.details
+    .filter(e => e.context.label.startsWith('visit-date'))
+    .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+    .length) {
+    error.details = error.details
+      .filter(e => !e.context.label.startsWith('visit-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+  }
+  if (error.details.filter(e => e.context.label.startsWith('visit-date')).length) {
+    errorSummary.push({
+      text: error.details.find(e => e.context.label.startsWith('visit-date')).message,
+      href: '#when-was-the-review-completed'
+    })
+  }
+
+  if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
+    errorSummary.push({
+      text: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut').message,
+      href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+    })
+  }
+  if (error.details
+    .filter(e => e.context.label.startsWith('on-another-date'))
+    .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+    .length) {
+    error.details = error.details
+      .filter(e => !e.context.label.startsWith('on-another-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
+  }
+  if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
+    errorSummary.push({
+      text: error.details.find(e => e.context.label.startsWith('on-another-date')).message,
+      href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+    })
+  }
+
+  return errorSummary
+}
+
 module.exports = [{
   method: 'GET',
   path,
@@ -90,14 +139,6 @@ module.exports = [{
                       return value
                     }
 
-                    const isValidDate = (year, month, day) => {
-                      const dateObject = new Date(year, month - 1, day)
-                      return (
-                        dateObject.getFullYear() === year &&
-                        dateObject.getMonth() === month - 1 &&
-                        dateObject.getDate() === day
-                      )
-                    }
                     if (!isValidDate(
                       +helpers.state.ancestors[0][labels.year],
                       +helpers.state.ancestors[0][labels.month],
@@ -186,14 +227,6 @@ module.exports = [{
                         return value
                       }
 
-                      const isValidDate = (year, month, day) => {
-                        const dateObject = new Date(year, month - 1, day)
-                        return (
-                          dateObject.getFullYear() === year &&
-                          dateObject.getMonth() === month - 1 &&
-                          dateObject.getDate() === day
-                        )
-                      }
                       if (!isValidDate(
                         +helpers.state.ancestors[0]['on-another-date-year'],
                         +helpers.state.ancestors[0]['on-another-date-month'],
@@ -258,14 +291,6 @@ module.exports = [{
                     return value
                   }
 
-                  const isValidDate = (year, month, day) => {
-                    const dateObject = new Date(year, month - 1, day)
-                    return (
-                      dateObject.getFullYear() === year &&
-                      dateObject.getMonth() === month - 1 &&
-                      dateObject.getDate() === day
-                    )
-                  }
                   if (!isValidDate(
                     +helpers.state.ancestors[0][labels.year],
                     +helpers.state.ancestors[0][labels.month],
@@ -310,46 +335,8 @@ module.exports = [{
             ]
           })
         }),
-      failAction: async (request, h, error) => {
-        const errorSummary = []
-
-        if (
-          error.details
-            .filter(e => e.context.label.startsWith('visit-date'))
-            .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-            .length
-        ) {
-          error.details = error.details
-            .filter(e => !e.context.label.startsWith('visit-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-        }
-        if (error.details.filter(e => e.context.label.startsWith('visit-date')).length) {
-          errorSummary.push({
-            text: error.details.find(e => e.context.label.startsWith('visit-date')).message,
-            href: '#when-was-the-review-completed'
-          })
-        }
-
-        if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
-          errorSummary.push({
-            text: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut').message,
-            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-          })
-        }
-        if (
-          error.details
-            .filter(e => e.context.label.startsWith('on-another-date'))
-            .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-            .length
-        ) {
-          error.details = error.details
-            .filter(e => !e.context.label.startsWith('on-another-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-        }
-        if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
-          errorSummary.push({
-            text: error.details.find(e => e.context.label.startsWith('on-another-date')).message,
-            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-          })
-        }
+      failAction: async function (request, h, error) {
+        const errorSummary = checkForError(error)
 
         return h
           .view(templatePath, {
