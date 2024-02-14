@@ -1,8 +1,7 @@
 const { v4: uuidv4 } = require('uuid')
-const config = require('../../config')
 const session = require('../../session')
 const { tokens } = require('../../session/keys')
-const InvalidStateError = require('../../exceptions/invalid-state-error')
+const config = require('../../config')
 
 const generate = (request) => {
   const state = {
@@ -17,43 +16,17 @@ const generate = (request) => {
 }
 
 const verify = (request) => {
-  try {
-    if (request.query.error) {
-      throw new Error(`Request query error found: ${JSON.stringify({
-        request: {
-          yar: {
-            id: request.yar.id
-          },
-          query: {
-            error_description: request.query.error_description
-          }
-        }
-      })}`)
-    }
+  if (!request.query.error) {
     const state = request.query.state
     if (!state) {
-      throw new InvalidStateError(`No state found: ${JSON.stringify({
-          request: {
-            yar: {
-              id: request.yar.id
-            }
-          }
-        })}`)
+      return false
     }
     const decodedState = JSON.parse(Buffer.from(state, 'base64').toString('ascii'))
     const savedState = JSON.parse(Buffer.from(session.getToken(request, tokens.state), 'base64').toString('ascii'))
-    if (decodedState.id !== savedState.id) {
-      throw new InvalidStateError(`State mismatch: ${JSON.stringify({
-          request: {
-            yar: {
-              id: request.yar.id
-            }
-          }
-        })}`)
-    }
-  } catch (error) {
-    console.error(error)
-    throw error
+    return decodedState.id === savedState.id
+  } else {
+    console.log(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
+    return false
   }
 }
 
