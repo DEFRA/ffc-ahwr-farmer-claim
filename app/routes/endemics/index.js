@@ -30,19 +30,22 @@ module.exports = {
     handler: async (request, h) => {
       request.cookieAuth.clear()
       session.clear(request)
-
+      console.log('%%%%%%%%%%%%%%', request.query)
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
-        const latestApplication = application.find((application) => {
+        const latestEndemicsApplication = application.find((application) => {
           return application.type === 'EE'
         })
+        // const latestReviewApplication = application.find((application) => {
+        //   return application.type === 'VV'
+        // })
         const claims = await getClaimsByApplicationReference(
-          latestApplication.reference
+          latestEndemicsApplication.reference
         )
 
         if (
-          isWithInLastTenMonths(latestApplication) &&
-          latestApplication?.statusId === REJECTED
+          isWithInLastTenMonths(latestEndemicsApplication) &&
+          latestEndemicsApplication?.statusId === REJECTED
         ) {
           return h.redirect(endemicsYouCannotClaimURI)
         }
@@ -59,11 +62,11 @@ module.exports = {
           }
         }
 
-        if (isWithInLastTenMonths(latestApplication)) {
+        if (isWithInLastTenMonths(latestEndemicsApplication)) {
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
 
-        if (!isWithInLastTenMonths(latestApplication)) {
+        if (!isWithInLastTenMonths(latestEndemicsApplication)) {
           return h.redirect(endemicsWhichReviewAnnualURI)
         }
       }
