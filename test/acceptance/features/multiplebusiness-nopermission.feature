@@ -1,4 +1,4 @@
-@smoke
+@smoke1
 
 Feature: Business Exceptions Validation- Multi Business exceptions - No Permissison
 
@@ -16,7 +16,7 @@ Scenario Outline: org-review page
     When click on continue button
     Examples:
     |business|
-    |Dale Hitchens - SBI 107224622|
+    |Lonsdale Health - SBI 106240540|
 
 Scenario:Validate Exception Message for Apply - Multi Business exceptions - No CPH
    When validate the error message in the Header

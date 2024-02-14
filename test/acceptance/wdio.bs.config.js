@@ -1,9 +1,9 @@
 const browserstack = require('browserstack-local')
-const { ReportAggregator, HtmlReporter } = require('@rpii/wdio-html-reporter')
-const log4js = require('@log4js-node/log4js-api')
+//const { ReportAggregator, HtmlReporter } = require('@rpii/wdio-html-reporter')
+//const log4js = require('@log4js-node/log4js-api')
 const allureReporter = require('@wdio/allure-reporter')
-const cucumberJson = require('wdio-cucumberjs-json-reporter')
-const logger = log4js.getLogger('default')
+//const cucumberJson = require('wdio-cucumberjs-json-reporter')
+//const logger = log4js.getLogger('default')
 const _ = require('lodash')
 const timeStamp = new Date().toLocaleString()
 const envRoot = (process.env.TEST_ENVIRONMENT_ROOT_URL || 'http://host.docker.internal:3004')
@@ -27,7 +27,7 @@ exports.config = {
         os: 'Windows',
         'projectName': 'DEFRA/ffc-ahwr/Vet-Visit',
         osVersion: '10',
-        browserVersion: '87.0',
+        browserVersion: '112.0',
         browserName: 'Chrome',
         'buildName': 'Chrome 112 compatibility - ' + timeStamp,
         local: true,
@@ -211,17 +211,17 @@ exports.config = {
   framework: 'cucumber',
   specFileRetries: 0,
   specFileRetriesDelay: 30,
-  reporters: ['spec',
-    [HtmlReporter, {
-      debug: false,
-      outputDir: './html-reports/',
-      filename: 'feature-report.html',
-      reportTitle: 'Feature Test Report',
-      showInBrowser: false,
-      useOnAfterCommandForScreenshot: false,
-      LOG: logger
-    }]
-  ],
+  // reporters: ['spec',
+  //   [HtmlReporter, {
+  //     debug: false,
+  //     outputDir: './html-reports/',
+  //     filename: 'feature-report.html',
+  //     reportTitle: 'Feature Test Report',
+  //     showInBrowser: false,
+  //     useOnAfterCommandForScreenshot: false,
+  //     LOG: logger
+  //   }]
+  // ],
   // If you are using Cucumber you need to specify the location of your step definitions.
   cucumberOpts: {
     require: ['./steps/**/*.js'], // <string[]> (file/dir) require files before executing features
@@ -244,7 +244,7 @@ exports.config = {
   // =====
   onPrepare: function (config, capabilities) {
     if (automationEnabled === 'false') {
-      console.log('Automation tests disabled, exiting tests.')
+      console.log('Automation tests disable, exiting tests.')
       process.exit(0)
     }
     const reportAggregator = new ReportAggregator({
@@ -307,6 +307,6 @@ exports.config = {
     await allureReporter.addFeature(world.name)
   },
   afterStep: async function (step, scenario, result) {
-    cucumberJson.attach(await browser.takeScreenshot(), 'image/png')
+  //  cucumberJson.attach(await browser.takeScreenshot(), 'image/png')
   }
 }

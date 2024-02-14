@@ -55,7 +55,7 @@ describe('Species numbers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 11 or more cattle  on the date of the review?')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 11 or more beef cattle  on the date of the review?')
       expect($('title').text().trim()).toEqual('Number - Annual health and welfare review of livestock')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
@@ -178,7 +178,7 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('Did you have 11 or more cattle  on the date of the review?')
+      expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the review?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a response')
     })
     test('redirect the user to 404 page in fail action and no claim object', async () => {

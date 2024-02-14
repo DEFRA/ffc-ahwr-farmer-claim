@@ -1,4 +1,4 @@
-@smoke1
+@smoke
 
 Feature: Business Exceptions Validation- Multi Business exceptions - Not Applied
 
