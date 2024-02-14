@@ -2,7 +2,7 @@ const { get } = require('./base')
 const config = require('../../config')
 const session = require('../../session')
 const { tokens } = require('../../session/keys')
-const jwtDecode = require('../../auth/token-verify/jwt-decode')
+const decodeJwt = require('../../auth/token-verify/jwt-decode')
 const hostname = config.authConfig.ruralPaymentsAgency.hostname
 const getOrganisationPermissionsUrl = config.authConfig.ruralPaymentsAgency.getOrganisationPermissionsUrl
 const getOrganisationUrl = config.authConfig.ruralPaymentsAgency.getOrganisationUrl
@@ -30,7 +30,7 @@ function getOrganisationAddress (address) {
 
 function parsedAccessToken (request) {
   const accessToken = session.getToken(request, tokens.accessToken)
-  return jwtDecode(accessToken)
+  return decodeJwt(accessToken)
 }
 
 const getOrganisationAuthorisation = async (request, organisationId) => {

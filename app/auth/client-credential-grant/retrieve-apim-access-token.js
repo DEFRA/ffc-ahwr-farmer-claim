@@ -2,7 +2,7 @@ const wreck = require('@hapi/wreck')
 const FormData = require('form-data')
 const config = require('../../config')
 
-const retrieveApimAccessToken = async (request) => {
+const retrieveApimAccessToken = async () => {
   console.log(`${new Date().toISOString()} Requesting an access token for APIM: ${JSON.stringify(`${config.authConfig.apim.hostname}${config.authConfig.apim.oAuthPath}`)}`)
   try {
     const uri = `${config.authConfig.apim.hostname}${config.authConfig.apim.oAuthPath}`
