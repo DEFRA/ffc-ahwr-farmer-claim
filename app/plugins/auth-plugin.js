@@ -23,7 +23,7 @@ module.exports = {
         validateFunc: async (request, s) => {
           const result = { valid: false }
 
-          if (session.getClaim(request, organisationKey)) {
+          if (session.getClaim(request, organisationKey) || session.getEndemicsClaim(request, organisationKey)) {
             result.valid = true
           }
 
