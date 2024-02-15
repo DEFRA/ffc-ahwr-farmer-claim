@@ -140,29 +140,6 @@ module.exports = [
               href: '#when-was-the-review-completed'
             })
           }
-
-          if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
-            errorSummary.push({
-              text: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut').message,
-              href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-            })
-          }
-          if (
-            error.details
-              .filter(e => e.context.label.startsWith('on-another-date'))
-              .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-              .length
-          ) {
-            error.details = error.details
-              .filter(e => !e.context.label.startsWith('on-another-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-          }
-          if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
-            errorSummary.push({
-              text: error.details.find(e => e.context.label.startsWith('on-another-date')).message,
-              href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-            })
-          }
-
           return h
             .view(endemicsDateOfVisit, {
               ...request.payload,
