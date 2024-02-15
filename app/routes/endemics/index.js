@@ -17,6 +17,9 @@ const {
   endemicsWhichTypeOfReview,
   endemicsYouCannotClaim
 } = require('../../config/routes')
+const {
+  endemicsClaim: { latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }
+} = require('../../session/keys')
 
 const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -30,15 +33,18 @@ module.exports = {
     handler: async (request, h) => {
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
-        const latestApplication = application.find((application) => {
+        const latestEndemicsApplication = application.find((application) => {
           return application.type === 'EE'
         })
         const latestVetVisitApplication = application.find((application) => {
           return application.type === 'VV'
         })
         const claims = await getClaimsByApplicationReference(
-          latestApplication.reference
+          latestEndemicsApplication.reference
         )
+        session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
+        session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+        session.setEndemicsClaim(request, previousClaimsKey, claims)
 
         // new user
         if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
@@ -58,7 +64,7 @@ module.exports = {
 
         // old claims NO new claims
         const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
-        if(latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
+        if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
           return h.redirect(endemicsWhichTypeOfReviewURI)
         } else if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === REJECTED) {
           logout()
