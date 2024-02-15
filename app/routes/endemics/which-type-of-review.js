@@ -13,15 +13,16 @@ const backLink = vetVisits
 const getTypeOfLivestockFromPastClaims = async (sbi) => {
   const applications = await getLatestApplicationsBySbi(sbi)
 
-  const latestApplication = applications[0]
-  const { reference } = latestApplication
+  const endemicsApplication = applications[0]
+  const { reference } = endemicsApplication
   const claims = await getClaimsByApplicationReference(reference)
 
   if (claims?.length) {
     return claims[0].data.typeOfLivestock
   }
 
-  return latestApplication.data.whichReview
+  const latestVetVisitsApplications = applications.filter((application) => application.type === 'VV')[0]
+  return latestVetVisitsApplications.data.whichReview
 }
 
 module.exports = [

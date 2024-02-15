@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim, clearEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
-const { livestockTypes } = require('../../constants/claim')
+const { livestockTypes, claimType } = require('../../constants/claim')
 const {
   vetVisits,
   endemicsDateOfVisit,
@@ -57,6 +57,7 @@ module.exports = [
 
         clearEndemicsClaim(request)
         setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
+        setEndemicsClaim(request, endemicsClaim.typeOfReview, claimType.review)
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
