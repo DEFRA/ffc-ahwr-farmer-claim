@@ -17,8 +17,12 @@ async function getClaimsByApplicationReference (applicationReference) {
   }
 }
 
-function isWithInLastTenMonths (application) {
-  const start = new Date(application.createdAt)
+function isWithInLastTenMonths (date) {
+  if (!date) {
+    return false // Date of visit was introduced more than 10 months ago
+  }
+
+  const start = new Date(date)
   const end = new Date(start)
 
   end.setMonth(end.getMonth() + 10)

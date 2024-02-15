@@ -20,9 +20,9 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, latestReviewApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, latestVetVisitApplication } = session.getEndemicsClaim(request)
         return h.view(endemicsDateOfVisit, {
-          dateOfAgreementAccepted: latestReviewApplication?.createdAt ? new Date(latestReviewApplication.createdAt).toISOString().slice(0, 10) : undefined,
+          dateOfAgreementAccepted: latestVetVisitApplication?.createdAt ? new Date(latestVetVisitApplication.createdAt).toISOString().slice(0, 10) : undefined,
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
@@ -108,7 +108,7 @@ module.exports = [
                   }
 
                   const endDate = new Date(dateOfAgreementAccepted)
-                  endDate.setMonth(endDate.getMonth() + config.EndemicsClaimExpiryTimeMonths)
+                  endDate.setMonth(endDate.getMonth() + config.endemicsClaimExpiryTimeMonths)
                   if (dateOfVisit > endDate) {
                     return helpers.error('dateOfVisit.expired')
                   }
