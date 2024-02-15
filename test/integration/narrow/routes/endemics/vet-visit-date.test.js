@@ -109,8 +109,8 @@ describe('Date of vet visit', () => {
     tomorrow.setDate(tomorrow.getDate() + 1)
     const after6Months = new Date(today)
     after6Months.setMonth(after6Months.getMonth() + 7)
-    const before5Months = new Date(today)
-    before5Months.setMonth(before5Months.getMonth() - 5)
+    const before10Months = new Date(today)
+    before10Months.setMonth(before10Months.getMonth() - 10)
 
     const allErrorHighlights = [labels.day, labels.month, labels.year]
 
@@ -156,6 +156,23 @@ describe('Date of vet visit', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('p.govuk-error-message').text().trim()).toEqual(`Error: ${errorMessage}`)
+    })
+    test.each([
+      { description: 'application created before 10 months, visit date today', applicationCreationDate: before10Months }
+    ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate, description }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestReviewApplication: { ...latestReviewApplication, createdAt: applicationCreationDate } } })
+      const options = {
+        auth,
+        method: 'POST',
+        url,
+        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before10Months },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
     })
   })
 })

@@ -20,13 +20,6 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        // session.setEndemicsClaim(request, latestReviewApplicationKey, {
-        //   reference: 'AHWR-2470-6BA9',
-        //   createdAt: Date.now(),
-        //   statusId: 1,
-        //   type: 'VV'
-        // })
-        console.log('>>>>>>>>>>>>>>>>', session.getEndemicsClaim(request))
         const { dateOfVisit, latestReviewApplication } = session.getEndemicsClaim(request)
         return h.view(endemicsDateOfVisit, {
           dateOfAgreementAccepted: latestReviewApplication?.createdAt ? new Date(latestReviewApplication.createdAt).toISOString().slice(0, 10) : undefined,
@@ -78,7 +71,6 @@ module.exports = [
                   if (value > 9999 || value < 1000) {
                     return value
                   }
-                  console.log('$$$$$$$$$$$$', helpers)
                   const isValidDate = (year, month, day) => {
                     const dateObject = new Date(year, month - 1, day)
                     return (
@@ -116,7 +108,7 @@ module.exports = [
                   }
 
                   const endDate = new Date(dateOfAgreementAccepted)
-                  endDate.setMonth(endDate.getMonth() + config.claimExpiryTimeMonths)
+                  endDate.setMonth(endDate.getMonth() + config.EndemicsClaimExpiryTimeMonths)
                   if (dateOfVisit > endDate) {
                     return helpers.error('dateOfVisit.expired')
                   }
@@ -125,7 +117,7 @@ module.exports = [
                 }, {
                   'dateOfVisit.future': 'Date of visit must be a real date',
                   'dateOfVisit.beforeAccepted': 'Date of visit cannot be before the date your agreement began',
-                  'dateOfVisit.expired': 'The date the review was completed must be within six months of agreement date'
+                  'dateOfVisit.expired': 'The date the review was completed must be within ten months of agreement date'
                 })
               }
             ]
@@ -133,8 +125,6 @@ module.exports = [
         }),
         failAction: async (request, h, error) => {
           const errorSummary = []
-          console.log('$$$$$$$$$$$$', error)
-
           if (
             error.details
               .filter(e => e.context.label.startsWith('visit-date'))
@@ -205,7 +195,6 @@ module.exports = [
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
-        console.log('$$$$$$$$$$$$', dateOfVisit)
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
       }

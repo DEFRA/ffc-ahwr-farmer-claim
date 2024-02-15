@@ -17,6 +17,9 @@ const {
   endemicsWhichTypeOfReview,
   endemicsYouCannotClaim
 } = require('../../config/routes')
+const {
+  endemicsClaim: { latestEndemicsApplication: latestEndemicsApplicationKey, latestReviewApplication: latestReviewApplicationKey, previousClaims: previousClaimsKey }
+} = require('../../session/keys')
 
 const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -30,18 +33,20 @@ module.exports = {
     handler: async (request, h) => {
       request.cookieAuth.clear()
       session.clear(request)
-      console.log('%%%%%%%%%%%%%%', request.query)
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
         const latestEndemicsApplication = application.find((application) => {
           return application.type === 'EE'
         })
-        // const latestReviewApplication = application.find((application) => {
-        //   return application.type === 'VV'
-        // })
+        const latestReviewApplication = application.find((application) => {
+          return application.type === 'VV'
+        })
         const claims = await getClaimsByApplicationReference(
           latestEndemicsApplication.reference
         )
+        session.setEndemicsClaim(request, latestReviewApplicationKey, latestReviewApplication)
+        session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+        session.setEndemicsClaim(request, previousClaimsKey, claims)
 
         if (
           isWithInLastTenMonths(latestEndemicsApplication) &&
