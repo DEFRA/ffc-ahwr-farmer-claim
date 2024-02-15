@@ -31,8 +31,6 @@ module.exports = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      request.cookieAuth.clear()
-      session.clear(request)
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
         const latestEndemicsApplication = application.find((application) => {
@@ -48,14 +46,15 @@ module.exports = {
         session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
         session.setEndemicsClaim(request, previousClaimsKey, claims)
 
-        if (
-          isWithInLastTenMonths(latestEndemicsApplication) &&
-          latestEndemicsApplication?.statusId === REJECTED
-        ) {
-          return h.redirect(endemicsYouCannotClaimURI)
+        if (latestReviewApplication) {
+          if (
+            isWithInLastTenMonths(latestReviewApplication) &&
+            latestReviewApplication?.statusId === REJECTED
+          ) {
+            return h.redirect(endemicsYouCannotClaimURI)
+          }
         }
-
-        if (claims?.length) {
+        if (Array.isArray(claims) && claims?.length) {
           const latestClaim = claims.find((claim) => {
             return claim.type === claimType.review || claim.type === claimType.endemics
           })
@@ -75,6 +74,10 @@ module.exports = {
           return h.redirect(endemicsWhichReviewAnnualURI)
         }
       }
+
+      request.cookieAuth.clear()
+      session.clear(request)
+
       return h.view(`${endemicsIndex}/index`, {
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
         ruralPaymentsAgency: config.ruralPaymentsAgency
