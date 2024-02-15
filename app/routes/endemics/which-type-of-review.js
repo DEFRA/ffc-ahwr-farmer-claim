@@ -18,11 +18,11 @@ const getTypeOfLivestockFromPastClaims = async (sbi) => {
   const claims = await getClaimsByApplicationReference(reference)
 
   if (claims?.length) {
-    return claims[0].data.typeOfLivestock
+    return claims[0].data?.typeOfLivestock
   }
 
-  const latestVetVisitsApplications = applications.filter((application) => application.type === 'VV')[0]
-  return latestVetVisitsApplications.data.whichReview
+  const latestVetVisitsApplication = applications.filter((application) => application.type === 'VV')[0]
+  return latestVetVisitsApplication.data?.whichReview
 }
 
 module.exports = [

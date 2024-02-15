@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const mockConfig = require('../../../../app/config')
+jest.mock('../../../../app/lib/logout')
 
 describe('Farmer claim home page test', () => {
   beforeAll(async () => {

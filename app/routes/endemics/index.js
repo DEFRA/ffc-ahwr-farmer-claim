@@ -46,12 +46,10 @@ module.exports = {
         session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
         session.setEndemicsClaim(request, previousClaimsKey, claims)
 
-        console.log('Do we get here')
         // new user
         if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
           return h.redirect(endemicsWhichSpeciesURI)
         }
-        console.log('Do we get here')
 
         // new claims
         if (Array.isArray(claims) && claims?.length) {
@@ -63,19 +61,15 @@ module.exports = {
             return h.redirect(endemicsWhichTypeOfReviewURI)
           }
         }
-        console.log('Do we get here')
 
         // old claims NO new claims
         const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
         if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
-          console.log('Do we get here READY TO PAY')
           return h.redirect(endemicsWhichTypeOfReviewURI)
         } else if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === REJECTED) {
-          console.log('Do we get here REJECTED')
           logout()
           return h.redirect(endemicsYouCannotClaimURI)
         } else {
-          console.log('Do we get here else')
           return h.redirect(endemicsWhichSpeciesURI)
         }
       }

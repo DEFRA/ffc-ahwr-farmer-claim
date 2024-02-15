@@ -8,6 +8,7 @@ jest.mock('../../../../app/session')
 const messagingMock = require('../../../../app/messaging')
 jest.mock('../../../../app/messaging')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+jest.mock('../../../../app/lib/logout')
 
 const reference = 'VV-1234-5678'
 const data = {
