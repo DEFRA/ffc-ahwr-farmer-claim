@@ -75,7 +75,7 @@ module.exports = {
           logout()
           return h.redirect(endemicsYouCannotClaimURI)
         } else {
-        console.log('Do we get here else')
+          console.log('Do we get here else')
           return h.redirect(endemicsWhichSpeciesURI)
         }
       }
