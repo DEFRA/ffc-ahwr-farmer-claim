@@ -23,8 +23,18 @@ jest.mock('../../../../../app/session')
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: Date.now(),
+  data: {
+    visitDate: Date.now()
+  },
   statusId: 1,
   type: 'VV'
+}
+
+const latestEndemicsApplication = {
+  reference: 'AHWR-2470-6BA9',
+  createdAt: Date.now(),
+  statusId: 1,
+  type: 'EE'
 }
 
 describe('Date of vet visit', () => {
@@ -32,7 +42,7 @@ describe('Date of vet visit', () => {
   const url = '/claim/endemics/date-of-visit'
 
   beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication } })
+    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')

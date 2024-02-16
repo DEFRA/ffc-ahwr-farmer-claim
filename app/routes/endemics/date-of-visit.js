@@ -23,7 +23,7 @@ module.exports = [
         const { dateOfVisit, latestEndemicsApplication } = session.getEndemicsClaim(request)
 
         return h.view(endemicsDateOfVisit, {
-          dateOfAgreementAccepted: latestEndemicsApplication?.createdAt ? new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10) : undefined,
+          dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
@@ -108,7 +108,7 @@ module.exports = [
                     })
                   }
 
-                  const endDate = new Date(dateOfAgreementAccepted)
+                  const endDate = new Date(dateOfAgreementAccepted) // todo: needs to be date of most recent review (either VV application or claim of type R)
                   endDate.setMonth(endDate.getMonth() + config.endemicsClaimExpiryTimeMonths)
                   if (dateOfVisit > endDate) {
                     return helpers.error('dateOfVisit.expired')
