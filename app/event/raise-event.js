@@ -22,8 +22,6 @@ const raiseEvent = async (event, status = 'success') => {
   }
 
   await eventPublisher.sendEvent(eventMessage)
-
-  // console.log(`Event raised: ${JSON.stringify(eventMessage)}`)
 }
 
 module.exports = raiseEvent
