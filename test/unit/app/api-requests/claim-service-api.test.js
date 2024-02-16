@@ -41,4 +41,38 @@ describe('Claim Service API', () => {
     expect(result).toBe(null)
     expect(claimServiceApi.isWithInLastTenMonths(Date.now())).toBe(true)
   })
+  test('Post claim should return status 200', async () => {
+    const mockResponse = {
+      res: {
+        statusCode: 200,
+        statusMessage: 'OK'
+      },
+      payload: 'new claim'
+    }
+    Wreck.post.mockResolvedValue(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const result = await claimServiceApi.submitNewClaim(
+      'new claim data'
+    )
+
+    expect(result).toBe('new claim')
+  })
+  test('Post claim with invalid data should return status 400', async () => {
+    const mockResponse = {
+      res: {
+        statusCode: 400,
+        statusMessage: 'Bad Request'
+      }
+    }
+    Wreck.post.mockResolvedValue(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const result = await claimServiceApi.submitNewClaim(
+      'new claim with invalid data'
+    )
+
+    expect(result).toBe(null)
+    expect(claimServiceApi.isWithInLastTenMonths()).toBe(false)
+  })
 })

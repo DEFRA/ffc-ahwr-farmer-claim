@@ -13,7 +13,7 @@ const {
 } = require('../../config/routes')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
-const { getSpeciesEligbileNumberForDisplay } = require('../../lib/display-helpers')
+const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
@@ -34,7 +34,7 @@ module.exports = [
         if (!claim) {
           return boom.notFound()
         }
-        const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
+        const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
         return h.view(
           endemicsSpeciesNumbers, {
             backLink,
@@ -57,7 +57,7 @@ module.exports = [
           if (!claim) {
             return boom.notFound()
           }
-          const speciesEligbileNumberForDisplay = getSpeciesEligbileNumberForDisplay(claim, isEndemicsClaims)
+          const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
           return h.view(
             endemicsSpeciesNumbers,
             {

@@ -1,8 +1,9 @@
-const session = require('../../session')
 const routes = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
-const { livestockTypes } = require('../../constants/claim')
-const { getSpeciesEligbileNumberForDisplay } = require('../../lib/display-helpers')
+const { livestockTypes, claimType } = require('../../constants/claim')
+const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
+const { submitNewClaim } = require('../../api-requests/claim-service-api')
+const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -12,7 +13,7 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const sessionData = session.getEndemicsClaim(request)
+        const sessionData = getEndemicsClaim(request)
         const {
           organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName,
           vetRCVSNumber, laboratoryURN
@@ -35,16 +36,16 @@ module.exports = [
           },
           {
             key: { text: 'Date of visit' },
-            value: { html: dateOfVisit },
+            value: { html: (new Date(dateOfVisit)).toLocaleDateString('en-GB') },
             actions: { items: [{ href: routes.endemicsTestUrn, text: 'Change', visuallyHiddenText: 'change date of visit' }] }
           },
           {
             key: { text: 'Date of testing' },
-            value: { html: dateOfTesting },
+            value: { html: (new Date(dateOfTesting)).toLocaleDateString('en-GB') },
             actions: { items: [{ href: routes.endemicsDateOfTesting, text: 'Change', visuallyHiddenText: 'change date of testing' }] }
           },
           {
-            key: { text: getSpeciesEligbileNumberForDisplay(sessionData, true) },
+            key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
             value: { html: speciesNumbers },
             actions: { items: [{ href: routes.endemicsSpeciesNumbers, text: 'Change', visuallyHiddenText: 'change URN' }] }
           },
@@ -90,10 +91,47 @@ module.exports = [
     method: 'POST',
     path: pageUrl,
     options: {
-      handler: async (_request, h) => {
-        // Submit claim
+      handler: async (request, h) => {
+        const {
+          typeOfLivestock,
+          typeOfReview,
+          dateOfVisit,
+          dateOfTesting,
+          speciesNumbers,
+          vetsName,
+          vetRCVSNumber,
+          laboratoryURN,
+          numberOfOralFluidSamples,
+          numberAnimalsTested,
+          minimumNumberAnimalsRequired,
+          testResults,
+          latestEndemicsApplication
+        } = getEndemicsClaim(request)
 
-        return h.redirect(`${urlPrefix}/${routes.endemicsConfirmation}`)
+        const claim = await submitNewClaim({
+          applicationReference: latestEndemicsApplication.reference,
+          type: claimType[typeOfReview],
+          createdBy: 'admin',
+          data: {
+            typeOfLivestock,
+            dateOfVisit,
+            dateOfTesting,
+            speciesNumbers,
+            vetsName,
+            vetRCVSNumber,
+            laboratoryURN,
+            numberOfOralFluidSamples,
+            numberAnimalsTested,
+            minimumNumberAnimalsRequired,
+            testResults
+          }
+        })
+
+        setEndemicsClaim(request, 'reference', claim.reference)
+
+        return h.redirect(
+          `${urlPrefix}/${routes.endemicsConfirmation}`
+        )
       }
     }
   }

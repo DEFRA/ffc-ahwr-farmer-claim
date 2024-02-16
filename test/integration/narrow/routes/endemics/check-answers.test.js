@@ -1,9 +1,12 @@
 const cheerio = require('cheerio')
-const { livestockTypes } = require('../../../../../app/constants/claim')
+const Wreck = require('@hapi/wreck')
 const getCrumbs = require('../../../../utils/get-crumbs')
+const { livestockTypes } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+
 jest.mock('../../../../../app/session')
+jest.mock('@hapi/wreck')
 
 describe('Check answers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -61,8 +64,8 @@ describe('Check answers test', () => {
           organisation: { name: 'business name' },
           typeOfLivestock: 'beef',
           typeOfReview: 'typeOfReview',
-          dateOfVisit: 'dateOfVisit',
-          dateOfTesting: 'dateOfTesting',
+          dateOfVisit: '2023-12-19T10:25:11.318Z',
+          dateOfTesting: '2023-12-19T10:25:11.318Z',
           speciesNumbers: 'speciesNumbers',
           vetsName: 'vetsName',
           vetRCVSNumber: 'vetRCVSNumber',
@@ -84,7 +87,7 @@ describe('Check answers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toEqual('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
 
       expect($('.govuk-summary-list__key').text()).toContain('Business name')
       expect($('.govuk-summary-list__value').text()).toContain('business name')
@@ -93,18 +96,18 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__value').text()).toContain('typeOfReview')
 
       expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
-      expect($('.govuk-summary-list__value').text()).toContain('dateOfVisit')
+      expect($('.govuk-summary-list__value').text()).toContain('19/12/2023')
 
       expect($('.govuk-summary-list__key').text()).toContain('Date of testing')
-      expect($('.govuk-summary-list__value').text()).toContain('dateOfTesting')
+      expect($('.govuk-summary-list__value').text()).toContain('19/12/2023')
 
       expect($('.govuk-summary-list__key').text()).toContain('11 or more beef cattle')
       expect($('.govuk-summary-list__value').text()).toContain('speciesNumbers')
 
-      expect($('.govuk-summary-list__key').text()).toContain('Vet\'s name')
+      expect($('.govuk-summary-list__key').text()).toContain("Vet's name")
       expect($('.govuk-summary-list__value').text()).toContain('vetsName')
 
-      expect($('.govuk-summary-list__key').text()).toContain('Vet\'s RCVS number')
+      expect($('.govuk-summary-list__key').text()).toContain("Vet's RCVS number")
       expect($('.govuk-summary-list__value').text()).toContain('vetRCVSNumber')
 
       expect($('.govuk-summary-list__key').text()).toContain('URN')
@@ -123,43 +126,59 @@ describe('Check answers test', () => {
     })
 
     test.each([
-      { typeOfLivestock: livestockTypes.beef, content: '11 or more beef cattle', backLink: 'endemics/test-results' },
-      { typeOfLivestock: livestockTypes.dairy, content: '11 or more dairy cattle', backLink: 'endemics/test-results' },
-      { typeOfLivestock: livestockTypes.pigs, content: '51 or more pigs', backLink: 'endemics/test-results' },
-      { typeOfLivestock: livestockTypes.sheep, content: '21 or more sheep', backLink: 'endemics/test-urn' }
-    ])('check content and back links are correct for $typeOfLivestock', async ({ typeOfLivestock, content, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => {
-        return {
-          organisation: { name: 'business name' },
-          typeOfLivestock,
-          typeOfReview: 'typeOfReview',
-          dateOfVisit: 'dateOfVisit',
-          dateOfTesting: 'dateOfTesting',
-          speciesNumbers: 'speciesNumbers',
-          vetsName: 'vetsName',
-          vetRCVSNumber: 'vetRCVSNumber',
-          laboratoryURN: 'laboratoryURN'
-        }
-      })
-      const options = {
-        method: 'GET',
-        url,
-        auth
+      {
+        typeOfLivestock: livestockTypes.beef,
+        content: '11 or more beef cattle',
+        backLink: 'endemics/test-results'
+      },
+      {
+        typeOfLivestock: livestockTypes.dairy,
+        content: '11 or more dairy cattle',
+        backLink: 'endemics/test-results'
+      },
+      {
+        typeOfLivestock: livestockTypes.pigs,
+        content: '51 or more pigs',
+        backLink: 'endemics/test-results'
+      },
+      {
+        typeOfLivestock: livestockTypes.sheep,
+        content: '21 or more sheep',
+        backLink: 'endemics/test-urn'
       }
+    ])(
+      'check content and back links are correct for $typeOfLivestock',
+      async ({ typeOfLivestock, content, backLink }) => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return {
+            organisation: { name: 'business name' },
+            typeOfLivestock,
+            typeOfReview: 'typeOfReview',
+            dateOfVisit: '2023-12-19T10:25:11.318Z',
+            dateOfTesting: '2023-12-19T10:25:11.318Z',
+            speciesNumbers: 'speciesNumbers',
+            vetsName: 'vetsName',
+            vetRCVSNumber: 'vetRCVSNumber',
+            laboratoryURN: 'laboratoryURN'
+          }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
 
-      const res = await global.__SERVER__.inject(options)
+        const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
 
-      expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toEqual('Check your answers - Annual health and welfare review of livestock')
-
-      expect($('.govuk-summary-list__key').text()).toContain(content)
-      expect($('.govuk-summary-list__value').text()).toContain('speciesNumbers')
-
-      expect($('.govuk-back-link').attr('href')).toEqual(backLink)
-    })
+        expect($('h1').text()).toMatch('Check your answers')
+        expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+        expect($('.govuk-summary-list__key').text()).toContain(content)
+        expect($('.govuk-summary-list__value').text()).toContain('speciesNumbers')
+        expect($('.govuk-back-link').attr('href')).toEqual(backLink)
+      })
   })
 
   describe(`POST ${url} route`, () => {
@@ -167,6 +186,62 @@ describe('Check answers test', () => {
 
     beforeEach(async () => {
       crumb = await getCrumbs(global.__SERVER__)
+    })
+
+    test('When post new claim, it should redirect to confirmation page', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      getEndemicsClaimMock.mockImplementation(() => {
+        return {
+          typeOfLivestock: 'pigs',
+          typeOfReview: 'review',
+          dateOfVisit: '2023-12-19T10:25:11.318Z',
+          dateOfTesting: '2023-12-19T10:25:11.318Z',
+          speciesNumbers: 'yes',
+          vetsName: 'VetName',
+          vetRCVSNumber: '123456',
+          laboratoryURN: '123456',
+          numberOfOralFluidSamples: '5',
+          numberAnimalsTested: '30',
+          minimumNumberAnimalsRequired: '30',
+          testResults: 'positive',
+          latestEndemicsApplication: {
+            reference: '123'
+          }
+        }
+      })
+
+      const mockResponse = {
+        res: {
+          statusCode: 200,
+          statusMessage: 'OK'
+        },
+        payload: {
+          reference: '123'
+        }
+      }
+
+      Wreck.post.mockResolvedValue(mockResponse)
+
+      jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
+        return {
+          submitNewClaim: jest.fn().mockReturnValue({
+            reference: '123'
+          })
+        }
+      })
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual(
+        expect.stringContaining('/claim/endemics/confirmation')
+      )
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -180,7 +255,11 @@ describe('Check answers test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(
+        expect.stringContaining(
+          'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
+        )
+      )
     })
   })
 })
