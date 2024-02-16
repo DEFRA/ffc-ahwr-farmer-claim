@@ -15,7 +15,7 @@ function expectPageContentOk ($) {
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/endemics/which-review-annual')
+  expect(backLink.attr('href')).toMatch('/claim/endemics/which-species')
 }
 
 jest.mock('../../../../../app/session')

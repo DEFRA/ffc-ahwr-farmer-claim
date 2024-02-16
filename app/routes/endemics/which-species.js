@@ -5,11 +5,11 @@ const { livestockTypes, claimType } = require('../../constants/claim')
 const {
   vetVisits,
   endemicsDateOfVisit,
-  endemicsWhichReviewAnnual
+  endemicsWhichSpecies
 } = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
 
-const pageUrl = `${urlPrefix}/${endemicsWhichReviewAnnual}`
+const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = {
   href: vetVisits
 }
@@ -23,7 +23,7 @@ module.exports = [
       handler: async (request, h) => {
         const endemicsClaimData = getEndemicsClaim(request)
 
-        return h.view(endemicsWhichReviewAnnual, {
+        return h.view(endemicsWhichSpecies, {
           ...(endemicsClaimData?.typeOfLivestock && {
             previousAnswer: endemicsClaimData.typeOfLivestock
           }),
@@ -44,7 +44,7 @@ module.exports = [
         }),
         failAction: (request, h, _err) => {
           return h
-            .view(endemicsWhichReviewAnnual, {
+            .view(endemicsWhichSpecies, {
               errorMessage,
               backLink
             })
