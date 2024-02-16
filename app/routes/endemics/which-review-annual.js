@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim, clearEndemicsClaim } = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const {
@@ -55,7 +55,6 @@ module.exports = [
       handler: async (request, h) => {
         const { typeOfLivestock } = request.payload
 
-        clearEndemicsClaim(request)
         setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
         setEndemicsClaim(request, endemicsClaim.typeOfReview, claimType.review)
 
