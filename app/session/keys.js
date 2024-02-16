@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   endemicsClaim: {
+    reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
     typeOfReview: 'typeOfReview',
     dateOfVisit: 'dateOfVisit',
