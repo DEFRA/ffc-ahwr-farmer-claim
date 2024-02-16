@@ -180,47 +180,47 @@ describe('Check answers test', () => {
         expect($('.govuk-back-link').attr('href')).toEqual(backLink)
       })
 
-      test.each([
-        {
-          typeOfReview: claimType.review,
-          content: 'Annual health and welfare review'
-        },
-        {
-          typeOfReview: claimType.endemics,
-          content: 'Endemic disease follow-ups'
-        },
-      ])(
-        'check content and back links are correct for typeOfReview: $typeOfReview',
-        async ({ typeOfReview, content, backLink }) => {
-          getEndemicsClaimMock.mockImplementation(() => {
-            return {
-              organisation: { name: 'business name' },
-              typeOfLivestock: 'beef',
-              typeOfReview,
-              dateOfVisit: '2023-12-19T10:25:11.318Z',
-              dateOfTesting: '2023-12-19T10:25:11.318Z',
-              speciesNumbers: 'speciesNumbers',
-              vetsName: 'vetsName',
-              vetRCVSNumber: 'vetRCVSNumber',
-              laboratoryURN: 'laboratoryURN'
-            }
-          })
-          const options = {
-            method: 'GET',
-            url,
-            auth
+    test.each([
+      {
+        typeOfReview: claimType.review,
+        content: 'Annual health and welfare review'
+      },
+      {
+        typeOfReview: claimType.endemics,
+        content: 'Endemic disease follow-ups'
+      }
+    ])(
+      'check content and back links are correct for typeOfReview: $typeOfReview',
+      async ({ typeOfReview, content, backLink }) => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return {
+            organisation: { name: 'business name' },
+            typeOfLivestock: 'beef',
+            typeOfReview,
+            dateOfVisit: '2023-12-19T10:25:11.318Z',
+            dateOfTesting: '2023-12-19T10:25:11.318Z',
+            speciesNumbers: 'speciesNumbers',
+            vetsName: 'vetsName',
+            vetRCVSNumber: 'vetRCVSNumber',
+            laboratoryURN: 'laboratoryURN'
           }
-  
-          const res = await global.__SERVER__.inject(options)
-  
-          expect(res.statusCode).toBe(200)
-          const $ = cheerio.load(res.payload)
-  
-          expect($('h1').text()).toMatch('Check your answers')
-          expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
-          expect($('.govuk-summary-list__key').text()).toContain('Type of review')
-          expect($('.govuk-summary-list__value').text()).toContain(content)
         })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        expect($('h1').text()).toMatch('Check your answers')
+        expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+        expect($('.govuk-summary-list__key').text()).toContain('Type of review')
+        expect($('.govuk-summary-list__value').text()).toContain(content)
+      })
   })
 
   describe(`POST ${url} route`, () => {
