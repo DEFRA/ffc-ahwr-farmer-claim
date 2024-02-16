@@ -13,7 +13,7 @@ const {
   getClaimsByApplicationReference
 } = require('../../api-requests/claim-service-api')
 const {
-  endemicsWhichReviewAnnual,
+  endemicsWhichSpecies,
   endemicsWhichTypeOfReview,
   endemicsYouCannotClaim
 } = require('../../config/routes')
@@ -23,7 +23,7 @@ const {
 
 const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichReviewAnnual}`
+const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
 
 module.exports = {
   method: 'GET',

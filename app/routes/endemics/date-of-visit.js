@@ -3,7 +3,7 @@ const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
-const { endemicsWhichReviewAnnual, endemicsDateOfVisit, endemicsDateOfTesting } = require('../../config/routes')
+const { endemicsWhichSpecies, endemicsDateOfVisit, endemicsDateOfTesting } = require('../../config/routes')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey }
 } = require('../../session/keys')
@@ -12,7 +12,7 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const backLink = `${urlPrefix}/${endemicsWhichReviewAnnual}`
+const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
 
 module.exports = [
   {

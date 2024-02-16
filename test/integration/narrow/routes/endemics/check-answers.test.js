@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
 const Wreck = require('@hapi/wreck')
 const getCrumbs = require('../../../../utils/get-crumbs')
-const { livestockTypes } = require('../../../../../app/constants/claim')
+const { livestockTypes, claimType } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 
@@ -93,7 +93,7 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__value').text()).toContain('business name')
 
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
-      expect($('.govuk-summary-list__value').text()).toContain('typeOfReview')
+      expect($('.govuk-summary-list__value').text()).toContain('Endemic disease follow-ups')
 
       expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
       expect($('.govuk-summary-list__value').text()).toContain('19/12/2023')
@@ -147,7 +147,7 @@ describe('Check answers test', () => {
         backLink: 'endemics/test-urn'
       }
     ])(
-      'check content and back links are correct for $typeOfLivestock',
+      'check content and back links are correct for typeOfLivestock: $typeOfLivestock',
       async ({ typeOfLivestock, content, backLink }) => {
         getEndemicsClaimMock.mockImplementation(() => {
           return {
@@ -178,6 +178,48 @@ describe('Check answers test', () => {
         expect($('.govuk-summary-list__key').text()).toContain(content)
         expect($('.govuk-summary-list__value').text()).toContain('speciesNumbers')
         expect($('.govuk-back-link').attr('href')).toEqual(backLink)
+      })
+
+    test.each([
+      {
+        typeOfReview: claimType.review,
+        content: 'Annual health and welfare review'
+      },
+      {
+        typeOfReview: claimType.endemics,
+        content: 'Endemic disease follow-ups'
+      }
+    ])(
+      'check content and back links are correct for typeOfReview: $typeOfReview',
+      async ({ typeOfReview, content, backLink }) => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return {
+            organisation: { name: 'business name' },
+            typeOfLivestock: 'beef',
+            typeOfReview,
+            dateOfVisit: '2023-12-19T10:25:11.318Z',
+            dateOfTesting: '2023-12-19T10:25:11.318Z',
+            speciesNumbers: 'speciesNumbers',
+            vetsName: 'vetsName',
+            vetRCVSNumber: 'vetRCVSNumber',
+            laboratoryURN: 'laboratoryURN'
+          }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        expect($('h1').text()).toMatch('Check your answers')
+        expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+        expect($('.govuk-summary-list__key').text()).toContain('Type of review')
+        expect($('.govuk-summary-list__value').text()).toContain(content)
       })
   })
 

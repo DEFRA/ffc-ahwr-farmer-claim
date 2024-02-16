@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
-const { livestockTypes } = require('../../constants/claim')
+const { livestockTypes, claimType } = require('../../constants/claim')
 const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit } = require('../../config/routes')
 const { getClaimsByApplicationReference } = require('../../api-requests/claim-service-api')
 const { getLatestApplicationsBySbi } = require('../../api-requests/application-service-api')
@@ -65,7 +65,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-        setEndemicsClaim(request, typeOfReviewKey, typeOfReview)
+        setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         // For review claim
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
