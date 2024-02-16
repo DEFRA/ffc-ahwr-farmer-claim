@@ -17,6 +17,24 @@ async function getClaimsByApplicationReference (applicationReference) {
   }
 }
 
+async function submitNewClaim (data) {
+  try {
+    const response = await Wreck.post(`${config.applicationApiUri}/claim`, {
+      payload: data,
+      json: true
+    })
+    if (response.res.statusCode !== 200) {
+      throw new Error(
+        `HTTP ${response.res.statusCode} (${response.res.statusMessage})`
+      )
+    }
+    return response.payload
+  } catch (error) {
+    console.error(`${new Date().toISOString()} claim submission failed`)
+    return null
+  }
+}
+
 function isWithInLastTenMonths (date) {
   if (!date) {
     return false // Date of visit was introduced more than 10 months ago
@@ -32,6 +50,7 @@ function isWithInLastTenMonths (date) {
 }
 
 module.exports = {
+  submitNewClaim,
   isWithInLastTenMonths,
   getClaimsByApplicationReference
 }
