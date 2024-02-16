@@ -20,9 +20,10 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, latestVetVisitApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, latestEndemicsApplication } = session.getEndemicsClaim(request)
+
         return h.view(endemicsDateOfVisit, {
-          dateOfAgreementAccepted: latestVetVisitApplication?.createdAt ? new Date(latestVetVisitApplication.createdAt).toISOString().slice(0, 10) : undefined,
+          dateOfAgreementAccepted: latestEndemicsApplication?.createdAt ? new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10) : undefined,
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
