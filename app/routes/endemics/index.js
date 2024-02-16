@@ -1,10 +1,10 @@
-const { REJECTED } = require('../../constants/application-status')
-const { claimType } = require('../../constants/claim')
+const { REJECTED, READY_TO_PAY } = require('../../constants/application-status')
 const config = require('../../config')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { endemicsIndex } = require('../../config/routes')
 const { requestAuthorizationCodeUrl } = require('../../auth')
+const logout = require('../../lib/logout')
 const {
   getLatestApplicationsBySbi
 } = require('../../api-requests/application-service-api')
@@ -13,14 +13,17 @@ const {
   getClaimsByApplicationReference
 } = require('../../api-requests/claim-service-api')
 const {
-  endemicsWhichReviewAnnual,
+  endemicsWhichSpecies,
   endemicsWhichTypeOfReview,
   endemicsYouCannotClaim
 } = require('../../config/routes')
+const {
+  endemicsClaim: { latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }
+} = require('../../session/keys')
 
 const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const endemicsWhichReviewAnnualURI = `${urlPrefix}/${endemicsWhichReviewAnnual}`
+const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
 
 module.exports = {
   method: 'GET',
@@ -28,45 +31,51 @@ module.exports = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      request.cookieAuth.clear()
-      session.clear(request)
-
       if (request.query?.from === 'dashboard' && request.query?.sbi) {
         const application = await getLatestApplicationsBySbi(request.query?.sbi)
-        const latestApplication = application.find((application) => {
+        const latestEndemicsApplication = application.find((application) => {
           return application.type === 'EE'
         })
+        const latestVetVisitApplication = application.find((application) => {
+          return application.type === 'VV'
+        })
         const claims = await getClaimsByApplicationReference(
-          latestApplication.reference
+          latestEndemicsApplication.reference
         )
+        session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
+        session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+        session.setEndemicsClaim(request, previousClaimsKey, claims)
 
-        if (
-          isWithInLastTenMonths(latestApplication) &&
-          latestApplication?.statusId === REJECTED
-        ) {
-          return h.redirect(endemicsYouCannotClaimURI)
+        // new user
+        if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
+          return h.redirect(endemicsWhichSpeciesURI)
         }
 
-        if (claims?.length) {
-          const latestClaim = claims.find((claim) => {
-            return claim.type === claimType.review || claim.type === claimType.endemics
-          })
-
-          if (isWithInLastTenMonths(latestClaim) && latestClaim?.statusId === REJECTED) {
+        // new claims
+        if (Array.isArray(claims) && claims?.length) {
+          // new claim rejected in the last 10 months
+          if (isWithInLastTenMonths(claims[0].data?.dateOfVisit) && claims[0].statusId === REJECTED) {
+            logout()
             return h.redirect(endemicsYouCannotClaimURI)
           } else {
             return h.redirect(endemicsWhichTypeOfReviewURI)
           }
         }
 
-        if (isWithInLastTenMonths(latestApplication)) {
+        // old claims NO new claims
+        const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
+        if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
           return h.redirect(endemicsWhichTypeOfReviewURI)
-        }
-
-        if (!isWithInLastTenMonths(latestApplication)) {
-          return h.redirect(endemicsWhichReviewAnnualURI)
+        } else if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === REJECTED) {
+          logout()
+          return h.redirect(endemicsYouCannotClaimURI)
+        } else {
+          return h.redirect(endemicsWhichSpeciesURI)
         }
       }
+
+      logout()
+
       return h.view(`${endemicsIndex}/index`, {
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
         ruralPaymentsAgency: config.ruralPaymentsAgency

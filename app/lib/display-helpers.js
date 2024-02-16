@@ -9,7 +9,7 @@ function getTypeOfReviewForDisplay (claimData) {
   }[getClaimType(claimData)]
 }
 
-function getSpeciesEligbileNumberForDisplay (claimData, isEndemicsClaims = false) {
+function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false) {
   return {
     beef: isEndemicsClaims ? '11 or more beef cattle ' : '11 or more cattle ',
     dairy: isEndemicsClaims ? '11 or more dairy cattle ' : '11 or more cattle ',
@@ -23,7 +23,7 @@ function getTypeOfReviewRowForDisplay (claimData) {
 }
 
 function getEligibleNumberRowForDisplay (claimData) {
-  return { key: { text: getSpeciesEligbileNumberForDisplay(claimData) }, value: { text: `${claimData.eligibleSpecies}, I had ${getSpeciesEligbileNumberForDisplay(claimData)}` } }
+  return { key: { text: getSpeciesEligibleNumberForDisplay(claimData) }, value: { text: `${claimData.eligibleSpecies}, I had ${getSpeciesEligibleNumberForDisplay(claimData)}` } }
 }
 
 function upperFirstLetter (str) {
@@ -34,6 +34,6 @@ module.exports = {
   getTypeOfReviewRowForDisplay,
   getEligibleNumberRowForDisplay,
   upperFirstLetter,
-  getSpeciesEligbileNumberForDisplay,
+  getSpeciesEligibleNumberForDisplay,
   getTypeOfReviewForDisplay
 }

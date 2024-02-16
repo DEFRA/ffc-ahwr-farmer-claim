@@ -1,6 +1,7 @@
 const session = require('../session')
 const config = require('../config')
 const { requestAuthorizationCodeUrl } = require('../auth')
+const logout = require('../lib/logout')
 
 module.exports = {
   method: 'GET',
@@ -8,8 +9,7 @@ module.exports = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      request.cookieAuth.clear()
-      session.clear(request)
+      logout()
       return h.view('index', {
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
         ruralPaymentsAgency: config.ruralPaymentsAgency,
