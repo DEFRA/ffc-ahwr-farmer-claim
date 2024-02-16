@@ -93,7 +93,7 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__value').text()).toContain('business name')
 
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
-      expect($('.govuk-summary-list__value').text()).toContain('typeOfReview')
+      expect($('.govuk-summary-list__value').text()).toContain('Endemic disease follow-ups')
 
       expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
       expect($('.govuk-summary-list__value').text()).toContain('19/12/2023')

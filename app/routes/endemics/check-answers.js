@@ -32,7 +32,7 @@ module.exports = [
           },
           {
             key: { text: 'Type of review' },
-            value: { html: typeOfReview }
+            value: { html: typeOfReview === claimType.R ? 'Annual health and welfare review' : 'Endemic disease follow-ups'}
           },
           {
             key: { text: 'Date of visit' },
