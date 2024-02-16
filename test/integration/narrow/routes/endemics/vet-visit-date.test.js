@@ -15,16 +15,26 @@ function expectPageContentOk ($) {
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/endemics/which-review-annual')
+  expect(backLink.attr('href')).toMatch('/claim/endemics/which-species')
 }
 
 jest.mock('../../../../../app/session')
 
-const latestReviewApplication = {
+const latestVetVisitApplication = {
+  reference: 'AHWR-2470-6BA9',
+  createdAt: Date.now(),
+  data: {
+    visitDate: Date.now()
+  },
+  statusId: 1,
+  type: 'VV'
+}
+
+const latestEndemicsApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: Date.now(),
   statusId: 1,
-  type: 'VV'
+  type: 'EE'
 }
 
 describe('Date of vet visit', () => {
@@ -32,7 +42,7 @@ describe('Date of vet visit', () => {
   const url = '/claim/endemics/date-of-visit'
 
   beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { latestReviewApplication } })
+    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -142,7 +152,7 @@ describe('Date of vet visit', () => {
       { description: 'missing day and year', day: '', month: today.getMonth(), year: '', errorMessage: 'Date of visit must include a day and a year', errorHighlights: [labels.day, labels.year], applicationCreationDate: today },
       { description: 'missing month and year', day: today.getDate(), month: '', year: '', errorMessage: 'Date of visit must include a month and a year', errorHighlights: [labels.month, labels.year], applicationCreationDate: today }
     ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ day, month, year, errorMessage, errorHighlights, applicationCreationDate }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestReviewApplication: { ...latestReviewApplication, createdAt: applicationCreationDate } } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: applicationCreationDate } } })
       const options = {
         method: 'POST',
         url,
@@ -160,7 +170,7 @@ describe('Date of vet visit', () => {
     test.each([
       { description: 'application created before 10 months, visit date today', applicationCreationDate: before10Months }
     ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate, description }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestReviewApplication: { ...latestReviewApplication, createdAt: applicationCreationDate } } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: applicationCreationDate } } })
       const options = {
         auth,
         method: 'POST',

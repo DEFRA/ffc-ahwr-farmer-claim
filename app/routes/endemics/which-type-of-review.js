@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
-const { livestockTypes } = require('../../constants/claim')
+const { livestockTypes, claimType } = require('../../constants/claim')
 const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit } = require('../../config/routes')
 const { getClaimsByApplicationReference } = require('../../api-requests/claim-service-api')
 const { getLatestApplicationsBySbi } = require('../../api-requests/application-service-api')
@@ -13,15 +13,16 @@ const backLink = vetVisits
 const getTypeOfLivestockFromPastClaims = async (sbi) => {
   const applications = await getLatestApplicationsBySbi(sbi)
 
-  const latestApplication = applications[0]
-  const { reference } = latestApplication
+  const endemicsApplication = applications[0]
+  const { reference } = endemicsApplication
   const claims = await getClaimsByApplicationReference(reference)
 
   if (claims?.length) {
-    return claims[0].data.typeOfLivestock
+    return claims[0].data?.typeOfLivestock
   }
 
-  return latestApplication.data.whichReview
+  const latestVetVisitsApplication = applications.filter((application) => application.type === 'VV')[0]
+  return latestVetVisitsApplication.data?.whichReview
 }
 
 module.exports = [
@@ -64,7 +65,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-        setEndemicsClaim(request, typeOfReviewKey, typeOfReview)
+        setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         // For review claim
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)

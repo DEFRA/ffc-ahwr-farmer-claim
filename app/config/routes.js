@@ -3,7 +3,7 @@ const config = require('../config')
 module.exports = {
   vetVisits: config.vetVisits,
   endemicsIndex: 'endemics',
-  endemicsWhichReviewAnnual: 'endemics/which-review-annual',
+  endemicsWhichSpecies: 'endemics/which-species',
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
   endemicsYouCannotClaim: 'endemics/you-cannot-claim',
   endemicsDateOfVisit: 'endemics/date-of-visit',
