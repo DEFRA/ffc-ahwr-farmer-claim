@@ -13,7 +13,6 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
 
 module.exports = [
   {
@@ -21,7 +20,9 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, latestEndemicsApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
+
+        const backLink = landingPage
 
         return h.view(endemicsDateOfVisit, {
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
@@ -135,6 +136,10 @@ module.exports = [
               href: '#when-was-the-review-completed'
             })
           }
+
+          const { landingPage } = session.getEndemicsClaim(request)
+          const backLink = landingPage
+
           return h
             .view(endemicsDateOfVisit, {
               ...request.payload,
@@ -155,7 +160,8 @@ module.exports = [
                 errorMessage: error.details.find(e => e.context.label.startsWith('visit-date'))
                   ? { text: error.details.find(e => e.context.label.startsWith('visit-date')).message }
                   : undefined
-              }
+              },
+              backLink
             })
             .code(400)
             .takeover()
