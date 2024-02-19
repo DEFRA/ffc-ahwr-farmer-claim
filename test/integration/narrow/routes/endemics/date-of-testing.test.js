@@ -2,7 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-// const { labels } = require('../../../../../app/config/visit-date')
+const { labels } = require('../../../../../app/config/visit-date')
 
 function expectPageContentOk ($) {
   // expect($('title').text()).toEqual('When were samples taken? - Annual health and welfare review of livestock')
@@ -26,6 +26,14 @@ const latestReviewApplication = {
 }
 
 describe('Date of vet visit', () => {
+  let crumb
+  const today = new Date()
+  const yearPast = new Date(today)
+  yearPast.setDate(yearPast.getDate() - 365)
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/date-of-testing'
 
@@ -91,121 +99,163 @@ describe('Date of vet visit', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
+
+    test.each([
+      {
+        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+        dateOfVisit: today
+      }
+    ])('Hide the date fields if date of testing equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
+      const options = {
+        method: 'GET',
+        url,
+        payload: { crumb, whenTestingWasCarriedOut },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+      expect($('#whenTestingWasCarriedOut').val()).toEqual(whenTestingWasCarriedOut)
+      // On other date radio button should be hidden
+      expect($('.govuk-radios__conditional--hidden').text()).toBeTruthy()
+    })
+
+    test.each([
+      {
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: today.getDate(),
+        onAnotherDateMonth: today.getMonth() + 1,
+        onAnotherDateYear: today.getFullYear(),
+        dateOfVisit: yesterday
+      }
+    ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: today } })
+      const options = {
+        method: 'GET',
+        url,
+        payload: { crumb, whenTestingWasCarriedOut, dateOfVisit },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+      expect($('#whenTestingWasCarriedOut-2').val()).toEqual(whenTestingWasCarriedOut)
+      // On other date radio button shouldn't be hidden
+      expect($('.govuk-radios__conditional--hidden').text()).toBeFalsy()
+      expect($('#on-another-date-day').val()).toEqual(today.getDate().toString())
+      expect($('#on-another-date-month').val()).toEqual((today.getMonth() + 1).toString())
+      expect($('#on-another-date-year').val()).toEqual(today.getFullYear().toString())
+    })
   })
 
   describe(`POST ${url} route`, () => {
-    let crumb
-    const today = new Date()
-    const yearPast = new Date(today)
-    yearPast.setDate(yearPast.getDate() - 365)
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
     beforeEach(async () => {
       crumb = await getCrumbs(global.__SERVER__)
     })
 
-    // test('when not logged in redirects to defra id', async () => {
-    //   const options = {
-    //     method: 'POST',
-    //     url,
-    //     payload: { crumb, [labels.day]: 31, [labels.month]: 12, [labels.year]: 2022 },
-    //     headers: { cookie: `crumb=${crumb}` }
-    //   }
+    test('when not logged in redirects to defra id', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        payload: { crumb, [labels.day]: 31, [labels.month]: 12, [labels.year]: 2022 },
+        headers: { cookie: `crumb=${crumb}` }
+      }
 
-    //   const res = await global.__SERVER__.inject(options)
+      const res = await global.__SERVER__.inject(options)
 
-    //   expect(res.statusCode).toBe(302)
-    //   expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
-    // })
-    // test.each([
-    //   {
-    //     description: 'onAnotherDay - Year must include 4 numbers',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: today.getDay(),
-    //     onAnotherDateMonth: today.getMonth(),
-    //     onAnotherDateYear: 202,
-    //     errorMessage: 'Year must include 4 numbers',
-    //     errorHighlights: ['on-another-date-day'],
-    //     dateOfVisit: today.setDate(today.getDate() - 1)
-    //   },
-    //   {
-    //     description: 'onAnotherDay - cannot be before the review visit date',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: 29,
-    //     onAnotherDateMonth: 3,
-    //     onAnotherDateYear: 2023,
-    //     errorMessage: 'Date of testing cannot be before the review visit date',
-    //     errorHighlights: ['on-another-date-day'],
-    //     dateOfVisit: today.setDate(today.getDate())
-    //   },
-    //   {
-    //     description: 'onAnotherDay - must not be in the future',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: tomorrow.getDate(),
-    //     onAnotherDateMonth: tomorrow.getMonth() + 1,
-    //     onAnotherDateYear: tomorrow.getFullYear(),
-    //     errorMessage: 'Date of sampling must be a real date',
-    //     errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-    //     dateOfVisit: today.setDate(today.getDate())
-    //   },
-    //   {
-    //     description: 'onAnotherDay - must not be before review visit date',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: yesterday.getDate(),
-    //     onAnotherDateMonth: yesterday.getMonth() + 1,
-    //     onAnotherDateYear: yesterday.getFullYear(),
-    //     errorMessage: 'Date of testing cannot be before the review visit date',
-    //     errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-    //     dateOfVisit: today.setDate(today.getDate())
-    //   },
-    //   {
-    //     description: 'onAnotherDay - must include a day',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: '',
-    //     onAnotherDateMonth: yesterday.getMonth() + 1,
-    //     onAnotherDateYear: yesterday.getFullYear(),
-    //     errorMessage: 'Date of testing must include a day',
-    //     errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-    //     dateOfVisit: today.setDate(today.getDate())
-    //   },
-    //   {
-    //     description: 'onAnotherDay - must include a month',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: tomorrow.getDate(),
-    //     onAnotherDateMonth: '',
-    //     onAnotherDateYear: yesterday.getFullYear(),
-    //     errorMessage: 'Date of testing must include a month',
-    //     errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-    //     dateOfVisit: today.setDate(today.getDate())
-    //   },
-    //   {
-    //     description: 'onAnotherDay - must include a year',
-    //     whenTestingWasCarriedOut: 'onAnotherDate',
-    //     onAnotherDateDay: tomorrow.getDate(),
-    //     onAnotherDateMonth: yesterday.getMonth() + 1,
-    //     onAnotherDateYear: '',
-    //     errorMessage: 'Date of testing must include a year',
-    //     errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-    //     dateOfVisit: today.setDate(today.getDate())
-    //   }
-    // ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, dateOfVisit }) => {
-    //   getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })
-    //   const options = {
-    //     method: 'POST',
-    //     url,
-    //     payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': `${onAnotherDateYear}`, dateOfVisit },
-    //     auth,
-    //     headers: { cookie: `crumb=${crumb}` }
-    //   }
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+    })
+    test.each([
+      {
+        description: 'onAnotherDay - Year must include 4 numbers',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: today.getDate(),
+        onAnotherDateMonth: today.getMonth(),
+        onAnotherDateYear: 202,
+        errorMessage: 'Year must include 4 numbers',
+        errorHighlights: ['on-another-date-day'],
+        dateOfVisit: today
+      },
+      {
+        description: 'onAnotherDay - cannot be before the review visit date',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: 29,
+        onAnotherDateMonth: 3,
+        onAnotherDateYear: 2023,
+        errorMessage: 'Date of testing cannot be before the review visit date',
+        errorHighlights: ['on-another-date-day'],
+        dateOfVisit: today
+      },
+      {
+        description: 'onAnotherDay - must not be in the future',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: tomorrow.getDate(),
+        onAnotherDateMonth: tomorrow.getMonth() + 1,
+        onAnotherDateYear: tomorrow.getFullYear(),
+        errorMessage: 'Date of sampling must be a real date',
+        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
+        dateOfVisit: today
+      },
+      {
+        description: 'onAnotherDay - must not be before review visit date',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: yesterday.getDate(),
+        onAnotherDateMonth: yesterday.getMonth() + 1,
+        onAnotherDateYear: yesterday.getFullYear(),
+        errorMessage: 'Date of testing cannot be before the review visit date',
+        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
+        dateOfVisit: today
+      },
+      {
+        description: 'onAnotherDay - must include a day',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: '',
+        onAnotherDateMonth: yesterday.getMonth() + 1,
+        onAnotherDateYear: yesterday.getFullYear(),
+        errorMessage: 'Date of testing must include a day',
+        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
+        dateOfVisit: today
+      },
+      {
+        description: 'onAnotherDay - must include a month',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: tomorrow.getDate(),
+        onAnotherDateMonth: '',
+        onAnotherDateYear: yesterday.getFullYear(),
+        errorMessage: 'Date of testing must include a month',
+        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
+        dateOfVisit: today
+      },
+      {
+        description: 'onAnotherDay - must include a year',
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: tomorrow.getDate(),
+        onAnotherDateMonth: yesterday.getMonth() + 1,
+        onAnotherDateYear: '',
+        errorMessage: 'Date of testing must include a year',
+        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
+        dateOfVisit: today
+      }
+    ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, dateOfVisit }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })
+      const options = {
+        method: 'POST',
+        url,
+        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': `${onAnotherDateYear}`, dateOfVisit },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
 
-    //   const res = await global.__SERVER__.inject(options)
+      const res = await global.__SERVER__.inject(options)
 
-    //   const $ = cheerio.load(res.payload)
-    //   expect(res.statusCode).toBe(400)
-    //   expect($('#on-another-date-error').text().trim()).toEqual(`Error: ${errorMessage}`)
-    // })
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('#on-another-date-error').text().trim()).toEqual(`Error: ${errorMessage}`)
+    })
 
     test.each([
       {
