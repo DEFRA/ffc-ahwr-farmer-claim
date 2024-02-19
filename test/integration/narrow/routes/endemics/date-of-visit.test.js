@@ -188,7 +188,7 @@ describe('Date of vet visit', () => {
 
     test('last review date less than 10 months ago', async () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: new Date() } } })
-      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => ( new Date() ))
+      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => (new Date()))
 
       const options = {
         auth,
@@ -208,7 +208,7 @@ describe('Date of vet visit', () => {
 
     test('last review date more than 10 months ago', async () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: new Date() } } })
-      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => ( yearPast ))
+      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => (yearPast))
 
       const options = {
         auth,
