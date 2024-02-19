@@ -60,7 +60,7 @@ async elementGetText(element){
     expect(await locator.getText()).to.equal(text)
   }
 
-  async getPageTitle (expectedTitle) {
+  async getPageTitle(expectedTitle) {
     const actualTitle = await browser.getTitle()
     expect(actualTitle).to.be.equal(expectedTitle)
   }
@@ -68,6 +68,13 @@ async elementGetText(element){
   async urlContain (expectedUrl) {
     const actualUrl = await browser.getUrl()
     expect(actualUrl).to.include(expectedUrl)
+  }
+
+  async screenShot(){
+    const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+    await sleep(5000)
+    var date=Date.now();
+    const screenshots=await browser.saveScreenshot('./screenShots/chrome-'+date+'.png')
   }
 
   async isElementExist (element) {
