@@ -34,7 +34,8 @@ if (config.endemics.enabled) {
     require('../routes/endemics/vet-name'),
     require('../routes/endemics/vet-rcvs'),
     require('../routes/endemics/check-answers'),
-    require('../routes/endemics/confirmation')
+    require('../routes/endemics/confirmation'),
+    require('../routes/endemics/date-of-testing')
   )
 }
 

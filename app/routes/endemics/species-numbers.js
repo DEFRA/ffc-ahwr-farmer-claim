@@ -8,8 +8,7 @@ const {
   endemicsNumberOfSpeciesTested,
   endemicsSpeciesNumbersException,
   endemicsVetName,
-  endemicsDateOfTesting,
-  endemicsWhichSpecies
+  endemicsDateOfTesting
 } = require('../../config/routes')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
@@ -17,7 +16,6 @@ const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helper
 const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
-const endemicsWhichSpeciesPageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const legendText = 'Did you have $ on the date of the review?'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
@@ -81,7 +79,7 @@ module.exports = [
           }
           return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
         }
-        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, endemicsWhichSpeciesPageUrl }).code(400).takeover()
+        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
     }
   }

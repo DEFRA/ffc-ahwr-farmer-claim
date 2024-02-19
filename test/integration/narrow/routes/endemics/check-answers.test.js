@@ -129,22 +129,22 @@ describe('Check answers test', () => {
       {
         typeOfLivestock: livestockTypes.beef,
         content: '11 or more beef cattle',
-        backLink: 'endemics/test-results'
+        backLink: '/claim/endemics/test-results'
       },
       {
         typeOfLivestock: livestockTypes.dairy,
         content: '11 or more dairy cattle',
-        backLink: 'endemics/test-results'
+        backLink: '/claim/endemics/test-results'
       },
       {
         typeOfLivestock: livestockTypes.pigs,
         content: '51 or more pigs',
-        backLink: 'endemics/test-results'
+        backLink: '/claim/endemics/test-results'
       },
       {
         typeOfLivestock: livestockTypes.sheep,
         content: '21 or more sheep',
-        backLink: 'endemics/test-urn'
+        backLink: '/claim/endemics/test-urn'
       }
     ])(
       'check content and back links are correct for typeOfLivestock: $typeOfLivestock',

@@ -1,0 +1,119 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}When were samples taken? - {{ serviceName }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorSummary.length %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: errorSummary
+        }) }}
+      {% endif %}
+      <h1 class="govuk-heading-l">When were samples taken?</h1>
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <input type="hidden" name="dateOfVisit" value="{{dateOfVisit}}"/>
+
+        <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingWasCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+          {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
+            {% set onAnotherDateDay = {
+              name: 'day',
+              value: whenTestingWasCarriedOut.onAnotherDate.day.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set onAnotherDateDay = {
+              name: 'day',
+              value: whenTestingWasCarriedOut.onAnotherDate.day.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if whenTestingWasCarriedOut.onAnotherDate.month.error %}
+            {% set onAnotherDateMonth = {
+              name: 'month',
+              value: whenTestingWasCarriedOut.onAnotherDate.month.value,
+              classes: 'govuk-input--width-2 govuk-input--error'
+            } %}
+          {% else %}
+            {% set onAnotherDateMonth = {
+              name: 'month',
+              value: whenTestingWasCarriedOut.onAnotherDate.month.value,
+              classes: 'govuk-input--width-2'
+            } %}
+          {% endif %}
+
+          {% if whenTestingWasCarriedOut.onAnotherDate.year.error %}
+            {% set onAnotherDateYear = {
+              name: 'year',
+              value: whenTestingWasCarriedOut.onAnotherDate.year.value,
+              classes: 'govuk-input--width-4 govuk-input--error'
+            } %}
+          {% else %}
+            {% set onAnotherDateYear = {
+              name: 'year',
+              value: whenTestingWasCarriedOut.onAnotherDate.year.value,
+              classes: 'govuk-input--width-4'
+            } %}
+          {% endif %}
+
+          {% set onAnotherDate %}
+          {{ govukDateInput({
+              id: "on-another-date",
+              namePrefix: "on-another-date",
+              hint: {
+                html: "For example, 27 3 2022"
+              },
+              errorMessage: whenTestingWasCarriedOut.onAnotherDate.errorMessage,
+              items: [onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear]
+            }) }}
+          {% endset %}
+
+          {{ govukRadios({
+            name: "whenTestingWasCarriedOut",
+            hint: {
+              text: "This is the date samples were taken to test for health conditions or diseases."
+            },
+            errorMessage: whenTestingWasCarriedOut.errorMessage,
+            items: [
+              {
+                value: "whenTheVetVisitedTheFarmToCarryOutTheReview",
+                text: "When the vet visited the farm to carry out the review",
+                checked: whenTestingWasCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+              },
+              {
+                value: "onAnotherDate",
+                text: "On another date",
+                checked: whenTestingWasCarriedOut.value === 'onAnotherDate',
+                conditional: {
+                  html: onAnotherDate
+                }
+              }
+            ]
+          }) }}
+        </div>
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          },
+          preventDoubleClick: true
+        }) }}
+
+      </form>
+    </div>
+  </div>
+{% endblock %}

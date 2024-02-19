@@ -1,9 +1,10 @@
 const Joi = require('joi')
+const { getMostRecentReviewDate } = require('../../api-requests/claim-service-api')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
-const { endemicsWhichSpecies, endemicsDateOfVisit, endemicsDateOfTesting } = require('../../config/routes')
+const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting } = require('../../config/routes')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey }
 } = require('../../session/keys')
@@ -12,7 +13,6 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
 
 module.exports = [
   {
@@ -20,7 +20,9 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, latestEndemicsApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
+
+        const backLink = landingPage
 
         return h.view(endemicsDateOfVisit, {
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
@@ -108,17 +110,10 @@ module.exports = [
                     })
                   }
 
-                  const endDate = new Date(dateOfAgreementAccepted) // todo: needs to be date of most recent review (either VV application or claim of type R)
-                  endDate.setMonth(endDate.getMonth() + config.endemicsClaimExpiryTimeMonths)
-                  if (dateOfVisit > endDate) {
-                    return helpers.error('dateOfVisit.expired')
-                  }
-
                   return value
                 }, {
                   'dateOfVisit.future': 'Date of visit must be a real date',
-                  'dateOfVisit.beforeAccepted': 'Date of visit cannot be before the date your agreement began',
-                  'dateOfVisit.expired': 'The date the review was completed must be within ten months of agreement date'
+                  'dateOfVisit.beforeAccepted': 'Date of visit cannot be before the date your agreement began'
                 })
               }
             ]
@@ -141,6 +136,10 @@ module.exports = [
               href: '#when-was-the-review-completed'
             })
           }
+
+          const { landingPage } = session.getEndemicsClaim(request)
+          const backLink = landingPage
+
           return h
             .view(endemicsDateOfVisit, {
               ...request.payload,
@@ -161,7 +160,8 @@ module.exports = [
                 errorMessage: error.details.find(e => e.context.label.startsWith('visit-date'))
                   ? { text: error.details.find(e => e.context.label.startsWith('visit-date')).message }
                   : undefined
-              }
+              },
+              backLink
             })
             .code(400)
             .takeover()
@@ -173,6 +173,19 @@ module.exports = [
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
+
+        const { latestVetVisitApplication, previousClaims } = session.getEndemicsClaim(request)
+        const lastReviewDate = getMostRecentReviewDate(previousClaims, latestVetVisitApplication)
+
+        if (lastReviewDate) {
+          const tenMonthsSinceLastReview = new Date(lastReviewDate)
+          tenMonthsSinceLastReview.setMonth(tenMonthsSinceLastReview.getMonth() + config.endemicsClaimExpiryTimeMonths)
+
+          if (dateOfVisit < tenMonthsSinceLastReview) {
+            return h.view(endemicsDateOfVisitException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+          }
+        }
+
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
       }
