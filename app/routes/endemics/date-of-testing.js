@@ -192,7 +192,8 @@ module.exports = [
                     ? { text: error.details.find(e => e.context.label.startsWith('on-another-date')).message }
                     : undefined
                 }
-              }
+              },
+              backLink
             })
             .code(400)
             .takeover()

@@ -18,7 +18,7 @@ const {
   endemicsYouCannotClaim
 } = require('../../config/routes')
 const {
-  endemicsClaim: { latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }
+  endemicsClaim: { landingPage: landingPageKey, latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }
 } = require('../../session/keys')
 
 const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
@@ -48,6 +48,7 @@ module.exports = {
 
         // new user
         if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
 
@@ -58,6 +59,7 @@ module.exports = {
             logout()
             return h.redirect(endemicsYouCannotClaimURI)
           } else {
+            session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
             return h.redirect(endemicsWhichTypeOfReviewURI)
           }
         }
@@ -65,11 +67,13 @@ module.exports = {
         // old claims NO new claims
         const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
         if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
         } else if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === REJECTED) {
           logout()
           return h.redirect(endemicsYouCannotClaimURI)
         } else {
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
       }
