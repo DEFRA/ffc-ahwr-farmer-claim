@@ -98,7 +98,7 @@ describe('Which type of review test', () => {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
         statusId: 10,
-        type: 'EE',
+        type: 'VV',
         data: {
           whichReview: 'beef'
         }
@@ -131,7 +131,7 @@ describe('Which type of review test', () => {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
         statusId: 10,
-        type: 'EE',
+        type: 'VV',
         data: {
           whichReview: typeOfLivestock
         }

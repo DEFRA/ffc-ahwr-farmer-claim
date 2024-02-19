@@ -1,11 +1,11 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
-const { endemicsWhichReviewAnnual } = require('../../../../../app/config/routes')
+const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/session')
-describe('Endemics which review annual test', () => {
-  const url = `/claim/${endemicsWhichReviewAnnual}`
+describe('Endemics which species test', () => {
+  const url = `/claim/${endemicsWhichSpecies}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'

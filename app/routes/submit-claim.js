@@ -1,8 +1,8 @@
 const { submitClaim } = require('../messaging/application')
 const { claimed } = require('../session/keys').claim
 const session = require('../session')
+const logout = require('../lib/logout')
 const states = require('../constants/states')
-const { clearAuthCookie } = require('../auth')
 const preDoubleSubmitHandler = require('./utils/pre-submission-handler')
 const config = require('../../app/config/index')
 const appInsights = require('applicationinsights')
@@ -10,8 +10,7 @@ const { claim: { animalsTested: animalsTestedKey } } = require('../session/keys'
 
 function updateSession (request, claimed, claimStatus) {
   session.setClaim(request, claimed, claimStatus)
-  session.clear(request)
-  clearAuthCookie(request)
+  logout()
 }
 
 module.exports = [{

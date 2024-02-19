@@ -60,7 +60,7 @@ const schema = Joi.object({
     timeoutMilliseconds: Joi.number().default(10000)
   },
   claimExpiryTimeMonths: Joi.number(),
-  EndemicsClaimExpiryTimeMonths: Joi.number(),
+  endemicsClaimExpiryTimeMonths: Joi.number(),
   dateOfTesting: {
     enabled: Joi.bool().default(false)
   },
@@ -119,7 +119,7 @@ const config = {
     timeoutMilliseconds: process.env.WRECK_HTTP_TIMEOUT_MILLISECONDS
   },
   claimExpiryTimeMonths: 6,
-  EndemicsClaimExpiryTimeMonths: 10,
+  endemicsClaimExpiryTimeMonths: 10,
   dateOfTesting: {
     enabled: process.env.DATE_OF_TESTING_ENABLED
   },

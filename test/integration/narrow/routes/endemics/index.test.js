@@ -3,8 +3,10 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const applicationServiceApiMock = require('../../../../../app/api-requests/application-service-api')
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
+const logoutMock = require('../../../../../app/lib/logout')
 jest.mock('../../../../../app/api-requests/application-service-api')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/lib/logout')
 
 describe('Claim endemics home page test', () => {
   const url = `${urlPrefix}/endemics?from=dashboard&sbi=1234567`
@@ -77,6 +79,7 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
+    expect(logoutMock).toHaveBeenCalledTimes(1)
     expect(res.headers.location).toEqual('/claim/endemics/you-cannot-claim')
   })
 
@@ -108,6 +111,7 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
+    expect(logoutMock).toHaveBeenCalledTimes(1)
     expect(res.headers.location).toEqual('/claim/endemics/you-cannot-claim')
   })
 
@@ -142,7 +146,7 @@ describe('Claim endemics home page test', () => {
     expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
   })
 
-  test('Redirects us to endemicsWhichTypeOfReviewURI if latest application is within 10 months and status is NOT rejected', async () => {
+  test('Redirects us to endemicsWhichSpeciesURI if latest application is within 10 months and status is NOT rejected', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
         reference: 'AHWR-2470-6BA9',
@@ -163,10 +167,10 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
+    expect(res.headers.location).toEqual('/claim/endemics/which-species')
   })
 
-  test('Redirects us to endemicsWhichReviewAnnualURI if latest application is NOT within 10 months and status is NOT rejected', async () => {
+  test('Redirects us to endemicsWhichSpeciesURI if latest application is NOT within 10 months and status is NOT rejected', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
         reference: 'AHWR-2470-6BA9',
@@ -187,7 +191,7 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/which-review-annual')
+    expect(res.headers.location).toEqual('/claim/endemics/which-species')
   })
 
   test('Renders index page if no url parameters', async () => {

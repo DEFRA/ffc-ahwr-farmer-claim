@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   endemicsClaim: {
+    reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
     typeOfReview: 'typeOfReview',
     dateOfVisit: 'dateOfVisit',
@@ -33,7 +34,7 @@ module.exports = {
     organisation: 'organisation',
     speciesNumbers: 'speciesNumbers',
     latestEndemicsApplication: 'latestEndemicsApplication',
-    latestReviewApplication: 'latestReviewApplication',
+    latestVetVisitApplication: 'latestVetVisitApplication',
     previousClaims: 'previousClaims'
   },
   claim: {
