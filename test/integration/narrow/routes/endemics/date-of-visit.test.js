@@ -38,12 +38,14 @@ const latestEndemicsApplication = {
   type: 'EE'
 }
 
+const landingPage = '/claim/endemics/which-species'
+
 describe('Date of vet visit', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/date-of-visit'
 
   beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication } })
+    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication, landingPage } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
