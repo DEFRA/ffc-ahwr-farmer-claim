@@ -1,15 +1,15 @@
 const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim, clearEndemicsClaim } = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
-const { livestockTypes } = require('../../constants/claim')
+const { livestockTypes, claimType } = require('../../constants/claim')
 const {
   vetVisits,
   endemicsDateOfVisit,
-  endemicsWhichReviewAnnual
+  endemicsWhichSpecies
 } = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
 
-const pageUrl = `${urlPrefix}/${endemicsWhichReviewAnnual}`
+const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = {
   href: vetVisits
 }
@@ -23,7 +23,7 @@ module.exports = [
       handler: async (request, h) => {
         const endemicsClaimData = getEndemicsClaim(request)
 
-        return h.view(endemicsWhichReviewAnnual, {
+        return h.view(endemicsWhichSpecies, {
           ...(endemicsClaimData?.typeOfLivestock && {
             previousAnswer: endemicsClaimData.typeOfLivestock
           }),
@@ -44,7 +44,7 @@ module.exports = [
         }),
         failAction: (request, h, _err) => {
           return h
-            .view(endemicsWhichReviewAnnual, {
+            .view(endemicsWhichSpecies, {
               errorMessage,
               backLink
             })
@@ -55,8 +55,8 @@ module.exports = [
       handler: async (request, h) => {
         const { typeOfLivestock } = request.payload
 
-        clearEndemicsClaim(request)
         setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
+        setEndemicsClaim(request, endemicsClaim.typeOfReview, claimType.review)
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }

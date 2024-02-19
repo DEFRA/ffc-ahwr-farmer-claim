@@ -3,7 +3,7 @@ const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
-const { endemicsWhichReviewAnnual, endemicsDateOfVisit, endemicsDateOfTesting } = require('../../config/routes')
+const { endemicsWhichSpecies, endemicsDateOfVisit, endemicsDateOfTesting } = require('../../config/routes')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey }
 } = require('../../session/keys')
@@ -12,7 +12,7 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const backLink = `${urlPrefix}/${endemicsWhichReviewAnnual}`
+const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
 
 module.exports = [
   {
@@ -20,9 +20,10 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, latestReviewApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, latestEndemicsApplication } = session.getEndemicsClaim(request)
+
         return h.view(endemicsDateOfVisit, {
-          dateOfAgreementAccepted: latestReviewApplication?.createdAt ? new Date(latestReviewApplication.createdAt).toISOString().slice(0, 10) : undefined,
+          dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
@@ -107,8 +108,8 @@ module.exports = [
                     })
                   }
 
-                  const endDate = new Date(dateOfAgreementAccepted)
-                  endDate.setMonth(endDate.getMonth() + config.EndemicsClaimExpiryTimeMonths)
+                  const endDate = new Date(dateOfAgreementAccepted) // todo: needs to be date of most recent review (either VV application or claim of type R)
+                  endDate.setMonth(endDate.getMonth() + config.endemicsClaimExpiryTimeMonths)
                   if (dateOfVisit > endDate) {
                     return helpers.error('dateOfVisit.expired')
                   }
