@@ -1,8 +1,11 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
+const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/session')
 
 function expectPageContentOk ($) {
   expect($('title').text()).toEqual('Date of visit - Annual health and welfare review of livestock')
@@ -17,8 +20,6 @@ function expectPageContentOk ($) {
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/endemics/which-species')
 }
-
-jest.mock('../../../../../app/session')
 
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
@@ -171,6 +172,44 @@ describe('Date of vet visit', () => {
       { description: 'application created before 10 months, visit date today', applicationCreationDate: before10Months }
     ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate, description }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: applicationCreationDate } } })
+      const options = {
+        auth,
+        method: 'POST',
+        url,
+        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before10Months },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    })
+
+    test('last review date less than 10 months ago', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: new Date() } } })
+      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => ( new Date() ))
+
+      const options = {
+        auth,
+        method: 'POST',
+        url,
+        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before10Months },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+      expect($('title').text().trim()).toEqual('You cannot continue with your claim - Annual health and welfare review of livestock')
+    })
+
+    test('last review date more than 10 months ago', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: new Date() } } })
+      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => ( yearPast ))
+
       const options = {
         auth,
         method: 'POST',
