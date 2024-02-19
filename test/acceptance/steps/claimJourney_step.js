@@ -257,3 +257,96 @@ Then(/^Create an Entry in the database$/,async function (){
 Then(/^update the date to after 24 hours$/,async function() {
   await claimJourney.generateDate()
 });
+
+//EndemicsClaim
+When(/^user clicks on Start now$/, async function () {
+  await claimJourney.startNow()
+ });
+  When(/^user validate the header of the page$/, async function () {
+  await claimJourney.claimNumberOfSpeciesPageHeader()
+ });
+ When(/^user validate the header of the page of OralSamples$/, async function () {
+  await claimJourney.claimNumberOfOralSamplesPageHeader()
+ });
+  Then(/^accept the cookies$/, async function () {
+  await claimJourney.acceptCookies()
+})
+When(/^user enters the no of animals (.*)$/, async function (value) {
+  await  claimJourney.numberOfanimalTestingValidation(value)
+ });
+ When(/^user enters the no of samples (.*)$/, async function (value) {
+  await  claimJourney.numberOfOralSamplesTestingValidation(value)
+ });
+ When(/^click to species continue the claim$/, async function () {
+  await claimJourney.continueAfterInputSpeciesData()
+});
+When(/^click to oral samples continue the claim$/, async function () {
+  await claimJourney.continueAfterInputOralSamplesData()
+});
+ Then(/^validate the exception screen for no of animals tested$/, async function(){
+  await claimJourney.validateClaimEndemicsExceptionHeader()
+ })
+ Then(/^validate the exception for oral samples screen$/, async function(){
+  await claimJourney.validateExceptionOralSamplesHeader()
+ })
+ Then(/^validate the error message for special character$/, async function(){
+  await claimJourney.validate_SpecialChar_Error()
+ })
+ Then(/^validate the error message for blank input$/, async function(){
+  await claimJourney.validate_Blank_Error()
+ })
+ Then(/^validate the error message for blank input vet name screen$/, async function(){
+  await claimJourney.validate_Blank_Error_Vet_Name()
+ })
+ Then(/^validate the error message for blank input oral samples screen$/, async function(){
+  await claimJourney.validate_Blank_Error_Oral_Sample()
+ })
+ Then(/^validate the cattle testing link in exception screen$/, async function(){
+  await claimJourney.cattleTestingLink()
+ })
+ Then(/^validate the sheep testing link in exception screen$/, async function(){
+  await claimJourney.sheepTestingLink()
+ })
+ Then(/^validate the pig testing link in exception screen$/, async function(){
+  await claimJourney.pigTestingLink()
+ })
+ Then(/^validate the enter the no of animals tested link in exception screen$/, async function(){
+  await claimJourney.enterNoOfAnimalsTestingLink()
+ })
+ Then(/^validate the at least five oral fluid samples tested link$/, async function(){
+  await claimJourney.atleastFiveOralFluidSamplesLink()
+ })
+ Then(/^validate the enter the no of oral fluid samples tested link$/, async function(){
+  await claimJourney.enterNoOfOralFluidSamplesLink()
+ })
+Then(/^click on the back link$/,async function(){
+  await claimJourney.click_BackLink()
+})
+Then(/^validate user can see get help with your claim header$/, async function(){
+  await claimJourney.getHelpForClaimHeader()
+})
+Then(/^validate user can see get help with your claim header for oral samples$/, async function(){
+  await claimJourney.getHelpForClaimOralSamplesHeader()
+})
+Then(/^check defra email ID exists$/,async function(){
+  await claimJourney.defraEmaiIDValidate()
+})
+Then(/^check phone number exists$/,async function(){
+  await claimJourney.phoneNumberValidate()
+})
+Then(/^check phone number exists for oral samples$/,async function(){
+  await claimJourney.phoneNumberOralSamplesValidate()
+})
+//check-detail page
+When(/^user check the business details$/, async function () {
+  await claimJourney.singleUserBusinessDetail()
+})
+When(/^user confirm the org-review page$/, async function () {
+  await claimJourney.checkFarmerDetails()
+})
+When(/^user agreed the business details is correct$/, async function () {
+  await claimJourney.farmerAcceptDetails()
+})
+Then(/^user continue to next page$/, async function () {
+  await claimJourney.proceedWithApplication()
+})

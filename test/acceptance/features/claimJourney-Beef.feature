@@ -1,4 +1,4 @@
-@smoke21
+@smoke
 Feature: claim journey landing page
 
   Scenario: claim with valid credentials

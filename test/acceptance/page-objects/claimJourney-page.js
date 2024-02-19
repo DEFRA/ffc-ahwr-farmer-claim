@@ -86,13 +86,16 @@ var another_year;
 //Exception
 const EXCEPTION_HEADER='.govuk-heading-l'
 const NO_OF_ANIMAL_TESTED='#number-of-animals-tested'
+const ORAL_SAMPLE_Blank_ERROR_ACTUAL='#numberOfOralFluidSamples-error'
+const ORAL_SAMPLE_Blank_ERROR_EXPECTED='Enter the number of oral fluid samples collected'
 const HEADER_ERROR_MESSAGE_EXPECTED='You cannot claim for a livestock review for this business'
 const EXCEPTION_ERROR_MESSAGE='.govuk-heading-l+.govuk-body'
 const EXCEPTION_ERROR_MESSAGE_EXPECTED='You do not have the required permission to act for Test Estate - SBI 114441446.'
 const EXCEPTION_ERROR_MESSAGE_EXPECTED_NOT_APPLIED='Mr A Slack - SBI 106864909 has not applied for an annual health and welfare review of livestock.'
 const EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_PERMISSION='You do not have the required permission to act for Dale Hitchens - SBI 107224622.'
 const EXCEPTION_ERROR_MESSAGE_EXPECTED_MB_NO_APPLIED='Michael Dixon - SBI 114293653 has not applied for an annual health and welfare review of livestock.'
-const CALL_CHARGES='.govuk-grid-column-full>p>.govuk-link'
+//const CALL_CHARGES='//a[text()="Find out about call charges (opens in a new tab)"]'
+const CALL_CHARGES='//a[contains(@href, "https://www.gov.uk/call-charges")]'
 const CALL_CHARGES_TITLE='Call charges and phone numbers - GOV.UK'
 const REAL_DATE_ERROR='Date of review must be a real date'
 const VET_NAME_ERROR_MESSAGE='Vet’s name must be 50 characters or fewer'
@@ -110,6 +113,55 @@ const ACTUAL_NOOFSPECIES_ERRORMESSAGE='body > div:nth-child(7) > main:nth-child(
 const EXPECTED_ONLYNUMBERS_ERRORMESSAGE='Number of animals tested must only include numbers'
 const ACTUAL_ERRORMESSAGE='a[href="#number-of-animals-tested"]'
 const EXPECTED_BLANK_ERRORMESSAGE='Enter the number of animals tested'
+
+//EndemicsClaim
+const COOKIES_ACCEPT = '[value="accept"]'
+const COOKIES_HIDE='/html/body/div[1]/div/div[2]/div[2]'
+const NUMBER_OF_SPECIES_EXCEPTION_EXPECTED='You cannot continue with your claim'
+const NUMBER_OF_SPECIES_EXCEPTION_ACTUAL='.govuk-heading-l' 
+const NUMBER_OF_TESTS_EXCEPTION_ACTUAL='#main-content > div > div > h1'
+const NUMBER_OF_TESTS_EXCEPTION_EXPECTED='You cannot continue with your claim'
+const CATTLE_TESTING_LINK_ACTUAL='//a[text()="cattle: testing required for an annual health and welfare review"]'
+const CATTLE_TESTING_LINK_EXPECTED='cattle: testing required for an annual health and welfare review'
+const SHEEP_TESTING_LINK_ACTUAL='//a[text()="sheep: testing required for an annual health and welfare review"]'
+const SHEEP_TESTING_LINK_EXPECTED='sheep: testing required for an annual health and welfare review'
+const PIG_TESTING_LINK_ACTUAL='//a[text()="pigs: testing required for an annual health and welfare review"]'
+const PIG_TESTING_LINK_EXPECTED='pigs: testing required for an annual health and welfare review'
+const ENTER_NO_OF_ANIMALS_TESTING_LINK_ACTUAL='//a[text()="Enter the number of animals tested"]'
+const ENTER_NO_OF_ANIMALS_TESTING_LINK_EXPECTED='Enter the number of animals tested'
+const BACK_LINK='#back'
+const GET_HELP_FOR_CLAIM_HEADER_EXPECTED='Get help with your claim'
+const GET_HELP_FOR_CLAIM_HEADER_ACTUAL='#main-content > div > div > h2:nth-child(11)'
+const GET_HELP_FOR_CLAIM_ORAL_SAMPLES_HEADER_ACTUAL='//*[@id="main-content"]/div/div/h2'
+const ATLEAST_FIVE_ORAL_SAMPLES_LINK_EXPECTED='There must have been at least five oral fluid samples tested'
+const ATLEAST_FIVE_ORAL_SAMPLES_LINK_ACTUAL='#main-content > div > div > p:nth-child(2) > a'
+const ENTER_NO_OF_ORAL_FLUID_SAMPLES_LINK_EXPECTED='Enter the number of oral fluid samples tested'
+const ENTER_NO_OF_ORAL_FLUID_SAMPLES_LINK_ACTUAL='#main-content > div > div > p:nth-child(4) > a'
+const Blank_ERROR_ACTUAL='#numberAnimalsTested-error'
+const Blank_ERROR_EXPECTED='Enter the number of animals tested'
+const CHAR_ERROR_ACTUAL='#numberAnimalsTested-error'
+const CHAR_ERROR_EXPECTED='Number of animals tested must only include numbers'
+const VET_NAME_Blank_ERROR_ACTUAL='#vetsName-error'
+const VET_NAME_Blank_ERROR_EXPECTED='Enter the vet’s name'
+const DEFRA_EMAIL_ID_EXPECTED='ruralpayments@defra.gov.uk'
+const DEFRA_EMAIL_ID_ACTUAL='//a[text()="ruralpayments@defra.gov.uk"]'
+const PHONE_NUMBER_EXPECTED='Telephone: 03000 200 301'
+const PHONE_NUMBER_ACTUAL='#main-content > div > div > p:nth-child(14)'
+const PHONE_NUMBER_ORAL_SAMPLES_ACTUAL='//*[@id="main-content"]/div/div/div[2]/div/ul/li[2]'
+const NUMBER_OF_ANIMALS_HEADER_EXPECTED='How many animals did the vet test?'
+const NUMBER_OF_ANIMALS_HEADER_ACTUAL='//*[@id="main-content"]/div/div/form/h1'
+const NUMBER_OF_ORAL_FLUID_SAMPLES_HEADER_ACTUAL='//*[@id="main-content"]/div/div/form/h1'
+const NUMBER_OF_ORAL_FLUID_SAMPLES_EXPECTED='How many oral fluid samples did the vet do?'
+const NO_OF_SPECIES_TESTED='#numberAnimalsTested'
+const NO_OF_ORAL_TESTED='#numberOfOralFluidSamples'
+const SPECIES_NUMBER_CONTINUE='#btnContinue'
+const ORAL_SAMPLES_CONTINUE='#continue'
+const CHECK_DETAILS = '.govuk-heading-l'
+const FARMER_DETAILS = '.govuk-summary-list'
+const DETAILS_BUTTON = '#confirmCheckDetails'
+const CONTINUE_BUTTON1 = '#btnContinue'
+const DETAILS = 'Check your details'
+const CONTENT1 = 'Farmer name'
 
 class StartPageActions extends CommonActions {
 
@@ -343,6 +395,7 @@ class StartPageActions extends CommonActions {
  async continueAfterInputData(){
     await this.clickOn(DATE_CONTINUE)
  }
+
  async vetNamePage(){
     await this.urlContain('vet-name')
  }
@@ -455,6 +508,7 @@ async validateCallCharges(){
       await browser.switchToWindow(windowHandles[1]);
       let expectedPageTitle =await this.getPageTitle(CALL_CHARGES_TITLE)
       console.log(expectedPageTitle)
+      await this.screenShot()
       await browser.closeWindow();
       await browser.switchToWindow(windowHandles[0]);
 }
@@ -646,6 +700,139 @@ async noOfSpeciesErrorValidation(type){
   }
 
 }
+
+//EndemicsClaim
+
+async claimNumberOfSpeciesPageHeader(){
+   await this.elementToContainText(NUMBER_OF_ANIMALS_HEADER_ACTUAL,NUMBER_OF_ANIMALS_HEADER_EXPECTED)
 }
+async claimNumberOfOralSamplesPageHeader(){
+  await this.elementToContainText(NUMBER_OF_ORAL_FLUID_SAMPLES_HEADER_ACTUAL,NUMBER_OF_ORAL_FLUID_SAMPLES_EXPECTED)
+}
+async numberOfanimalTestingValidation(numberOfSpecies){
+  await this.sendKey(NO_OF_SPECIES_TESTED,numberOfSpecies)
+}
+async numberOfOralSamplesTestingValidation(numberOfOralSamples){
+  await this.sendKey(NO_OF_ORAL_TESTED,numberOfOralSamples)
+}
+async acceptCookies() {
+  await this.clickOn(COOKIES_ACCEPT)
+  await this.clickOn(COOKIES_HIDE)
+  }
+async continueAfterInputSpeciesData(){
+  await this.clickOn(SPECIES_NUMBER_CONTINUE)
+}
+async continueAfterInputOralSamplesData(){
+  await this.clickOn(ORAL_SAMPLES_CONTINUE)
+}
+async cattleTestingLink(){
+  await this.elementToContainText(CATTLE_TESTING_LINK_ACTUAL,CATTLE_TESTING_LINK_EXPECTED)
+  await this.clickOn(CATTLE_TESTING_LINK_ACTUAL)
+  await this.screenShot()
+  await browser.back()
+  }
+async sheepTestingLink(){
+  await this.elementToContainText(SHEEP_TESTING_LINK_ACTUAL,SHEEP_TESTING_LINK_EXPECTED)
+  await this.clickOn(SHEEP_TESTING_LINK_ACTUAL)
+  await this.screenShot()
+  await browser.back()
+  }
+async pigTestingLink(){
+  await this.elementToContainText(PIG_TESTING_LINK_ACTUAL,PIG_TESTING_LINK_EXPECTED)
+  await this.clickOn(PIG_TESTING_LINK_ACTUAL)
+  await this.screenShot()
+  await browser.back()
+  }
+async enterNoOfAnimalsTestingLink(){
+  await this.elementToContainText(ENTER_NO_OF_ANIMALS_TESTING_LINK_ACTUAL,ENTER_NO_OF_ANIMALS_TESTING_LINK_EXPECTED)
+  await this.clickOn(ENTER_NO_OF_ANIMALS_TESTING_LINK_ACTUAL)
+  await this.screenShot()
+  }
+async atleastFiveOralFluidSamplesLink(){
+  await this.elementToContainText(ATLEAST_FIVE_ORAL_SAMPLES_LINK_ACTUAL,ATLEAST_FIVE_ORAL_SAMPLES_LINK_EXPECTED)
+  await this.clickOn(ATLEAST_FIVE_ORAL_SAMPLES_LINK_ACTUAL)
+  await this.screenShot()
+  await browser.back()
+  }
+async enterNoOfOralFluidSamplesLink(){
+  await this.elementToContainText(ENTER_NO_OF_ORAL_FLUID_SAMPLES_LINK_ACTUAL,ENTER_NO_OF_ORAL_FLUID_SAMPLES_LINK_EXPECTED)
+  await this.clickOn(ENTER_NO_OF_ORAL_FLUID_SAMPLES_LINK_ACTUAL)
+  await this.screenShot()
+  }
+  
+async click_BackLink(){
+  await this.clickOn(BACK_LINK)
+ 
+ }
+async getHelpForClaimHeader(){
+  await this.elementToContainText(GET_HELP_FOR_CLAIM_HEADER_ACTUAL,GET_HELP_FOR_CLAIM_HEADER_EXPECTED)
+  }
+  async getHelpForClaimOralSamplesHeader(){
+    await this.elementToContainText(GET_HELP_FOR_CLAIM_ORAL_SAMPLES_HEADER_ACTUAL,GET_HELP_FOR_CLAIM_HEADER_EXPECTED)
+    }
+  
+
+async defraEmaiIDValidate(){
+  await this.elementToContainText(DEFRA_EMAIL_ID_ACTUAL,DEFRA_EMAIL_ID_EXPECTED)
+    }
+
+async phoneNumberValidate(){
+  await this.elementToContainText(PHONE_NUMBER_ACTUAL,PHONE_NUMBER_EXPECTED)
+      }
+async phoneNumberOralSamplesValidate(){
+        await this.elementToContainText(PHONE_NUMBER_ORAL_SAMPLES_ACTUAL,PHONE_NUMBER_EXPECTED)
+            }
+// Exception
+  async validateClaimEndemicsExceptionHeader(){
+     const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+   await sleep(10000)
+   await this.elementToContainText(NUMBER_OF_SPECIES_EXCEPTION_ACTUAL,NUMBER_OF_SPECIES_EXCEPTION_EXPECTED)
+     }
+
+  async validateExceptionOralSamplesHeader(){
+      const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+    await sleep(10000)
+    await this.elementToContainText(NUMBER_OF_TESTS_EXCEPTION_ACTUAL,NUMBER_OF_TESTS_EXCEPTION_EXPECTED)
+      }
+     
+// Error message
+async validate_Blank_Error(){
+  await this.elementToContainText(Blank_ERROR_ACTUAL,Blank_ERROR_EXPECTED)
+}
+async validate_Blank_Error_Vet_Name(){
+  await this.elementToContainErrorText(VET_NAME_Blank_ERROR_ACTUAL,VET_NAME_Blank_ERROR_EXPECTED)
+}
+async validate_Blank_Error_Oral_Sample(){
+  await this.elementToContainErrorText(ORAL_SAMPLE_Blank_ERROR_ACTUAL,ORAL_SAMPLE_Blank_ERROR_EXPECTED)
+}
+async validate_SpecialChar_Error(){
+  await this.elementToContainText(CHAR_ERROR_ACTUAL,CHAR_ERROR_EXPECTED)
+}
+
+// check-detail page
+async singleUserBusinessDetail() {
+   
+  const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+  await sleep(5000)
+ 
+    await this.elementTextShouldBe(CHECK_DETAILS, DETAILS)
+     
+}
+
+async checkFarmerDetails() {
+  
+  await this.elementToContainText(FARMER_DETAILS, CONTENT1)
+}
+
+async farmerAcceptDetails() {
+  await this.clickOn(DETAILS_BUTTON)
+}
+
+async proceedWithApplication() {
+  await this.clickOn(CONTINUE_BUTTON1)
+}
+
+
+  }
 module.exports = StartPageActions
 
