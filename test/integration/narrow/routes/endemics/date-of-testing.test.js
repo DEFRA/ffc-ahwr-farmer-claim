@@ -155,7 +155,7 @@ describe('Date of vet visit', () => {
     beforeEach(async () => {
       crumb = await getCrumbs(global.__SERVER__)
     })
-
+    const errorSummaryHref = '#when-was-endemic-disease-or-condition-testing-carried-out'
     test('when not logged in redirects to defra id', async () => {
       const options = {
         method: 'POST',
@@ -255,6 +255,8 @@ describe('Date of vet visit', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('#on-another-date-error').text().trim()).toEqual(`Error: ${errorMessage}`)
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#main-content > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
     })
 
     test.each([
@@ -306,6 +308,29 @@ describe('Date of vet visit', () => {
       expect($('#whenTestingWasCarriedOut').val()).toEqual(whenTestingWasCarriedOut)
       // On other date radio button should be hidden
       expect($('.govuk-radios__conditional--hidden').text()).toBeTruthy()
+    })
+
+    test.each([
+      {
+        dateOfVisit: today,
+        errorMessage: 'Select if testing was carried out when the vet visited the farm or on another date'
+      }
+    ])('Show error when no option selected', async ({ dateOfVisit, errorMessage }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })
+      const options = {
+        method: 'POST',
+        url,
+        payload: { crumb },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('#whenTestingWasCarriedOut-error').text().trim()).toEqual(`Error: ${errorMessage}`)
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#main-content > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
     })
   })
 })
