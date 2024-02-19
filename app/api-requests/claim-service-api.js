@@ -1,5 +1,7 @@
 const Wreck = require('@hapi/wreck')
 const config = require('../config')
+const { READY_TO_PAY } = require('../constants/application-status')
+const { claimType } = require('../constants/claim')
 
 async function getClaimsByApplicationReference (applicationReference) {
   try {
@@ -49,8 +51,18 @@ function isWithInLastTenMonths (date) {
   return !(Date.now() > end)
 }
 
+function getMostRecentReviewDate (previousClaims, latestVetVisitApplication) {
+  const successfulReviewClaims = (previousClaims ?? []).filter((previousClaim) => previousClaim.statusId === READY_TO_PAY && previousClaim.type === claimType.review)
+  if (successfulReviewClaims.length) {
+    return new Date(successfulReviewClaims[0].data.dateOfVisit)
+  } else if (latestVetVisitApplication && latestVetVisitApplication?.statusId === READY_TO_PAY) {
+    return new Date(latestVetVisitApplication.data.visitDate)
+  }
+}
+
 module.exports = {
   submitNewClaim,
   isWithInLastTenMonths,
-  getClaimsByApplicationReference
+  getClaimsByApplicationReference,
+  getMostRecentReviewDate
 }

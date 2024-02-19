@@ -1,9 +1,10 @@
 const Joi = require('joi')
+const { getMostRecentReviewDate } = require('../../api-requests/claim-service-api')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
-const { endemicsWhichSpecies, endemicsDateOfVisit, endemicsDateOfTesting } = require('../../config/routes')
+const { endemicsWhichSpecies, endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting } = require('../../config/routes')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey }
 } = require('../../session/keys')
@@ -108,17 +109,10 @@ module.exports = [
                     })
                   }
 
-                  const endDate = new Date(dateOfAgreementAccepted) // todo: needs to be date of most recent review (either VV application or claim of type R)
-                  endDate.setMonth(endDate.getMonth() + config.endemicsClaimExpiryTimeMonths)
-                  if (dateOfVisit > endDate) {
-                    return helpers.error('dateOfVisit.expired')
-                  }
-
                   return value
                 }, {
                   'dateOfVisit.future': 'Date of visit must be a real date',
-                  'dateOfVisit.beforeAccepted': 'Date of visit cannot be before the date your agreement began',
-                  'dateOfVisit.expired': 'The date the review was completed must be within ten months of agreement date'
+                  'dateOfVisit.beforeAccepted': 'Date of visit cannot be before the date your agreement began'
                 })
               }
             ]
@@ -173,6 +167,19 @@ module.exports = [
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
+
+        const { latestVetVisitApplication, previousClaims } = session.getEndemicsClaim(request)
+        const lastReviewDate = getMostRecentReviewDate(previousClaims, latestVetVisitApplication)
+
+        if (lastReviewDate) {
+          const tenMonthsSinceLastReview = new Date(lastReviewDate)
+          tenMonthsSinceLastReview.setMonth(tenMonthsSinceLastReview.getMonth() + config.endemicsClaimExpiryTimeMonths)
+
+          if (dateOfVisit < tenMonthsSinceLastReview) {
+            return h.view(endemicsDateOfVisitException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+          }
+        }
+
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
       }
