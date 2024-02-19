@@ -7,6 +7,7 @@ module.exports = {
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
   endemicsYouCannotClaim: 'endemics/you-cannot-claim',
   endemicsDateOfVisit: 'endemics/date-of-visit',
+  endemicsDateOfVisitException: 'endemics/date-of-visit-exception',
   endemicsDateOfTesting: 'endemics/date-of-testing',
   endemicsVetName: 'endemics/vet-name',
   endemicsVetRCVS: 'endemics/vet-rcvs',

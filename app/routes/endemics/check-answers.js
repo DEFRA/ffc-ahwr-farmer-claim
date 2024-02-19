@@ -19,7 +19,7 @@ module.exports = [
           vetRCVSNumber, laboratoryURN
         } = sessionData
 
-        const backLink = typeOfLivestock === livestockTypes.sheep ? routes.endemicsTestUrn : routes.endemicsTestResults
+        const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
 
         const rows = [
           {
