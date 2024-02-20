@@ -47,7 +47,7 @@ module.exports = [
           {
             key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
             value: { html: capitalize(speciesNumbers) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'change URN' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'change number of species' }] }
           },
           {
             key: { text: 'Vet\'s name' },
@@ -72,7 +72,7 @@ module.exports = [
           {
             key: { text: 'Number of animals tested' }, // Pigs, Beef, Sheep
             value: { html: sessionData?.numberAnimalsTested },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfTests}`, text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
           },
           {
             key: { text: 'Test results' }, // Pigs, Dairy, Beef
@@ -109,7 +109,7 @@ module.exports = [
 
         const claim = await submitNewClaim({
           applicationReference: latestEndemicsApplication.reference,
-          type: claimType[typeOfReview],
+          type: typeOfReview,
           createdBy: 'admin',
           data: {
             typeOfLivestock,
