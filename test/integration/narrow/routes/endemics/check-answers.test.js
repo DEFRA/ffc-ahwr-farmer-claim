@@ -90,7 +90,7 @@ describe('Check answers test', () => {
       expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
 
       expect($('.govuk-summary-list__key').text()).toContain('Business name')
-      expect($('.govuk-summary-list__value').text()).toContain('business name')
+      expect($('.govuk-summary-list__value').text()).toContain('Business name')
 
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
       expect($('.govuk-summary-list__value').text()).toContain('Endemic disease follow-ups')
@@ -102,10 +102,10 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__value').text()).toContain('19/12/2023')
 
       expect($('.govuk-summary-list__key').text()).toContain('11 or more beef cattle')
-      expect($('.govuk-summary-list__value').text()).toContain('speciesNumbers')
+      expect($('.govuk-summary-list__value').text()).toContain('SpeciesNumbers')
 
       expect($('.govuk-summary-list__key').text()).toContain("Vet's name")
-      expect($('.govuk-summary-list__value').text()).toContain('vetsName')
+      expect($('.govuk-summary-list__value').text()).toContain('VetsName')
 
       expect($('.govuk-summary-list__key').text()).toContain("Vet's RCVS number")
       expect($('.govuk-summary-list__value').text()).toContain('vetRCVSNumber')
@@ -120,7 +120,7 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__value').text()).toContain('numberAnimalsTested')
 
       expect($('.govuk-summary-list__key').text()).toContain('Test results')
-      expect($('.govuk-summary-list__value').text()).toContain('testResults')
+      expect($('.govuk-summary-list__value').text()).toContain('TestResults')
 
       expectPhaseBanner.ok($)
     })
@@ -159,7 +159,10 @@ describe('Check answers test', () => {
             speciesNumbers: 'speciesNumbers',
             vetsName: 'vetsName',
             vetRCVSNumber: 'vetRCVSNumber',
-            laboratoryURN: 'laboratoryURN'
+            laboratoryURN: 'laboratoryURN',
+            numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+            numberAnimalsTested: 'numberAnimalsTested',
+            testResults: 'testResults'
           }
         })
         const options = {
@@ -176,7 +179,7 @@ describe('Check answers test', () => {
         expect($('h1').text()).toMatch('Check your answers')
         expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
         expect($('.govuk-summary-list__key').text()).toContain(content)
-        expect($('.govuk-summary-list__value').text()).toContain('speciesNumbers')
+        expect($('.govuk-summary-list__value').text()).toContain('SpeciesNumbers')
         expect($('.govuk-back-link').attr('href')).toEqual(backLink)
       })
 
@@ -202,7 +205,10 @@ describe('Check answers test', () => {
             speciesNumbers: 'speciesNumbers',
             vetsName: 'vetsName',
             vetRCVSNumber: 'vetRCVSNumber',
-            laboratoryURN: 'laboratoryURN'
+            laboratoryURN: 'laboratoryURN',
+            numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+            numberAnimalsTested: 'numberAnimalsTested',
+            testResults: 'testResults'
           }
         })
         const options = {
@@ -251,7 +257,6 @@ describe('Check answers test', () => {
           laboratoryURN: '123456',
           numberOfOralFluidSamples: '5',
           numberAnimalsTested: '30',
-          minimumNumberAnimalsRequired: '30',
           testResults: 'positive',
           latestEndemicsApplication: {
             reference: '123'

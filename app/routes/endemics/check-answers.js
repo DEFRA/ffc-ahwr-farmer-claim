@@ -18,17 +18,17 @@ module.exports = [
           organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName,
           vetRCVSNumber, laboratoryURN
         } = sessionData
-
+        const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
         const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
 
         const rows = [
           {
             key: { text: 'Business name' },
-            value: { html: organisation.name }
+            value: { html: capitalize(organisation.name) }
           },
           {
             key: { text: 'Livestock' },
-            value: { html: typeOfLivestock }
+            value: { html: capitalize([livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
           },
           {
             key: { text: 'Type of review' },
@@ -37,47 +37,47 @@ module.exports = [
           {
             key: { text: 'Date of visit' },
             value: { html: (new Date(dateOfVisit)).toLocaleDateString('en-GB') },
-            actions: { items: [{ href: routes.endemicsTestUrn, text: 'Change', visuallyHiddenText: 'change date of visit' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of visit' }] }
           },
           {
             key: { text: 'Date of testing' },
             value: { html: (new Date(dateOfTesting)).toLocaleDateString('en-GB') },
-            actions: { items: [{ href: routes.endemicsDateOfTesting, text: 'Change', visuallyHiddenText: 'change date of testing' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'change date of testing' }] }
           },
           {
             key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
-            value: { html: speciesNumbers },
-            actions: { items: [{ href: routes.endemicsSpeciesNumbers, text: 'Change', visuallyHiddenText: 'change URN' }] }
+            value: { html: capitalize(speciesNumbers) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'change number of species' }] }
           },
           {
             key: { text: 'Vet\'s name' },
-            value: { html: vetsName },
-            actions: { items: [{ href: routes.endemicsVetName, text: 'Change', visuallyHiddenText: 'change vet\'s name' }] }
+            value: { html: capitalize(vetsName) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetName}`, text: 'Change', visuallyHiddenText: 'change vet\'s name' }] }
           },
           {
             key: { text: 'Vet\'s RCVS number' },
             value: { html: vetRCVSNumber },
-            actions: { items: [{ href: routes.endemicsTestUrn, text: 'Change', visuallyHiddenText: 'change vet\'s rcvs number' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetRCVS}`, text: 'Change', visuallyHiddenText: 'change vet\'s rcvs number' }] }
           },
           {
             key: { text: 'Test results URN' },
             value: { html: laboratoryURN },
-            actions: { items: [{ href: routes.endemicsTestUrn, text: 'Change', visuallyHiddenText: 'change test URN' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'change test URN' }] }
           },
           {
             key: { text: 'Number of tests' }, // Pigs
             value: { html: sessionData?.numberOfOralFluidSamples },
-            actions: { items: [{ href: routes.endemicsNumberOfOralFluidSamples, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples' }] }
           },
           {
             key: { text: 'Number of animals tested' }, // Pigs, Beef, Sheep
             value: { html: sessionData?.numberAnimalsTested },
-            actions: { items: [{ href: routes.endemicsNumberOfSpeciesTested, text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
           },
           {
             key: { text: 'Test results' }, // Pigs, Dairy, Beef
-            value: { html: sessionData?.testResults },
-            actions: { items: [{ href: routes.endemicsTestResults, text: 'Change', visuallyHiddenText: 'change test results' }] }
+            value: { html: capitalize(sessionData?.testResults) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
           }
         ]
 
@@ -103,14 +103,13 @@ module.exports = [
           laboratoryURN,
           numberOfOralFluidSamples,
           numberAnimalsTested,
-          minimumNumberAnimalsRequired,
           testResults,
           latestEndemicsApplication
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
           applicationReference: latestEndemicsApplication.reference,
-          type: claimType[typeOfReview],
+          type: typeOfReview,
           createdBy: 'admin',
           data: {
             typeOfLivestock,
@@ -122,7 +121,6 @@ module.exports = [
             laboratoryURN,
             numberOfOralFluidSamples,
             numberAnimalsTested,
-            minimumNumberAnimalsRequired,
             testResults
           }
         })
