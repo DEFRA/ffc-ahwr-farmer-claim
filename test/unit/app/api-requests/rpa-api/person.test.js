@@ -60,9 +60,9 @@ describe('Person', () => {
     { firstName: null, middleName: null, lastName: null, expectedResult: '' }
   ])('when getPersonName called with Firstname=$firstName Middlename=$middleName Lastname=$lastName returns $expectedResult', async ({ firstName, middleName, lastName, expectedResult }) => {
     const personSummary = {
-      firstName: firstName,
-      middleName: middleName,
-      lastName: lastName
+      firstName,
+      middleName,
+      lastName
     }
     const result = person.getPersonName(personSummary)
     expect(result).toEqual(expectedResult)

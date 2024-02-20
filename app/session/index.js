@@ -21,7 +21,7 @@ function set (request, entryKey, key, value, status) {
     : request.info.remoteAddress
   claim &&
     sendSessionEvent(
-      claim.organisation,
+      claim,
       request.yar.id,
       entryKey,
       key,
