@@ -24,15 +24,20 @@
 
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <h1 class="govuk-heading-l">What’s the laboratory unique reference number (URN) for the test results?</h1>
-        <p class="govuk-body">You can find this on the summary the vet gave you.</p>
-
         {{ govukInput({
-          classes: "govuk-input-!-width-full",
-          id: "laboratoryURN",
-          name: "laboratoryURN",
-          value: laboratoryURN,
-          errorMessage: errorMessage
+            label: {
+              text: "What’s the laboratory unique reference number (URN) for the test results?",
+              classes: "govuk-label--l",
+              isPageHeading: true
+            },
+            hint: {
+              text: "You can find this on the summary the vet gave you."
+            },
+            classes: "govuk-input-!-width-full",
+            id: "laboratoryURN",
+            name: "laboratoryURN",
+            value: laboratoryURN,
+            errorMessage: errorMessage
         }) }}
 
         {{ govukButton({
