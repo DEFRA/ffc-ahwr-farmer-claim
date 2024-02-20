@@ -251,7 +251,6 @@ describe('Check answers test', () => {
           laboratoryURN: '123456',
           numberOfOralFluidSamples: '5',
           numberAnimalsTested: '30',
-          minimumNumberAnimalsRequired: '30',
           testResults: 'positive',
           latestEndemicsApplication: {
             reference: '123'

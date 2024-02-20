@@ -103,7 +103,6 @@ module.exports = [
           laboratoryURN,
           numberOfOralFluidSamples,
           numberAnimalsTested,
-          minimumNumberAnimalsRequired,
           testResults,
           latestEndemicsApplication
         } = getEndemicsClaim(request)
@@ -122,7 +121,6 @@ module.exports = [
             laboratoryURN,
             numberOfOralFluidSamples,
             numberAnimalsTested,
-            minimumNumberAnimalsRequired,
             testResults
           }
         })
