@@ -1,4 +1,4 @@
-const { REJECTED, READY_TO_PAY } = require('../../constants/application-status')
+const { REJECTED, READY_TO_PAY } = require('../../constants/status')
 const config = require('../../config')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix

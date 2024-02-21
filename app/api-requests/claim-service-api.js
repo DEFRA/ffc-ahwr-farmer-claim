@@ -1,6 +1,6 @@
 const Wreck = require('@hapi/wreck')
 const config = require('../config')
-const { READY_TO_PAY } = require('../constants/application-status')
+const { READY_TO_PAY } = require('../constants/status')
 const { claimType } = require('../constants/claim')
 
 async function getClaimsByApplicationReference (applicationReference) {
