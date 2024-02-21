@@ -7,6 +7,9 @@ const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helper
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
+const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
+const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
+
 module.exports = [
   {
     method: 'GET',
@@ -18,7 +21,6 @@ module.exports = [
           organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName,
           vetRCVSNumber, laboratoryURN
         } = sessionData
-        const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
         const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
 
         const rows = [
@@ -36,12 +38,12 @@ module.exports = [
           },
           {
             key: { text: 'Date of visit' },
-            value: { html: (new Date(dateOfVisit)).toLocaleDateString('en-GB') },
+            value: { html: formatDate(dateOfVisit) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of visit' }] }
           },
           {
             key: { text: 'Date of testing' },
-            value: { html: (new Date(dateOfTesting)).toLocaleDateString('en-GB') },
+            value: { html: formatDate(dateOfTesting) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'change date of testing' }] }
           },
           {
