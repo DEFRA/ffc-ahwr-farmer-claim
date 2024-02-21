@@ -116,4 +116,34 @@ describe('session', () => {
     expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
     expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { [key]: objectValue })
   })
+
+  test('session clear clears correct keys', async () => {
+    const yarMock = {
+      get: jest.fn(),
+      set: jest.fn(),
+      clear: jest.fn()
+    }
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
+    session.clear(requestSetMock)
+
+    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(4)
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('claim')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('endemicsClaim')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('application')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('organisation')
+  })
+
+  test('session clearEndemicsClaim clears correct keys and keeps correct keys', async () => {
+    const yarMock = {
+      get: jest.fn(),
+      set: jest.fn(),
+      clear: jest.fn()
+    }
+    yarMock.get.mockReturnValue({ organisation: 'org', reference: 'ref' })
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
+    session.clearEndemicsClaim(requestSetMock)
+
+    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(1)
+    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(2)
+  })
 })

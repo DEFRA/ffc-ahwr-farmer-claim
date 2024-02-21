@@ -1,5 +1,5 @@
 const applicationApi = require('../../api-requests/application-service-api')
-const applicationStatus = require('../../constants/application-status')
+const applicationStatus = require('../../constants/status')
 const { claimHasExpired } = require('../../lib/claim-has-expired')
 const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../exceptions')
 const { claimExpiryTimeMonths } = require('../../config')
@@ -32,7 +32,7 @@ async function getLatestApplicationForSbi (sbi, name = '') {
     return new Date(a.createdAt) > new Date(b.createdAt) ? a : b
   })
   switch (latestApplication.statusId) {
-    case applicationStatus.AGREED_STATUS:
+    case applicationStatus.AGREED:
       if (claimHasExpired(latestApplication)) {
         const dates = claimTimeLimitDates(latestApplication)
         throw new ClaimHasExpiredError(`Claim has expired for reference - ${latestApplication.reference}`,
