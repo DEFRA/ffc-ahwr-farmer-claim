@@ -10,7 +10,7 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        clearEndemicsClaim()
+        clearEndemicsClaim(request)
         const { reference } = getEndemicsClaim(request)
 
         return h.view(endemicsConfirmation, {
