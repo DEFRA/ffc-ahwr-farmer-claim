@@ -13,7 +13,7 @@ const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = {
   href: vetVisits
 }
-const errorMessage = { text: 'Select one of the following Livestocks' }
+const errorMessage = { text: 'Select which livestock you are claiming for' }
 
 module.exports = [
   {

@@ -57,7 +57,7 @@ module.exports = [
             .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
             .required()
             .messages({
-              'any.required': 'Select if testing was carried out when the vet visited the farm or on another date'
+              'any.required': 'Enter the date the vet completed testing'
             }),
 
           'on-another-date-day': Joi

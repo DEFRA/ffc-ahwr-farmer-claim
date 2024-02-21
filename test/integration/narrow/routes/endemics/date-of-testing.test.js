@@ -313,7 +313,7 @@ describe('Date of vet visit', () => {
     test.each([
       {
         dateOfVisit: today,
-        errorMessage: 'Select if testing was carried out when the vet visited the farm or on another date'
+        errorMessage: 'Enter the date the vet completed testing'
       }
     ])('Show error when no option selected', async ({ dateOfVisit, errorMessage }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })

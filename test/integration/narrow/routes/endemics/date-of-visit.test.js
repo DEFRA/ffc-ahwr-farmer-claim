@@ -146,7 +146,7 @@ describe('Date of vet visit', () => {
     })
     test.each([
       { description: 'visit before application - application created today, visit date yesterday', day: yesterday.getDate(), month: yesterday.getMonth() === 0 ? 1 : yesterday.getMonth() + 1, year: yesterday.getFullYear(), errorMessage: 'Date of visit cannot be before the date your agreement began', errorHighlights: allErrorHighlights, applicationCreationDate: today },
-      { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 1, year: tomorrow.getFullYear(), errorMessage: 'Date of visit must be a real date', errorHighlights: allErrorHighlights, applicationCreationDate: today },
+      { description: 'visit date in future - application created today, visit date tomorrow', day: tomorrow.getDate(), month: tomorrow.getMonth() + 1, year: tomorrow.getFullYear(), errorMessage: 'Date of visit must be in the past', errorHighlights: allErrorHighlights, applicationCreationDate: today },
       { description: 'missing day and month and year', day: '', month: '', year: '', errorMessage: 'Enter the date the vet completed the review', errorHighlights: allErrorHighlights, applicationCreationDate: today },
       { description: 'missing day', day: '', month: today.getMonth(), year: today.getFullYear(), errorMessage: 'Date of visit must include a day', errorHighlights: [labels.day], applicationCreationDate: today },
       { description: 'missing month', day: today.getDate(), month: '', year: today.getFullYear(), errorMessage: 'Date of visit must include a month', errorHighlights: [labels.month], applicationCreationDate: today },
