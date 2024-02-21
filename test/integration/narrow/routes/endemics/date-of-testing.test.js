@@ -4,7 +4,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
 
-function expectPageContentOk ($) {
+function expectPageContentOk($) {
   // expect($('title').text()).toEqual('When were samples taken? - Annual health and welfare review of livestock')
   expect($('h1').text()).toMatch('When were samples taken?')
   expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('his is the date samples were taken to test for health conditions or diseases.')
@@ -313,7 +313,7 @@ describe('Date of vet visit', () => {
     test.each([
       {
         dateOfVisit: today,
-        errorMessage: 'Select if testing was carried out when the vet visited the farm or on another date'
+        errorMessage: 'Enter the date the vet completed testing'
       }
     ])('Show error when no option selected', async ({ dateOfVisit, errorMessage }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })

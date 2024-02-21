@@ -23,24 +23,24 @@ module.exports = [
           dateOfVisit,
           whenTestingWasCarriedOut: dateOfTesting
             ? {
-                value: dateOfVisit === dateOfTesting
-                  ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-                  : 'onAnotherDate',
-                onAnotherDate: {
-                  day: {
-                    value: new Date(dateOfTesting).getDate()
-                  },
-                  month: {
-                    value: new Date(dateOfTesting).getMonth() + 1
-                  },
-                  year: {
-                    value: new Date(dateOfTesting).getFullYear()
-                  }
+              value: dateOfVisit === dateOfTesting
+                ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                : 'onAnotherDate',
+              onAnotherDate: {
+                day: {
+                  value: new Date(dateOfTesting).getDate()
+                },
+                month: {
+                  value: new Date(dateOfTesting).getMonth() + 1
+                },
+                year: {
+                  value: new Date(dateOfTesting).getFullYear()
                 }
               }
+            }
             : {
-                dateOfVisit
-              },
+              dateOfVisit
+            },
           backLink
         })
       }
@@ -57,7 +57,7 @@ module.exports = [
             .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
             .required()
             .messages({
-              'any.required': 'Select if testing was carried out when the vet visited the farm or on another date'
+              'any.required': 'Enter the date the vet completed testing'
             }),
 
           'on-another-date-day': Joi
