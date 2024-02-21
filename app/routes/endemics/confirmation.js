@@ -1,4 +1,4 @@
-const { getEndemicsClaim } = require('../../session')
+const { clearEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const { endemicsConfirmation, vetVisits } = require('../../config/routes')
 
@@ -10,6 +10,7 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
+        clearEndemicsClaim()
         const { reference } = getEndemicsClaim(request)
 
         return h.view(endemicsConfirmation, {
