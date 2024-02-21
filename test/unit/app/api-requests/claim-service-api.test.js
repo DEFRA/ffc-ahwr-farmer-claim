@@ -1,5 +1,5 @@
 const Wreck = require('@hapi/wreck')
-const { READY_TO_PAY } = require('../../../../app/constants/application-status')
+const { READY_TO_PAY } = require('../../../../app/constants/status')
 const { claimType } = require('../../../../app/constants/claim')
 
 const consoleErrorSpy = jest.spyOn(console, 'error')
