@@ -112,7 +112,7 @@ module.exports = [
 
                   return value
                 }, {
-                  'dateOfVisit.future': 'Date of visit must be a real date',
+                  'dateOfVisit.future': 'Date of visit must be in the past',
                   'dateOfVisit.beforeAccepted': 'Date of visit cannot be before the date your agreement began'
                 })
               }

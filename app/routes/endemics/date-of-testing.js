@@ -23,24 +23,24 @@ module.exports = [
           dateOfVisit,
           whenTestingWasCarriedOut: dateOfTesting
             ? {
-              value: dateOfVisit === dateOfTesting
-                ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-                : 'onAnotherDate',
-              onAnotherDate: {
-                day: {
-                  value: new Date(dateOfTesting).getDate()
-                },
-                month: {
-                  value: new Date(dateOfTesting).getMonth() + 1
-                },
-                year: {
-                  value: new Date(dateOfTesting).getFullYear()
+                value: dateOfVisit === dateOfTesting
+                  ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                  : 'onAnotherDate',
+                onAnotherDate: {
+                  day: {
+                    value: new Date(dateOfTesting).getDate()
+                  },
+                  month: {
+                    value: new Date(dateOfTesting).getMonth() + 1
+                  },
+                  year: {
+                    value: new Date(dateOfTesting).getFullYear()
+                  }
                 }
               }
-            }
             : {
-              dateOfVisit
-            },
+                dateOfVisit
+              },
           backLink
         })
       }
