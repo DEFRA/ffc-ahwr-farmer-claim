@@ -179,7 +179,7 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the review?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a response')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
     })
     test('redirect the user to 404 page in fail action and no claim object', async () => {
       const options = {

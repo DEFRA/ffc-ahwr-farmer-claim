@@ -19,7 +19,7 @@ const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const legendText = 'Did you have $ on the date of the review?'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
-const errorMessageText = 'Select a response'
+const errorMessageText = 'Select yes or no'
 const isEndemicsClaims = true
 
 module.exports = [
