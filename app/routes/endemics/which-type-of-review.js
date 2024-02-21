@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
-const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
+const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit } = require('../../config/routes')
 const { getClaimsByApplicationReference } = require('../../api-requests/claim-service-api')
@@ -33,6 +33,7 @@ module.exports = [
       handler: async (request, h) => {
         const { organisation, typeOfReview } = getEndemicsClaim(request)
         const typeOfLivestock = await getTypeOfLivestockFromPastClaims(organisation.sbi)
+        setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
 
         const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
         return h.view(endemicsWhichTypeOfReview, {
