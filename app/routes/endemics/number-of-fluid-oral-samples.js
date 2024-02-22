@@ -35,11 +35,11 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          numberOfOralFluidSamples: Joi.string().pattern(/^\d+$/).max(6).required()
+          numberOfOralFluidSamples: Joi.string().pattern(/^\d+$/).max(4).required()
             .messages({
               'string.base': 'Enter the number of oral fluid samples collected',
               'string.empty': 'Enter the number of oral fluid samples collected',
-              'string.max': 'The number of animals tested should not exceed 999999',
+              'string.max': 'The number of animals tested should not exceed 9999',
               'string.pattern.base': 'Number of animals tested must only include numbers'
             })
         }),
