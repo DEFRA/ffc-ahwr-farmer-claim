@@ -2,16 +2,35 @@ const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { rcvs: rcvsErrorMessages } = require('../../../app/lib/error-messages')
+const { claimType, livestockTypes } = require('../../constants/claim')
 const {
   endemicsVetName,
   endemicsVetRCVS,
-  endemicsTestUrn
+  endemicsTestUrn,
+  endemicsTestResults,
+  endemicsVaccination,
+  endemicsEndemicsPackage
 } = require('../../config/routes')
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
 } = require('../../session/keys')
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
+
+const nextPageURL = (request) => {
+  const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
+  if (latestVetVisitApplication) {
+    if (typeOfReview === claimType.endemics && [livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+  }
+  if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
+  if (typeOfReview === claimType.endemics) {
+    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsEndemicsPackage}`
+    if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+  }
+
+  return `${urlPrefix}/${endemicsTestUrn}`
+}
 
 module.exports = [
   {
@@ -55,7 +74,7 @@ module.exports = [
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
-        return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
+        return h.redirect(nextPageURL(request))
       }
     }
   }

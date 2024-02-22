@@ -138,5 +138,27 @@ describe('Vet name test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/endemics-package' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/vaccination' }
+    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, nextPageURL }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, vetRCVSNumber: '1234567' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual(nextPageURL)
+    })
   })
 })
