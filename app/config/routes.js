@@ -21,5 +21,9 @@ module.exports = {
   endemicsNumberOfOralFluidSamplesException: 'endemics/number-of-fluid-oral-samples-exception',
   endemicsTestResults: 'endemics/test-results',
   endemicsCheckAnswers: 'endemics/check-answers',
-  endemicsConfirmation: 'endemics/confirmation'
+  endemicsConfirmation: 'endemics/confirmation',
+  endemicsVaccination: 'endemics/vaccination',
+  endemicsDiseaseStatus: 'endemics/disease-status',
+  endemicsEndemicsPackage: 'endemics/endemics-package',
+  endemicsBiosecurity: 'endemics/biosecurity'
 }

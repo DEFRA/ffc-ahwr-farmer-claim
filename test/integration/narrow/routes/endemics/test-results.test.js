@@ -62,12 +62,14 @@ describe('Test Results test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'sheep', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-fluid-oral-samples' }
-    ])('backLink when species $typeOfLivestock', async ({ typeOfLivestock, backLink }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
+      { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/number-of-fluid-oral-samples' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/disease-status' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-rcvs' }
+    ])('backLink when species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, backLink }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
       const options = {
         method: 'GET',
         url,
@@ -75,11 +77,9 @@ describe('Test Results test', () => {
       }
 
       const res = await global.__SERVER__.inject(options)
-
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-back-link').attr('href')).toContain(backLink)
-
       expectPhaseBanner.ok($)
     })
 
@@ -116,7 +116,14 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
 
-    test('redirects to check answers page when payload is valid', async () => {
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/biosecurity' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/vaccination' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/check-answers' }
+    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, nextPageURL }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
+
       const options = {
         method: 'POST',
         url,
@@ -128,7 +135,7 @@ describe('Test Results test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/check-answers'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageURL))
     })
 
     test('shows error when payload is invalid', async () => {
