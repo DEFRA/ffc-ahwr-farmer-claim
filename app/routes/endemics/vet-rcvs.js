@@ -19,11 +19,11 @@ const backLink = `${urlPrefix}/${endemicsVetName}`
 
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
-  if (latestVetVisitApplication) {
-    if (typeOfReview === claimType.endemics && [livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
-  }
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
+    if (latestVetVisitApplication) {
+      if ([livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+    }
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsEndemicsPackage}`
     if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
