@@ -150,9 +150,11 @@ describe('Eligibility test', () => {
 
       const res = await global.__SERVER__.inject(options)
 
+      const title = typeOfLivestock === 'sheep' ? 'There could be a problem with your claim' : 'You cannot continue with your claim'
+
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect($('h1').text()).toMatch(title)
     })
   })
 })
