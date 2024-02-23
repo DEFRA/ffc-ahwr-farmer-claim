@@ -19,22 +19,30 @@ const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
 
-  if (latestVetVisitApplication) {
-    if (typeOfReview === claimType.endemics && [livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetRCVS}`
+  if (typeOfReview === claimType.endemics) {
+    if (latestVetVisitApplication) {
+      if ([livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetRCVS}`
+    }
+    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
+    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetRCVS}`
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
   }
-  if (typeOfReview === claimType.review && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
-  if (typeOfReview === claimType.review && typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
-  if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
-  if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetRCVS}`
+
+  if (typeOfReview === claimType.review) {
+    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+    if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+  }
 }
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
 
-  if (latestVetVisitApplication) {
-    if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
-    if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+  if (typeOfReview === claimType.endemics) {
+    if (latestVetVisitApplication) {
+      if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+      if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+    }
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsBiosecurity}`
   }
-  if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsBiosecurity}`
 
   return `${urlPrefix}/${endemicsCheckAnswers}`
 }
