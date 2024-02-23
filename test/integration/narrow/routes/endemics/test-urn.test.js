@@ -44,7 +44,13 @@ describe('Test URN test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200', async () => {
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'R', title: 'What’s the laboratory unique reference number (URN) for the test results?' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) for the test results?' }
+    ])('Return 200 with Title $title when type of species is $typeOfLivestock and type of review is $typeOfReview', async ({ title, typeOfLivestock, typeOfReview }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'GET',
         url,
@@ -55,9 +61,29 @@ describe('Test URN test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What’s the laboratory unique reference number (URN) for the test results?')
+      expect($('h1').text()).toMatch(title)
       expect($('title').text()).toEqual('Laboratory URN - Annual health and welfare review of livestock')
 
+      expectPhaseBanner.ok($)
+    })
+
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vaccination' }
+    ])('backLink when species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, backLink }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').attr('href')).toContain(backLink)
       expectPhaseBanner.ok($)
     })
 
