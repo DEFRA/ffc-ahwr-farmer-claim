@@ -22,7 +22,7 @@ module.exports = {
   endemicsTestResults: 'endemics/test-results',
   endemicsCheckAnswers: 'endemics/check-answers',
   endemicsConfirmation: 'endemics/confirmation',
-  endemicsVaccination: 'endemics/vaccination',
+  endemicsHerdVaccinationStatus: 'endemics/herd-vaccination-status',
   endemicsDiseaseStatus: 'endemics/disease-status',
   endemicsEndemicsPackage: 'endemics/endemics-package',
   endemicsBiosecurity: 'endemics/biosecurity'

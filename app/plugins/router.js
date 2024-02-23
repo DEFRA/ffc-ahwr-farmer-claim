@@ -36,7 +36,7 @@ if (config.endemics.enabled) {
     require('../routes/endemics/check-answers'),
     require('../routes/endemics/confirmation'),
     require('../routes/endemics/date-of-testing'),
-    require('../routes/endemics/vaccination'),
+    require('../routes/endemics/herd-vaccination-status'),
     require('../routes/endemics/disease-status'),
     require('../routes/endemics/endemics-package'),
     require('../routes/endemics/biosecurity')

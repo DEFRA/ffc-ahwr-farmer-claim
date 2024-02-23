@@ -1,6 +1,6 @@
-describe('Vaccination test', () => {
+describe('Herd vaccination status test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/vaccination'
+  const url = '/claim/endemics/herd-vaccination-status'
 
   describe(`GET ${url} route`, () => {
     test('Returns 200', async () => {

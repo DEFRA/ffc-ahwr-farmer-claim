@@ -144,7 +144,7 @@ describe('Vet name test', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/endemics-package' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/vaccination' }
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/herd-vaccination-status' }
     ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, nextPageURL }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
       const options = {
