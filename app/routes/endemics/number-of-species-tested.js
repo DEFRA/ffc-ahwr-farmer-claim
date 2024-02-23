@@ -6,7 +6,8 @@ const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
   endemicsNumberOfSpeciesException,
-  endemicsVetName
+  endemicsVetName,
+  endemicsLambErrorException
 } = require('../../config/routes')
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
@@ -21,6 +22,7 @@ const {
 const { livestockTypes } = require('../../constants/claim')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
+const nextPageURL = `${urlPrefix}/${endemicsVetName}`
 
 module.exports = [
   {
@@ -70,8 +72,12 @@ module.exports = [
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
+        if (typeOfLivestock === livestockTypes.sheep && !eligibleSheep) {
+          return h.view(endemicsLambErrorException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
+        }
+
         if (eligibleBeef || eligiblePigs || eligibleSheep) {
-          return h.redirect(`${urlPrefix}/${endemicsVetName}`)
+          return h.redirect(nextPageURL)
         }
         return h.view(endemicsNumberOfSpeciesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
