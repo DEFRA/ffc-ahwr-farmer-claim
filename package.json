@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-farmer-claim",
-  "version": "0.36.67",
+  "version": "0.36.68",
   "description": "Web frontend for farmer claim journey",
   "homepage": "https://github.com/DEFRA/ffc-ahwr-farmer-claim",
   "main": "app/index.js",
