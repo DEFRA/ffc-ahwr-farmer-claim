@@ -183,6 +183,40 @@ describe('Check answers test', () => {
         expect($('.govuk-back-link').attr('href')).toEqual(backLink)
       })
 
+      test('check row doesnt appear if no value', async () => {
+          getEndemicsClaimMock.mockImplementation(() => {
+            return {
+              organisation: { name: 'business name' },
+              typeOfLivestock: 'sheep',
+              typeOfReview: 'typeOfReview',
+              dateOfVisit: '2023-12-19T10:25:11.318Z',
+              dateOfTesting: '2023-12-19T10:25:11.318Z',
+              speciesNumbers: 'speciesNumbers',
+              vetsName: 'vetsName',
+              vetRCVSNumber: 'vetRCVSNumber',
+              laboratoryURN: 'laboratoryURN',
+              numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+              numberAnimalsTested: 'numberAnimalsTested',
+              testResults: undefined,
+            }
+          })
+          const options = {
+            method: 'GET',
+            url,
+            auth
+          }
+  
+          const res = await global.__SERVER__.inject(options)
+  
+          expect(res.statusCode).toBe(200)
+          const $ = cheerio.load(res.payload)
+  
+          expect($('h1').text()).toMatch('Check your answers')
+          expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+          expect($('.govuk-summary-list__key').text()).not.toContain('Test results\n')
+          expect($('.govuk-summary-list__value').text()).not.toContain('TestResults')
+        })
+
     test.each([
       {
         typeOfReview: claimType.review,
@@ -194,7 +228,7 @@ describe('Check answers test', () => {
       }
     ])(
       'check content and back links are correct for typeOfReview: $typeOfReview',
-      async ({ typeOfReview, content, backLink }) => {
+      async ({ typeOfReview, content }) => {
         getEndemicsClaimMock.mockImplementation(() => {
           return {
             organisation: { name: 'business name' },
