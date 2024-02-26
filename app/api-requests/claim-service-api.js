@@ -48,7 +48,7 @@ function isWithInLastTenMonths (date) {
   end.setMonth(end.getMonth() + 10)
   end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
 
-  return !(Date.now() > end)
+  return Date.now() <= end
 }
 
 function getMostRecentReviewDate (previousClaims, latestVetVisitApplication) {
