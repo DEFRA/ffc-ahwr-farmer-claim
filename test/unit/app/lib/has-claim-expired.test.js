@@ -116,7 +116,7 @@ describe('Has claim expired test', () => {
       }
     },
     {
-      toString: () => 'claim has expired - 1 second after deadline',
+      toString: () => 'claim has expired - 1 millisecond after deadline',
       given: {
         application: {
           claimed: false,
@@ -146,7 +146,7 @@ describe('Has claim expired test', () => {
         }
       },
       when: {
-        currentTime: '2022-05-25 00:00:01'
+        currentTime: '2022-05-24 24:00:00'
       },
       expect: {
         hasExpired: true
