@@ -5,6 +5,33 @@ const { getEndemicsClaim } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/session')
 describe('Endemics which species test', () => {
+  jest.mock('../../../../../app/config', () => {
+    const originalModule = jest.requireActual('../../../../../app/config')
+    return {
+      ...originalModule,
+      authConfig: {
+        defraId: {
+          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+          policy: 'b2c_1a_signupsigninsfi',
+          redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          clientId: 'dummy_client_id',
+          serviceId: 'dummy_service_id',
+          scope: 'openid dummy_client_id offline_access'
+        },
+        ruralPaymentsAgency: {
+          hostname: 'dummy-host-name',
+          getPersonSummaryUrl: 'dummy-get-person-summary-url',
+          getOrganisationPermissionsUrl:
+            'dummy-get-organisation-permissions-url',
+          getOrganisationUrl: 'dummy-get-organisation-url'
+        }
+      },
+      endemics: {
+        enabled: true
+      }
+    }
+  })
   const url = `/claim/${endemicsWhichSpecies}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
@@ -29,7 +56,9 @@ describe('Endemics which species test', () => {
     const $ = cheerio.load(res.payload)
     const typeOfLivestock = 'sheep'
 
-    expect($('input[name="typeOfLivestock"]:checked').val()).toEqual(typeOfLivestock)
+    expect($('input[name="typeOfLivestock"]:checked').val()).toEqual(
+      typeOfLivestock
+    )
     expect($('.govuk-back-link').text()).toMatch('Back')
   })
   test('Continue without seleceted livestock should return error', async () => {
