@@ -46,7 +46,7 @@ function isWithInLastTenMonths (date) {
   const end = new Date(start)
 
   end.setMonth(end.getMonth() + 10)
-  end.setHours(24, 0, 0, 0) // set to midnight of agreement end day
+  end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
 
   return !(Date.now() > end)
 }
