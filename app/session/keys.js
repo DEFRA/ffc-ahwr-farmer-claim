@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   endemicsClaim: {
+    diseaseStatus: 'diseaseStatus',
     landingPage: 'landingPage',
     reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',

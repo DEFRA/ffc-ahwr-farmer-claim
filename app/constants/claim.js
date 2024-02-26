@@ -13,5 +13,11 @@ module.exports = {
   claimType: {
     review: 'R',
     endemics: 'E'
+  },
+  diseaseStatusTypes:{
+    1:'1',
+    2:'2',
+    3:'3',
+    4:'4'
   }
 }

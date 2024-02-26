@@ -3,8 +3,58 @@
 {% block pageTitle %}Disease Status - {{ serviceName }}
 {% endblock %}
 
+{%block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink.href
+  })}}
+{% endblock %}
+
 {% block content %}
   <div class="govuk-grid-row">
-    <h1 class="govuk-heading-l">Disease Status</h1>
+    <h1 class="govuk-heading-l"></h1>
+    <form method="" autocomplete="off" novalidate="novalidate">
+    <input type="hidden" name="crumb" value="{{crumb}}" />
+    {{govukRadios({
+      id: "diseaseStatusCategory",
+      name: "diseaseStatusCategory",
+      fieldset:{
+        legend: {
+          text: "What is the disease status category?"
+          isPageHeading: true,
+          classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
+        }
+      },
+      hint: {
+          text: "You can find this on the summary the vet gave you."
+      },
+      errorMessage,
+      items:[
+        {
+          value: 1
+          text: "1"
+        },
+        {
+          value: 2
+          text: "2"
+        },
+        {
+          value: 3
+          text: "3"
+        },
+        {
+          value: 4
+          text: "4"
+        },
+      ]
+    })
+    }}
+    {{ govukButton({
+      text: "Continue",
+      attributes: {id: "btnContinue"},
+      preventDoubleClick: true
+    })
+    }}
+    </form>
   </div>
 {% endblock %}
