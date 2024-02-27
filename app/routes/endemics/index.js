@@ -55,7 +55,7 @@ module.exports = {
         // new claims
         if (Array.isArray(claims) && claims?.length) {
           // new claim rejected in the last 10 months
-          if (isWithInLastTenMonths(claims[0].data?.dateOfVisit) && claims[0].statusId === REJECTED) {
+          if (isWithInLastTenMonths(claims[0].createdAt) && claims[0].statusId === REJECTED) {
             logout()
             return h.redirect(endemicsYouCannotClaimURI)
           } else {
@@ -65,7 +65,7 @@ module.exports = {
         }
 
         // old claims NO new claims
-        const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
+        const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.createdAt)
         if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
