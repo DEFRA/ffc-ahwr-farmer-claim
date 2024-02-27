@@ -116,11 +116,16 @@ describe('Eligibility test', () => {
       expect($('#numberAnimalsTested-error').text()).toMatch(error)
     })
     test.each([
-      { typeOfLivestock: 'beef', numberAnimalsTested: '5' },
-      { typeOfLivestock: 'pigs', numberAnimalsTested: '30' },
-      { typeOfLivestock: 'sheep', numberAnimalsTested: '10' }
-    ])('Continue to vet name screen if the number of animals is  eligible', async ({ typeOfLivestock, numberAnimalsTested }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+      { typeOfLivestock: 'beef', typeOfReview: 'R', numberAnimalsTested: '5' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '30' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '10' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '5' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '1' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '30' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '10' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'E', numberAnimalsTested: '1' }
+    ])('Continue to vet name screen if the number of $typeOfLivestock is eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,
@@ -135,11 +140,16 @@ describe('Eligibility test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/vet-name')
     })
     test.each([
-      { typeOfLivestock: 'beef', numberAnimalsTested: '4' },
-      { typeOfLivestock: 'pigs', numberAnimalsTested: '6' },
-      { typeOfLivestock: 'sheep', numberAnimalsTested: '9' }
-    ])('shows error page when number of animals to be tested is not eligible', async ({ typeOfLivestock, numberAnimalsTested }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+      { typeOfLivestock: 'beef', typeOfReview: 'R', numberAnimalsTested: '4' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '20' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '8' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '3' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '0' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '6' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'E', numberAnimalsTested: '0' }
+    ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,
@@ -150,9 +160,11 @@ describe('Eligibility test', () => {
 
       const res = await global.__SERVER__.inject(options)
 
+      const title = typeOfLivestock === 'sheep' ? 'There could be a problem with your claim' : 'You cannot continue with your claim'
+
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect($('h1').text()).toMatch(title)
     })
   })
 })

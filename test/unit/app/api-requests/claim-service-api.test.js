@@ -4,6 +4,7 @@ const { claimType } = require('../../../../app/constants/claim')
 
 const consoleErrorSpy = jest.spyOn(console, 'error')
 
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('@hapi/wreck')
 
 describe('Claim Service API', () => {

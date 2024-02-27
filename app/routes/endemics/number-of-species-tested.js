@@ -6,21 +6,17 @@ const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
   endemicsNumberOfSpeciesException,
-  endemicsVetName
+  endemicsVetName,
+  endemicsNumberOfSpeciesSheepException
 } = require('../../config/routes')
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
 } = require('../../session/keys')
-const {
-  thresholds: {
-    minimumNumberOFBeefTested,
-    minimumNumberOFPigsTested,
-    minimumNumberOFSheepTested
-  }
-} = require('../../constants/amounts')
+const { thresholds } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
+const nextPageURL = `${urlPrefix}/${endemicsVetName}`
 
 module.exports = [
   {
@@ -29,6 +25,7 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { numberAnimalsTested } = session.getEndemicsClaim(request)
+
         return h.view(endemicsNumberOfSpeciesTested, {
           numberAnimalsTested,
           backLink
@@ -63,16 +60,18 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { numberAnimalsTested } = request.payload
-        const { typeOfLivestock } = session.getEndemicsClaim(request)
-        const eligibleBeef = livestockTypes.beef === typeOfLivestock && numberAnimalsTested >= minimumNumberOFBeefTested
-        const eligiblePigs = livestockTypes.pigs === typeOfLivestock && numberAnimalsTested >= minimumNumberOFPigsTested
-        const eligibleSheep = livestockTypes.sheep === typeOfLivestock && numberAnimalsTested >= minimumNumberOFSheepTested
+        const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+
+        const isEligible = numberAnimalsTested >= thresholds[typeOfLivestock][typeOfReview]
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
-        if (eligibleBeef || eligiblePigs || eligibleSheep) {
-          return h.redirect(`${urlPrefix}/${endemicsVetName}`)
+        if (isEligible) return h.redirect(nextPageURL)
+
+        if (typeOfLivestock === livestockTypes.sheep) {
+          return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
         }
+
         return h.view(endemicsNumberOfSpeciesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
     }

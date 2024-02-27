@@ -8,7 +8,9 @@ const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helper
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
 const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
-const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
+const capitalize = (value) => {
+  if (value) return value.charAt(0).toUpperCase() + value.slice(1)
+}
 
 module.exports = [
   {

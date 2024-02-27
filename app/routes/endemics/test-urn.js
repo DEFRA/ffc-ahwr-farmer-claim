@@ -1,10 +1,12 @@
 const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
+const { claimType, livestockTypes } = require('../../constants/claim')
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
   endemicsTestUrn,
+  endemicsVaccination,
   endemicsNumberOfOralFluidSamples,
   endemicsTestResults
 } = require('../../config/routes')
@@ -14,6 +16,38 @@ const {
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
+const title = (request) => {
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+
+  if (typeOfReview === claimType.endemics) {
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return 'What’s the laboratory unique reference number (URN) or certificate number of the test results?'
+  }
+
+  return 'What’s the laboratory unique reference number (URN) for the test results?'
+}
+
+const previousPageUrl = (request) => {
+  const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
+
+  if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsVetRCVS}`
+  if (typeOfReview === claimType.endemics) {
+    if (latestVetVisitApplication) {
+      if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestResults}`
+    }
+    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+  }
+  return `${urlPrefix}/${endemicsVetRCVS}`
+}
+
+const nextPageUrl = (request) => {
+  const { typeOfLivestock } = session.getEndemicsClaim(request)
+
+  if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+  if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+
+  return `${urlPrefix}/${endemicsCheckAnswers}`
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -22,8 +56,9 @@ module.exports = [
       handler: async (request, h) => {
         const { laboratoryURN } = session.getEndemicsClaim(request)
         return h.view(endemicsTestUrn, {
+          title: title(request),
           laboratoryURN,
-          backLink: `${urlPrefix}/${endemicsVetRCVS}`
+          backLink: previousPageUrl(request)
         })
       }
     }
@@ -51,8 +86,9 @@ module.exports = [
           return h
             .view(endemicsTestUrn, {
               ...request.payload,
+              title: title(request),
               errorMessage: { text: error.details[0].message, href: '#laboratoryURN' },
-              backLink: `${urlPrefix}/${endemicsVetRCVS}`
+              backLink: previousPageUrl(request)
             })
             .code(400)
             .takeover()
@@ -60,17 +96,10 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { laboratoryURN } = request.payload
-        const { typeOfLivestock } = session.getEndemicsClaim(request)
 
         session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
-        if (typeOfLivestock === 'beef' || typeOfLivestock === 'dairy') {
-          return h.redirect(`${urlPrefix}/${endemicsTestResults}`)
-        } else if (typeOfLivestock === 'pigs') {
-          return h.redirect(`${urlPrefix}/${endemicsNumberOfOralFluidSamples}`)
-        }
-        // else if (typeOfLivestock === "sheep") {
-        return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
+        return h.redirect(nextPageUrl(request))
       }
     }
   }
