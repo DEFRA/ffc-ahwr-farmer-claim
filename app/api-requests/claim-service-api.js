@@ -1,4 +1,5 @@
 const Wreck = require('@hapi/wreck')
+const appInsights = require('applicationinsights')
 const config = require('../config')
 const { statusesFor10MonthCheck } = require('../constants/status')
 const { claimType } = require('../constants/claim')
@@ -26,6 +27,7 @@ async function submitNewClaim (data) {
       json: true
     })
     if (response.res.statusCode !== 200) {
+      appInsights.defaultClient.trackException({ exception: response.res.statusMessage })
       throw new Error(
         `HTTP ${response.res.statusCode} (${response.res.statusMessage})`
       )
@@ -33,6 +35,7 @@ async function submitNewClaim (data) {
     return response.payload
   } catch (error) {
     console.error(`${new Date().toISOString()} claim submission failed`)
+    appInsights.defaultClient.trackException({ exception: error })
     return null
   }
 }
