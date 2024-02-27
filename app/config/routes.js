@@ -18,7 +18,8 @@ module.exports = {
   endemicsNumberOfSpeciesTested: 'endemics/number-of-species-tested',
   endemicsNumberOfSpeciesException: 'endemics/number-of-species-exception',
   endemicsNumberOfOralFluidSamples: 'endemics/number-of-fluid-oral-samples',
-  endemicsNumberOfOralFluidSamplesException: 'endemics/number-of-fluid-oral-samples-exception',
+  endemicsNumberOfOralFluidSamplesException:
+    'endemics/number-of-fluid-oral-samples-exception',
   endemicsTestResults: 'endemics/test-results',
   endemicsCheckAnswers: 'endemics/check-answers',
   endemicsConfirmation: 'endemics/confirmation',
@@ -26,5 +27,5 @@ module.exports = {
   endemicsDiseaseStatus: 'endemics/disease-status',
   endemicsEndemicsPackage: 'endemics/endemics-package',
   endemicsBiosecurity: 'endemics/biosecurity',
-  endemicsLambErrorException: 'endemics/lamb-error-exception'
+  endemicsNumberOfSpeciesSheepException: 'endemics/number-of-species-sheep-exception'
 }
