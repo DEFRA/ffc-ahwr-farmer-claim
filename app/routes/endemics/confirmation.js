@@ -16,7 +16,7 @@ module.exports = [
         return h.view(endemicsConfirmation, {
           vetVisits,
           reference,
-          ruralPaymentsAgency: ruralPaymentsAgency
+          ruralPaymentsAgency
         })
       }
     }
