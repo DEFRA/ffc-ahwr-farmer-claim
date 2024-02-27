@@ -57,7 +57,7 @@ module.exports = [
             .view(endemicsNumberOfSpeciesTested, {
               ...request.payload,
               backLink,
-              errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}}` }
+              errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}` }
             })
             .code(400)
             .takeover()
