@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
+const { urlPrefix } = require('../../config')
 const {
   endemicsVaccination,
   endemicsTestUrn,
@@ -34,7 +34,7 @@ module.exports = [{
       failAction: async (request, h, error) => {
         const { latestVetVisitApplication } = session.getEndemicsClaim(request)
         const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: 'vaccinated', text: 'Vaccinated' }, { value: 'notVaccinated', text: 'Not vaccinated' }])
-        const backLink = latestVetVisitApplication === true ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
+        const backLink = latestVetVisitApplication ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsVaccination, {
           ...request.payload,
           backLink,
