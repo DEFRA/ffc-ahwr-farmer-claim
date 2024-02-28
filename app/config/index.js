@@ -36,7 +36,7 @@ const schema = Joi.object({
   env: Joi.string().valid('development', 'test', 'production').default(
     'development'
   ),
-  vetVisits: Joi.string().uri(),
+  dashboardServiceUri: Joi.string().uri(),
   googleTagManagerKey: Joi.string().allow(null, ''),
   isDev: Joi.boolean().default(false),
   port: Joi.number().default(3000),
@@ -96,7 +96,7 @@ const config = {
     password: process.env.COOKIE_PASSWORD
   },
   env: process.env.NODE_ENV,
-  vetVisits: process.env.DASHBOARD_SERVICE_URI,
+  dashboardServiceUri: process.env.DASHBOARD_SERVICE_URI,
   googleTagManagerKey: process.env.GOOGLE_TAG_MANAGER_KEY,
   isDev: process.env.NODE_ENV === 'development',
   port: process.env.PORT,

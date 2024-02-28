@@ -1,7 +1,7 @@
 const config = require('../config')
 
 module.exports = {
-  vetVisits: config.vetVisits,
+  vetVisits: `${config.dashboardServiceUri}/vet-visits`,
   endemicsIndex: 'endemics',
   endemicsWhichSpecies: 'endemics/which-species',
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
