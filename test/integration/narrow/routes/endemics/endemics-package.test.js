@@ -1,6 +1,6 @@
 describe('Endemics package test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/endemics-package'
+  const url = '/claim/endemics/sheep-endemics-package'
 
   describe(`GET ${url} route`, () => {
     jest.mock('../../../../../app/config', () => {

@@ -84,7 +84,7 @@ describe('routes plugin test', () => {
       '/claim/endemics/date-of-testing',
       '/claim/endemics/date-of-visit',
       '/claim/endemics/disease-status',
-      '/claim/endemics/endemics-package',
+      '/claim/endemics/sheep-endemics-package',
       '/claim/endemics/number-of-fluid-oral-samples',
       '/claim/endemics/number-of-species-tested',
       '/claim/endemics/species-numbers',
