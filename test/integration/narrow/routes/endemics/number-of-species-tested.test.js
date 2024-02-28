@@ -166,5 +166,25 @@ describe('Eligibility test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(title)
     })
+    test.each([
+      { typeOfLivestock: 'sheep', numberAnimalsTested: '0' }
+    ])('shows error page when number of $typeOfLivestock to be tested is 0 for Sheep', async ({ typeOfLivestock, numberAnimalsTested }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberAnimalsTested },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      const message = 'Number of animals tested cannot be 0'
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('a').text()).toMatch(message)
+    })
   })
 })
