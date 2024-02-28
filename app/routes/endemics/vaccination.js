@@ -19,7 +19,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { latestVetVisitApplication, herdVaccinationStatus } = session.getEndemicsClaim(request)
       const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: 'vaccinated', text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: 'notVaccinated', text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
-      const backLink = latestVetVisitApplication === true ? `${urlPrefix}/${endemicsVetRCVS}` : `${urlPrefix}/${endemicsTestResults}`
+      const backLink = latestVetVisitApplication ? `${urlPrefix}/${endemicsVetRCVS}` : `${urlPrefix}/${endemicsTestResults}`
       return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios })
     }
   }
