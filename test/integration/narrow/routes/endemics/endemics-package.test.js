@@ -148,7 +148,7 @@ describe('Endemics package test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/sheep/ewe-tests')
+      expect(res.headers.location).toEqual('/claim/endemics/sheep-tests')
     })
   })
 })

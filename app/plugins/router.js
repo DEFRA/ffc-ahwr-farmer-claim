@@ -39,7 +39,7 @@ if (config.endemics.enabled) {
     require('../routes/endemics/vaccination'),
     require('../routes/endemics/disease-status'),
     require('../routes/endemics/sheep-endemics-package'),
-    require('../routes/endemics/sheep/ewe-tests'),
+    require('../routes/endemics/sheep-tests'),
     require('../routes/endemics/biosecurity')
   )
 }

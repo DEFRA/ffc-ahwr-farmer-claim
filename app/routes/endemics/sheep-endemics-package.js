@@ -2,7 +2,7 @@ const Joi = require('joi')
 const session = require('../../session')
 const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
-const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepEweTests } = require('../../config/routes')
+const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = require('../../config/routes')
 const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = require('../../session/keys')
 const pageUrl = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
 
@@ -62,7 +62,7 @@ module.exports = [{
       const { sheepEndemicsPackage } = request.payload
 
       session.setEndemicsClaim(request, sheepEndemicsPackageKey, sheepEndemicsPackage)
-      return h.redirect(`${urlPrefix}/${endemicsSheepEweTests}`)
+      return h.redirect(`${urlPrefix}/${endemicsSheepTests}`)
     }
   }
 }]
