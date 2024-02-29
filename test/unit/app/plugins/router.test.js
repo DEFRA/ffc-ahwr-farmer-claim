@@ -112,6 +112,7 @@ describe('routes plugin test', () => {
       '/claim/endemics/species-numbers',
       '/claim/endemics/test-results',
       '/claim/endemics/test-urn',
+      '/claim/endemics/vaccination',
       '/claim/endemics/vet-name',
       '/claim/endemics/vet-rcvs',
       '/claim/endemics/which-species',

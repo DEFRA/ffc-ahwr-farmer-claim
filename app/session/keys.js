@@ -27,6 +27,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting',
     vetsName: 'vetsName',
     vetRCVSNumber: 'vetRCVSNumber',
+    herdVaccinationStatus: 'herdVaccinationStatus',
     laboratoryURN: 'laboratoryURN',
     numberOfOralFluidSamples: 'numberOfOralFluidSamples',
     numberAnimalsTested: 'numberAnimalsTested',
