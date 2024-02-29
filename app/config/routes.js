@@ -26,6 +26,7 @@ module.exports = {
   endemicsVaccination: 'endemics/vaccination',
   endemicsDiseaseStatus: 'endemics/disease-status',
   endemicsSheepEndemicsPackage: 'endemics/sheep-endemics-package',
+  endemicsSheepEweTests: 'endemics/sheep/ewe',
   endemicsBiosecurity: 'endemics/biosecurity',
   endemicsNumberOfSpeciesSheepException: 'endemics/number-of-species-sheep-exception'
 }
