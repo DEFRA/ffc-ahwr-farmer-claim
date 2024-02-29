@@ -3,6 +3,7 @@ const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { rcvs: rcvsErrorMessages } = require('../../../app/lib/error-messages')
 const { claimType, livestockTypes } = require('../../constants/claim')
+const { isWithInLastTenMonths } = require('../../api-requests/claim-service-api')
 const {
   endemicsVetName,
   endemicsVetRCVS,
@@ -21,11 +22,11 @@ const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
-    if (latestVetVisitApplication) {
-      if ([livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+    if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
+      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
     }
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsEndemicsPackage}`
-    if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
   }
 

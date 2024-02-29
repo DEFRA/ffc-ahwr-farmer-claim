@@ -8,6 +8,8 @@ jest.mock('../../../../../app/session')
 describe('Vet name test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/vet-rcvs'
+  const latestVetVisitApplicationWithInLastTenMonths = { createdAt: new Date().toISOString() }
+  const latestVetVisitApplicationNotWithInLastTenMonths = { createdAt: '2023-01-01T00:00:01T00' }
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
@@ -139,12 +141,12 @@ describe('Vet name test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-results' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-results' },
-      { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: true, nextPageURL: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/endemics-package' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, nextPageURL: '/claim/endemics/vaccination' }
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/endemics-package' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/vaccination' }
     ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, nextPageURL }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
       const options = {

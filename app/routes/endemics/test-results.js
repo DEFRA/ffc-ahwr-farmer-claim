@@ -14,14 +14,15 @@ const {
 const { endemicsClaim: { testResults: testResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
 const { claimType, livestockTypes } = require('../../constants/claim')
+const { isWithInLastTenMonths } = require('../../api-requests/claim-service-api')
 
 const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
 
   if (typeOfReview === claimType.endemics) {
-    if (latestVetVisitApplication) {
-      if ([livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetRCVS}`
+    if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
+      if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetRCVS}`
     }
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetRCVS}`
@@ -37,9 +38,9 @@ const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
 
   if (typeOfReview === claimType.endemics) {
-    if (latestVetVisitApplication) {
+    if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
       if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
-      if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+      if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
     }
     if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsBiosecurity}`
   }
