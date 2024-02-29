@@ -4,6 +4,7 @@ const { livestockTypes, claimType } = require('../../constants/claim')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
+const { isWithInLastTenMonths } = require('../../api-requests/claim-service-api')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -21,7 +22,7 @@ module.exports = [
         const sessionData = getEndemicsClaim(request)
         const {
           organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName,
-          vetRCVSNumber, laboratoryURN
+          vetRCVSNumber, laboratoryURN, latestVetVisitApplication
         } = sessionData
         const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
 
@@ -82,7 +83,14 @@ module.exports = [
             key: { text: 'Test results' }, // Pigs, Dairy, Beef
             value: { html: capitalize(sessionData?.testResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
-          }
+          },
+          ...(isWithInLastTenMonths(latestVetVisitApplication?.createdAt) && [livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)
+            ? [{
+                key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
+                value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
+                actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+              }]
+            : [])
         ]
 
         const rowsWithData = rows.filter((row) => row.value.html !== undefined)
@@ -108,7 +116,9 @@ module.exports = [
           numberOfOralFluidSamples,
           numberAnimalsTested,
           testResults,
-          latestEndemicsApplication
+          latestEndemicsApplication,
+          latestVetVisitApplication,
+          vetVisitsReviewTestResults
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
@@ -125,7 +135,8 @@ module.exports = [
             laboratoryURN,
             numberOfOralFluidSamples,
             numberAnimalsTested,
-            testResults
+            testResults,
+            ...(isWithInLastTenMonths(latestVetVisitApplication?.createdAt) && [livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock) ? [vetVisitsReviewTestResults] : [])
           }
         })
 

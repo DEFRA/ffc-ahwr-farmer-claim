@@ -39,7 +39,8 @@ if (config.endemics.enabled) {
     require('../routes/endemics/vaccination'),
     require('../routes/endemics/disease-status'),
     require('../routes/endemics/endemics-package'),
-    require('../routes/endemics/biosecurity')
+    require('../routes/endemics/biosecurity'),
+    require('../routes/endemics/vet-visits-review-test-results')
   )
 }
 

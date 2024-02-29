@@ -6,7 +6,7 @@ jest.mock('../../../../../app/session')
 
 describe('Test Results test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/test-results'
+  const url = '/claim/endemics/vet-visits-review-test-results'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
@@ -44,12 +44,7 @@ describe('Test Results test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test.each([
-      { typeOfReview: 'E', question: 'What was the endemic disease test result' },
-      { typeOfReview: 'R', question: 'What was the test result?' }
-    ])('returns 200', async ({ typeOfReview, question }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfReview } })
-
+    test('returns 200', async () => {
       const options = {
         method: 'GET',
         url,
@@ -57,26 +52,17 @@ describe('Test Results test', () => {
       }
 
       const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch(question)
-      expect($('title').text()).toEqual(
-        'Test Results - Annual health and welfare review of livestock'
-      )
+      expect($('h1').text()).toMatch('What was the review test result?')
+      expect($('title').text()).toContain('Vet Visits Review Test Results - Annual health and welfare review of livestock')
 
       expectPhaseBanner.ok($)
     })
 
-    test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'R', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'R', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'R', backLink: '/claim/endemics/number-of-fluid-oral-samples' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', backLink: '/claim/endemics/disease-status' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', backLink: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', backLink: '/claim/endemics/test-urn' }
-    ])('backLink when species $typeOfLivestock and type of review is $typeOfReview', async ({ typeOfLivestock, typeOfReview, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+    test('backLink test', async () => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestocl: 'beef' } })
       const options = {
         method: 'GET',
         url,
@@ -86,7 +72,7 @@ describe('Test Results test', () => {
       const res = await global.__SERVER__.inject(options)
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-back-link').attr('href')).toContain(backLink)
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/vet-rcvs')
       expectPhaseBanner.ok($)
     })
 
@@ -124,17 +110,17 @@ describe('Test Results test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', nextPageURL: '/claim/endemics/biosecurity' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', nextPageURL: '/claim/endemics/biosecurity' },
-      { typeOfLivestock: 'beef', typeOfReview: 'R', nextPageURL: '/claim/endemics/check-answers' }
-    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview', async ({ typeOfLivestock, typeOfReview, nextPageURL }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+      { typeOfLivestock: 'beef', nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'dairy', nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'pigs', nextPageURL: '/claim/endemics/vaccination' }
+    ])('Redirect $nextPageURL When species $typeOfLivestock', async ({ typeOfLivestock, nextPageURL }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
 
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, testResults: 'positive' },
+        payload: { crumb, vetVisitsReviewTestResults: 'positive' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -149,7 +135,7 @@ describe('Test Results test', () => {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, testResults: undefined },
+        payload: { crumb, vetVisitsReviewTestResults: undefined },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -157,9 +143,9 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result?')
+      expect($('h1').text()).toMatch('What was the review test result?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
-      expect($('#testResults-error').text()).toMatch('Select a test result')
+      expect($('#vetVisitsReviewTestResults-error').text()).toMatch('Select a test result')
     })
   })
 })

@@ -8,9 +8,9 @@ const {
   endemicsVetName,
   endemicsVetRCVS,
   endemicsTestUrn,
-  endemicsTestResults,
   endemicsVaccination,
-  endemicsEndemicsPackage
+  endemicsEndemicsPackage,
+  endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
@@ -23,7 +23,7 @@ const nextPageURL = (request) => {
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
     if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
-      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
     }
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsEndemicsPackage}`
     if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`

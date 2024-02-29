@@ -33,6 +33,7 @@ module.exports = {
     numberAnimalsTested: 'numberAnimalsTested',
     minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired',
     testResults: 'testResults',
+    vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
     organisation: 'organisation',
     speciesNumbers: 'speciesNumbers',
     latestEndemicsApplication: 'latestEndemicsApplication',
