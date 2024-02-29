@@ -1,5 +1,5 @@
-const urlPrefix = require('../../config').urlPrefix
-const { endemicsSheepEndemicsPackage, endemicsSheepEweTests } = require('../../config/routes')
+const { urlPrefix } = require('../../../config')
+const { endemicsSheepEndemicsPackage, endemicsSheepEweTests } = require('../../../config/routes')
 
 const pageUrl = `${urlPrefix}/${endemicsSheepEweTests}`
 const backLink = endemicsSheepEndemicsPackage

@@ -13,12 +13,12 @@ module.exports = [{
     handler: async (request, h) => {
       const { sheepEndemicsPackage } = session.getEndemicsClaim(request)
       const sheepEndemicsPackageRadios = radios('', 'sheepEndemicsPackage')([
-        { value: 'improvedEwePerformance', text: 'Improved ewe performance', checked: sheepEndemicsPackage === 'improvedEwePerformance' }, 
+        { value: 'improvedEwePerformance', text: 'Improved ewe performance', checked: sheepEndemicsPackage === 'improvedEwePerformance' },
         { value: 'improvedReproductivePerformance', text: 'Improved reproductive performance', checked: sheepEndemicsPackage === 'improvedReproductivePerformance' },
         { value: 'improvedLambPerformance', text: 'Improved lamb performance', checked: sheepEndemicsPackage === 'improvedLambPerformance' },
         { value: 'improvedNeonatalLambSurvival', text: 'Improved neonatal lamb survival', checked: sheepEndemicsPackage === 'improvedNeonatalLambSurvival' },
         { value: 'reducedExternalParasites', text: 'Reduced level of external parasites', checked: sheepEndemicsPackage === 'reducedExternalParasites' },
-        { value: 'reducedLameness', text: 'Reduced level of lameness', checked: sheepEndemicsPackage === 'reducedLameness' },
+        { value: 'reducedLameness', text: 'Reduced level of lameness', checked: sheepEndemicsPackage === 'reducedLameness' }
       ])
       const backLink = `${urlPrefix}/${endemicsVetRCVS}`
       return h.view(endemicsSheepEndemicsPackage, { backLink, sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
@@ -31,21 +31,21 @@ module.exports = [{
     validate: {
       payload: Joi.object({
         sheepEndemicsPackage: Joi.string().valid(
-          'improvedEwePerformance', 
-          'improvedReproductivePerformance', 
-          'improvedLambPerformance', 
-          'improvedNeonatalLambSurvival', 
-          'reducedExternalParasites', 
+          'improvedEwePerformance',
+          'improvedReproductivePerformance',
+          'improvedLambPerformance',
+          'improvedNeonatalLambSurvival',
+          'reducedExternalParasites',
           'reducedLameness').required()
       }),
       failAction: async (request, h, error) => {
         const sheepEndemicsPackageRadios = radios('', 'sheepEndemicsPackage', 'Select a package')([
-          { value: 'improvedEwePerformance', text: 'Improved ewe performance' }, 
+          { value: 'improvedEwePerformance', text: 'Improved ewe performance' },
           { value: 'improvedReproductivePerformance', text: 'Improved reproductive performance' },
           { value: 'improvedLambPerformance', text: 'Improved lamb performance' },
           { value: 'improvedNeonatalLambSurvival', text: 'Improved neonatal lamb survival' },
           { value: 'reducedExternalParasites', text: 'Reduced level of external parasites' },
-          { value: 'reducedLameness', text: 'Reduced level of lameness' },])
+          { value: 'reducedLameness', text: 'Reduced level of lameness' }])
         const backLink = `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsSheepEndemicsPackage, {
           ...request.payload,
@@ -62,7 +62,6 @@ module.exports = [{
       const { sheepEndemicsPackage } = request.payload
 
       session.setEndemicsClaim(request, sheepEndemicsPackageKey, sheepEndemicsPackage)
-      // TODO: update to new route
       return h.redirect(`${urlPrefix}/${endemicsSheepEweTests}`)
     }
   }

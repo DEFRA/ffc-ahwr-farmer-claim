@@ -1,8 +1,15 @@
+const cheerio = require('cheerio')
+// const getCrumbs = require('../../../../utils/get-crumbs')
+const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+jest.mock('../../../../../app/session')
 describe('Endemics package test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/sheep-endemics-package'
 
-  describe(`GET ${url} route`, () => {
+  beforeAll(() => {
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -20,8 +27,7 @@ describe('Endemics package test', () => {
           ruralPaymentsAgency: {
             hostname: 'dummy-host-name',
             getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl:
-              'dummy-get-organisation-permissions-url',
+            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
         },
@@ -30,6 +36,13 @@ describe('Endemics package test', () => {
         }
       }
     })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`GET ${url} route`, () => {
     test('Returns 200', async () => {
       const options = {
         method: 'GET',
@@ -40,6 +53,11 @@ describe('Endemics package test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('Which package did you choose?')
+      expect($('title').text()).toEqual('Sheep Endemics Package - Annual health and welfare review of livestock')
+
+      expectPhaseBanner.ok($)
     })
   })
 })
