@@ -3,13 +3,14 @@ const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { rcvs: rcvsErrorMessages } = require('../../../app/lib/error-messages')
 const { claimType, livestockTypes } = require('../../constants/claim')
+const { isWithInLastTenMonths } = require('../../api-requests/claim-service-api')
 const {
   endemicsVetName,
   endemicsVetRCVS,
   endemicsTestUrn,
-  endemicsTestResults,
   endemicsVaccination,
-  endemicsEndemicsPackage
+  endemicsSheepEndemicsPackage,
+  endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
@@ -21,11 +22,11 @@ const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
-    if (latestVetVisitApplication) {
-      if ([livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+    if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
+      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
     }
-    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsEndemicsPackage}`
-    if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
   }
 
@@ -52,7 +53,7 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]{1}$/i).required()
+          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]$/i).required()
             .messages({
               'any.required': rcvsErrorMessages.enterRCVS,
               'string.base': rcvsErrorMessages.enterRCVS,

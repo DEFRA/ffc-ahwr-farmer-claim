@@ -1,4 +1,5 @@
 const Wreck = require('@hapi/wreck')
+const appInsights = require('applicationinsights')
 const config = require('../config')
 const { statusesFor10MonthCheck } = require('../constants/status')
 const { claimType } = require('../constants/claim')
@@ -26,6 +27,7 @@ async function submitNewClaim (data) {
       json: true
     })
     if (response.res.statusCode !== 200) {
+      appInsights.defaultClient.trackException({ exception: response.res.statusMessage })
       throw new Error(
         `HTTP ${response.res.statusCode} (${response.res.statusMessage})`
       )
@@ -33,6 +35,7 @@ async function submitNewClaim (data) {
     return response.payload
   } catch (error) {
     console.error(`${new Date().toISOString()} claim submission failed`)
+    appInsights.defaultClient.trackException({ exception: error })
     return null
   }
 }
@@ -46,9 +49,9 @@ function isWithInLastTenMonths (date) {
   const end = new Date(start)
 
   end.setMonth(end.getMonth() + 10)
-  end.setHours(24, 0, 0, 0) // set to midnight of agreement end day
+  end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
 
-  return !(Date.now() > end)
+  return Date.now() <= end
 }
 
 function getMostRecentReviewDate (previousClaims, latestVetVisitApplication) {

@@ -8,7 +8,9 @@ const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helper
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
 const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
-const capitalize = (value) => value.charAt(0).toUpperCase() + value.slice(1)
+const capitalize = (value) => {
+  if (value) return value.charAt(0).toUpperCase() + value.slice(1)
+}
 
 module.exports = [
   {
@@ -80,6 +82,11 @@ module.exports = [
             key: { text: 'Test results' }, // Pigs, Dairy, Beef
             value: { html: capitalize(sessionData?.testResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
+          },
+          {
+            key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
+            value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
           }
         ]
 
@@ -106,7 +113,8 @@ module.exports = [
           numberOfOralFluidSamples,
           numberAnimalsTested,
           testResults,
-          latestEndemicsApplication
+          latestEndemicsApplication,
+          vetVisitsReviewTestResults
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
@@ -123,7 +131,8 @@ module.exports = [
             laboratoryURN,
             numberOfOralFluidSamples,
             numberAnimalsTested,
-            testResults
+            testResults,
+            vetVisitsReviewTestResults
           }
         })
 

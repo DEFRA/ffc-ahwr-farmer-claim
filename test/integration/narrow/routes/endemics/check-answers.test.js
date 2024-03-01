@@ -11,6 +11,8 @@ jest.mock('@hapi/wreck')
 describe('Check answers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/check-answers'
+  const latestVetVisitApplicationWithInLastTenMonths = { createdAt: new Date().toISOString() }
+  const latestVetVisitApplicationNotWithInLastTenMonths = { createdAt: '2023-01-01T00:00:01T00' }
 
   beforeAll(() => {
     jest.mock('../../../../../app/config', () => {
@@ -183,6 +185,40 @@ describe('Check answers test', () => {
         expect($('.govuk-back-link').attr('href')).toEqual(backLink)
       })
 
+    test('check row doesnt appear if no value', async () => {
+      getEndemicsClaimMock.mockImplementation(() => {
+        return {
+          organisation: { name: 'business name' },
+          typeOfLivestock: 'sheep',
+          typeOfReview: 'typeOfReview',
+          dateOfVisit: '2023-12-19T10:25:11.318Z',
+          dateOfTesting: '2023-12-19T10:25:11.318Z',
+          speciesNumbers: 'speciesNumbers',
+          vetsName: 'vetsName',
+          vetRCVSNumber: 'vetRCVSNumber',
+          laboratoryURN: 'laboratoryURN',
+          numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+          numberAnimalsTested: 'numberAnimalsTested',
+          testResults: undefined
+        }
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      expect($('h1').text()).toMatch('Check your answers')
+      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('.govuk-summary-list__key').text()).not.toContain('Test results\n')
+      expect($('.govuk-summary-list__value').text()).not.toContain('TestResults')
+    })
+
     test.each([
       {
         typeOfReview: claimType.review,
@@ -194,7 +230,7 @@ describe('Check answers test', () => {
       }
     ])(
       'check content and back links are correct for typeOfReview: $typeOfReview',
-      async ({ typeOfReview, content, backLink }) => {
+      async ({ typeOfReview, content }) => {
         getEndemicsClaimMock.mockImplementation(() => {
           return {
             organisation: { name: 'business name' },
@@ -227,6 +263,57 @@ describe('Check answers test', () => {
         expect($('.govuk-summary-list__key').text()).toContain('Type of review')
         expect($('.govuk-summary-list__value').text()).toContain(content)
       })
+
+    test.each([
+      {
+        typeOfLivestock: livestockTypes.beef
+      },
+      {
+        typeOfLivestock: livestockTypes.pigs
+      },
+      {
+        typeOfLivestock: livestockTypes.dairy
+      }
+
+    ])(
+      'check content and back links are correct for typeOfLivestock: $typeOfLivestock',
+      async ({ typeOfLivestock }) => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return {
+            organisation: { name: 'business name' },
+            typeOfReview: 'E',
+            typeOfLivestock,
+            dateOfVisit: '2023-12-19T10:25:11.318Z',
+            dateOfTesting: '2023-12-19T10:25:11.318Z',
+            speciesNumbers: 'speciesNumbers',
+            vetsName: 'vetsName',
+            vetRCVSNumber: 'vetRCVSNumber',
+            laboratoryURN: 'laboratoryURN',
+            numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+            numberAnimalsTested: 'numberAnimalsTested',
+            testResults: 'testResults',
+            vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
+            latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths
+          }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        expect($('h1').text()).toMatch('Check your answers')
+        expect($('title').text()).toMatch(
+          'Check your answers - Annual health and welfare review of livestock'
+        )
+        expect($('.govuk-summary-list__value').text()).toContain('VetVisitsReviewTestResults')
+      }
+    )
   })
 
   describe(`POST ${url} route`, () => {
@@ -236,7 +323,10 @@ describe('Check answers test', () => {
       crumb = await getCrumbs(global.__SERVER__)
     })
 
-    test('When post new claim, it should redirect to confirmation page', async () => {
+    test.each([
+      { latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths },
+      { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }
+    ])('When post new claim, it should redirect to confirmation page', async ({ latestVetVisitApplication }) => {
       const options = {
         method: 'POST',
         url,
@@ -258,6 +348,7 @@ describe('Check answers test', () => {
           numberOfOralFluidSamples: '5',
           numberAnimalsTested: '30',
           testResults: 'positive',
+          latestVetVisitApplication,
           latestEndemicsApplication: {
             reference: '123'
           }
