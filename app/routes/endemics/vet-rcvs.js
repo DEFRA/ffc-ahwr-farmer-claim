@@ -8,9 +8,9 @@ const {
   endemicsVetName,
   endemicsVetRCVS,
   endemicsTestUrn,
-  endemicsTestResults,
   endemicsVaccination,
-  endemicsSheepEndemicsPackage
+  endemicsSheepEndemicsPackage,
+  endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
@@ -23,7 +23,7 @@ const nextPageURL = (request) => {
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
     if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
-      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
     }
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
     if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
@@ -53,7 +53,7 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]{1}$/i).required()
+          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]$/i).required()
             .messages({
               'any.required': rcvsErrorMessages.enterRCVS,
               'string.base': rcvsErrorMessages.enterRCVS,

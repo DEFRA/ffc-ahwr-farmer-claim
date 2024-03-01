@@ -141,8 +141,9 @@ describe('Vet name test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-results' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/sheep-endemics-package' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/test-urn' },
