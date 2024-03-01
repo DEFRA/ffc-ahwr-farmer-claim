@@ -6,17 +6,54 @@ const { getEndemicsClaim } = require('../../../../../app/session')
 jest.mock('../../../../../app/session')
 
 describe('Disease status test', () => {
+  jest.mock('../../../../../app/config', () => {
+    const originalModule = jest.requireActual('../../../../../app/config')
+    return {
+      ...originalModule,
+      authConfig: {
+        defraId: {
+          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+          policy: 'b2c_1a_signupsigninsfi',
+          redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          clientId: 'dummy_client_id',
+          serviceId: 'dummy_service_id',
+          scope: 'openid dummy_client_id offline_access'
+        },
+        ruralPaymentsAgency: {
+          hostname: 'dummy-host-name',
+          getPersonSummaryUrl: 'dummy-get-person-summary-url',
+          getOrganisationPermissionsUrl:
+              'dummy-get-organisation-permissions-url',
+          getOrganisationUrl: 'dummy-get-organisation-url'
+        }
+      },
+      endemics: {
+        enabled: true
+      }
+    }
+  })
+  const url = `/claim/${endemicsDiseaseStatus}`
   const auth = {
-    credentials: {
-      reference: 'AHWR-AAAA-AAAA', sbi: '111111111'
-    },
+    credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'
   }
-  const url = `/claim/${endemicsDiseaseStatus}`
   let crumb
 
   beforeEach(async () => {
     crumb = await getCrumbs(global.__SERVER__)
+  })
+
+  test('Returns 200', async () => {
+    const options = {
+      method: 'GET',
+      auth,
+      url
+    }
+
+    const res = await global.__SERVER__.inject(options)
+
+    expect(res.statusCode).toBe(200)
   })
 
   test("select '1' when diseaseStatus is '1'", async () => {
@@ -35,6 +72,7 @@ describe('Disease status test', () => {
     expect($('input[name="diseaseStatus"]:checked').val()).toEqual(diseaseStatus)
     expect($('.govuk-back-link').text()).toMatch('Back')
   })
+
   test('show inline Error if continue is pressed without diseaseStatus selected', async () => {
     const options = {
       method: 'POST',
@@ -52,6 +90,7 @@ describe('Disease status test', () => {
 
     expect($('p.govuk-error-message').text()).toMatch(errorMessage)
   })
+
   test('continue when diseaseStatus category is selected', async () => {
     const options = {
       method: 'POST',
@@ -67,4 +106,5 @@ describe('Disease status test', () => {
     expect(response.statusCode).toBe(302)
     expect(response.headers.location).toEqual('/claim/endemics/biosecurity')
   })
+  // })
 })
