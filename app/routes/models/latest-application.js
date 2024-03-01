@@ -12,7 +12,7 @@ function claimTimeLimitDates (latestApplication) {
   const start = new Date(latestApplication.createdAt)
   const end = new Date(start)
   end.setMonth(end.getMonth() + claimExpiryTimeMonths)
-  end.setHours(24, 0, 0, 0) // set to midnight of agreement end day
+  end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
   return { startDate: start, endDate: end }
 }
 
