@@ -14,10 +14,10 @@ module.exports = {
     review: 'R',
     endemics: 'E'
   },
-  diseaseStatusTypes:{
-    1:'1',
-    2:'2',
-    3:'3',
-    4:'4'
+  diseaseStatusTypes: {
+    1: '1',
+    2: '2',
+    3: '3',
+    4: '4'
   }
 }

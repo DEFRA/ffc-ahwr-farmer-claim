@@ -26,5 +26,6 @@ module.exports = {
   endemicsDiseaseStatus: 'endemics/disease-status',
   endemicsEndemicsPackage: 'endemics/endemics-package',
   endemicsBiosecurity: 'endemics/biosecurity',
-  endemicsLambErrorException: 'endemics/lamb-error-exception'
+  endemicsLambErrorException: 'endemics/lamb-error-exception',
+  endemimicsTestNumbers: 'endemics/test-numbers'
 }

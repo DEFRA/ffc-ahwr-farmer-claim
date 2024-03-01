@@ -6,21 +6,32 @@
 {%block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: backLink.href
+    href: backLink
   })}}
 {% endblock %}
 
 {% block content %}
-  <div class="govuk-grid-row">
-    <h1 class="govuk-heading-l"></h1>
-    <form method="" autocomplete="off" novalidate="novalidate">
-    <input type="hidden" name="crumb" value="{{crumb}}" />
-    {{govukRadios({
-      id: "diseaseStatusCategory",
-      name: "diseaseStatusCategory",
+  <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList:[{
+            text: errorMessage.text,
+              href: "#diseaseStatus"
+          }]
+        }) }}
+      {% endif %}
+      <div class="govuk-grid-row">
+        <h1 class="govuk-heading-l"></h1>
+        <form method="POST" autocomplete="off" novalidate="novalidate">
+          <input type="hidden" name="crumb" value="{{crumb}}"/>
+          {{ govukRadios({
+      id: "diseaseStatus",
+      name: "diseaseStatus",
       fieldset:{
         legend: {
-          text: "What is the disease status category?"
+          text: "What is the disease status category?",
           isPageHeading: true,
           classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
         }
@@ -28,33 +39,37 @@
       hint: {
           text: "You can find this on the summary the vet gave you."
       },
-      errorMessage,
+      errorMessage: errorMessage,
       items:[
         {
-          value: 1
-          text: "1"
+          value: 1,
+          text: "1",
+          checked: previousAnswer === "1"
         },
         {
-          value: 2
-          text: "2"
+          value: 2,
+          text: "2",
+          checked: previousAnswer === "2"
         },
         {
-          value: 3
-          text: "3"
+          value: 3,
+          text: "3",
+          checked: previousAnswer === "3"
         },
         {
-          value: 4
-          text: "4"
-        },
+          value: 4,
+          text: "4",
+          checked: previousAnswer === "4"
+        }
       ]
     })
     }}
-    {{ govukButton({
+          {{ govukButton({
       text: "Continue",
       attributes: {id: "btnContinue"},
       preventDoubleClick: true
     })
     }}
-    </form>
-  </div>
-{% endblock %}
+        </form>
+      </div>
+    {% endblock %}

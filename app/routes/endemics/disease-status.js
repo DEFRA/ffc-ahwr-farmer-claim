@@ -1,11 +1,13 @@
 const Joi = require('joi')
 const { urlPrefix } = require('../../config')
-const { endemicsDiseaseStatus } = require('../../config/routes')
+const { endemicsDiseaseStatus, endemicsNumberOfSpeciesTested, endemicsBiosecurity } = require('../../config/routes')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { diseaseStatusTypes, claimType } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsDiseaseStatus}`
+const backLink = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+const errorMessage = { text: 'Enter the disease status category' }
 
 module.exports = [
   {
@@ -30,20 +32,20 @@ module.exports = [
       validate: {
         payload: Joi.object({
           diseaseStatus: Joi.string()
-          .valid(...Object.values(diseaseStatusTypes))
-          .required()
+            .valid(...Object.values(diseaseStatusTypes))
+            .required()
         }),
         failAction: (request, h, _err) => {
           return h.view(endemicsDiseaseStatus, {
             errorMessage,
             backLink
           })
-          .code(400)
-          .takeover()
+            .code(400)
+            .takeover()
         }
       },
-      handler: async(request, h) => {
-        const {diseaseStatus} = request.payload
+      handler: async (request, h) => {
+        const { diseaseStatus } = request.payload
 
         setEndemicsClaim(request, endemicsClaim.diseaseStatus, diseaseStatus)
         setEndemicsClaim(request, endemicsClaim.diseaseStatus, claimType.review)
