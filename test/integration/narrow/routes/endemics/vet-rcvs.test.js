@@ -145,10 +145,10 @@ describe('Vet name test', () => {
       { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths, nextPageURL: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/endemics-package' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/sheep-endemics-package' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths, nextPageURL: '/claim/endemics/vaccination' }
-    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and aplication from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, nextPageURL }) => {
+    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, nextPageURL }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
       const options = {
         method: 'POST',
