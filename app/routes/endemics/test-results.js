@@ -5,47 +5,40 @@ const {
   endemicsTestResults,
   endemicsCheckAnswers,
   endemicsTestUrn,
-  endemicsVetRCVS,
   endemicsDiseaseStatus,
   endemicsBiosecurity,
-  endemicsVaccination,
   endemicsNumberOfOralFluidSamples
 } = require('../../config/routes')
 const { endemicsClaim: { testResults: testResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
 const { claimType, livestockTypes } = require('../../constants/claim')
-const { isWithInLastTenMonths } = require('../../api-requests/claim-service-api')
 
 const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
   if (typeOfReview === claimType.endemics) {
-    if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
-      if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetRCVS}`
-    }
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
-    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetRCVS}`
     if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
   }
 
   if (typeOfReview === claimType.review) {
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
-    if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsTestUrn}`
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
   }
 }
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
   if (typeOfReview === claimType.endemics) {
-    if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
-      if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
-      if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
-    }
     if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsBiosecurity}`
   }
 
   return `${urlPrefix}/${endemicsCheckAnswers}`
+}
+const pageTitle = (request) => {
+  const { typeOfReview } = session.getEndemicsClaim(request)
+  return typeOfReview === claimType.endemics ? 'What was the endemic disease test result?' : 'What was the test result?'
 }
 
 module.exports = [{
@@ -55,7 +48,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { testResults } = session.getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
-      return h.view(endemicsTestResults, { backLink: previousPageUrl(request), ...positiveNegativeRadios })
+      return h.view(endemicsTestResults, { title: pageTitle(request), backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
   }
 }, {
@@ -70,6 +63,7 @@ module.exports = [{
         const positiveNegativeRadios = radios('', 'testResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsTestResults, {
           ...request.payload,
+          title: pageTitle(request),
           backLink: previousPageUrl(request),
           ...positiveNegativeRadios,
           errorMessage: {
