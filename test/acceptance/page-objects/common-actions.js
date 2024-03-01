@@ -16,12 +16,13 @@ class CommonActions {
 
   async sendKey (element, text) {
     const locator = browser.$(element)
+
     await locator.setValue(text)
   }
 
 async elementGetText(element){
   const locator = await browser.$(element)
-  let Text =await locator.getText()
+  let Text = await locator.getText()
   return Text
 }
 
