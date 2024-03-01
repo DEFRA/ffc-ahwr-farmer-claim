@@ -4,7 +4,6 @@ const { livestockTypes, claimType } = require('../../constants/claim')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
-const { isWithInLastTenMonths } = require('../../api-requests/claim-service-api')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -22,7 +21,7 @@ module.exports = [
         const sessionData = getEndemicsClaim(request)
         const {
           organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName,
-          vetRCVSNumber, laboratoryURN, latestVetVisitApplication
+          vetRCVSNumber, laboratoryURN
         } = sessionData
         const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
 
@@ -84,13 +83,11 @@ module.exports = [
             value: { html: capitalize(sessionData?.testResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
           },
-          ...(isWithInLastTenMonths(latestVetVisitApplication?.createdAt) && [livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)
-            ? [{
-                key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
-                value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
-                actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
-              }]
-            : [])
+          {
+            key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
+            value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+          }
         ]
 
         const rowsWithData = rows.filter((row) => row.value.html !== undefined)
@@ -117,7 +114,6 @@ module.exports = [
           numberAnimalsTested,
           testResults,
           latestEndemicsApplication,
-          latestVetVisitApplication,
           vetVisitsReviewTestResults
         } = getEndemicsClaim(request)
 
@@ -136,7 +132,7 @@ module.exports = [
             numberOfOralFluidSamples,
             numberAnimalsTested,
             testResults,
-            ...(isWithInLastTenMonths(latestVetVisitApplication?.createdAt) && [livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock) ? [vetVisitsReviewTestResults] : [])
+            vetVisitsReviewTestResults
           }
         })
 
