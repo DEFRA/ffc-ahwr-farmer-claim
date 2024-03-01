@@ -43,7 +43,7 @@ module.exports = [{
       if (
         !!claimType &&
         !!claimType.whichReview &&
-        Object.prototype.hasOwnProperty.call(thresholdPerClaimType, claimType.whichReview) &&
+        Object.hasOwn(thresholdPerClaimType, claimType.whichReview) &&
         thresholdPerClaimType[claimType.whichReview] <= animalsTested
       ) {
         session.setClaim(request, animalsTestedKey, animalsTested)
