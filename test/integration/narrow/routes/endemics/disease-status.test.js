@@ -8,7 +8,7 @@ jest.mock('../../../../../app/session')
 describe('Disease status test', () => {
   const auth = {
     credentials: {
-      reference: '1111', sbi: '111111111'
+      reference: 'AHWR-AAAA-AAAA', sbi: '111111111'
     },
     strategy: 'cookie'
   }
