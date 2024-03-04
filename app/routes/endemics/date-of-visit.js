@@ -7,7 +7,8 @@ const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
 const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting } = require('../../config/routes')
 const {
-  endemicsClaim: { dateOfVisit: dateOfVisitKey }
+  endemicsClaim: { dateOfVisit: dateOfVisitKey },
+  farmerApplyData: { organisation: organisationKey }
 } = require('../../session/keys')
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
@@ -21,6 +22,49 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
+        let date = new Date()
+        date = date.setDate(date.getDate() - 1)
+        session.setEndemicsClaim(request, 'typeOfReview', 'E')
+        session.setEndemicsClaim(request, 'latestEndemicsApplication', {
+          reference: 'AHWR-2470-6BA9',
+          createdAt: date,
+          statusId: 1,
+          type: 'EE'
+        })
+        session.setEndemicsClaim(request, 'previousClaims', [{
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'E',
+          createdAt: '2023-12-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2022-11-01T10:25:11.318Z'
+          }
+        },
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'E',
+          createdAt: '2023-12-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2022-11-01T10:25:11.318Z'
+          }
+        },
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2023-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2022-12-19T10:25:11.318Z'
+          }
+        }])
+
         const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
         const backLink = landingPage
 
@@ -169,13 +213,13 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview, previousClaims } = session.getEndemicsClaim(request)
+        const organisation = session.getClaim(request, organisationKey)
         const dateOfVisit = new Date(
           request.payload[labels.year],
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
-        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit)
-        console.log('****************', previousClaims, dateOfVisit)
+        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit,  organisation?.name)
         if (!isValid) {
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, content, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }

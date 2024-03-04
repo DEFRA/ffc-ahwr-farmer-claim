@@ -67,7 +67,6 @@ function getMostRecentReviewDate (previousClaims, latestVetVisitApplication) {
 function is10MonthsDifference (firstDate, secondDate, comparisonOperator = '') {
   const tenMonthsSinceLastClaim = new Date(secondDate)
   tenMonthsSinceLastClaim.setMonth(tenMonthsSinceLastClaim.getMonth() + config.endemicsClaimExpiryTimeMonths)
-  console.log('is10MonthsDifference', firstDate, tenMonthsSinceLastClaim)
   if (comparisonOperator === 'lessThanTenMonths') {
     return firstDate < tenMonthsSinceLastClaim
   }
@@ -82,7 +81,6 @@ function isValidReviewDate (previousClaims, dateOfVisit) {
   const IsValidPriorReviewDifference = sortedPriorReviewClaims.length ? is10MonthsDifference(dateOfVisit, sortedPriorReviewClaims[sortedPriorReviewClaims.length - 1].data.dateOfVisit) : undefined
   const IsValidNextReviewDifference = sortedNextReviewClaims.length ? is10MonthsDifference(new Date(sortedNextReviewClaims[sortedNextReviewClaims.length - 1].data.dateOfVisit), dateOfVisit) : undefined
 
-  console.log('$$$$$$$$$', sortedNextReviewClaims, priorReviewClaims)
   if ((sortedPriorReviewClaims.length && !IsValidPriorReviewDifference) ||
     (sortedNextReviewClaims.length && !IsValidNextReviewDifference)) {
     return { isValid: false, content: { url: 'https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers', text: 'There must be at least 10 months between your annual health and welfare reviews.' } }
@@ -90,7 +88,7 @@ function isValidReviewDate (previousClaims, dateOfVisit) {
   return { isValid: true, content: {} }
 }
 
-function isValidEndemicsDate (previousClaims, dateOfVisit) {
+function isValidEndemicsDate (previousClaims, dateOfVisit, organisation= {}) {
   const priorFailedReviewClaims = (previousClaims ?? []).filter((previousClaim) => REJECTED === previousClaim.statusId && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) < dateOfVisit)
   const priorSuccessFulReviewClaims = (previousClaims ?? []).filter((previousClaim) => successfulStatuses.includes(previousClaim.statusId) && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) < dateOfVisit)
   const priorEndemicsClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.endemics && new Date(previousClaim.data.dateOfVisit) < dateOfVisit)
@@ -104,9 +102,8 @@ function isValidEndemicsDate (previousClaims, dateOfVisit) {
   const isValidPriorEndemicsDifference = sortedPriorEndemicsClaims.length ? is10MonthsDifference(dateOfVisit, sortedPriorEndemicsClaims[sortedPriorEndemicsClaims.length - 1].data.dateOfVisit) : undefined
   const isValidNextEndemicsDifference = sortedNextEndemicsClaims.length ? is10MonthsDifference(new Date(sortedNextEndemicsClaims[sortedNextEndemicsClaims.length - 1].data.dateOfVisit), dateOfVisit) : undefined
 
-  console.log('%%%%%%%%%%%%%%%', sortedPriorSuccessFulReviewClaims.length, priorSuccessFulReviewClaims)
   if (sortedPriorFailedReviewClaims.length && !isValidPriorFailedReviewClaimsDifference) {
-    return { isValid: false, content: { url: '', text: 'The Dairy Farm - SBI 123456789 had a failed review claim for beef cattle in the last 10 months.' } }
+    return { isValid: false, content: { url: '', text: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for beef cattle in the last 10 months.` } }
   }
 
   if (sortedPriorSuccessFulReviewClaims.length && !isValidPriorSuccessFulReviewClaimsDifference) {
