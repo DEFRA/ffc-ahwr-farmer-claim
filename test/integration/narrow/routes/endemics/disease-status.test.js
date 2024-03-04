@@ -45,6 +45,15 @@ describe('Disease status test', () => {
         }
       }
     })
+    test('Returns 200', async()=>{
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+      const response = await global.__SERVER__.inject(options)
+      expect(response.statusCode).toBe(200)
+    })
 
     test("select '1' when diseaseStatus is '1'", async () => {
       const options = {
