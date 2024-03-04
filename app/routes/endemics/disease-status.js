@@ -2,7 +2,7 @@ const Joi = require('joi')
 const { endemicsDiseaseStatus, endemicsNumberOfSpeciesTested, endemicsBiosecurity } = require('../../config/routes')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
-const { diseaseStatusTypes, claimType } = require('../../constants/claim')
+const { diseaseStatusTypes } = require('../../constants/claim')
 
 const urlPrefix = require('../../config').urlPrefix
 const pageUrl = `${urlPrefix}/${endemicsDiseaseStatus}`
