@@ -45,7 +45,7 @@ describe('Disease status test', () => {
         }
       }
     })
-    test('Returns 200', async()=>{
+    test('Returns 200', async () => {
       const options = {
         method: 'GET',
         url,
