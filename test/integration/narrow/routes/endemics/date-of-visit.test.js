@@ -124,6 +124,12 @@ describe('Date of vet visit', () => {
     after6Months.setMonth(after6Months.getMonth() + 7)
     const before10Months = new Date(today)
     before10Months.setMonth(before10Months.getMonth() - 10)
+    const after10Months = new Date(today)
+    after10Months.setMonth(before10Months.getMonth() + 10)
+    const before5Months = new Date(today)
+    before5Months.setMonth(before5Months.getMonth() - 5)
+    const after7Months = new Date(today)
+    after7Months.setMonth(after7Months.getMonth() + 7)
 
     const allErrorHighlights = [labels.day, labels.month, labels.year]
 
@@ -170,55 +176,105 @@ describe('Date of vet visit', () => {
       expect(res.statusCode).toBe(400)
       expect($('p.govuk-error-message').text().trim()).toEqual(`Error: ${errorMessage}`)
     })
+
     test.each([
-      { description: 'application created before 10 months, visit date today', applicationCreationDate: before10Months }
-    ])('returns 302 to next page when acceptable answer given - $description', async ({ applicationCreationDate, description }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: applicationCreationDate } } })
+      {
+        description: 'prior review claim difference is less than ten moth',
+        day: today.getDate(),
+        month: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
+        year: today.getFullYear(),
+        applicationCreationDate: yesterday,
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2023-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: before5Months
+          }
+        }
+      },
+      {
+        description: 'next review claim difference is less than 10 months',
+        day: today.getDate(),
+        month: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
+        year: today.getFullYear(),
+        applicationCreationDate: yesterday,
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2023-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: after7Months
+          }
+        }
+      }])('Redirect to exception screen when ($description)', async ({ day, month, year, applicationCreationDate, claim }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: applicationCreationDate }, previousClaims: [claim], typeOfReview: 'R' } })
       const options = {
-        auth,
         method: 'POST',
         url,
-        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before10Months },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-    })
-
-    test('last review date less than 10 months ago', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: new Date() } } })
-      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => (new Date()))
-
-      const options = {
+        payload: { crumb, [labels.day]: day.toString(), [labels.month]: month.toString(), [labels.year]: year.toString(), dateOfAgreementAccepted: applicationCreationDate },
         auth,
-        method: 'POST',
-        url,
-        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before10Months },
         headers: { cookie: `crumb=${crumb}` }
       }
-
+      claimServiceApiMock.isValidReviewDate.mockImplementationOnce(() => ({ isValid: false, content: { url: 'https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers', text: 'There must be at least 10 months between your annual health and welfare reviews.' } }))
       const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
       expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-      expect($('title').text().trim()).toEqual('You cannot continue with your claim - Annual health and welfare review of livestock')
     })
 
-    test('last review date more than 10 months ago', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: new Date() } } })
-      claimServiceApiMock.getMostRecentReviewDate.mockImplementationOnce(() => (yearPast))
-
+    test.each([
+      {
+        description: 'prior review claim difference is more than ten months',
+        day: today.getDate(),
+        month: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
+        year: today.getFullYear(),
+        applicationCreationDate: yesterday,
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2023-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: before10Months
+          }
+        }
+      },
+      {
+        description: 'next review claim difference is more than 10 months',
+        day: today.getDate(),
+        month: today.getMonth() === 0 ? 1 : today.getMonth() + 1,
+        year: today.getFullYear(),
+        applicationCreationDate: yesterday,
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2023-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: after10Months
+          }
+        }
+      }])('Redirect to next page when ($description)', async ({ day, month, year, applicationCreationDate, claim }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { latestVetVisitApplication: { ...latestVetVisitApplication, createdAt: applicationCreationDate }, previousClaims: [claim], typeOfReview: 'R' } })
       const options = {
-        auth,
         method: 'POST',
         url,
-        payload: { crumb, [labels.day]: today.getDate(), [labels.month]: today.getMonth() === 0 ? 1 : today.getMonth() + 1, [labels.year]: `${today.getFullYear()}`, dateOfAgreementAccepted: before10Months },
+        payload: { crumb, [labels.day]: day.toString(), [labels.month]: month.toString(), [labels.year]: year.toString(), dateOfAgreementAccepted: applicationCreationDate },
+        auth,
         headers: { cookie: `crumb=${crumb}` }
       }
+      claimServiceApiMock.isValidReviewDate.mockImplementationOnce(() => ({ isValid: true, content: {} }))
 
       const res = await global.__SERVER__.inject(options)
 

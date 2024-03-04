@@ -1,5 +1,6 @@
 const Joi = require('joi')
-const { getMostRecentReviewDate } = require('../../api-requests/claim-service-api')
+const { isValidEndemicsDate, isValidReviewDate } = require('../../api-requests/claim-service-api')
+const { claimType } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
@@ -20,12 +21,11 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
-
+        const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
         const backLink = landingPage
 
         return h.view(endemicsDateOfVisit, {
-          dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
+          dateOfAgreementAccepted: typeOfReview === claimType.endemics ? new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10) : new Date(latestVetVisitApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
@@ -168,22 +168,16 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
+        const { typeOfReview, previousClaims } = session.getEndemicsClaim(request)
         const dateOfVisit = new Date(
           request.payload[labels.year],
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
-
-        const { latestVetVisitApplication, previousClaims } = session.getEndemicsClaim(request)
-        const lastReviewDate = getMostRecentReviewDate(previousClaims, latestVetVisitApplication)
-
-        if (lastReviewDate) {
-          const tenMonthsSinceLastReview = new Date(lastReviewDate)
-          tenMonthsSinceLastReview.setMonth(tenMonthsSinceLastReview.getMonth() + config.endemicsClaimExpiryTimeMonths)
-
-          if (dateOfVisit < tenMonthsSinceLastReview) {
-            return h.view(endemicsDateOfVisitException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
-          }
+        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit)
+        console.log('****************', previousClaims, dateOfVisit)
+        if (!isValid) {
+          return h.view(endemicsDateOfVisitException, { backLink: pageUrl, content, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
