@@ -82,6 +82,11 @@ module.exports = [
             key: { text: 'Test results' }, // Pigs, Dairy, Beef
             value: { html: capitalize(sessionData?.testResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
+          },
+          {
+            key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
+            value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
           }
         ]
 
@@ -108,7 +113,8 @@ module.exports = [
           numberOfOralFluidSamples,
           numberAnimalsTested,
           testResults,
-          latestEndemicsApplication
+          latestEndemicsApplication,
+          vetVisitsReviewTestResults
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
@@ -125,7 +131,8 @@ module.exports = [
             laboratoryURN,
             numberOfOralFluidSamples,
             numberAnimalsTested,
-            testResults
+            testResults,
+            vetVisitsReviewTestResults
           }
         })
 

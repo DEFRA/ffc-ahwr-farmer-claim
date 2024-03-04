@@ -51,6 +51,7 @@ container:
   redisPort: 6379
   serviceUri:
   applyServiceUri:
+  dashboardServiceUri:
   applicationApiUri:
   defraIdTenant:
   defraIdDashboardRedirectUri:
