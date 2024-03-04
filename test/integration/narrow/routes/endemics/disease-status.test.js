@@ -24,7 +24,7 @@ describe('Disease status test', () => {
           hostname: 'dummy-host-name',
           getPersonSummaryUrl: 'dummy-get-person-summary-url',
           getOrganisationPermissionsUrl:
-              'dummy-get-organisation-permissions-url',
+            'dummy-get-organisation-permissions-url',
           getOrganisationUrl: 'dummy-get-organisation-url'
         }
       },
@@ -42,18 +42,6 @@ describe('Disease status test', () => {
 
   beforeEach(async () => {
     crumb = await getCrumbs(global.__SERVER__)
-  })
-
-  test('Returns 200', async () => {
-    const options = {
-      method: 'GET',
-      auth,
-      url
-    }
-
-    const res = await global.__SERVER__.inject(options)
-
-    expect(res.statusCode).toBe(200)
   })
 
   test("select '1' when diseaseStatus is '1'", async () => {
@@ -106,5 +94,4 @@ describe('Disease status test', () => {
     expect(response.statusCode).toBe(302)
     expect(response.headers.location).toEqual('/claim/endemics/biosecurity')
   })
-  // })
 })

@@ -23,17 +23,16 @@
         }) }}
       {% endif %}
       <div class="govuk-grid-row">
-        <h1 class="govuk-heading-l"></h1>
+        <h1 class="govuk-heading-l">What is the disease Status category?</h1>
+
         <form method="POST" autocomplete="off" novalidate="novalidate">
           <input type="hidden" name="crumb" value="{{crumb}}"/>
           {{ govukRadios({
-      id: "diseaseStatus",
-      name: "diseaseStatus",
-      fieldset:{
-        legend: {
-          text: "What is the disease status category?",
-          isPageHeading: true,
-          classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
+            id: "diseaseStatus",
+            name: "diseaseStatus",
+            fieldset:{
+              legend: {
+                classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
         }
       },
       hint: {
@@ -65,10 +64,10 @@
     })
     }}
           {{ govukButton({
-      text: "Continue",
-      attributes: {id: "btnContinue"},
-      preventDoubleClick: true
-    })
+        text: "Continue",
+        attributes: {id: "btnContinue"},
+        preventDoubleClick: true
+      })
     }}
         </form>
       </div>
