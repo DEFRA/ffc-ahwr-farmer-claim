@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { isValidEndemicsDate, isValidReviewDate } = require('../../api-requests/claim-service-api')
-const { claimType } = require('../../constants/claim')
+const { livestockTypes, claimType } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
@@ -22,49 +22,6 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        let date = new Date()
-        date = date.setDate(date.getDate() - 1)
-        session.setEndemicsClaim(request, 'typeOfReview', 'E')
-        session.setEndemicsClaim(request, 'latestEndemicsApplication', {
-          reference: 'AHWR-2470-6BA9',
-          createdAt: date,
-          statusId: 1,
-          type: 'EE'
-        })
-        session.setEndemicsClaim(request, 'previousClaims', [{
-          reference: 'AHWR-C2EA-C718',
-          applicationReference: 'AHWR-2470-6BA9',
-          statusId: 1,
-          type: 'E',
-          createdAt: '2023-12-19T10:25:11.318Z',
-          data: {
-            typeOfLivestock: 'beef',
-            dateOfVisit: '2022-11-01T10:25:11.318Z'
-          }
-        },
-        {
-          reference: 'AHWR-C2EA-C718',
-          applicationReference: 'AHWR-2470-6BA9',
-          statusId: 1,
-          type: 'E',
-          createdAt: '2023-12-19T10:25:11.318Z',
-          data: {
-            typeOfLivestock: 'beef',
-            dateOfVisit: '2022-11-01T10:25:11.318Z'
-          }
-        },
-        {
-          reference: 'AHWR-C2EA-C718',
-          applicationReference: 'AHWR-2470-6BA9',
-          statusId: 9,
-          type: 'R',
-          createdAt: '2023-03-19T10:25:11.318Z',
-          data: {
-            typeOfLivestock: 'beef',
-            dateOfVisit: '2022-12-19T10:25:11.318Z'
-          }
-        }])
-
         const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
         const backLink = landingPage
 
@@ -212,14 +169,15 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { typeOfReview, previousClaims } = session.getEndemicsClaim(request)
+        const { typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+        const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
         const organisation = session.getClaim(request, organisationKey)
         const dateOfVisit = new Date(
           request.payload[labels.year],
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
-        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit,  organisation?.name)
+        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit, organisation?.name, formattedTypeOfLivestock)
         if (!isValid) {
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, content, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }

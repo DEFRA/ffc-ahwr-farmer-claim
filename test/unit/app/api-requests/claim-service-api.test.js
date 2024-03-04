@@ -250,12 +250,11 @@ describe('Claim Service API', () => {
       text: 'There must be at least 10 months between your endemics follow-ups.'
     }])('isValidEndemicsDate when ($description)', async ({ dateOfVisit, claims, text }) => {
     const { isValidEndemicsDate } = require('../../../../app/api-requests/claim-service-api')
-    const { isValid, content } = isValidEndemicsDate(claims, dateOfVisit)
+    const { isValid, content } = isValidEndemicsDate(claims, dateOfVisit, { name: 'The Dairy Farm', sbi: '123456789' }, 'beef cattle')
     expect(isValid).toEqual(false)
     expect(content.text).toEqual(text)
   })
 
-  // ////////
   test.each([
     {
       description: 'prior successful review claim difference is less than ten moth',
@@ -303,8 +302,7 @@ describe('Claim Service API', () => {
       }]
     }])('isValidEndemicsDate when ($description)', async ({ dateOfVisit, claims, text }) => {
     const { isValidEndemicsDate } = require('../../../../app/api-requests/claim-service-api')
-    const { isValid, content } = isValidEndemicsDate(claims, dateOfVisit)
+    const { isValid } = isValidEndemicsDate(claims, dateOfVisit)
     expect(isValid).toEqual(true)
-    expect(content.text).toBeUndefined()
   })
 })

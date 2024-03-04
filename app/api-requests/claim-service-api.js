@@ -88,7 +88,7 @@ function isValidReviewDate (previousClaims, dateOfVisit) {
   return { isValid: true, content: {} }
 }
 
-function isValidEndemicsDate (previousClaims, dateOfVisit, organisation= {}) {
+function isValidEndemicsDate (previousClaims, dateOfVisit, organisation = {}, formattedTypeOfLivestock) {
   const priorFailedReviewClaims = (previousClaims ?? []).filter((previousClaim) => REJECTED === previousClaim.statusId && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) < dateOfVisit)
   const priorSuccessFulReviewClaims = (previousClaims ?? []).filter((previousClaim) => successfulStatuses.includes(previousClaim.statusId) && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) < dateOfVisit)
   const priorEndemicsClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.endemics && new Date(previousClaim.data.dateOfVisit) < dateOfVisit)
@@ -103,7 +103,7 @@ function isValidEndemicsDate (previousClaims, dateOfVisit, organisation= {}) {
   const isValidNextEndemicsDifference = sortedNextEndemicsClaims.length ? is10MonthsDifference(new Date(sortedNextEndemicsClaims[sortedNextEndemicsClaims.length - 1].data.dateOfVisit), dateOfVisit) : undefined
 
   if (sortedPriorFailedReviewClaims.length && !isValidPriorFailedReviewClaimsDifference) {
-    return { isValid: false, content: { url: '', text: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for beef cattle in the last 10 months.` } }
+    return { isValid: false, content: { url: '', text: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.` } }
   }
 
   if (sortedPriorSuccessFulReviewClaims.length && !isValidPriorSuccessFulReviewClaimsDifference) {
