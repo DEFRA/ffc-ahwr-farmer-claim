@@ -1,7 +1,7 @@
 const config = require('../config')
 
 module.exports = {
-  vetVisits: config.vetVisits,
+  vetVisits: `${config.dashboardServiceUri}/vet-visits`,
   endemicsIndex: 'endemics',
   endemicsWhichSpecies: 'endemics/which-species',
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
@@ -18,14 +18,15 @@ module.exports = {
   endemicsNumberOfSpeciesTested: 'endemics/number-of-species-tested',
   endemicsNumberOfSpeciesException: 'endemics/number-of-species-exception',
   endemicsNumberOfOralFluidSamples: 'endemics/number-of-fluid-oral-samples',
-  endemicsNumberOfOralFluidSamplesException:
-    'endemics/number-of-fluid-oral-samples-exception',
+  endemicsNumberOfOralFluidSamplesException: 'endemics/number-of-fluid-oral-samples-exception',
   endemicsTestResults: 'endemics/test-results',
   endemicsCheckAnswers: 'endemics/check-answers',
   endemicsConfirmation: 'endemics/confirmation',
   endemicsVaccination: 'endemics/vaccination',
   endemicsDiseaseStatus: 'endemics/disease-status',
-  endemicsEndemicsPackage: 'endemics/endemics-package',
+  endemicsSheepEndemicsPackage: 'endemics/sheep-endemics-package',
+  endemicsSheepTests: 'endemics/sheep-tests',
   endemicsBiosecurity: 'endemics/biosecurity',
-  endemicsNumberOfSpeciesSheepException: 'endemics/number-of-species-sheep-exception'
+  endemicsNumberOfSpeciesSheepException: 'endemics/number-of-species-sheep-exception',
+  endemicsVetVisitsReviewTestResults: 'endemics/vet-visits-review-test-results'
 }

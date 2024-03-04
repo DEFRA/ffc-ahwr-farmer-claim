@@ -18,7 +18,7 @@ module.exports = [{
   options: {
     validate: {
       payload: Joi.object({
-        rcvs: Joi.string().trim().pattern(/^\d{6}[\dX]{1}$/i).required()
+        rcvs: Joi.string().trim().pattern(/^\d{6}[\dX]$/i).required()
           .messages({
             'any.required': rcvsErrorMessages.enterRCVS,
             'string.base': rcvsErrorMessages.enterRCVS,

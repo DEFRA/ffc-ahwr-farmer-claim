@@ -10,9 +10,7 @@ const {
 const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
-const backLink = {
-  href: vetVisits
-}
+const backLink = vetVisits
 const errorMessage = { text: 'Select which livestock you are claiming for' }
 
 module.exports = [
