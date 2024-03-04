@@ -20,13 +20,6 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const date = new Date()
-        session.setEndemicsClaim(request, 'latestEndemicsApplication', {
-          reference: 'AHWR-2470-6BA9',
-          createdAt: date,
-          statusId: 1,
-          type: 'VV'
-        })
         const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
 
         const backLink = landingPage

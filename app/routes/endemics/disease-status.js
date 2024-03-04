@@ -48,8 +48,6 @@ module.exports = [
         const { diseaseStatus } = request.payload
 
         setEndemicsClaim(request, endemicsClaim.diseaseStatus, diseaseStatus)
-        setEndemicsClaim(request, endemicsClaim.diseaseStatus, claimType.review)
-
         return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
       }
     }
