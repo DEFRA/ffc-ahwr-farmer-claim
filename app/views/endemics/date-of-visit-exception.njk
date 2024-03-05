@@ -18,9 +18,14 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
       <br>
-      <p class="govuk-body">
-      <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers">There must be at least 10 months between your annual health and welfare reviews.</a>
-      </p>
+      {% if content.url %}
+        <p class="govuk-body">
+          <a href={{ content.url  }}>{{ content.text  }}</a>
+        </p>
+      {% endif %}
+      {% if not content.url %}
+        <p class="govuk-body">{{ content.text }}</p>
+      {% endif %}
       <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
       <p class="govuk-body">
         <a class="govuk-link" href={{ backLink }}>Enter the date the vet last visited your farm</a>
