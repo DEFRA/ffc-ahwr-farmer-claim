@@ -22,11 +22,11 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
         const backLink = landingPage
 
         return h.view(endemicsDateOfVisit, {
-          dateOfAgreementAccepted: typeOfReview === claimType.endemics ? new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10) : new Date(latestVetVisitApplication.createdAt).toISOString().slice(0, 10),
+          dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
