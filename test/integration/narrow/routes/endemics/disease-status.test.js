@@ -45,14 +45,29 @@ describe('Disease status test', () => {
         }
       }
     })
-    test('Returns 200', async () => {
+    test('redirect if not logged in / authorized', async () => {
+      const options = {
+        method: 'GET',
+        url
+      }
+
+      const response = await global.__SERVER__.inject(options)
+
+      expect(response.statusCode).toBe(302)
+      expect(response.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+    })
+    test('Returns 200 and text displayed', async () => {
       const options = {
         method: 'GET',
         url,
         auth
       }
       const response = await global.__SERVER__.inject(options)
+
+      const $ = cheerio.load(response.payload)
+
       expect(response.statusCode).toBe(200)
+      expect($('h1').text()).toMatch('What is the disease Status category?')
     })
 
     test("select '1' when diseaseStatus is '1'", async () => {
