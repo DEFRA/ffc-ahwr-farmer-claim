@@ -20,6 +20,7 @@ module.exports = {
   },
   endemicsClaim: {
     landingPage: 'landingPage',
+    biosecurity: 'biosecurity',
     reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
     typeOfReview: 'typeOfReview',

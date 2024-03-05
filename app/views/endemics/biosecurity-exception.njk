@@ -1,0 +1,18 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+
+{% block content %}
+{% endblock %}
