@@ -5,7 +5,7 @@
 ## Checklist
 
 <!-- [x] if you have completed the task -->
-<!-- [n/a] if the task is not releveant -->
+<!-- [n/a] if the task is not relevant -->
 
 - [ ] Content has no typos
 - [ ] Correct inline validation errors
