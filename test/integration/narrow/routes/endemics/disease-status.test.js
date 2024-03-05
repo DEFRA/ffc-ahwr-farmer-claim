@@ -17,7 +17,7 @@ describe('Disease status test', () => {
     crumb = await getCrumbs(global.__SERVER__)
   })
 
-  describe(`GET ${url} route`, () => {
+  beforeAll(() => {
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -45,6 +45,12 @@ describe('Disease status test', () => {
         }
       }
     })
+  })
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`GET ${url}`, () => {
     test('redirect if not logged in / authorized', async () => {
       const options = {
         method: 'GET',
@@ -56,20 +62,30 @@ describe('Disease status test', () => {
       expect(response.statusCode).toBe(302)
       expect(response.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
-    test('Returns 200 and text displayed', async () => {
+
+    test('Returns 200', async () => {
       const options = {
         method: 'GET',
         url,
         auth
       }
+
+      const response = await global.__SERVER__.inject(options)
+
+      expect(response.statusCode).toBe(200)
+    })
+    test('display question text', async () => {
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
       const response = await global.__SERVER__.inject(options)
 
       const $ = cheerio.load(response.payload)
-
-      expect(response.statusCode).toBe(200)
       expect($('h1').text()).toMatch('What is the disease Status category?')
     })
-
     test("select '1' when diseaseStatus is '1'", async () => {
       const options = {
         method: 'GET',
@@ -86,7 +102,9 @@ describe('Disease status test', () => {
       expect($('input[name="diseaseStatus"]:checked').val()).toEqual(diseaseStatus)
       expect($('.govuk-back-link').text()).toMatch('Back')
     })
+  })
 
+  describe(`POST ${url}`, () => {
     test('show inline Error if continue is pressed without diseaseStatus selected', async () => {
       const options = {
         method: 'POST',
