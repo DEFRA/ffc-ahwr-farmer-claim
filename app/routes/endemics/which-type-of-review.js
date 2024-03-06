@@ -70,8 +70,6 @@ module.exports = [
 
         // For review claim
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
-
-        // todo: For endemics claim
       }
     }
   }
