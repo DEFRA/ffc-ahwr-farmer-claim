@@ -20,6 +20,10 @@ const backLink = `${urlPrefix}/${endemicsVetName}`
 
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, latestVetVisitApplication } = session.getEndemicsClaim(request)
+    // TODO: Temp for local testing purposes
+  // const { typeOfLivestock, latestVetVisitApplication } = session.getEndemicsClaim(request)
+  // let typeOfReview = claimType.endemics
+  
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
     if ((isWithInLastTenMonths(latestVetVisitApplication?.createdAt))) {
@@ -30,7 +34,7 @@ const nextPageURL = (request) => {
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
   }
 
-  return `${urlPrefix}/${endemicsTestUrn}`
+  else return `${urlPrefix}/${endemicsTestUrn}`
 }
 
 module.exports = [

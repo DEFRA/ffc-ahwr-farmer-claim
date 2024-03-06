@@ -37,6 +37,7 @@ module.exports = {
     organisation: 'organisation',
     speciesNumbers: 'speciesNumbers',
     sheepEndemicsPackage: 'sheepEndemicsPackage',
+    sheepEndemicsTests: 'sheepTests',
     latestEndemicsApplication: 'latestEndemicsApplication',
     latestVetVisitApplication: 'latestVetVisitApplication',
     previousClaims: 'previousClaims'

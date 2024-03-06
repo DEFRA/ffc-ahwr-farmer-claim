@@ -12,7 +12,34 @@
 
 {% block content %}
   <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
+    
     <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
-      <h1 class="govuk-heading-l">What did the vet test or sample for?</h1>
+      {% if errorMessage %}
+      {{ govukErrorSummary({
+        titleText: "There is a problem",
+        errorList: [errorMessage]
+      }) }}
+    {% endif %}
+
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        <h1 class="govuk-heading-l">What did the vet test or sample for?</h1>
+        <p class="govuk-body">You can find this on the summary the vet gave you.</p>
+        
+        {{ govukCheckboxes({
+          name: "sheepTests",
+          items: sheepTestCheckboxItems
+        }) }}
+
+        {{ govukButton({
+          text: "Continue",
+          attributes: {
+            id: "continue"
+          },
+          preventDoubleClick: true
+        }) }}
+      
+      </form>
+    </div>
   </div>
 {% endblock %}
