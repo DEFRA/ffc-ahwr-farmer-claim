@@ -1,12 +1,14 @@
 const Joi = require('joi')
-const { getMostRecentReviewDate } = require('../../api-requests/claim-service-api')
+const { isValidEndemicsDate, isValidReviewDate } = require('../../api-requests/claim-service-api')
+const { livestockTypes, claimType } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
 const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting } = require('../../config/routes')
 const {
-  endemicsClaim: { dateOfVisit: dateOfVisitKey }
+  endemicsClaim: { dateOfVisit: dateOfVisitKey },
+  farmerApplyData: { organisation: organisationKey }
 } = require('../../session/keys')
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
@@ -21,7 +23,6 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
-
         const backLink = landingPage
 
         return h.view(endemicsDateOfVisit, {
@@ -168,22 +169,17 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
+        const { typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+        const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
+        const organisation = session.getClaim(request, organisationKey)
         const dateOfVisit = new Date(
           request.payload[labels.year],
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
-
-        const { latestVetVisitApplication, previousClaims } = session.getEndemicsClaim(request)
-        const lastReviewDate = getMostRecentReviewDate(previousClaims, latestVetVisitApplication)
-
-        if (lastReviewDate) {
-          const tenMonthsSinceLastReview = new Date(lastReviewDate)
-          tenMonthsSinceLastReview.setMonth(tenMonthsSinceLastReview.getMonth() + config.endemicsClaimExpiryTimeMonths)
-
-          if (dateOfVisit < tenMonthsSinceLastReview) {
-            return h.view(endemicsDateOfVisitException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
-          }
+        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit, organisation?.name, formattedTypeOfLivestock)
+        if (!isValid) {
+          return h.view(endemicsDateOfVisitException, { backLink: pageUrl, content, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
