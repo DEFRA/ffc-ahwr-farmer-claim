@@ -84,7 +84,7 @@ describe('Disease status test', () => {
       const response = await global.__SERVER__.inject(options)
 
       const $ = cheerio.load(response.payload)
-      expect($('h1').text()).toMatch('What is the disease Status category?')
+      expect($('h1').text()).toMatch('What is the disease status category?')
     })
     test("select '1' when diseaseStatus is '1'", async () => {
       const options = {
