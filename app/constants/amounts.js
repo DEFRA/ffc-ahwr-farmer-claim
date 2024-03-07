@@ -12,8 +12,8 @@ const thresholds = {
   minimumNumberOFBeefTested: 5,
   minimumNumberOFPigsTested: 30,
   minimumNumberOFSheepTested: 10,
-  positiveReviewNumberOfSamplesTested: 6,
-  negativeReviewNumberOfSamplesTested: 30,
+  positiveReviewNumberOfSamplesTested: '6',
+  negativeReviewNumberOfSamplesTested: '30',
   [beef]: {
     [review]: 5,
     [endemics]: 1

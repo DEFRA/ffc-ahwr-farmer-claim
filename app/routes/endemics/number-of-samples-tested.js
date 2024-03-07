@@ -37,10 +37,10 @@ module.exports = [
         payload: Joi.object({
           numberOfSamplesTested: Joi.string().pattern(/^\d+$/).max(4).required()
             .messages({
-              'string.base': 'Enter the number of oral fluid samples collected',
-              'string.empty': 'Enter the number of oral fluid samples collected',
-              'string.max': 'The number of animals tested should not exceed 9999',
-              'string.pattern.base': 'Number of animals tested must only include numbers'
+              'string.base': 'Enter the number of samples tested',
+              'string.empty': 'Enter the number of samples tested',
+              'string.max': 'The number of samples tested should not exceed 9999',
+              'string.pattern.base': 'Number of samples tested must only include numbers'
             })
         }),
         failAction: async (request, h, error) => {
@@ -58,8 +58,11 @@ module.exports = [
         const { numberOfSamplesTested } = request.payload
         session.setEndemicsClaim(request, numberOfSamplesTestedKey, numberOfSamplesTested)
 
-        if ((lastReviewTestResults === 'positive' && numberOfSamplesTested === positiveReviewNumberOfSamplesTested) ||
-              (lastReviewTestResults === 'negative' && numberOfSamplesTested === negativeReviewNumberOfSamplesTested)) {
+        const endemicsClaim = session.getEndemicsClaim(request)
+        const lastReviewTestResults = endemicsClaim.vetVisitsReviewTestResults ?? endemicsClaim.relevantReviewForEndemics?.data?.testResults
+
+        if ((lastReviewTestResults === 'positive' && numberOfSamplesTested !== positiveReviewNumberOfSamplesTested) ||
+              (lastReviewTestResults === 'negative' && numberOfSamplesTested !== negativeReviewNumberOfSamplesTested)) {
           return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
