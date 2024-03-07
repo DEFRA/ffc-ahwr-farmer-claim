@@ -305,4 +305,89 @@ describe('Claim Service API', () => {
     const { isValid } = isValidEndemicsDate(claims, dateOfVisit)
     expect(isValid).toEqual(true)
   })
+
+  test.each([
+    {
+      endemicsDateOfVetVisit: new Date('2024-05-01'),
+      previousClaims: [{
+        statusId: READY_TO_PAY,
+        type: 'R',
+        data: {
+          dateOfVisit: new Date('2024-04-01')
+        }
+      }
+      ],
+      latestVetVisitApplication: {
+
+      },
+      result: {
+        statusId: READY_TO_PAY,
+        type: 'R',
+        data: {
+          dateOfVisit: new Date('2024-04-01')
+        }
+      }
+    },
+    {
+      endemicsDateOfVetVisit: new Date('2024-05-01'),
+      previousClaims: [{
+        statusId: READY_TO_PAY,
+        type: 'R',
+        data: {
+          dateOfVisit: new Date('2000-04-01')
+        }
+      }
+      ],
+      latestVetVisitApplication: {
+
+      },
+      result: undefined
+    },
+    {
+      endemicsDateOfVetVisit: new Date('2024-05-01'),
+      previousClaims: [
+      ],
+      latestVetVisitApplication: {
+        statusId: READY_TO_PAY,
+        data: {
+          visitDate: new Date('2024-04-01')
+        }
+      },
+      result: {
+        statusId: READY_TO_PAY,
+        data: {
+          visitDate: new Date('2024-04-01')
+        }
+      }
+    },
+    {
+      endemicsDateOfVetVisit: new Date('2024-05-01'),
+      previousClaims: [{
+        statusId: READY_TO_PAY,
+        type: 'R',
+        data: {
+          dateOfVisit: new Date('2024-04-01')
+        }
+      }, {
+        statusId: READY_TO_PAY,
+        type: 'R',
+        data: {
+          dateOfVisit: new Date('2000-04-01')
+        }
+      }
+      ],
+      latestVetVisitApplication: undefined,
+      result: {
+        statusId: READY_TO_PAY,
+        type: 'R',
+        data: {
+          dateOfVisit: new Date('2024-04-01')
+        }
+      }
+    }
+  ])('getRelevantReviewForEndemics returns the relevant review', async ({ endemicsDateOfVetVisit, previousClaims, latestVetVisitApplication, result }) => {
+    const { getRelevantReviewForEndemics } = require('../../../../app/api-requests/claim-service-api')
+    const relevantReviewForEndemics = getRelevantReviewForEndemics(endemicsDateOfVetVisit, previousClaims, latestVetVisitApplication)
+    expect(relevantReviewForEndemics).toEqual(result)
+  })
 })
