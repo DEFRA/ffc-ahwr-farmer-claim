@@ -2,7 +2,7 @@ const Wreck = require('@hapi/wreck')
 const _ = require('lodash')
 const appInsights = require('applicationinsights')
 const config = require('../config')
-const { statusesFor10MonthCheck, successfulStatuses, REJECTED } = require('../constants/status')
+const { statusesFor10MonthCheck, successfulStatuses, validReviewStatuses, REJECTED } = require('../constants/status')
 const { claimType } = require('../constants/claim')
 
 async function getClaimsByApplicationReference (applicationReference) {
@@ -61,6 +61,17 @@ function getMostRecentReviewDate (previousClaims, latestVetVisitApplication) {
     return new Date(successfulReviewClaims[0].data.dateOfVisit)
   } else if (latestVetVisitApplication && statusesFor10MonthCheck.includes(latestVetVisitApplication?.statusId)) {
     return new Date(latestVetVisitApplication.data.visitDate)
+  }
+}
+
+function getRelevantReviewForEndemics (endemicsDateOfVetVisit, previousClaims, latestVetVisitApplication) {
+  const relevantReviewClaim = (previousClaims ?? []).filter((previousClaim) => {
+    return validReviewStatuses.includes(previousClaim.statusId) && previousClaim.type === claimType.review && is10MonthsDifference(endemicsDateOfVetVisit, previousClaim?.data?.dateOfVisit, 'lessThanTenMonths')
+  })
+  if (relevantReviewClaim.length) {
+    return relevantReviewClaim[0]
+  } else if (latestVetVisitApplication && validReviewStatuses.includes(latestVetVisitApplication?.statusId) && is10MonthsDifference(endemicsDateOfVetVisit, latestVetVisitApplication?.data?.visitDate, 'lessThanTenMonths')) {
+    return latestVetVisitApplication
   }
 }
 
@@ -123,6 +134,7 @@ module.exports = {
   isWithInLastTenMonths,
   getClaimsByApplicationReference,
   getMostRecentReviewDate,
+  getRelevantReviewForEndemics,
   isValidReviewDate,
   isValidEndemicsDate,
   is10MonthsDifference
