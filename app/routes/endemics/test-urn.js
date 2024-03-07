@@ -8,6 +8,7 @@ const {
   endemicsTestUrn,
   endemicsVaccination,
   endemicsNumberOfOralFluidSamples,
+  endemicsNumberOfSamplesTested,
   endemicsTestResults
 } = require('../../config/routes')
 const {
@@ -40,9 +41,10 @@ const previousPageUrl = (request) => {
 }
 
 const nextPageUrl = (request) => {
-  const { typeOfLivestock } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
-  if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+  if (typeOfLivestock === livestockTypes.pigs && typeOfReview === claimType.review) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+  if (typeOfLivestock === livestockTypes.pigs && typeOfReview === claimType.endemics) return `${urlPrefix}/${endemicsNumberOfSamplesTested}`
   if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
 
   return `${urlPrefix}/${endemicsCheckAnswers}`

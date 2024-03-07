@@ -31,6 +31,7 @@ module.exports = {
     herdVaccinationStatus: 'herdVaccinationStatus',
     laboratoryURN: 'laboratoryURN',
     numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+    numberOfSamplesTested: 'numberOfSamplesTested',
     numberAnimalsTested: 'numberAnimalsTested',
     minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired',
     testResults: 'testResults',
@@ -40,7 +41,8 @@ module.exports = {
     sheepEndemicsPackage: 'sheepEndemicsPackage',
     latestEndemicsApplication: 'latestEndemicsApplication',
     latestVetVisitApplication: 'latestVetVisitApplication',
-    previousClaims: 'previousClaims'
+    previousClaims: 'previousClaims',
+    relevantReviewForEndemics: 'relevantReviewForEndemics'
   },
   claim: {
     animalsTested: 'animalsTested',

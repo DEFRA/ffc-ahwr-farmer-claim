@@ -122,12 +122,13 @@ describe('Test URN test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/test-results' },
-      { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/test-results' },
-      { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/check-answers' },
-      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' }
-    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
+      { typeOfLivestock: 'beef', typeOfReview: 'R', nextPageUrl: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', nextPageUrl: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'R', nextPageUrl: '/claim/endemics/check-answers' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', nextPageUrl: '/claim/endemics/number-of-samples-tested' }
+    ])('redirects to check answers page when payload is valid for $typeOfLivestock and $typeOfReview', async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,

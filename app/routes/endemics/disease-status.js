@@ -1,12 +1,12 @@
 const Joi = require('joi')
-const { endemicsDiseaseStatus, endemicsNumberOfSpeciesTested, endemicsBiosecurity } = require('../../config/routes')
+const { endemicsDiseaseStatus, endemicsNumberOfSamplesTested, endemicsBiosecurity } = require('../../config/routes')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { diseaseStatusTypes } = require('../../constants/claim')
 
 const urlPrefix = require('../../config').urlPrefix
 const pageUrl = `${urlPrefix}/${endemicsDiseaseStatus}`
-const backLink = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+const backLink = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
 const errorMessage = { text: 'Enter the disease status category' }
 
 module.exports = [

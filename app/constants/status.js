@@ -35,4 +35,9 @@ const statusesFor10MonthCheck = [
   status.REJECTED
 ]
 
-module.exports = { ...status, openStatuses, closedStatuses, successfulStatuses, statusesFor10MonthCheck }
+const validReviewStatuses = [
+  ...openStatuses,
+  status.READY_TO_PAY
+]
+
+module.exports = { ...status, openStatuses, closedStatuses, successfulStatuses, statusesFor10MonthCheck, validReviewStatuses }
