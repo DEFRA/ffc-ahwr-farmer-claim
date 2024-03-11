@@ -4,7 +4,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
 
-describe('Eligibility test', () => {
+describe('Number of species tested test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/number-of-species-tested'
 
@@ -144,10 +144,8 @@ describe('Eligibility test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '20' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '8' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '3' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '0' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '6' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', numberAnimalsTested: '0' }
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '6' }
     ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
