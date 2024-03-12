@@ -4,7 +4,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
 
-describe('Eligibility test', () => {
+describe('Number of species tested test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/number-of-species-tested'
 
@@ -144,10 +144,8 @@ describe('Eligibility test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '20' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '8' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '3' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '0' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '6' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', numberAnimalsTested: '0' }
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '6' }
     ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
@@ -166,25 +164,22 @@ describe('Eligibility test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(title)
     })
-    test.each([
-      { typeOfLivestock: 'sheep', numberAnimalsTested: '0' }
-    ])('shows error page when number of $typeOfLivestock to be tested is 0 for Sheep', async ({ typeOfLivestock, numberAnimalsTested }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
+    test('shows error page when number of animals tested is 0 ', async () => {
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, numberAnimalsTested },
+        payload: { crumb, numberAnimalsTested: '0' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
       const res = await global.__SERVER__.inject(options)
 
-      const message = 'Number of animals tested cannot be 0'
-
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('a').text()).toMatch(message)
+      expect($('h1').text()).toMatch('How many animals did the vet test?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Number of animals tested cannot be 0')
+      expect($('#numberAnimalsTested-error').text()).toMatch('Number of animals tested cannot be 0')
     })
   })
 })
