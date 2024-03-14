@@ -222,7 +222,7 @@ describe('Claim Service API', () => {
           dateOfVisit: '2022-02-19'
         }
       }]
-    },
+    }
   ])('isValidReviewDate when $description', async ({ dateOfVisit, claims }) => {
     const { isValidReviewDate } = require('../../../../app/api-requests/claim-service-api')
     const { isValid, content } = isValidReviewDate(claims, dateOfVisit)
@@ -684,7 +684,7 @@ describe('Claim Service API', () => {
     { firstDate: '2024-01-01', secondDate: '2024-12-01', comparisonOperator: 'lessThanTenMonths', expected: true },
     { firstDate: '2024-09-01', secondDate: '2024-01-01', comparisonOperator: 'lessThanTenMonths', expected: true },
     { firstDate: '2024-12-01', secondDate: '2024-01-01', comparisonOperator: 'lessThanTenMonths', expected: false },
-    { firstDate: '2024-01-01', secondDate: '2024-01-01', comparisonOperator: 'lessThanTenMonths', expected: true },
+    { firstDate: '2024-01-01', secondDate: '2024-01-01', comparisonOperator: 'lessThanTenMonths', expected: true }
   ])('is10MonthsDifference $firstDate $secondDate $comparisonOperator', async ({ firstDate, secondDate, comparisonOperator, expected }) => {
     const { is10MonthsDifference } = require('../../../../app/api-requests/claim-service-api')
     const result = is10MonthsDifference(new Date(firstDate), new Date(secondDate), comparisonOperator)
