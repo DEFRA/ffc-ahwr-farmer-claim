@@ -4,6 +4,7 @@ const { livestockTypes, claimType } = require('../../constants/claim')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
+const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -19,16 +20,13 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const sessionData = getEndemicsClaim(request)
-        const {
-          organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName,
-          vetRCVSNumber, laboratoryURN
-        } = sessionData
+        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN } = sessionData
         const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
 
         const rows = [
           {
             key: { text: 'Business name' },
-            value: { html: capitalize(organisation.name) }
+            value: { html: capitalize(organisation?.name) }
           },
           {
             key: { text: 'Livestock' },
@@ -87,7 +85,20 @@ module.exports = [
             key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
             value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
-          }
+          },
+          ...(typeOfLivestock === livestockTypes.sheep && typeOfReview === claimType.endemics && sessionData?.sheepTestResults?.length
+            ? sessionData?.sheepTestResults.map((sheepTest, index) => {
+                return {
+                  key: { text: index === 0 ? 'Disease test and result' : '' },
+                  value: {
+                    html: typeof sheepTest.result === 'object'
+                      ? sheepTest.result.map(testResult => `${testResult.diseaseType}(${testResult.testResult})</br>`).join(' ')
+                      : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text}(${sheepTestResultsType[sheepTest.diseaseType].find(resultType => resultType.value === sheepTest.result).text})`
+                  },
+                  actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`, text: 'Change', visuallyHiddenText: 'change disease type and test result' }] }
+                }
+              })
+            : [])
         ]
 
         const rowsWithData = rows.filter((row) => row.value.html !== undefined)
@@ -114,11 +125,12 @@ module.exports = [
           numberAnimalsTested,
           testResults,
           latestEndemicsApplication,
-          vetVisitsReviewTestResults
+          vetVisitsReviewTestResults,
+          sheepTestResults
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
-          applicationReference: latestEndemicsApplication.reference,
+          applicationReference: latestEndemicsApplication?.reference,
           type: typeOfReview,
           createdBy: 'admin',
           data: {
@@ -132,7 +144,13 @@ module.exports = [
             numberOfOralFluidSamples,
             numberAnimalsTested,
             testResults,
-            vetVisitsReviewTestResults
+            vetVisitsReviewTestResults,
+            ...(typeOfReview === claimType.endemics && {
+              sheepTestResults: sheepTestResults?.map(sheepTest => ({
+                diseaseType: sheepTest.diseaseType,
+                result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
+              }))
+            })
           }
         })
 

@@ -4,6 +4,7 @@ const entries = {
   application: 'application',
   claim: 'claim',
   endemicsClaim: 'endemicsClaim',
+  sheepTestResults: 'sheepTestResults',
   organisation: 'organisation',
   pkcecodes: 'pkcecodes',
   tokens: 'tokens',
@@ -40,6 +41,14 @@ function clear (request) {
   request.yar.clear(entries.endemicsClaim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
+}
+
+function getSheepTestResults (request, key) {
+  return get(request, entries.sheepTestResults, key)
+}
+
+function setSheepTestResults (request, key, value) {
+  set(request, entries.sheepTestResults, key, value)
 }
 
 function getApplication (request, key) {
@@ -113,5 +122,7 @@ module.exports = {
   getCustomer,
   setCustomer,
   getPkcecodes,
-  setPkcecodes
+  setPkcecodes,
+  setSheepTestResults,
+  getSheepTestResults
 }
