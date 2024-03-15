@@ -42,7 +42,8 @@ if (config.endemics.enabled) {
     require('../routes/endemics/sheep-endemics-package'),
     require('../routes/endemics/sheep-tests'),
     require('../routes/endemics/biosecurity'),
-    require('../routes/endemics/vet-visits-review-test-results')
+    require('../routes/endemics/vet-visits-review-test-results'),
+    require('../routes/endemics/sheep-test-results')
   )
 }
 
