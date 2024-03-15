@@ -30,5 +30,6 @@ module.exports = {
   endemicsSheepTests: 'endemics/sheep-tests',
   endemicsBiosecurity: 'endemics/biosecurity',
   endemicsNumberOfSpeciesSheepException: 'endemics/number-of-species-sheep-exception',
-  endemicsVetVisitsReviewTestResults: 'endemics/vet-visits-review-test-results'
+  endemicsVetVisitsReviewTestResults: 'endemics/vet-visits-review-test-results',
+  endemicsSheepTestResults: 'endemics/sheep-test-results'
 }
