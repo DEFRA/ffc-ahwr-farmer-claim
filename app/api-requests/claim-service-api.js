@@ -99,7 +99,7 @@ function isValidReviewDate (previousClaims, dateOfVisit) {
   return { isValid: true, content: {} }
 }
 
-function isValidEndemicsDate (previousClaims, dateOfVisit, organisation = {}, formattedTypeOfLivestock) {
+function isValidEndemicsDate (previousClaims, dateOfVisit, organisation = {}, formattedTypeOfLivestock = '') {
   const priorFailedReviewClaims = (previousClaims ?? []).filter((previousClaim) => REJECTED === previousClaim.statusId && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
   const priorSuccessfulReviewClaims = (previousClaims ?? []).filter((previousClaim) => successfulStatuses.includes(previousClaim.statusId) && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
   const priorEndemicsClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.endemics && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
