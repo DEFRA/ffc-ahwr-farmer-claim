@@ -88,7 +88,7 @@ const getDuplicatedItemIndexes = (input) => {
 
 const getInvalidItemIndexes = (input, key) => input.map((item, index) => {
   const validatedItem = fieldValidator(key).validate(item)
-  
+
   if (validatedItem?.error) {
     return { [index]: { text: validatedItem?.error?.details[0].message, href: `#${key}-${index}` } }
   }
