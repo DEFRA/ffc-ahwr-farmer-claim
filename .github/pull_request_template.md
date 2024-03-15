@@ -12,3 +12,4 @@
 - [ ] Back link and next page navigation
 - [ ] Removed all unnecessary console logs
 - [ ] Removed all commented out code
+- [ ] Updated README / confluence
