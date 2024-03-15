@@ -7,8 +7,8 @@
 <!-- [x] if you have completed the task -->
 <!-- [n/a] if the task is not relevant -->
 
-- [x] Content has no typos
-- [x ] Correct inline validation errors
-- [x] Back link and next page navigation
-- [x] Removed all unnecessary console logs
-- [x] Removed all commented out code
+- [ ] Content has no typos
+- [ ] Correct inline validation errors
+- [ ] Back link and next page navigation
+- [ ] Removed all unnecessary console logs
+- [ ] Removed all commented out code
