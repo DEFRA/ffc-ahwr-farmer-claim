@@ -71,8 +71,7 @@ const getPageContent = (request, data) => {
 const getDuplicatedItemIndexes = (input) => {
   const duplicates = new Map()
 
-  input
-    .map((item) => item.toLowerCase())
+  input.map((item) => item.toLowerCase())
     .forEach((element, idx) => {
       const indices = duplicates.get(element) || []
       indices.push(idx)
