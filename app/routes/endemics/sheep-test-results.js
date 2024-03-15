@@ -92,8 +92,65 @@ const getInvalidItemIndexes = (input, key) => input.map((item, index) => {
     return { [index]: { text: validatedItem?.error?.details[0].message, href: `#${key}-${index}` } }
   }
 
-  return false
-}).filter((item) => item)
+  return {}
+}).filter((item) => Object.keys(item)?.length)
+
+const newDiseaseTypeErrorMessageAddAnother = (payload, diseaseTypeValidationError, testResultValidationError, lastIndex) => {
+  return {
+    diseaseType: {
+      value: payload.diseaseType[lastIndex],
+      ...((diseaseTypeValidationError
+        ? { text: diseaseTypeValidationError, href: '#diseaseType' }
+        : payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex]) && { text: duplicatedItemErrorMessage, href: '#diseaseType' }) || {})
+    },
+    testResult: {
+      value: payload.testResult[lastIndex],
+      ...(testResultValidationError && { text: testResultValidationError, href: '#testResult' })
+    }
+  }
+}
+
+const newDiseaseTypeErrorMessageContinue = (payload, diseaseTypeValidationError, testResultValidationError, lastIndex) => {
+  return {
+    diseaseType: {
+      value: payload.diseaseType[lastIndex],
+      ...(diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' })
+    },
+    testResult: {
+      value: payload.testResult[lastIndex],
+      ...(testResultValidationError && { text: testResultValidationError, href: '#testResult' })
+    }
+  }
+}
+const newDiseaseInTheListValidation = (payload) => {
+  let newDiseaseTypeErrorMessage
+  let newPayloadData = payload
+  const lastIndex = payload.diseaseType.length - 1
+  const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload.diseaseType[lastIndex]}`)?.error?.details[0]?.message
+  const testResultValidationError = fieldValidator('testResult').validate(`${payload.testResult[lastIndex]}`)?.error?.details[0]?.message
+
+  if (diseaseTypeValidationError || testResultValidationError) {
+    newPayloadData = { ...payload, diseaseType: payload.diseaseType.slice(0, lastIndex), testResult: payload.testResult.slice(0, lastIndex) }
+
+    if (!payload?.delete && payload?.submitButton === 'addAnother') {
+      newDiseaseTypeErrorMessage = newDiseaseTypeErrorMessageAddAnother(payload, diseaseTypeValidationError, testResultValidationError, lastIndex)
+    }
+    if (payload?.submitButton === 'continue' && (payload.diseaseType[lastIndex] || payload.testResult[lastIndex])) {
+      newDiseaseTypeErrorMessage = newDiseaseTypeErrorMessageContinue(payload, diseaseTypeValidationError, testResultValidationError, lastIndex)
+    }
+  } else if (payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex])) {
+    newPayloadData = { ...payload, diseaseType: payload.diseaseType.slice(0, lastIndex), testResult: payload.testResult.slice(0, lastIndex) }
+
+    if (!payload?.delete) {
+      newDiseaseTypeErrorMessage = {
+        diseaseType: { value: payload.diseaseType[lastIndex], text: duplicatedItemErrorMessage, href: '#diseaseType' },
+        testResult: { value: payload.testResult[lastIndex] }
+      }
+    }
+  }
+
+  return { newPayloadData, newDiseaseTypeErrorMessage }
+}
 
 module.exports = [
   {
@@ -159,51 +216,9 @@ module.exports = [
           let payloadData = payload
           let newDiseaseTypeErrorMessage
           if (typeof payload.diseaseType === 'object' && payload.diseaseType.length > 1) {
-            const lastIndex = payload.diseaseType.length - 1
-            const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload.diseaseType[lastIndex]}`)?.error?.details[0]?.message
-            const testResultValidationError = fieldValidator('testResult').validate(`${payload.testResult[lastIndex]}`)?.error?.details[0]?.message
-
-            if (diseaseTypeValidationError || testResultValidationError) {
-              payloadData = { ...payload, diseaseType: payload.diseaseType.slice(0, lastIndex), testResult: payload.testResult.slice(0, lastIndex) }
-
-              if (!payload?.delete && payload?.submitButton === 'addAnother') {
-                newDiseaseTypeErrorMessage = {
-                  diseaseType: {
-                    value: payload.diseaseType[lastIndex],
-                    ...(diseaseTypeValidationError
-                      ? { text: diseaseTypeValidationError, href: '#diseaseType' }
-                      : payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex])
-                        ? { text: duplicatedItemErrorMessage, href: '#diseaseType' }
-                        : {})
-                  },
-                  testResult: {
-                    value: payload.testResult[lastIndex],
-                    ...(testResultValidationError && { text: testResultValidationError, href: '#testResult' })
-                  }
-                }
-              }
-              if (payload?.submitButton === 'continue' && (payload.diseaseType[lastIndex] || payload.testResult[lastIndex])) {
-                newDiseaseTypeErrorMessage = {
-                  diseaseType: {
-                    value: payload.diseaseType[lastIndex],
-                    ...(diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' })
-                  },
-                  testResult: {
-                    value: payload.testResult[lastIndex],
-                    ...(testResultValidationError && { text: testResultValidationError, href: '#testResult' })
-                  }
-                }
-              }
-            } else if (payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex])) {
-              payloadData = { ...payload, diseaseType: payload.diseaseType.slice(0, lastIndex), testResult: payload.testResult.slice(0, lastIndex) }
-
-              if (!payload?.delete) {
-                newDiseaseTypeErrorMessage = {
-                  diseaseType: { value: payload.diseaseType[lastIndex], text: duplicatedItemErrorMessage, href: '#diseaseType' },
-                  testResult: { value: payload.testResult[lastIndex] }
-                }
-              }
-            }
+            const { newPayloadData, newDiseaseTypeErrorMessage: newErrorMessage } = newDiseaseInTheListValidation(payload)
+            payloadData = newPayloadData
+            newDiseaseTypeErrorMessage = newErrorMessage
           }
 
           const diseaseTypeEmptyItems = typeof payloadData.diseaseType === 'object' ? getInvalidItemIndexes(payloadData.diseaseType, 'diseaseType') : []
