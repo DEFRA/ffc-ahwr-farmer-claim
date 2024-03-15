@@ -50,17 +50,19 @@ module.exports = [{
           }
         )
 
-        session.setEndemicsClaim(
-          request,
-          sessionKeys.endemicsClaim.organisation,
-          {
-            sbi: organisationSummary.organisation.sbi?.toString(),
-            farmerName: getPersonName(personSummary),
-            name: organisationSummary.organisation.name,
-            email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
-            address: getOrganisationAddress(organisationSummary.organisation.address)
-          }
-        )
+        if (config.endemics.enabled) {
+          session.setEndemicsClaim(
+            request,
+            sessionKeys.endemicsClaim.organisation,
+            {
+              sbi: organisationSummary.organisation.sbi?.toString(),
+              farmerName: getPersonName(personSummary),
+              name: organisationSummary.organisation.name,
+              email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
+              address: getOrganisationAddress(organisationSummary.organisation.address)
+            }
+          )
+        }
 
         if (!organisationSummary.organisationPermission) {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)

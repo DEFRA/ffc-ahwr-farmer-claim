@@ -52,7 +52,7 @@ module.exports = [
             .view(endemicsNumberOfSpeciesTested, {
               ...request.payload,
               backLink,
-              errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}}` }
+              errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}` }
             })
             .code(400)
             .takeover()
@@ -68,10 +68,11 @@ module.exports = [
 
         if (isEligible) return h.redirect(nextPageURL)
 
+        if (numberAnimalsTested === '0') {
+          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
+        }
+
         if (typeOfLivestock === livestockTypes.sheep) {
-          if (numberAnimalsTested === '0') {
-            return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
-          }
           return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
         }
 

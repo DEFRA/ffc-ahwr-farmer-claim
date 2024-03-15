@@ -27,6 +27,7 @@ if (config.endemics.enabled) {
     require('../routes/endemics/date-of-visit'),
     require('../routes/endemics/which-species'),
     require('../routes/endemics/number-of-fluid-oral-samples'),
+    require('../routes/endemics/number-of-samples-tested'),
     require('../routes/endemics/species-numbers'),
     require('../routes/endemics/which-type-of-review'),
     require('../routes/endemics/you-cannot-claim'),
@@ -41,7 +42,8 @@ if (config.endemics.enabled) {
     require('../routes/endemics/sheep-endemics-package'),
     require('../routes/endemics/sheep-tests'),
     require('../routes/endemics/biosecurity'),
-    require('../routes/endemics/vet-visits-review-test-results')
+    require('../routes/endemics/vet-visits-review-test-results'),
+    require('../routes/endemics/sheep-test-results')
   )
 }
 

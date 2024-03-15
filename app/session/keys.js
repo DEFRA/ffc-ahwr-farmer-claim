@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   endemicsClaim: {
+    diseaseStatus: 'diseaseStatus',
     landingPage: 'landingPage',
     reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
@@ -30,6 +31,7 @@ module.exports = {
     herdVaccinationStatus: 'herdVaccinationStatus',
     laboratoryURN: 'laboratoryURN',
     numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+    numberOfSamplesTested: 'numberOfSamplesTested',
     numberAnimalsTested: 'numberAnimalsTested',
     minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired',
     testResults: 'testResults',
@@ -39,6 +41,8 @@ module.exports = {
     sheepEndemicsPackage: 'sheepEndemicsPackage',
     latestEndemicsApplication: 'latestEndemicsApplication',
     latestVetVisitApplication: 'latestVetVisitApplication',
+    relevantReviewForEndemics: 'relevantReviewForEndemics',
+    sheepTestResults: 'sheepTestResults',
     previousClaims: 'previousClaims'
   },
   claim: {
