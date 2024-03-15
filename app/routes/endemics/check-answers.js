@@ -87,7 +87,7 @@ module.exports = [
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
           },
           ...(typeOfLivestock === livestockTypes.sheep && typeOfReview === claimType.endemics && sessionData?.sheepTestResults?.length
-            ? sessionData?.sheepTestResults.map((sheepTest, index) => {
+            ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
                 return {
                   key: { text: index === 0 ? 'Disease test and result' : '' },
                   value: {

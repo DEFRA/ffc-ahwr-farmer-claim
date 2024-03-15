@@ -215,7 +215,7 @@ module.exports = [
           if (diseaseTypeEmptyItems?.length && duplicateItems?.length) {
             diseaseTypeErrorList = [
               ...diseaseTypeEmptyItems,
-              ...duplicateItems?.filter((item) => !diseaseTypeEmptyItems?.length || !diseaseTypeEmptyItems?.find((empty) => Object.keys(empty)[0] === Object.keys(item)[0]))
+              ...((duplicateItems || []).filter((item) => !diseaseTypeEmptyItems?.length || !diseaseTypeEmptyItems?.find((emptyItem) => Object.keys(emptyItem)[0] === Object.keys(item)[0])))
             ]
           } else if (duplicateItems?.length) {
             diseaseTypeErrorList = [...duplicateItems]
