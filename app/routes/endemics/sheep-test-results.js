@@ -35,16 +35,11 @@ const fieldValidator = (fieldName) => Joi.string().trim().max(50).pattern(/^(?!.
   'string.max': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must be 100 characters or fewer`,
   'string.pattern.base': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must only include letters a to z, numbers, special characters such as hyphens and spaces`
 })
-const selectedSheepTestResultsType = (testType) =>
-  sheepTestTypes[testType].map((test) => ({ diseaseType: test.value, result: '', isCurrentPage: test.value === 'other' }))
+
 const title = (diseaseType) => `What was the ${diseaseType} test result?`
 const inputText = (id, text, value, classes, errorMessage) => ({ id, name: id, label: { text }, value, classes, errorMessage })
+
 const getPageContent = (request, data) => {
-  const endemicsSession = getEndemicsClaim(request)
-  if (!endemicsSession?.sheepEndemicsPackage && !endemicsSession?.sheepTestResults) {
-    setEndemicsClaim(request, 'sheepEndemicsPackage', 'improvedLambPerformance')
-    setEndemicsClaim(request, 'sheepTestResults', selectedSheepTestResultsType('improvedLambPerformance'))
-  }
   const { sheepEndemicsPackage, sheepTestResults } = getEndemicsClaim(request)
   const { diseaseType, result } = sheepTestResults.find((test) => test.isCurrentPage)
   const testResultOptions = sheepTestResultsType[diseaseType]
@@ -206,7 +201,6 @@ module.exports = [
     method: 'GET',
     path: pageUrl,
     options: {
-      auth: false,
       handler: async (request, h) => {
         const endemicsClaim = getEndemicsClaim(request)
         if (request.query?.diseaseType && endemicsClaim?.sheepTestResults) {
@@ -229,7 +223,6 @@ module.exports = [
     method: 'POST',
     path: pageUrl,
     options: {
-      auth: false,
       handler: async (request, h) => {
         const { payload } = request
         const { nextPage, previousePage } = routes(request)
