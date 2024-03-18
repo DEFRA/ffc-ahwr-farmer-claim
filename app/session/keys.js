@@ -43,8 +43,9 @@ module.exports = {
     sheepEndemicsPackage: 'sheepEndemicsPackage',
     latestEndemicsApplication: 'latestEndemicsApplication',
     latestVetVisitApplication: 'latestVetVisitApplication',
-    previousClaims: 'previousClaims',
-    relevantReviewForEndemics: 'relevantReviewForEndemics'
+    relevantReviewForEndemics: 'relevantReviewForEndemics',
+    sheepTestResults: 'sheepTestResults',
+    previousClaims: 'previousClaims'
   },
   claim: {
     animalsTested: 'animalsTested',

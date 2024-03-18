@@ -10,11 +10,11 @@ const entries = {
   customer: 'customer'
 }
 
-function set (request, entryKey, key, value, status) {
+function set (request, entryKey, key, value, status, endemics = false) {
   const entryValue = request.yar?.get(entryKey) || {}
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
-  const claim = getClaim(request)
+  const claim = endemics ? getEndemicsClaim(request) : getClaim(request)
   const xForwardedForHeader = request.headers['x-forwarded-for']
   const ip = xForwardedForHeader
     ? xForwardedForHeader.split(',')[0]
@@ -60,7 +60,7 @@ function getClaim (request, key) {
 
 function setEndemicsClaim (request, key, value, status) {
   console.log('key, value', key, value)
-  set(request, entries.endemicsClaim, key, value, status)
+  set(request, entries.endemicsClaim, key, value, status, true)
 }
 
 function getEndemicsClaim (request, key) {
