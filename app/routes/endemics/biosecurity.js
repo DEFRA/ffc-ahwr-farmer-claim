@@ -1,22 +1,29 @@
 const Joi = require('joi')
-const { urlPrefix } = require('../../config')
+const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException } = require('../../config/routes')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { livestockTypes } = require('../../constants/claim')
 const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
 
-
-const backLink = `${urlPrefix}/${endemicsTestResults}`
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
-const legendText = ''
-const hintText = 'You can find this on the summary the vet gave you.'
-const radioOptions = {legendClasses: 'govuk-fieldset_legend--l', inline: false, hintText}
-const errorMessageText = 'Select yes or no'
-const isEndemicsClaims = true 
 
 const previousPageUrl = (request) => {
   const { typeOfLivestock } = getEndemicsClaim(request)
   return (typeOfLivestock === livestockTypes.pigs) ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
+}
+
+const getErrorMessage = (value) => {
+  console.log('assesmt', value, typeof(value))
+  switch (true) {
+    case value === '':
+      return 'Enter the assessment percentage'
+    case Number(value) < 1:
+      return 'Assessment percentage cannot be less than 1'
+    case Number(value) > 100:
+      return 'Assessment percentage cannot be more than 100'
+    default:
+      return 'The assessment percentage can only include numbers'
+  }
 }
 
 module.exports = [
@@ -52,22 +59,18 @@ module.exports = [
           ),
           assessmentPercentage: Joi.when('biosecurity', {
             is: Joi.valid('yes'),
-            then: Joi.string().pattern(/^[1-9][0-9]?$|^100$/).max(3).messages({
-              'string.base': 'Enter the assessment percentage',
-              'string.empty': 'Enter the assessment percentage',
-              'string.min': 'Assessment percentage must be at least 1',
-              'string.max': 'Assessment percentage must be at most 100',
-              'string.pattern.base': 'The assessment percentage can only include numbers'
-            })
+            then: Joi.string().pattern(/^[1-9][0-9]?$|^100$/)
           })
         }),
         failAction: (request, h, error) => {
           const { typeOfLivestock } = getEndemicsClaim(request)
-          const { biosecurity } = request.payload
+          const { biosecurity, assessmentPercentage } = request.payload
+          const errorMessage = error.details[0].path[0] === 'assessmentPercentage' ? getErrorMessage(assessmentPercentage) : error.details[0].message
+
           return h.view(endemicsBiosecurity, {
             backLink: previousPageUrl(request),
             typeOfLivestock,
-            errorMessage: { text: error.details[0].message, href: `#${biosecurityKey}` },
+            errorMessage: { text: errorMessage, href: `#${biosecurityKey}` },
             previousAnswer: biosecurity
 
           })
@@ -79,21 +82,13 @@ module.exports = [
         const { pigs } = livestockTypes
         const { typeOfLivestock } = getEndemicsClaim(request)
         const { biosecurity, assessmentPercentage } = request.payload
+
         if (biosecurity === 'no') {
-          return h.view(endemicsBiosecurityException, { backLink: pageUrl }).code(400).takeover()
+          return h.view(endemicsBiosecurityException, { backLink: pageUrl, ruralPaymentsAgency }).code(400).takeover()
         }
-        if (biosecurity === 'yes') {
-          if (typeOfLivestock === pigs) {
-            const biosecurityValues = {
-              biosecurity,
-              assessmentPercentage
-            }
-            setEndemicsClaim(request, biosecurityKey, biosecurityValues)
-            return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
-          }
-          setEndemicsClaim(request, biosecurityKey, biosecurity)
-          return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
-        }
+
+        setEndemicsClaim(request, biosecurityKey, typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity)
+        return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
       }
     }
   }

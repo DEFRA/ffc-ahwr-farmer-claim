@@ -1,7 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}You cannot continue with your claim - {{ serviceName }}
-{% endblock %}
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -14,42 +13,28 @@
 {% endblock %}
 
 {% block content %}
-  <main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <h1 class="govuk-heading-l"> 
-    You cannot continue with your claim
-  </h1>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+
         <p class="govuk-body">
-    You need to <a href="#" class="govuk-link">ask the vet to complete a biosecurity assessment.</a>Once you have done this, you can start your claim again.
-  </p>
-        <p> 
-      If you have selected the wrong option,<a href={{ backLink }} class="govuk-link">choose again if the vet did a biosecurity assessment. </a>
+        You need to <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">ask the vet to complete a biosecurity assessment.</a> Once you have done this, you can start your claim again.
         </p>
+
+        <p class="govuk-body">If you have selected the wrong option, <a class="govuk-link" href={{backLink}}>choose again if the vet did a biosecurity assessment.</a></p>
 
         <div class="govuk-warning-text">
-          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-          <strong class="govuk-warning-text__text">
-            <span class="govuk-warning-text__assistive">Warning</span>
-      Your claim will be checked by our team.
-    </strong>
+            <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+            <strong class="govuk-warning-text__text">
+                <span class="govuk-warning-text__assistive">Warning</span>
+                Your claim will be checked by our team.
+            </strong>
         </div>
+
         <h2 class="govuk-heading-m">Get help with your claim</h2>
-
         <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
-        <ul class="govuk-list">
-          <li class="govuk-body">
-          Email: <a href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a>
-          </li>
-          <li class="govuk-body">Telephone: 03000 200 301</li>
-          <br>
-          <li>Monday to Friday, 8:30am to 5pm, except bank holidays</li>
-        </ul>
-        <p class="govuk-body">
-          <a class="govuk-link" rel="external" href="https://www.gov.uk/call-charges"  target="_blank">Find out about call charges (opens in a new window)</a>
-        </p>
-      </div>
+        {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+        <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
     </div>
-  </main>
-
+  </div>
 {% endblock %}
