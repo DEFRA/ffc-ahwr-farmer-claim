@@ -4,10 +4,12 @@
 {% endblock %}
 
 {%block beforeContent %}
-  {{ govukBackLink({
-    text: "Back",
-    href: backLink
-  })}}
+  {{ 
+    govukBackLink({
+      text: "Back",
+      href: backLink
+    })
+  }}
 {% endblock %}
 
 {% block content %}
@@ -23,41 +25,65 @@
           }]
         }) }}
         {% endif %}
-        <h1 class="govuk-heading-l">Did the vet do a biosecurity assessment?</h1>
-        <form method="POST" autocomplete="off" novalidate="novalidate">
-          <input type="hidden" name="crumb" value="{{crumb}}"/>
-          {{ govukRadios({
-            id: "biosecurity",
-            name: "biosecurity",
-            fieldset:{
-              legend: {
-                classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
-        }
-      },
-      hint: {
-          text: "You can find this on the summary the vet gave you."
-      },
-      errorMessage: errorMessage,
-      items:[
-        {
-          value: Yes,
-          text: "Yes",
-          checked: previousAnswer === "Yes"
-        },
-        {
-          value: No,
-          text: "No",
-          checked: previousAnswer === "No"
-        }
-      ]
-    })
-    }}
-          {{ govukButton({
-        text: "Continue",
-        attributes: {id: "btnContinue"},
-        preventDoubleClick: true
-      })
-    }}
-        </form>
+        <div class="govuk-grid-row">
+          <h1 class="govuk-heading-l">Did the vet do a biosecurity assessment?</h1>
+          <form method="POST" autocomplete="off" novalidate="novalidate">
+            <input type="hidden" name="crumb" value="{{crumb}}"/>
+            <input type="hidden" name="typeOfLivestock" value="{{typeOfLivestock}}"/>
+            {% if typeOfLivestock == 'pigs' %}
+              {% set assessmentPercentage %}
+              {{
+                  govukInput({
+                    id:"assessmentPercentage",
+                    name:"assessmentPercentage",
+                    type: "number",
+                    spellcheck: false,
+                    errorMessage:errorMessage,
+                    classes: "govuk-input--width-3",
+                    label:{
+                      text: "Assessment percentage %"
+                    }
+                  })
+                }}
+              {% endset -%}
+            {% endif %}
+            {{ 
+              govukRadios({
+                id: "biosecurity",
+                name: "biosecurity",
+                fieldset:{
+                  legend:{
+                    classes: "govuk-fieldset__legend--l"
+                  }
+                }, 
+                hint: {
+                  text: "You can find this on the summary the vet gave you."
+                }, 
+                errorMessage: errorMessage,
+                items: [
+                  {
+                    value:"yes",
+                    text: "Yes",
+                    checked: previousAnswer == "yes",
+                    conditional: {
+                      html: assessmentPercentage
+                    }
+                  },
+                  {
+                    value: "no",
+                    text: "No",
+                    checked: previousAnswer == "no"
+                  }
+                ]
+              })
+            }}
+            {{ govukButton({
+                  text: "Continue",
+                  attributes: {id: "btnContinue"},
+                  preventDoubleClick: true
+                })
+            }}
+          </form>
+        </div>
       </div>
     {% endblock %}

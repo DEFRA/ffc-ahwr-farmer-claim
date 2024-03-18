@@ -19,6 +19,7 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   endemicsClaim: {
+    biosecurity: 'biosecurity',
     diseaseStatus: 'diseaseStatus',
     landingPage: 'landingPage',
     reference: 'reference',
