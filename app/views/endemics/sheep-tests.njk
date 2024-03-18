@@ -5,14 +5,51 @@
 
 {% block beforeContent %}
   {{ govukBackLink({
-        text: "Back",
-        href: backLink
-      }) }}
+      text: "Back",
+      href: backLink
+    }) 
+  }}
 {% endblock %}
 
 {% block content %}
   <div class="govuk-grid-row govuk-width-container govuk-!-static-margin-top-0">
     <div class="govuk-grid-column-two-thirds govuk-!-static-padding-0">
-      <h1 class="govuk-heading-l">What did the vet test or sample for?</h1>
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) 
+        }}
+      {% endif %}
+
+      <form method="POST">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+        
+        {{ govukCheckboxes({
+            name: "sheepTests",
+            fieldset: {
+              legend: {
+                text: "What did the vet test or sample for?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
+            hint: {
+              text: "You can find this on the summary the vet gave you."
+            },
+            items: sheepTestCheckboxItems
+          }) 
+        }}
+
+        {{ govukButton({
+            text: "Continue",
+            attributes: {
+              id: "continue"
+            },
+            preventDoubleClick: true
+          }) 
+        }}
+      </form>
+    </div>
   </div>
 {% endblock %}
