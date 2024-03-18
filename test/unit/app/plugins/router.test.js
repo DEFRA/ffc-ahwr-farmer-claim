@@ -108,6 +108,7 @@ describe('routes plugin test', () => {
       '/claim/vet-rcvs',
       '/claim/vet-visit-date',
       '/claim/visit-review',
+      '/claim/endemics/biosecurity',
       '/claim/endemics/check-answers',
       '/claim/endemics/date-of-testing',
       '/claim/endemics/date-of-visit',
