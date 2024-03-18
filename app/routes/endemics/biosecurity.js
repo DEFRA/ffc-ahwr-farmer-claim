@@ -13,7 +13,6 @@ const previousPageUrl = (request) => {
 }
 
 const getErrorMessage = (value) => {
-  console.log('assesmt', value, typeof(value))
   switch (true) {
     case value === '':
       return 'Enter the assessment percentage'
