@@ -22,6 +22,7 @@ module.exports = {
     biosecurity: 'biosecurity',
     diseaseStatus: 'diseaseStatus',
     landingPage: 'landingPage',
+    biosecurity: 'biosecurity',
     reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
     typeOfReview: 'typeOfReview',

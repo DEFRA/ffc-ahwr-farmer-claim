@@ -5,7 +5,14 @@ const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { livestockTypes } = require('../../constants/claim')
 const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
 
+
+const backLink = `${urlPrefix}/${endemicsTestResults}`
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
+const legendText = ''
+const hintText = 'You can find this on the summary the vet gave you.'
+const radioOptions = {legendClasses: 'govuk-fieldset_legend--l', inline: false, hintText}
+const errorMessageText = 'Select yes or no'
+const isEndemicsClaims = true 
 
 const previousPageUrl = (request) => {
   const { typeOfLivestock } = getEndemicsClaim(request)
