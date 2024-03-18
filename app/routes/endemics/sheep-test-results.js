@@ -35,8 +35,10 @@ const fieldValidator = (fieldName) => Joi.string().trim().max(50).pattern(/^(?!.
   'string.max': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must be 100 characters or fewer`,
   'string.pattern.base': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must only include letters a to z, numbers, special characters such as hyphens and spaces`
 })
+
 const title = (diseaseType) => `What was the ${diseaseType} test result?`
 const inputText = (id, text, value, classes, errorMessage) => ({ id, name: id, label: { text }, value, classes, errorMessage })
+
 const getPageContent = (request, data) => {
   const { sheepEndemicsPackage, sheepTestResults } = getEndemicsClaim(request)
   const { diseaseType, result } = sheepTestResults.find((test) => test.isCurrentPage)
@@ -152,6 +154,48 @@ const newDiseaseInTheListValidation = (payload) => {
   return { newPayloadData, newDiseaseTypeErrorMessage }
 }
 
+const getDiseaseTypeErrorMessage = (diseaseTypeEmptyItems, duplicateItems) => {
+  let diseaseTypeErrorList
+
+  if (diseaseTypeEmptyItems?.length && duplicateItems?.length) {
+    diseaseTypeErrorList = [
+      ...diseaseTypeEmptyItems,
+      ...(duplicateItems || []).filter(
+        (item) => !diseaseTypeEmptyItems?.length || !diseaseTypeEmptyItems?.find((emptyItem) => Object.keys(emptyItem)[0] === Object.keys(item)[0])
+      )
+    ]
+  } else if (duplicateItems?.length) {
+    diseaseTypeErrorList = [...duplicateItems]
+  } else if (diseaseTypeEmptyItems?.length) diseaseTypeErrorList = [...diseaseTypeEmptyItems]
+
+  return diseaseTypeErrorList
+}
+
+const updateDiseaseType = (diseaseTypeErrorList, testResultEmptyItems, payloadData) => {
+  let result
+
+  if (diseaseTypeErrorList.length || testResultEmptyItems.length) {
+    result = payloadData.diseaseType.map((disease, index) => ({
+      diseaseType: disease,
+      testResult: payloadData.testResult[index],
+      errorMessage: {
+        ...(diseaseTypeErrorList?.find((error) => error[index]) && {
+          diseaseType: { text: diseaseTypeErrorList?.find((error) => error[index])[index].text }
+        }),
+        ...(testResultEmptyItems?.find((error) => error[index]) && {
+          testResult: { text: testResultEmptyItems?.find((error) => error[index])[index].text }
+        })
+      }
+    }))
+  } else {
+    result = typeof payloadData.diseaseType === 'object'
+      ? payloadData.diseaseType.map((disease, index) => ({ diseaseType: disease, testResult: payloadData.testResult[index] }))
+      : [{ diseaseType: payloadData.diseaseType, testResult: payloadData.testResult }]
+  }
+
+  return result
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -225,34 +269,9 @@ module.exports = [
           const testResultEmptyItems = typeof payloadData.testResult === 'object' ? getInvalidItemIndexes(payloadData.testResult, 'testResult') : []
           const duplicateItems = typeof payloadData.diseaseType === 'object' ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
 
-          let diseaseTypeErrorList = []
-          if (diseaseTypeEmptyItems?.length && duplicateItems?.length) {
-            diseaseTypeErrorList = [
-              ...diseaseTypeEmptyItems,
-              ...((duplicateItems || []).filter((item) => !diseaseTypeEmptyItems?.length || !diseaseTypeEmptyItems?.find((emptyItem) => Object.keys(emptyItem)[0] === Object.keys(item)[0])))
-            ]
-          } else if (duplicateItems?.length) {
-            diseaseTypeErrorList = [...duplicateItems]
-          } else if (diseaseTypeEmptyItems?.length) diseaseTypeErrorList = [...diseaseTypeEmptyItems]
+          const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems) || []
 
-          if (diseaseTypeErrorList.length || testResultEmptyItems.length) {
-            diseaseType.result = payloadData.diseaseType.map((disease, index) => ({
-              diseaseType: disease,
-              testResult: payloadData.testResult[index],
-              errorMessage: {
-                ...(diseaseTypeErrorList?.find((error) => error[index]) && {
-                  diseaseType: { text: diseaseTypeErrorList?.find((error) => error[index])[index].text }
-                }),
-                ...(testResultEmptyItems?.find((error) => error[index]) && {
-                  testResult: { text: testResultEmptyItems?.find((error) => error[index])[index].text }
-                })
-              }
-            }))
-          } else {
-            diseaseType.result = typeof payloadData.diseaseType === 'object'
-              ? payloadData.diseaseType.map((disease, index) => ({ diseaseType: disease, testResult: payloadData.testResult[index] }))
-              : [{ diseaseType: payloadData.diseaseType, testResult: payloadData.testResult }]
-          }
+          diseaseType.result = updateDiseaseType(diseaseTypeErrorList, testResultEmptyItems, payloadData)
 
           upatedSheepTestResults[diseaseTypeIndex] = diseaseType
 
