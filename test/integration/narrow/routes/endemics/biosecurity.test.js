@@ -60,6 +60,8 @@ describe('Biosecurity test', () => {
         url
       }
 
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
+
       const response = await global.__SERVER__.inject(options)
 
       expect(response.statusCode).toBe(302)
@@ -71,6 +73,8 @@ describe('Biosecurity test', () => {
         url,
         auth
       }
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
       const response = await global.__SERVER__.inject(options)
 
@@ -96,7 +100,7 @@ describe('Biosecurity test', () => {
         url
       }
 
-      getEndemicsClaim.mockReturnValue({ biosecurity: 'yes' })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', biosecurity: 'yes' })
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)
@@ -108,15 +112,15 @@ describe('Biosecurity test', () => {
   })
   describe(`POST ${url}`, () => {
     test('show inline Error if continue is pressed and biosecurity answer not selected', async () => {
-      const typeOfLivestock = 'pigs'
       const options = {
         method: 'POST',
         auth,
         url,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, typeOfLivestock, biosecurity: '', assessmentPercentage: '' }
+        payload: { crumb, biosecurity: '', assessmentPercentage: '' }
       }
-      getEndemicsClaim.mockReturnValue({ biosecurity: '', assessmentPercentage: '' })
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)
@@ -125,15 +129,15 @@ describe('Biosecurity test', () => {
       expect($('a').text()).toMatch(errorMessage)
     })
     test('show inline error if continue is pressed and no answer is selected for assessmentPercentage', async () => {
-      const typeOfLivestock = 'pigs'
       const options = {
         method: 'POST',
         auth,
         url,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, typeOfLivestock, biosecurity: 'yes', assessmentPercentage: '' }
+        payload: { crumb, biosecurity: 'yes', assessmentPercentage: '' }
       }
-      getEndemicsClaim.mockReturnValue({ biosecurity: 'yes', assessmentPercentage: '' })
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)
@@ -144,15 +148,15 @@ describe('Biosecurity test', () => {
       expect($('a').text()).toMatch('Enter the assessment percentage')
     })
     test('continue to next page when biosecurity and assessment are provided for Pigs journey', async () => {
-      const typeOfLivestock = 'pigs'
       const options = {
         method: 'POST',
         auth,
         url,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, typeOfLivestock, biosecurity: 'yes', assessmentPercentage: '1' }
+        payload: { crumb, biosecurity: 'yes', assessmentPercentage: '1' }
       }
-      getEndemicsClaim.mockReturnValue({ biosecurity: 'yes', assessmentPercentage: '1' })
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
       const response = await global.__SERVER__.inject(options)
 
@@ -160,15 +164,15 @@ describe('Biosecurity test', () => {
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
     })
     test('continue to next page when biosecurity is "yes" for other journeys besides pig', async () => {
-      const typeOfLivestock = 'dairy'
       const options = {
         method: 'POST',
         auth,
         url,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, typeOfLivestock, biosecurity: 'yes' }
+        payload: { crumb, biosecurity: 'yes' }
       }
-      getEndemicsClaim.mockReturnValue({ biosecurity: 'yes' })
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
       const response = await global.__SERVER__.inject(options)
 
@@ -183,7 +187,8 @@ describe('Biosecurity test', () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, biosecurity: 'no' }
       }
-      getEndemicsClaim.mockReturnValue({ biosecurity: 'no' })
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)

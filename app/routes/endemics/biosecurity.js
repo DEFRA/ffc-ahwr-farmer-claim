@@ -33,7 +33,6 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        setEndemicsClaim(request, 'typeOfLivestock', 'pigs')
         const session = getEndemicsClaim(request)
         return h.view(
           endemicsBiosecurity,
@@ -52,7 +51,6 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          typeOfLivestock: Joi.string(),
           biosecurity: Joi.string().valid('yes', 'no').required().messages(
             {
               'any.required': 'Select whether the vet did a biosecurity assessment'
