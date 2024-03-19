@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const session = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
 const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = require('../../config/routes')
@@ -11,17 +11,17 @@ module.exports = [{
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { sheepEndemicsPackage } = session.getEndemicsClaim(request)
+      const session = getEndemicsClaim(request)
       const sheepEndemicsPackageRadios = radios('', 'sheepEndemicsPackage')([
-        { value: 'improvedEwePerformance', text: 'Improved ewe performance', checked: sheepEndemicsPackage === 'improvedEwePerformance' },
-        { value: 'improvedReproductivePerformance', text: 'Improved reproductive performance', checked: sheepEndemicsPackage === 'improvedReproductivePerformance' },
-        { value: 'improvedLambPerformance', text: 'Improved lamb performance', checked: sheepEndemicsPackage === 'improvedLambPerformance' },
-        { value: 'improvedNeonatalLambSurvival', text: 'Improved neonatal lamb survival', checked: sheepEndemicsPackage === 'improvedNeonatalLambSurvival' },
-        { value: 'reducedExternalParasites', text: 'Reduced level of external parasites', checked: sheepEndemicsPackage === 'reducedExternalParasites' },
-        { value: 'reducedLameness', text: 'Reduced level of lameness', checked: sheepEndemicsPackage === 'reducedLameness' }
+        { value: 'improvedEwePerformance', text: 'Improved ewe performance', checked: session?.sheepEndemicsPackage === 'improvedEwePerformance' },
+        { value: 'improvedReproductivePerformance', text: 'Improved reproductive performance', checked: session?.sheepEndemicsPackage === 'improvedReproductivePerformance' },
+        { value: 'improvedLambPerformance', text: 'Improved lamb performance', checked: session?.sheepEndemicsPackage === 'improvedLambPerformance' },
+        { value: 'improvedNeonatalLambSurvival', text: 'Improved neonatal lamb survival', checked: session?.sheepEndemicsPackage === 'improvedNeonatalLambSurvival' },
+        { value: 'reducedExternalParasites', text: 'Reduced level of external parasites', checked: session?.sheepEndemicsPackage === 'reducedExternalParasites' },
+        { value: 'reducedLameness', text: 'Reduced level of lameness', checked: session?.sheepEndemicsPackage === 'reducedLameness' }
       ])
       const backLink = `${urlPrefix}/${endemicsVetRCVS}`
-      return h.view(endemicsSheepEndemicsPackage, { backLink, sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
+      return h.view(endemicsSheepEndemicsPackage, { backLink, sheepEndemicsPackage: session?.sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
     }
   }
 }, {
@@ -60,8 +60,15 @@ module.exports = [{
     },
     handler: async (request, h) => {
       const { sheepEndemicsPackage } = request.payload
+      const session = getEndemicsClaim(request)
 
-      session.setEndemicsClaim(request, sheepEndemicsPackageKey, sheepEndemicsPackage)
+      if (session?.sheepEndemicsPackage !== sheepEndemicsPackage) {
+        setEndemicsClaim(request, 'sheepTests', undefined)
+        setEndemicsClaim(request, 'sheepTestResults', undefined)
+      }
+
+      setEndemicsClaim(request, sheepEndemicsPackageKey, sheepEndemicsPackage)
+
       return h.redirect(`${urlPrefix}/${endemicsSheepTests}`)
     }
   }
