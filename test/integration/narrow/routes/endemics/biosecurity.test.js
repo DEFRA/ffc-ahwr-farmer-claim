@@ -4,8 +4,7 @@ const { getEndemicsClaim } = require('../../../../../app/session')
 const { urlPrefix } = require('../../../../../app/config')
 const {
   endemicsBiosecurity,
-  endemicsCheckAnswers,
-  endemicsBiosecurityException
+  endemicsCheckAnswers
 } = require('../../../../../app/config/routes')
 
 jest.mock('../../../../../app/session')
@@ -123,7 +122,7 @@ describe('Biosecurity test', () => {
       const $ = cheerio.load(response.payload)
       const errorMessage = 'Select whether the vet did a biosecurity assessment'
 
-      expect($('p.govuk-error-message').text()).toMatch(errorMessage)
+      expect($('a').text()).toMatch(errorMessage)
     })
     test('show inline error if continue is pressed and no answer is selected for assessmentPercentage', async () => {
       const typeOfLivestock = 'pigs'
@@ -141,8 +140,8 @@ describe('Biosecurity test', () => {
       const errorMessage = 'Enter the assessment percentage'
 
       expect(response.statusCode).toBe(400)
-      expect($('p.govuk-error-message').text()).toMatch(errorMessage)
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the assessment percentage')
+      expect($('a').text()).toMatch(errorMessage)
+      expect($('a').text()).toMatch('Enter the assessment percentage')
     })
     test('continue to next page when biosecurity and assessment are provided for Pigs journey', async () => {
       const typeOfLivestock = 'pigs'
@@ -177,20 +176,74 @@ describe('Biosecurity test', () => {
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
     })
     test('continue to Exception page when biosecurity  is "no" for any journey', async () => {
-      const typeOfLivestock = 'pigs'
       const options = {
         method: 'POST',
         auth,
         url,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, typeOfLivestock, biosecurity: 'no' }
+        payload: { crumb, biosecurity: 'no' }
       }
       getEndemicsClaim.mockReturnValue({ biosecurity: 'no' })
 
       const response = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect(response.statusCode).toBe(400)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
+    })
+    test('continue without provideing biosecurity', async () => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb }
+      }
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
+
+      const response = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect(response.statusCode).toBe(400)
+      expect($('a').text()).toMatch('Select whether the vet did a biosecurity assessment')
+    })
+    test('continue without with provideing biosecurity and assessmentPercentage', async () => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, biosecurity: 'yes', assessmentPercentage: '80' }
+      }
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
+
+      const response = await global.__SERVER__.inject(options)
 
       expect(response.statusCode).toBe(302)
-      expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsBiosecurityException}`)
+      expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
+    })
+    test.each([
+      { biosecurity: 'yes', assessmentPercentage: '', errorMessage: 'Enter the assessment percentage' },
+      { biosecurity: 'yes', assessmentPercentage: '0', errorMessage: 'Assessment percentage cannot be less than 1' },
+      { biosecurity: 'yes', assessmentPercentage: '101', errorMessage: 'Assessment percentage cannot be more than 100' },
+      { biosecurity: 'yes', assessmentPercentage: 'abc', errorMessage: 'The assessment percentage can only include numbers' }
+    ])('continue to Exception page when biosecurity  is "no" for any journey', async ({ biosecurity, assessmentPercentage, errorMessage }) => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, biosecurity, assessmentPercentage }
+      }
+      getEndemicsClaim.mockReturnValue({ biosecurity: 'no' })
+
+      const response = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect(response.statusCode).toBe(400)
+      expect($('a').text()).toMatch(errorMessage)
     })
   })
 })

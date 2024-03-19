@@ -8,8 +8,8 @@ const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsCl
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 
 const previousPageUrl = (request) => {
-  const { typeOfLivestock } = getEndemicsClaim(request)
-  return (typeOfLivestock === livestockTypes.pigs) ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
+  const session = getEndemicsClaim(request)
+  return (session?.typeOfLivestock === livestockTypes.pigs) ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
 }
 
 const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {
@@ -33,12 +33,13 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { biosecurity, typeOfLivestock } = getEndemicsClaim(request)
+        setEndemicsClaim(request, 'typeOfLivestock', 'pigs')
+        const session = getEndemicsClaim(request)
         return h.view(
           endemicsBiosecurity,
           {
-            previousAnswer: biosecurity,
-            typeOfLivestock,
+            previousAnswer: session?.biosecurity,
+            typeOfLivestock: session?.typeOfLivestock,
             backLink: previousPageUrl(request)
           }
         )
@@ -59,11 +60,11 @@ module.exports = [
           ),
           assessmentPercentage: Joi.when('biosecurity', {
             is: Joi.valid('yes'),
-            then: Joi.string().pattern(/^[1-9][0-9]?$|^100$/)
+            then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
           })
         }),
         failAction: (request, h, error) => {
-          const { typeOfLivestock } = getEndemicsClaim(request)
+          const session = getEndemicsClaim(request)
           const { biosecurity, assessmentPercentage } = request.payload
           const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(biosecurity, assessmentPercentage)
 
@@ -76,7 +77,7 @@ module.exports = [
 
           return h.view(endemicsBiosecurity, {
             backLink: previousPageUrl(request),
-            typeOfLivestock,
+            typeOfLivestock: session?.typeOfLivestock,
             ...errors,
             previousAnswer: biosecurity
           })

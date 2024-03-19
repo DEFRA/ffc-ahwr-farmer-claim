@@ -32,8 +32,7 @@
             <input type="hidden" name="typeOfLivestock" value="{{typeOfLivestock}}"/>
             {% if typeOfLivestock == 'pigs' %}
               {% set assessmentPercentage %}
-              {{
-                  govukInput({
+                {{ govukInput({
                     id:"assessmentPercentage",
                     name:"assessmentPercentage",
                     spellcheck: false,

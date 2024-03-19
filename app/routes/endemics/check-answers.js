@@ -86,6 +86,16 @@ module.exports = [
             value: { html: capitalize(sessionData?.vetVisitsReviewTestResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
           },
+          {
+            key: { text: 'Diseases status category' }, // Pigs
+            value: { html: sessionData?.diseaseStatus },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+          },
+          {
+            key: { text: 'Herd vaccination status' }, // Pigs
+            value: { html: capitalize(sessionData?.diseaseStatus) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+          },
           ...(typeOfLivestock === livestockTypes.sheep && typeOfReview === claimType.endemics && sessionData?.sheepTestResults?.length
             ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
                 return {
