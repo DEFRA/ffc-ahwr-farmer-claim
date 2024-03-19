@@ -89,12 +89,17 @@ module.exports = [
           {
             key: { text: 'Diseases status category' }, // Pigs
             value: { html: sessionData?.diseaseStatus },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change diseases status category' }] }
           },
           {
             key: { text: 'Herd vaccination status' }, // Pigs
-            value: { html: capitalize(sessionData?.diseaseStatus) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+            value: { html: capitalize(sessionData?.herdVaccinationStatus) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'change herd vaccination status' }] }
+          },
+          {
+            key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
+            value: { html: typeOfLivestock === livestockTypes.pigs ? capitalize(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : capitalize(sessionData?.biosecurity) },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'change biosecurity assessment' }] }
           },
           ...(typeOfLivestock === livestockTypes.sheep && typeOfReview === claimType.endemics && sessionData?.sheepTestResults?.length
             ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
@@ -136,7 +141,10 @@ module.exports = [
           testResults,
           latestEndemicsApplication,
           vetVisitsReviewTestResults,
-          sheepTestResults
+          sheepTestResults,
+          biosecurity,
+          herdVaccinationStatus,
+          diseaseStatus
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
@@ -155,8 +163,11 @@ module.exports = [
             numberAnimalsTested,
             testResults,
             vetVisitsReviewTestResults,
+            biosecurity,
+            herdVaccinationStatus,
+            diseaseStatus,
             ...(typeOfReview === claimType.endemics && {
-              sheepTestResults: sheepTestResults?.map(sheepTest => ({
+              testResults: sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,
                 result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
               }))

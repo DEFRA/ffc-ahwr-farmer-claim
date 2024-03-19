@@ -85,7 +85,10 @@ describe('Check answers test', () => {
           laboratoryURN: 'laboratoryURN',
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults'
+          testResults: 'testResults',
+          diseaseStatus: 'diseaseStatus',
+          herdVaccinationStatus: 'herdVaccinationStatus',
+          biosecurity: 'biosecurity'
         }
       })
       const options = {
@@ -134,6 +137,15 @@ describe('Check answers test', () => {
 
       expect($('.govuk-summary-list__key').text()).toContain('Test results')
       expect($('.govuk-summary-list__value').text()).toContain('TestResults')
+
+      expect($('.govuk-summary-list__key').text()).toContain('Diseases status category')
+      expect($('.govuk-summary-list__value').text()).toContain('diseaseStatus')
+
+      expect($('.govuk-summary-list__key').text()).toContain('Herd vaccination status')
+      expect($('.govuk-summary-list__value').text()).toContain('HerdVaccinationStatus')
+
+      expect($('.govuk-summary-list__key').text()).toContain('Biosecurity assessment')
+      expect($('.govuk-summary-list__value').text()).toContain('Biosecurity')
 
       expectPhaseBanner.ok($)
     })
