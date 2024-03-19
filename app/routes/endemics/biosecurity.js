@@ -12,13 +12,15 @@ const previousPageUrl = (request) => {
   return (typeOfLivestock === livestockTypes.pigs) ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
 }
 
-const getErrorMessage = (value) => {
+const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {
+  if (biosecurity === undefined) return
+
   switch (true) {
-    case value === '':
+    case assessmentPercentage === '':
       return 'Enter the assessment percentage'
-    case Number(value) < 1:
+    case Number(assessmentPercentage) < 1:
       return 'Assessment percentage cannot be less than 1'
-    case Number(value) > 100:
+    case Number(assessmentPercentage) > 100:
       return 'Assessment percentage cannot be more than 100'
     default:
       return 'The assessment percentage can only include numbers'
@@ -52,8 +54,7 @@ module.exports = [
           typeOfLivestock: Joi.string(),
           biosecurity: Joi.string().valid('yes', 'no').required().messages(
             {
-              'string.empty': 'Select whether the vet did a biosecurity assessment',
-              'string.base': 'Select whether the vet did a biosecurity assessment'
+              'any.required': 'Select whether the vet did a biosecurity assessment'
             }
           ),
           assessmentPercentage: Joi.when('biosecurity', {
@@ -64,14 +65,20 @@ module.exports = [
         failAction: (request, h, error) => {
           const { typeOfLivestock } = getEndemicsClaim(request)
           const { biosecurity, assessmentPercentage } = request.payload
-          const errorMessage = error.details[0].path[0] === 'assessmentPercentage' ? getErrorMessage(assessmentPercentage) : error.details[0].message
+          const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(biosecurity, assessmentPercentage)
+
+          const errorMessage = biosecurity ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
+          const errors = {
+            errorMessage,
+            radioErrorMessage: biosecurity === undefined ? { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
+            inputErrorMessage: assessmentPercentageErrorMessage ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : undefined,
+          }
 
           return h.view(endemicsBiosecurity, {
             backLink: previousPageUrl(request),
             typeOfLivestock,
-            errorMessage: { text: errorMessage, href: `#${biosecurityKey}` },
+            ...errors,
             previousAnswer: biosecurity
-
           })
             .code(400)
             .takeover()

@@ -21,7 +21,7 @@
           titleText: "There is a problem",
           errorList:[{
             text: errorMessage.text,
-              href: "#biosecurity"
+            href: errorMessage.href
           }]
         }) }}
         {% endif %}
@@ -36,9 +36,8 @@
                   govukInput({
                     id:"assessmentPercentage",
                     name:"assessmentPercentage",
-                    type: "number",
                     spellcheck: false,
-                    errorMessage:errorMessage,
+                    errorMessage: inputErrorMessage,
                     classes: "govuk-input--width-3",
                     label:{
                       text: "Assessment percentage %"
@@ -59,7 +58,7 @@
                 hint: {
                   text: "You can find this on the summary the vet gave you."
                 }, 
-                errorMessage: errorMessage,
+                errorMessage: radioErrorMessage,
                 items: [
                   {
                     value:"yes",
