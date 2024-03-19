@@ -172,7 +172,7 @@ describe('Biosecurity test', () => {
         payload: { crumb, biosecurity: 'yes' }
       }
 
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef' })
 
       const response = await global.__SERVER__.inject(options)
 
@@ -213,7 +213,7 @@ describe('Biosecurity test', () => {
       expect(response.statusCode).toBe(400)
       expect($('a').text()).toMatch('Select whether the vet did a biosecurity assessment')
     })
-    test('continue without with provideing biosecurity and assessmentPercentage', async () => {
+    test('continue without with providing biosecurity and assessmentPercentage', async () => {
       const options = {
         method: 'POST',
         auth,
