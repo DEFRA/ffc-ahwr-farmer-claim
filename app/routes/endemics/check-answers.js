@@ -144,7 +144,8 @@ module.exports = [
           sheepTestResults,
           biosecurity,
           herdVaccinationStatus,
-          diseaseStatus
+          diseaseStatus,
+          sheepEndemicsPackage
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
@@ -166,6 +167,7 @@ module.exports = [
             biosecurity,
             herdVaccinationStatus,
             diseaseStatus,
+            sheepEndemicsPackage,
             ...(typeOfReview === claimType.endemics && {
               testResults: sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,
