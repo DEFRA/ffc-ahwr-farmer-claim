@@ -92,15 +92,22 @@ module.exports = [
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change diseases status category' }] }
           },
           {
+            key: { text: 'Samples tested' }, // Pigs
+            value: { html: sessionData?.numberOfSamplesTested },
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`, text: 'Change', visuallyHiddenText: 'change number of samples tested' }] }
+          },
+          {
             key: { text: 'Herd vaccination status' }, // Pigs
             value: { html: capitalize(sessionData?.herdVaccinationStatus) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'change herd vaccination status' }] }
           },
-          {
-            key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
-            value: { html: typeOfLivestock === livestockTypes.pigs ? capitalize(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : capitalize(sessionData?.biosecurity) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'change biosecurity assessment' }] }
-          },
+          ...(typeOfReview === claimType.endemics && [livestockTypes.pigs, livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)
+            ? [{
+                key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
+                value: { html: typeOfLivestock === livestockTypes.pigs ? capitalize(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : capitalize(sessionData?.biosecurity) },
+                actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'change biosecurity assessment' }] }
+              }]
+            : []),
           ...(typeOfLivestock === livestockTypes.sheep && typeOfReview === claimType.endemics && sessionData?.sheepTestResults?.length
             ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
                 return {
@@ -145,7 +152,8 @@ module.exports = [
           biosecurity,
           herdVaccinationStatus,
           diseaseStatus,
-          sheepEndemicsPackage
+          sheepEndemicsPackage,
+          numberOfSamplesTested
         } = getEndemicsClaim(request)
 
         const claim = await submitNewClaim({
@@ -168,6 +176,7 @@ module.exports = [
             herdVaccinationStatus,
             diseaseStatus,
             sheepEndemicsPackage,
+            numberOfSamplesTested,
             ...(typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.sheep && {
               testResults: sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,
