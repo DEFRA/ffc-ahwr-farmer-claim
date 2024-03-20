@@ -168,7 +168,7 @@ module.exports = [
             herdVaccinationStatus,
             diseaseStatus,
             sheepEndemicsPackage,
-            ...(typeOfReview === claimType.endemics && {
+            ...(typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.sheep && {
               testResults: sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,
                 result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
