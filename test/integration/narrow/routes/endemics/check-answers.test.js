@@ -153,30 +153,58 @@ describe('Check answers test', () => {
     test.each([
       {
         typeOfLivestock: livestockTypes.beef,
+        typeOfReview: 'R',
         content: '11 or more beef cattle',
         backLink: '/claim/endemics/test-results'
       },
       {
         typeOfLivestock: livestockTypes.dairy,
+        typeOfReview: 'R',
         content: '11 or more dairy cattle',
         backLink: '/claim/endemics/test-results'
       },
       {
         typeOfLivestock: livestockTypes.pigs,
+        typeOfReview: 'R',
         content: '51 or more pigs',
         backLink: '/claim/endemics/test-results'
       },
       {
         typeOfLivestock: livestockTypes.sheep,
+        typeOfReview: 'R',
         content: '21 or more sheep',
         backLink: '/claim/endemics/test-urn'
+      },
+      {
+        typeOfLivestock: livestockTypes.beef,
+        typeOfReview: 'E',
+        content: '11 or more beef cattle',
+        backLink: '/claim/endemics/biosecurity'
+      },
+      {
+        typeOfLivestock: livestockTypes.dairy,
+        typeOfReview: 'E',
+        content: '11 or more dairy cattle',
+        backLink: '/claim/endemics/biosecurity'
+      },
+      {
+        typeOfLivestock: livestockTypes.pigs,
+        typeOfReview: 'E',
+        content: '51 or more pigs',
+        backLink: '/claim/endemics/biosecurity'
+      },
+      {
+        typeOfLivestock: livestockTypes.sheep,
+        typeOfReview: 'E',
+        content: '21 or more sheep',
+        backLink: '/claim/endemics/sheep-test-results'
       }
-    ])('check content and back links are correct for typeOfLivestock: $typeOfLivestock', async ({ typeOfLivestock, content, backLink }) => {
+    ])('check content and back links are correct for typeOfLivestock: $typeOfLivestock and whichReview $whichReview', async ({ typeOfLivestock, typeOfReview, content, backLink }) => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
           typeOfLivestock,
-          typeOfReview: 'E',
+          typeOfReview,
           dateOfVisit: '2023-12-19T10:25:11.318Z',
           dateOfTesting: '2023-12-19T10:25:11.318Z',
           speciesNumbers: 'speciesNumbers',
