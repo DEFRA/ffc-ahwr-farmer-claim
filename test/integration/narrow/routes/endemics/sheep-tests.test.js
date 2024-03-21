@@ -96,7 +96,7 @@ describe('Test Results test', () => {
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('What did the vet test or sample for?')
       expect($('title').text()).toMatch('Sheep Tests - Annual health and welfare review of livestock')
-      expect($('a').text()).toMatch('Select at least one test')
+      expect($('a').text()).toMatch('You must select a disease')
 
       expectPhaseBanner.ok($)
     })

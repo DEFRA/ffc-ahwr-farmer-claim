@@ -8,6 +8,14 @@ const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
+const getBackLink = (typeOfReview, typeOfLivestock) => {
+  if (typeOfReview === claimType.review) {
+    return typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
+  } else {
+    return typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsSheepTestResults}` : `${urlPrefix}/${routes.endemicsBiosecurity}`
+  }
+}
+
 const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
 const capitalize = (value) => {
   if (value) return value.charAt(0).toUpperCase() + value.slice(1)
@@ -21,7 +29,7 @@ module.exports = [
       handler: async (request, h) => {
         const sessionData = getEndemicsClaim(request)
         const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN } = sessionData
-        const backLink = typeOfLivestock === livestockTypes.sheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
+        const backLink = getBackLink(typeOfReview, typeOfLivestock)
 
         const rows = [
           {
@@ -114,8 +122,8 @@ module.exports = [
                   key: { text: index === 0 ? 'Disease test and result' : '' },
                   value: {
                     html: typeof sheepTest.result === 'object'
-                      ? sheepTest.result.map(testResult => `${testResult.diseaseType}(${testResult.testResult})</br>`).join(' ')
-                      : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text}(${sheepTestResultsType[sheepTest.diseaseType].find(resultType => resultType.value === sheepTest.result).text})`
+                      ? sheepTest.result.map(testResult => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
+                      : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find(resultType => resultType.value === sheepTest.result).text})`
                   },
                   actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`, text: 'Change', visuallyHiddenText: 'change disease type and test result' }] }
                 }
