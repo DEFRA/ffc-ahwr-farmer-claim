@@ -46,6 +46,7 @@ module.exports = [{
             farmerName: getPersonName(personSummary),
             name: organisationSummary.organisation.name,
             email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
+            orgEmail: organisationSummary.organisation.email,
             address: getOrganisationAddress(organisationSummary.organisation.address)
           }
         )
@@ -59,6 +60,7 @@ module.exports = [{
               farmerName: getPersonName(personSummary),
               name: organisationSummary.organisation.name,
               email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
+              orgEmail: organisationSummary.organisation.email,
               address: getOrganisationAddress(organisationSummary.organisation.address)
             }
           )
