@@ -17,6 +17,7 @@ module.exports = [{
       if (!claim) {
         return boom.notFound()
       }
+      console.log('>>>>>>>>', claim)
 
       return h.view('visit-review', getClaimViewData(claim, generateBackLink(request)))
     }
