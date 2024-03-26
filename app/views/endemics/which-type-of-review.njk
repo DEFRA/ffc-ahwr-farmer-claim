@@ -27,7 +27,7 @@
             name: "typeOfReview",
             fieldset: {
               legend: {
-                text: "Which type of review are you claiming for " + typeOfLivestock + "?",
+                text: "What are you claiming for " + typeOfLivestock + "?",
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--l"
               }
@@ -36,12 +36,12 @@
             items: [
               {
                 value: "review",
-                text: "Annual health and welfare review",
+                text: "Livestock health and welfare review",
                 checked: previousAnswer === "review"
               },
               {
                 value: "endemics",
-                text: "Endemic disease follow-ups",
+                text: "Endemic disease follow-up",
                 checked: previousAnswer === "endemics"
               }
             ]
