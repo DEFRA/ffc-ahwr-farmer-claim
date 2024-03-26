@@ -6,6 +6,7 @@ const legendText = 'Are these details correct?'
 
 const getRows = (claim) => {
   const claimData = claim.data
+  console.log('@@@@@@@@@', claim)
   const rows = [
     { key: { text: 'Agreement number' }, value: { text: claim.reference } },
     { key: { text: 'Business name' }, value: { text: claimData.organisation.name } },
