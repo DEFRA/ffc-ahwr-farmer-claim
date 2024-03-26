@@ -205,7 +205,7 @@ describe('Claim endemics home page test', () => {
 
     expect(res.statusCode).toBe(200)
     const $ = cheerio.load(res.payload)
-    expect($('h1').text().trim()).toMatch('Claim for funding for livestock health and welfare reviews and endemic disease follow-ups')
+    expect($('h1').text().trim()).toMatch('Claim funding to improve livestock health and welfare')
     expect($('title').text().trim()).toEqual('Claim funding - Annual health and welfare review of livestock')
     expectPhaseBanner.ok($)
   })
