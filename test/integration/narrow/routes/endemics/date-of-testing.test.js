@@ -8,7 +8,7 @@ function expectPageContentOk ($) {
   // expect($('title').text()).toEqual('When were samples taken? - Annual health and welfare review of livestock')
   expect($('h1').text()).toMatch('When were samples taken?')
   expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('his is the date samples were taken to test for health conditions or diseases.')
-  expect($('label[for=whenTestingWasCarriedOut]').text()).toMatch('When the vet visited the farm to carry out the review')
+  expect($('label[for=whenTestingWasCarriedOut]').text()).toMatch('When the vet visited the farm for the review or follow-up')
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
