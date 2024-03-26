@@ -85,13 +85,13 @@
           {{ govukRadios({
             name: "whenTestingWasCarriedOut",
             hint: {
-              text: "This is the date samples were taken to test for health conditions or diseases."
+              text: "This is the date samples were taken to test for health conditions or diseases. You can find it on the summary the vet gave you."
             },
             errorMessage: whenTestingWasCarriedOut.errorMessage,
             items: [
               {
                 value: "whenTheVetVisitedTheFarmToCarryOutTheReview",
-                text: "When the vet visited the farm to carry out the review",
+                text: "When the vet visited the farm for the review or follow-up",
                 checked: whenTestingWasCarriedOut.value === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
               },
               {
