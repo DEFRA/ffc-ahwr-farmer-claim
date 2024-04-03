@@ -150,7 +150,7 @@ describe('Vet rcvs test', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' }
     ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $relevantReviewForEndemics ', async ({ typeOfLivestock, typeOfReview, relevantReviewForEndemics, nextPageURL }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, relevantReviewForEndemics } })
       const options = {

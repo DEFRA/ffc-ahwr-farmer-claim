@@ -1,65 +1,65 @@
-const cheerio = require('cheerio');
-const getCrumbs = require('../../../../utils/get-crumbs');
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect');
-const { labels } = require('../../../../../app/config/visit-date');
+const cheerio = require('cheerio')
+const getCrumbs = require('../../../../utils/get-crumbs')
+const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const { labels } = require('../../../../../app/config/visit-date')
 const getEndemicsClaimMock =
-  require('../../../../../app/session').getEndemicsClaim;
-const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api');
-jest.mock('../../../../../app/api-requests/claim-service-api');
-jest.mock('../../../../../app/session');
+  require('../../../../../app/session').getEndemicsClaim
+const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/session')
 
-function expectPageContentOk($) {
+function expectPageContentOk ($) {
   expect($('title').text()).toEqual(
     'Date of visit - Annual health and welfare review of livestock'
-  );
-  expect($('h1').text()).toMatch('Date of review or follow-up');
+  )
+  expect($('h1').text()).toMatch('Date of review or follow-up')
   expect($('p').text()).toMatch(
     'This is the date the vet last visited the farm for this review or follow-up. You can find it on the summary the vet gave you.'
-  );
-  expect($('#visit-date-hint').text()).toMatch('For example, 27 3 2022');
-  expect($(`label[for=${labels.day}]`).text()).toMatch('Day');
-  expect($(`label[for=${labels.month}]`).text()).toMatch('Month');
-  expect($(`label[for=${labels.year}]`).text()).toMatch('Year');
-  expect($('.govuk-button').text()).toMatch('Continue');
-  const backLink = $('.govuk-back-link');
-  expect(backLink.text()).toMatch('Back');
-  expect(backLink.attr('href')).toMatch('/claim/endemics/which-species');
+  )
+  expect($('#visit-date-hint').text()).toMatch('For example, 27 3 2022')
+  expect($(`label[for=${labels.day}]`).text()).toMatch('Day')
+  expect($(`label[for=${labels.month}]`).text()).toMatch('Month')
+  expect($(`label[for=${labels.year}]`).text()).toMatch('Year')
+  expect($('.govuk-button').text()).toMatch('Continue')
+  const backLink = $('.govuk-back-link')
+  expect(backLink.text()).toMatch('Back')
+  expect(backLink.attr('href')).toMatch('/claim/endemics/which-species')
 }
 
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: '2023-01-01',
   data: {
-    visitDate: '2023-01-01',
+    visitDate: '2023-01-01'
   },
   statusId: 1,
-  type: 'VV',
-};
+  type: 'VV'
+}
 
 const latestEndemicsApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: '2023-01-01',
   statusId: 1,
-  type: 'EE',
-};
+  type: 'EE'
+}
 
-const landingPage = '/claim/endemics/which-species';
+const landingPage = '/claim/endemics/which-species'
 
 describe('Date of vet visit', () => {
-  const auth = { credentials: {}, strategy: 'cookie' };
-  const url = '/claim/endemics/date-of-visit';
+  const auth = { credentials: {}, strategy: 'cookie' }
+  const url = '/claim/endemics/date-of-visit'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => {
       return {
         latestVetVisitApplication,
         latestEndemicsApplication,
-        landingPage,
-      };
-    });
+        landingPage
+      }
+    })
 
     jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config');
+      const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
         authConfig: {
@@ -70,67 +70,67 @@ describe('Date of vet visit', () => {
             redirectUri: 'http://localhost:3000/apply/signin-oidc',
             clientId: 'dummy_client_id',
             serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access',
+            scope: 'openid dummy_client_id offline_access'
           },
           ruralPaymentsAgency: {
             hostname: 'dummy-host-name',
             getPersonSummaryUrl: 'dummy-get-person-summary-url',
             getOrganisationPermissionsUrl:
               'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url',
-          },
+            getOrganisationUrl: 'dummy-get-organisation-url'
+          }
         },
         endemics: {
-          enabled: true,
-        },
-      };
-    });
-  });
+          enabled: true
+        }
+      }
+    })
+  })
 
   afterAll(() => {
-    jest.resetAllMocks();
-  });
+    jest.resetAllMocks()
+  })
 
   describe(`GET ${url} route`, () => {
     test('returns 200', async () => {
       const options = {
         method: 'GET',
         url,
-        auth,
-      };
+        auth
+      }
 
-      const res = await global.__SERVER__.inject(options);
+      const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(200);
-      const $ = cheerio.load(res.payload);
-      expectPageContentOk($);
-      expectPhaseBanner.ok($);
-    });
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expectPageContentOk($)
+      expectPhaseBanner.ok($)
+    })
 
     test('when not logged in redirects to defra id', async () => {
       const options = {
         method: 'GET',
-        url,
-      };
+        url
+      }
 
-      const res = await global.__SERVER__.inject(options);
+      const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(302);
+      expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(
         expect.stringContaining(
           'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
         )
-      );
-    });
-  });
+      )
+    })
+  })
 
   describe(`POST ${url} route`, () => {
-    let crumb;
-    const allErrorHighlights = [labels.day, labels.month, labels.year];
+    let crumb
+    const allErrorHighlights = [labels.day, labels.month, labels.year]
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__);
-    });
+      crumb = await getCrumbs(global.__SERVER__)
+    })
 
     test('when not logged in redirects to defra id', async () => {
       const options = {
@@ -140,20 +140,20 @@ describe('Date of vet visit', () => {
           crumb,
           [labels.day]: 31,
           [labels.month]: 12,
-          [labels.year]: 2021,
+          [labels.year]: 2021
         },
-        headers: { cookie: `crumb=${crumb}` },
-      };
+        headers: { cookie: `crumb=${crumb}` }
+      }
 
-      const res = await global.__SERVER__.inject(options);
+      const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(302);
+      expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(
         expect.stringContaining(
           'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
         )
-      );
-    });
+      )
+    })
     test.each([
       {
         description:
@@ -164,7 +164,7 @@ describe('Date of vet visit', () => {
         errorMessage:
           'Date of visit cannot be before the date your agreement began',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2022-07-10',
+        applicationCreationDate: '2022-07-10'
       },
       {
         description:
@@ -174,7 +174,7 @@ describe('Date of vet visit', () => {
         year: '3000',
         errorMessage: 'Date of visit must be in the past',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing day and month and year',
@@ -183,7 +183,7 @@ describe('Date of vet visit', () => {
         year: '',
         errorMessage: 'Enter the date the vet completed the review',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing day',
@@ -192,7 +192,7 @@ describe('Date of vet visit', () => {
         year: '2023',
         errorMessage: 'Date of visit must include a day',
         errorHighlights: [labels.day],
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing month',
@@ -201,7 +201,7 @@ describe('Date of vet visit', () => {
         year: '2023',
         errorMessage: 'Date of visit must include a month',
         errorHighlights: [labels.month],
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing year',
@@ -210,7 +210,7 @@ describe('Date of vet visit', () => {
         year: '',
         errorMessage: 'Date of visit must include a year',
         errorHighlights: [labels.year],
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing day and month',
@@ -219,7 +219,7 @@ describe('Date of vet visit', () => {
         year: '2023',
         errorMessage: 'Date of visit must include a day and a month',
         errorHighlights: [labels.day, labels.month],
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing day and year',
@@ -228,7 +228,7 @@ describe('Date of vet visit', () => {
         year: '',
         errorMessage: 'Date of visit must include a day and a year',
         errorHighlights: [labels.day, labels.year],
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'missing month and year',
@@ -237,8 +237,8 @@ describe('Date of vet visit', () => {
         year: '',
         errorMessage: 'Date of visit must include a month and a year',
         errorHighlights: [labels.month, labels.year],
-        applicationCreationDate:'2023-01-01',
-      },
+        applicationCreationDate: '2023-01-01'
+      }
     ])(
       'returns error ($errorMessage) when partial or invalid input is given - $description',
       async ({
@@ -247,16 +247,16 @@ describe('Date of vet visit', () => {
         year,
         errorMessage,
         errorHighlights,
-        applicationCreationDate,
+        applicationCreationDate
       }) => {
         getEndemicsClaimMock.mockImplementationOnce(() => {
           return {
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
-              createdAt: applicationCreationDate,
-            },
-          };
-        });
+              createdAt: applicationCreationDate
+            }
+          }
+        })
         const options = {
           method: 'POST',
           url,
@@ -265,21 +265,21 @@ describe('Date of vet visit', () => {
             [labels.day]: day,
             [labels.month]: month,
             [labels.year]: `${year}`,
-            dateOfAgreementAccepted: applicationCreationDate,
+            dateOfAgreementAccepted: applicationCreationDate
           },
           auth,
-          headers: { cookie: `crumb=${crumb}` },
-        };
+          headers: { cookie: `crumb=${crumb}` }
+        }
 
-        const res = await global.__SERVER__.inject(options);
+        const res = await global.__SERVER__.inject(options)
 
-        const $ = cheerio.load(res.payload);
-        expect(res.statusCode).toBe(400);
+        const $ = cheerio.load(res.payload)
+        expect(res.statusCode).toBe(400)
         expect($('p.govuk-error-message').text().trim()).toEqual(
           `Error: ${errorMessage}`
-        );
+        )
       }
-    );
+    )
 
     test.each([
       {
@@ -287,7 +287,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01',
         claim: {
           reference: 'AHWR-C2EA-C718',
           applicationReference: 'AHWR-2470-6BA9',
@@ -296,16 +296,16 @@ describe('Date of vet visit', () => {
           createdAt: '2022-03-19T10:25:11.318Z',
           data: {
             typeOfLivestock: 'beef',
-            dateOfVisit: '2023-01-01',
-          },
-        },
+            dateOfVisit: '2023-01-01'
+          }
+        }
       },
       {
         description: 'next review claim difference is less than 10 months',
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01',
         claim: {
           reference: 'AHWR-C2EA-C718',
           applicationReference: 'AHWR-2470-6BA9',
@@ -314,10 +314,10 @@ describe('Date of vet visit', () => {
           createdAt: '2022-03-19T10:25:11.318Z',
           data: {
             typeOfLivestock: 'beef',
-            dateOfVisit: '2023-12-01',
-          },
-        },
-      },
+            dateOfVisit: '2023-12-01'
+          }
+        }
+      }
     ])(
       'Redirect to exception screen when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
@@ -325,12 +325,12 @@ describe('Date of vet visit', () => {
           return {
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
-              createdAt: applicationCreationDate,
+              createdAt: applicationCreationDate
             },
             previousClaims: [claim],
-            typeOfReview: 'R',
-          };
-        });
+            typeOfReview: 'R'
+          }
+        })
         const options = {
           method: 'POST',
           url,
@@ -339,22 +339,22 @@ describe('Date of vet visit', () => {
             [labels.day]: day.toString(),
             [labels.month]: month.toString(),
             [labels.year]: year.toString(),
-            dateOfAgreementAccepted: applicationCreationDate,
+            dateOfAgreementAccepted: applicationCreationDate
           },
           auth,
-          headers: { cookie: `crumb=${crumb}` },
-        };
+          headers: { cookie: `crumb=${crumb}` }
+        }
         claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
-          isValid: false,
-        }));
-        const res = await global.__SERVER__.inject(options);
-        const $ = cheerio.load(res.payload);
-        expect(res.statusCode).toBe(400);
+          isValid: false
+        }))
+        const res = await global.__SERVER__.inject(options)
+        const $ = cheerio.load(res.payload)
+        expect(res.statusCode).toBe(400)
         expect($('h1').text().trim()).toMatch(
           'You cannot continue with your claim'
-        );
+        )
       }
-    );
+    )
 
     test.each([
       {
@@ -362,7 +362,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01',
         claim: {
           reference: 'AHWR-C2EA-C718',
           applicationReference: 'AHWR-2470-6BA9',
@@ -371,16 +371,16 @@ describe('Date of vet visit', () => {
           createdAt: '2022-03-19T10:25:11.318Z',
           data: {
             typeOfLivestock: 'beef',
-            dateOfVisit: '2022-01-01',
-          },
-        },
+            dateOfVisit: '2022-01-01'
+          }
+        }
       },
       {
         description: 'next review claim difference is more than 10 months',
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate:'2023-01-01',
+        applicationCreationDate: '2023-01-01',
         claim: {
           reference: 'AHWR-C2EA-C718',
           applicationReference: 'AHWR-2470-6BA9',
@@ -389,10 +389,10 @@ describe('Date of vet visit', () => {
           createdAt: '2022-03-19T10:25:11.318Z',
           data: {
             typeOfLivestock: 'beef',
-            dateOfVisit: '2025-01-01',
-          },
-        },
-      },
+            dateOfVisit: '2025-01-01'
+          }
+        }
+      }
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
@@ -400,12 +400,12 @@ describe('Date of vet visit', () => {
           return {
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
-              createdAt: applicationCreationDate,
+              createdAt: applicationCreationDate
             },
             previousClaims: [claim],
-            typeOfReview: 'R',
-          };
-        });
+            typeOfReview: 'R'
+          }
+        })
         const options = {
           method: 'POST',
           url,
@@ -414,20 +414,20 @@ describe('Date of vet visit', () => {
             [labels.day]: day.toString(),
             [labels.month]: month.toString(),
             [labels.year]: year.toString(),
-            dateOfAgreementAccepted: applicationCreationDate,
+            dateOfAgreementAccepted: applicationCreationDate
           },
           auth,
-          headers: { cookie: `crumb=${crumb}` },
-        };
+          headers: { cookie: `crumb=${crumb}` }
+        }
         claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
-          isValid: true,
-        }));
+          isValid: true
+        }))
 
-        const res = await global.__SERVER__.inject(options);
+        const res = await global.__SERVER__.inject(options)
 
-        expect(res.statusCode).toBe(302);
-        expect(res.headers.location).toEqual('/claim/endemics/date-of-testing');
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
       }
-    );
-  });
-});
+    )
+  })
+})
