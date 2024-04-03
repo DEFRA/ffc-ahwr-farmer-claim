@@ -222,7 +222,7 @@ describe('Date of vet visit', () => {
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }
-      claimServiceApiMock.isValidReviewDate.mockImplementationOnce(() => ({ isValid: false, content: { url: 'https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers', text: 'There must be at least 10 months between your annual health and welfare reviews.' } }))
+      claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({ isValid: false }))
       const res = await global.__SERVER__.inject(options)
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
@@ -274,7 +274,7 @@ describe('Date of vet visit', () => {
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }
-      claimServiceApiMock.isValidReviewDate.mockImplementationOnce(() => ({ isValid: true, content: {} }))
+      claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({ isValid: true }))
 
       const res = await global.__SERVER__.inject(options)
 
