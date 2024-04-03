@@ -8,6 +8,7 @@ const {
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
+const { addError } = require('../utils/validations')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
@@ -149,21 +150,9 @@ module.exports = [
               href: '#when-was-endemic-disease-or-condition-testing-carried-out'
             })
           }
-          if (
-            error.details
-              .filter(e => e.context.label.startsWith('on-another-date'))
-              .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-              .length
-          ) {
-            error.details = error.details
-              .filter(e => !e.context.label.startsWith('on-another-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-          }
-          if (error.details.filter(e => e.context.label.startsWith('on-another-date')).length) {
-            errorSummary.push({
-              text: error.details.find(e => e.context.label.startsWith('on-another-date')).message,
-              href: '#when-was-endemic-disease-or-condition-testing-carried-out'
-            })
-          }
+
+          const newError = addError(error, 'on-another-date', 'ifTheDateIsIncomplete', '#when-was-endemic-disease-or-condition-testing-carried-out')
+          if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
           return h
             .view(endemicsDateOfTesting, {

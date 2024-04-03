@@ -9,8 +9,8 @@ jest.mock('../../../../../app/session')
 
 function expectPageContentOk ($) {
   expect($('title').text()).toEqual('Date of visit - Annual health and welfare review of livestock')
-  expect($('h1').text()).toMatch('Date of visit')
-  expect($('p').text()).toMatch('When the vet last visited the farm for the review.')
+  expect($('h1').text()).toMatch('Date of review or follow-up')
+  expect($('p').text()).toMatch('This is the date the vet last visited the farm for this review or follow-up. You can find it on the summary the vet gave you.')
   expect($('#visit-date-hint').text()).toMatch('For example, 27 3 2022')
   expect($(`label[for=${labels.day}]`).text()).toMatch('Day')
   expect($(`label[for=${labels.month}]`).text()).toMatch('Month')

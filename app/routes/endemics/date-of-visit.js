@@ -12,6 +12,7 @@ const {
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
+const { addError } = require('../utils/validations')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 
@@ -121,21 +122,8 @@ module.exports = [
         }),
         failAction: async (request, h, error) => {
           const errorSummary = []
-          if (
-            error.details
-              .filter(e => e.context.label.startsWith('visit-date'))
-              .filter(e => e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-              .length
-          ) {
-            error.details = error.details
-              .filter(e => !e.context.label.startsWith('visit-date') || e.type.indexOf('ifTheDateIsIncomplete') !== -1)
-          }
-          if (error.details.filter(e => e.context.label.startsWith('visit-date')).length) {
-            errorSummary.push({
-              text: error.details.find(e => e.context.label.startsWith('visit-date')).message,
-              href: '#when-was-the-review-completed'
-            })
-          }
+          const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
+          if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
           const { landingPage } = session.getEndemicsClaim(request)
           const backLink = landingPage

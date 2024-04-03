@@ -20,6 +20,10 @@ function expectPageContentOk ($, application) {
   expect(values.eq(2).text()).toMatch(typeOfReviewRow.value.text)
   expect(keys.eq(3).text()).toMatch(eligibleSpeciesRow.key.text)
   expect(values.eq(3).text()).toMatch('yes')
+  expect(keys.eq(4).text()).toMatch('Organisation email address')
+  expect(values.eq(4).text()).toMatch('testemail2@email.com')
+  expect(keys.eq(5).text()).toMatch('User email address')
+  expect(values.eq(5).text()).toMatch('testemail@email.com')
   expect($('title').text()).toContain('Confirm the details')
   expectPhaseBanner.ok($)
 }
@@ -33,10 +37,16 @@ describe('Vet visit review page test', () => {
     let vvData
     const application = {
       reference: 'AWHR-TEST',
+      organisation: {
+        name: 'org-name',
+        email: 'testemail@email.com',
+        orgEmail: 'testemail2@email.com'
+      },
       data: {
         organisation: {
           name: 'org-name',
-          email: 'testemail@email.com'
+          email: 'testemail@email.com',
+          orgEmail: 'testemail2@email.com'
         },
         whichReview: speciesToTest,
         eligibleSpecies: 'yes'
