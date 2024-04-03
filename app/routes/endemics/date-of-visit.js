@@ -1,6 +1,6 @@
 const Joi = require('joi')
-const { isValidEndemicsDate, isValidReviewDate, getRelevantReviewForEndemics } = require('../../api-requests/claim-service-api')
-const { livestockTypes, claimType } = require('../../constants/claim')
+const { isValidDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
+const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
@@ -176,13 +176,31 @@ module.exports = [
           request.payload[labels.month] - 1,
           request.payload[labels.day]
         )
-        const { isValid, content } = typeOfReview === claimType.review ? isValidReviewDate(previousClaims, dateOfVisit) : isValidEndemicsDate(previousClaims, dateOfVisit, organisation?.name, formattedTypeOfLivestock)
+        const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
+        const content = {}
         if (!isValid) {
+          switch (reason) {
+            case dateOfVetVisitExceptions.reviewWithin10:
+              content.url = '#'
+              content.text = 'There must be at least 10 months between your annual health and welfare reviews.'
+              break
+            case dateOfVetVisitExceptions.rejectedReview:
+              content.url = '#'
+              content.text = `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
+              break
+            case dateOfVetVisitExceptions.noReview:
+              content.url = '#'
+              content.text = 'There must be no more than 10 months between your annual health and welfare reviews and endemic disease follow-ups.'
+              break
+            case dateOfVetVisitExceptions.endemicsWithin10:
+              content.url = '#'
+              content.text = 'There must be at least 10 months between your endemics follow-ups.'
+          }
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, content, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
         if (typeOfReview === claimType.endemics) {
-          session.setEndemicsClaim(request, relevantReviewForEndemicsKey, getRelevantReviewForEndemics(dateOfVisit, previousClaims, latestVetVisitApplication))
+          session.setEndemicsClaim(request, relevantReviewForEndemicsKey, getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication))
         }
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
