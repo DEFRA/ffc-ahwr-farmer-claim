@@ -692,7 +692,7 @@ describe('isValidDateOfVisit test', () => {
         vetVisitReview: generateMockVetVisitReview('2023-05-01', 10),
         previousClaims: undefined,
         expected: { isValid: false, reason: 'no review within 10 months past' }
-      },
+      }
     ])('$test | isValidDateOfVisit', ({ dateOfVisit, previousClaims, vetVisitReview, expected }) => {
       expect(isValidDateOfVisit(dateOfVisit, 'E', previousClaims, vetVisitReview)).toEqual(expected)
     })
