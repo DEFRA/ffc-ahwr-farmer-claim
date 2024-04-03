@@ -139,11 +139,11 @@ module.exports = [
                 },
                 month: {
                   value: request.payload['visit-date-month'],
-                  error: error.details.find(e => e.context.label === 'visit-date-month' || e.type.startsWith('dateOfReview'))
+                  error: error.details.find(e => e.context.label === 'visit-date-month' || e.type.startsWith('dateOfVisit'))
                 },
                 year: {
                   value: request.payload['visit-date-year'],
-                  error: error.details.find(e => e.context.label === 'visit-date-year' || e.type.startsWith('dateOfReview'))
+                  error: error.details.find(e => e.context.label === 'visit-date-year' || e.type.startsWith('dateOfVisit'))
                 },
                 errorMessage: error.details.find(e => e.context.label.startsWith('visit-date'))
                   ? { text: error.details.find(e => e.context.label.startsWith('visit-date')).message }
