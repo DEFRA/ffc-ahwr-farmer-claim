@@ -364,7 +364,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate: '2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'previous review claim difference is more than 10 months',
@@ -373,7 +373,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate: '2023-01-01',
+        applicationCreationDate: '2023-01-01'
       },
       {
         description: 'previous review claim difference is more than 10 months',
@@ -391,7 +391,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '2023',
-        applicationCreationDate: '2023-01-01',
+        applicationCreationDate: '2023-01-01'
       }
     ])(
       'Redirect to exception screen when ($description) and match content',
@@ -416,7 +416,7 @@ describe('Date of vet visit', () => {
         }
         claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
           isValid: false,
-          reason: dateOfVetVisitException,
+          reason: dateOfVetVisitException
         }))
         const res = await global.__SERVER__.inject(options)
         const $ = cheerio.load(res.payload)
