@@ -358,6 +358,76 @@ describe('Date of vet visit', () => {
 
     test.each([
       {
+        description: 'prior review claim difference is less than ten months and rejected',
+        content: 'undefined - SBI undefined had a failed review claim for undefined cattle in the last 10 months.',
+        dateOfVetVisitException: 'rejected review',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01',
+      },
+      {
+        description: 'previous review claim difference is more than 10 months',
+        content: 'There must be no more than 10 months between your annual health and welfare reviews and endemic disease follow-ups.',
+        dateOfVetVisitException: 'no review within 10 months past',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01',
+      },
+      {
+        description: 'previous review claim difference is more than 10 months',
+        content: 'There must be at least 10 months between your endemics follow-ups.',
+        dateOfVetVisitException: 'another endemics within 10 months',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01'
+      },
+      {
+        description: 'previous review claim difference is more than 10 months',
+        content: 'There must be at least 10 months between your annual health and welfare reviews.',
+        dateOfVetVisitException: 'another review within 10 months',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01',
+      }
+    ])(
+      'Redirect to exception screen when ($description) and match content',
+      async ({ day, month, year, applicationCreationDate, content, dateOfVetVisitException }) => {
+        getEndemicsClaimMock.mockImplementationOnce(() => {
+          return {
+            typeOfReview: 'E'
+          }
+        })
+        const options = {
+          method: 'POST',
+          url,
+          payload: {
+            crumb,
+            [labels.day]: day.toString(),
+            [labels.month]: month.toString(),
+            [labels.year]: year.toString(),
+            dateOfAgreementAccepted: applicationCreationDate
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` }
+        }
+        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+          isValid: false,
+          reason: dateOfVetVisitException,
+        }))
+        const res = await global.__SERVER__.inject(options)
+        const $ = cheerio.load(res.payload)
+        expect(res.statusCode).toBe(400)
+        expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+        expect($('p.govuk-body').html()).toMatch(`<a href="#">${content}</a>`)
+      }
+    )
+
+    test.each([
+      {
         description: 'prior review claim difference is more than ten months',
         day: '01',
         month: '05',

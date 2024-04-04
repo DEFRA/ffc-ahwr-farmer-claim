@@ -174,7 +174,7 @@ module.exports = [
               break
             case dateOfVetVisitExceptions.rejectedReview:
               content.url = '#'
-              content.text = `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
+              content.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
               break
             case dateOfVetVisitExceptions.noReview:
               content.url = '#'
