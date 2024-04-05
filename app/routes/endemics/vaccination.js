@@ -17,9 +17,9 @@ module.exports = [{
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { latestVetVisitApplication, herdVaccinationStatus } = session.getEndemicsClaim(request)
+      const { vetVisitsReviewTestResults, herdVaccinationStatus } = session.getEndemicsClaim(request)
       const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: 'vaccinated', text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: 'notVaccinated', text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
-      const backLink = latestVetVisitApplication ? `${urlPrefix}/${endemicsVetRCVS}` : `${urlPrefix}/${endemicsTestResults}`
+      const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsVetRCVS}` : `${urlPrefix}/${endemicsTestResults}`
       return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios })
     }
   }
@@ -32,9 +32,9 @@ module.exports = [{
         herdVaccinationStatus: Joi.string().valid('vaccinated', 'notVaccinated').required()
       }),
       failAction: async (request, h, error) => {
-        const { latestVetVisitApplication } = session.getEndemicsClaim(request)
+        const { vetVisitsReviewTestResults } = session.getEndemicsClaim(request)
         const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: 'vaccinated', text: 'Vaccinated' }, { value: 'notVaccinated', text: 'Not vaccinated' }])
-        const backLink = latestVetVisitApplication ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
+        const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsVaccination, {
           ...request.payload,
           backLink,

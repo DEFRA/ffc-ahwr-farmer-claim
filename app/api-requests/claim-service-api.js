@@ -1,9 +1,8 @@
 const Wreck = require('@hapi/wreck')
-const _ = require('lodash')
 const appInsights = require('applicationinsights')
 const config = require('../config')
-const { statusesFor10MonthCheck, successfulStatuses, validReviewStatuses, REJECTED } = require('../constants/status')
-const { claimType } = require('../constants/claim')
+const { REJECTED } = require('../constants/status')
+const { claimType, dateOfVetVisitExceptions } = require('../constants/claim')
 
 async function getClaimsByApplicationReference (applicationReference) {
   try {
@@ -55,87 +54,69 @@ function isWithInLastTenMonths (date) {
   return Date.now() <= end
 }
 
-function getMostRecentReviewDate (previousClaims, latestVetVisitApplication) {
-  const successfulReviewClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.review)
-  if (successfulReviewClaims.length) {
-    return new Date(successfulReviewClaims[0].data.dateOfVisit)
-  } else if (latestVetVisitApplication && statusesFor10MonthCheck.includes(latestVetVisitApplication?.statusId)) {
-    return new Date(latestVetVisitApplication.data.visitDate)
-  }
+const isWithin10Months = (dateA, dateB) => {
+  const [firstDate, secondDate] = dateA < dateB ? [dateA, dateB] : [dateB, dateA]
+  const firstDatelus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
+  return firstDatelus10Months >= secondDate
 }
 
-function getRelevantReviewForEndemics (endemicsDateOfVetVisit, previousClaims, latestVetVisitApplication) {
-  const relevantReviewClaim = (previousClaims ?? []).filter((previousClaim) => {
-    return validReviewStatuses.includes(previousClaim.statusId) && previousClaim.type === claimType.review && is10MonthsDifference(endemicsDateOfVetVisit, previousClaim?.data?.dateOfVisit, 'lessThanTenMonths')
-  })
-  if (relevantReviewClaim.length) {
-    return relevantReviewClaim[0]
-  } else if (latestVetVisitApplication && validReviewStatuses.includes(latestVetVisitApplication?.statusId) && is10MonthsDifference(endemicsDateOfVetVisit, latestVetVisitApplication?.data?.visitDate, 'lessThanTenMonths')) {
-    return latestVetVisitApplication
+const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
+  const pastReviewClaims = previousClaims?.filter((prevClaim) => (new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) && prevClaim.type === claimType.review)) ?? []
+  if (vetVisitReview) {
+    pastReviewClaims.push(
+      {
+        ...vetVisitReview,
+        data: {
+          ...vetVisitReview?.data,
+          dateOfVisit: vetVisitReview?.data?.visitDate
+        }
+      }
+    )
   }
+  const pastReviewClaimsWithin10Months = pastReviewClaims?.filter((pastReviewClaim) => isWithin10Months(new Date(pastReviewClaim.data.dateOfVisit), new Date(dateOfVisit)))
+  return pastReviewClaimsWithin10Months?.[0]
 }
 
-function is10MonthsDifference (firstDate, secondDate, comparisonOperator = '') {
-  const tenMonthsSinceLastClaim = new Date(secondDate)
-  tenMonthsSinceLastClaim.setMonth(tenMonthsSinceLastClaim.getMonth() + config.endemicsClaimExpiryTimeMonths)
-  if (comparisonOperator === 'lessThanTenMonths') {
-    return firstDate < tenMonthsSinceLastClaim
+const isAClaimTypeWithin10Months = (typeOfClaim, dateOfVisit, previousClaims, vetVisitReview) => {
+  const allClaimTypeClaims = previousClaims?.filter((prevClaim) => prevClaim.type === typeOfClaim)?.map((prevReviewClaim) => ({ dateOfVisit: prevReviewClaim.data.dateOfVisit })) ?? []
+  if (vetVisitReview && typeOfClaim === claimType.review) {
+    allClaimTypeClaims.push({ dateOfVisit: vetVisitReview?.data?.visitDate })
   }
-  return firstDate > tenMonthsSinceLastClaim
+
+  const allClaimTypeClaimsWithin10Months = allClaimTypeClaims?.filter((claim) => isWithin10Months(new Date(dateOfVisit), new Date(claim.dateOfVisit)))
+  return allClaimTypeClaimsWithin10Months.length > 0
 }
 
-function isValidReviewDate (previousClaims, dateOfVisit) {
-  const priorReviewClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
-  const nextReviewClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) > dateOfVisit)
-  const sortedPriorReviewClaims = _.sortBy(priorReviewClaims, [(priorReviewClaim) => { return new Date(priorReviewClaim.data.dateOfVisit) }])
-  const sortedNextReviewClaims = _.sortBy(nextReviewClaims, [(nextReviewClaim) => { return new Date(nextReviewClaim.data.dateOfVisit) }])
-  const isValidPriorReviewDifference = sortedPriorReviewClaims.length ? is10MonthsDifference(dateOfVisit, sortedPriorReviewClaims[sortedPriorReviewClaims.length - 1].data.dateOfVisit) : undefined
-  const isValidNextReviewDifference = sortedNextReviewClaims.length ? is10MonthsDifference(new Date(sortedNextReviewClaims[0].data.dateOfVisit), dateOfVisit) : undefined
+const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitReview) => {
+  if (typeOfClaim === claimType.review) {
+    // Cannot have another review dateOfVisit +- 10 months
+    const isValid = !isAClaimTypeWithin10Months(claimType.review, dateOfVisit, previousClaims, vetVisitReview)
+    return { isValid, reason: !isValid ? dateOfVetVisitExceptions.reviewWithin10 : undefined }
+  } else if (typeOfClaim === claimType.endemics) {
+    const pastClaims = previousClaims?.filter((prevClaim) => new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit))
+    if (isAClaimTypeWithin10Months(claimType.review, dateOfVisit, pastClaims, vetVisitReview)) {
+      // Review within 10 months is REJECTED
+      if (getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId === REJECTED) {
+        return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
+      }
 
-  if ((sortedPriorReviewClaims.length && !isValidPriorReviewDifference) ||
-    (sortedNextReviewClaims.length && !isValidNextReviewDifference)) {
-    return { isValid: false, content: { url: 'https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers', text: 'There must be at least 10 months between your annual health and welfare reviews.' } }
+      // Cannot have another endemics dateOfVisit +- 10 months
+      const isValid = !isAClaimTypeWithin10Months(claimType.endemics, dateOfVisit, previousClaims, vetVisitReview)
+      return { isValid, reason: !isValid ? dateOfVetVisitExceptions.endemicsWithin10 : undefined }
+    } else {
+      // Need a review within the last 10 months for an endemics
+      return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
+    }
+  } else {
+    // typeOfClaim was not review or endemics
+    return { isValid: false }
   }
-  return { isValid: true, content: {} }
-}
-
-function isValidEndemicsDate (previousClaims, dateOfVisit, organisation = {}, formattedTypeOfLivestock = '') {
-  const priorFailedReviewClaims = (previousClaims ?? []).filter((previousClaim) => REJECTED === previousClaim.statusId && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
-  const priorSuccessfulReviewClaims = (previousClaims ?? []).filter((previousClaim) => successfulStatuses.includes(previousClaim.statusId) && previousClaim.type === claimType.review && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
-  const priorEndemicsClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.endemics && new Date(previousClaim.data.dateOfVisit) <= dateOfVisit)
-  const nextEndemicsClaims = (previousClaims ?? []).filter((previousClaim) => statusesFor10MonthCheck.includes(previousClaim.statusId) && previousClaim.type === claimType.endemics && new Date(previousClaim.data.dateOfVisit) > dateOfVisit)
-  const sortedPriorFailedReviewClaims = _.sortBy(priorFailedReviewClaims, [(priorReviewClaim) => { return new Date(priorReviewClaim.data.dateOfVisit) }])
-  const sortedPriorSuccessfulReviewClaims = _.sortBy(priorSuccessfulReviewClaims, [(priorReviewClaim) => { return new Date(priorReviewClaim.data.dateOfVisit) }])
-  const sortedPriorEndemicsClaims = _.sortBy(priorEndemicsClaims, [(priorEndemicsClaim) => { return new Date(priorEndemicsClaim.data.dateOfVisit) }])
-  const sortedNextEndemicsClaims = _.sortBy(nextEndemicsClaims, [(nextEndemicsClaim) => { return new Date(nextEndemicsClaim.data.dateOfVisit) }])
-  const isValidPriorFailedReviewClaimsDifference = sortedPriorFailedReviewClaims.length ? is10MonthsDifference(dateOfVisit, sortedPriorFailedReviewClaims[sortedPriorFailedReviewClaims.length - 1].data.dateOfVisit, 'lessThanTenMonths') : undefined
-  const isValidPriorSuccessfulReviewClaimsDifference = sortedPriorSuccessfulReviewClaims.length ? is10MonthsDifference(dateOfVisit, sortedPriorSuccessfulReviewClaims[sortedPriorSuccessfulReviewClaims.length - 1].data.dateOfVisit, 'lessThanTenMonths') : undefined
-  const isValidPriorEndemicsDifference = sortedPriorEndemicsClaims.length ? is10MonthsDifference(dateOfVisit, sortedPriorEndemicsClaims[sortedPriorEndemicsClaims.length - 1].data.dateOfVisit) : undefined
-  const isValidNextEndemicsDifference = sortedNextEndemicsClaims.length ? is10MonthsDifference(new Date(sortedNextEndemicsClaims[0].data.dateOfVisit), dateOfVisit) : undefined
-
-  if (sortedPriorFailedReviewClaims.length && !isValidPriorFailedReviewClaimsDifference) {
-    return { isValid: false, content: { url: '', text: `${organisation.name} - SBI ${organisation.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.` } }
-  }
-
-  if (sortedPriorSuccessfulReviewClaims.length && !isValidPriorSuccessfulReviewClaimsDifference) {
-    return { isValid: false, content: { url: 'https://fcp-ahwr-prototype.herokuapp.com/v25/farmer/guidance-claim', text: 'There must be no more than 10 months between your annual health and welfare reviews and endemic disease follow-ups.' } }
-  }
-
-  if ((sortedPriorEndemicsClaims.length && !isValidPriorEndemicsDifference) ||
-    (sortedNextEndemicsClaims.length && !isValidNextEndemicsDifference)) {
-    return { isValid: false, content: { url: 'https://fcp-ahwr-prototype.herokuapp.com/v25/farmer/guidance-claim', text: 'There must be at least 10 months between your endemics follow-ups.' } }
-  }
-
-  return { isValid: true, content: {} }
 }
 
 module.exports = {
   submitNewClaim,
   isWithInLastTenMonths,
   getClaimsByApplicationReference,
-  getMostRecentReviewDate,
-  getRelevantReviewForEndemics,
-  isValidReviewDate,
-  isValidEndemicsDate,
-  is10MonthsDifference
+  isValidDateOfVisit,
+  getReviewWithinLast10Months
 }

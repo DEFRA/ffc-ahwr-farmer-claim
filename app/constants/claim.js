@@ -12,12 +12,19 @@ module.exports = {
   },
   claimType: {
     review: 'R',
-    endemics: 'E'
+    endemics: 'E',
+    vetVisits: 'VV'
   },
   diseaseStatusTypes: {
     1: '1',
     2: '2',
     3: '3',
     4: '4'
+  },
+  dateOfVetVisitExceptions: {
+    rejectedReview: 'rejected review',
+    endemicsWithin10: 'another endemics within 10 months',
+    noReview: 'no review within 10 months past',
+    reviewWithin10: 'another review within 10 months'
   }
 }
