@@ -45,9 +45,9 @@ module.exports = [
             value: { html: typeOfReview === claimType.review ? 'Annual health and welfare review' : 'Endemic disease follow-ups' }
           },
           {
-            key: { text: 'Date of visit' },
+            key: { text: 'Date of review or follow-up' },
             value: { html: formatDate(dateOfVisit) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of visit' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of review or follow-up' }] }
           },
           {
             key: { text: 'Date of testing' },
