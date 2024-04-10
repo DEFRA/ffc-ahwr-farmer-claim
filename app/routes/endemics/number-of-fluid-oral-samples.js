@@ -59,7 +59,13 @@ module.exports = [
         session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
         if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
-          return h.view(endemicsNumberOfOralFluidSamplesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+          return h.view(
+            endemicsNumberOfOralFluidSamplesException,
+            {
+              backLink: pageUrl,
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              minimumNumberFluidOralSamples
+            }).code(400).takeover()
         }
 
         return h.redirect(`${urlPrefix}/${endemicsTestResults}`)
