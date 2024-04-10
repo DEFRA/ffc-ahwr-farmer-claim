@@ -18,17 +18,17 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
       <br>
-      {% if content.url %}
+      {% if mainMessage.url %}
         <p class="govuk-body">
-          <a href={{ content.url  }}>{{ content.text  }}</a>
+          <a href={{ mainMessage.url  }}>{{ mainMessage.text  }}</a>
         </p>
       {% endif %}
-      {% if not content.url %}
-        <p class="govuk-body">{{ content.text }}</p>
+      {% if not mainMessage.url %}
+        <p class="govuk-body">{{ mainMessage.text }}</p>
       {% endif %}
       <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
       <p class="govuk-body">
-        <a class="govuk-link" href={{ backLink }}>Enter the date the vet last visited your farm</a>
+        <a class="govuk-link" href={{ backLink }}>{{backToPageMessage}}</a>
       </p>
       <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
@@ -38,9 +38,8 @@
         </strong>
       </div>
       <h2 class="govuk-heading-m">Get help with your claim</h2>
-      <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
+      <p class="govuk-body">If you need help with your claim, contact the Rural Payments Agency and give your agreement number.</p>
       {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
-      <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
     </div>
   </div>
 {% endblock %}

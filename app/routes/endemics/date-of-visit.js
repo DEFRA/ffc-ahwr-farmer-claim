@@ -165,22 +165,25 @@ module.exports = [
           request.payload[labels.day]
         )
         const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
-        const content = { url: '#' }
+        const mainMessage = { url: '#' }
+        let backToPageMessage = 'Enter the date the vet last visited your farm'
         if (!isValid) {
           switch (reason) {
             case dateOfVetVisitExceptions.reviewWithin10:
-              content.text = 'There must be at least 10 months between your annual health and welfare reviews.'
+              mainMessage.text = 'There must be at least 10 months between your reviews.'
               break
             case dateOfVetVisitExceptions.rejectedReview:
-              content.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
+              mainMessage.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
               break
             case dateOfVetVisitExceptions.noReview:
-              content.text = 'There must be no more than 10 months between your annual health and welfare reviews and endemic disease follow-ups.'
+              mainMessage.text = 'There must be no more than 10 months between your reviews and follow-ups.'
+              backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
               break
             case dateOfVetVisitExceptions.endemicsWithin10:
-              content.text = 'There must be at least 10 months between your endemics follow-ups.'
+              mainMessage.text = 'There must be at least 10 months between your follow-ups.'
+              backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
           }
-          return h.view(endemicsDateOfVisitException, { backLink: pageUrl, content, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+          return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
 
         if (typeOfReview === claimType.endemics) {
