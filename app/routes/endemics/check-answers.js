@@ -53,7 +53,7 @@ module.exports = [
           {
             key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
             value: { html: formatDate(dateOfVisit) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of visit' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of review or follow-up' }] }
           },
           {
             key: { text: 'Date of sampling' },

@@ -56,7 +56,7 @@ describe('Vet name test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1 > label').text().trim()).toMatch('What is the vet\'s name?')
+      expect($('h1').text()).toMatch('What is the vet\'s name?')
       expect($('title').text().trim()).toEqual('What is the vet\'s name? - Annual health and welfare review of livestock')
       expectPhaseBanner.ok($)
     })
@@ -111,7 +111,7 @@ describe('Vet name test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1 > label').text().trim()).toMatch('What is the vet\'s name?')
+      expect($('h1').text()).toMatch('What is the vet\'s name?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(error)
       expect($('#vetsName-error').text()).toMatch(error)
     })

@@ -74,10 +74,10 @@ describe('Vaccination test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'pigs', latestVetVisitApplication: false, backLink: '/claim/endemics/test-results' },
-      { typeOfLivestock: 'pigs', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-rcvs' }
-    ])('backLink when species is pigs and application from old world is $latestVetVisitApplication', async ({ typeOfLivestock, latestVetVisitApplication, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, latestVetVisitApplication } })
+      { typeOfLivestock: 'pigs', vetVisitsReviewTestResults: false, backLink: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'pigs', vetVisitsReviewTestResults: true, backLink: '/claim/endemics/vet-rcvs' }
+    ])('backLink when species is pigs and application from old world is $vetVisitsReviewTestResults', async ({ typeOfLivestock, vetVisitsReviewTestResults, backLink }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, vetVisitsReviewTestResults } })
       const options = {
         method: 'GET',
         url,

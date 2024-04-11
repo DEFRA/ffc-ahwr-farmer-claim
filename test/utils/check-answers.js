@@ -56,7 +56,7 @@ const expectedReviewBeef = {
     'Positive'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     'Change change number of animals tested',
@@ -103,7 +103,7 @@ const expectedReviewDairy = {
     'Positive'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     "Change change vet's name",
@@ -152,7 +152,7 @@ const expectedReviewPigs = {
     'Positive'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     'Change change number of animals tested',
@@ -201,7 +201,7 @@ const expectedReviewSheep = {
     'laboratoryURN'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     'Change change number of animals tested',
@@ -280,7 +280,7 @@ const expectedEndemicsFollowUpBeef = {
     'Yes'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     'Change change number of animals tested',
@@ -331,7 +331,7 @@ const expectedEndemicsFollowUpDairy = {
     'Yes'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     "Change change vet's name",
@@ -386,7 +386,7 @@ const expectedEndemicsFollowUpPigs = {
     'Yes, Assessment percentage: 50%'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     'Change change number of animals tested',
@@ -447,7 +447,7 @@ const expectedEndemicsFollowUpSheep = {
     'disease one (test result one) disease two (test result two)'
   ],
   rowActionTexts: [
-    'Change change date of visit',
+    'Change change date of review or follow-up',
     'Change change date of sampling',
     'Change change number of species',
     'Change change number of animals tested',
