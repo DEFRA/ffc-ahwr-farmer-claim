@@ -32,7 +32,7 @@ const expectedReviewBeef = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of review',
     'Date of sampling',
     '11 or more beef cattle',
@@ -81,7 +81,7 @@ const expectedReviewDairy = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of review',
     'Date of sampling',
     '11 or more dairy cattle',
@@ -126,7 +126,7 @@ const expectedReviewPigs = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of review',
     'Date of sampling',
     '51 or more pigs',
@@ -179,7 +179,7 @@ const expectedReviewSheep = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of review',
     'Date of sampling',
     '21 or more sheep',
@@ -254,7 +254,7 @@ const expectedEndemicsFollowUpBeef = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of follow-up',
     'Date of sampling',
     '11 or more beef cattle',
@@ -307,7 +307,7 @@ const expectedEndemicsFollowUpDairy = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of follow-up',
     'Date of sampling',
     '11 or more dairy cattle',
@@ -356,7 +356,7 @@ const expectedEndemicsFollowUpPigs = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of follow-up',
     'Date of sampling',
     '51 or more pigs',
@@ -417,7 +417,7 @@ const expectedEndemicsFollowUpSheep = {
   rowKeys: [
     'Business name',
     'Livestock',
-    'Type of review',
+    'Review or follow up',
     'Date of follow-up',
     'Date of sampling',
     '21 or more sheep',

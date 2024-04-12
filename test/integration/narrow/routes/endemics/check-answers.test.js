@@ -374,8 +374,6 @@ describe('Check answers test', () => {
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
           testResults: 'testResults'
-          // sheepEndemicsPackage,
-          // sheepTestResults
         }
       })
       const options = {
@@ -468,6 +466,7 @@ describe('Check answers test', () => {
 
       expect($('h1').text()).toMatch('Check your answers')
       expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('.govuk-summary-list__key').text()).toContain('Review test result')
       expect($('.govuk-summary-list__value').text()).toContain('VetVisitsReviewTestResults')
     })
   })

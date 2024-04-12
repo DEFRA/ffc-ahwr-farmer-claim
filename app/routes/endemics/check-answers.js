@@ -45,7 +45,7 @@ module.exports = [
           value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
         },
         {
-          key: { text: 'Type of review' },
+          key: { text: 'Review or follow up' },
           value: { html: isReview ? 'Annual health and welfare review' : 'Endemic disease follow-up' }
         }]
 
@@ -94,12 +94,12 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples' }] }
         }
         const testResultsRow = {
-          key: { text: 'Test results' }, // Pigs, Dairy, Beef
+          key: { text: 'Test results' }, // Pigs, Dairy, Beef, when coming from old world agreement
           value: { html: testResults && upperFirstLetter(testResults) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
         }
         const vetVisitsReviewTestResultsRow = {
-          key: { text: 'Vet Visits Review Test results' }, // Pigs, Dairy, Beef
+          key: { text: 'Review test result' }, // Pigs, Dairy, Beef
           value: { html: upperFirstLetter(sessionData?.vetVisitsReviewTestResults) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
         }
