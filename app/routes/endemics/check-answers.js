@@ -45,7 +45,7 @@ module.exports = [
           value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
         },
         {
-          key: { text: 'Review or follow up' },
+          key: { text: 'Review or follow-up' },
           value: { html: isReview ? 'Annual health and welfare review' : 'Endemic disease follow-up' }
         }]
 
@@ -53,7 +53,7 @@ module.exports = [
           {
             key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
             value: { html: formatDate(dateOfVisit) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: 'change date of review or follow-up' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `change date of ${isReview ? 'review' : 'follow-up'}` }] }
           },
           {
             key: { text: 'Date of sampling' },
@@ -91,17 +91,17 @@ module.exports = [
         const oralFluidSamplesRow = {
           key: { text: 'Number of oral fluid samples taken' }, // Pigs
           value: { html: sessionData?.numberOfOralFluidSamples },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples taken' }] }
         }
         const testResultsRow = {
-          key: { text: 'Test results' }, // Pigs, Dairy, Beef, when coming from old world agreement
+          key: { text: 'Test results' }, // Pigs, Dairy, Beef
           value: { html: testResults && upperFirstLetter(testResults) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
         }
         const vetVisitsReviewTestResultsRow = {
-          key: { text: 'Review test result' }, // Pigs, Dairy, Beef
+          key: { text: 'Review test result' }, // Pigs, Dairy, Beef, when coming from old world agreement
           value: { html: upperFirstLetter(sessionData?.vetVisitsReviewTestResults) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change vet visits review test results' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change review test results' }] }
         }
         const diseaseStatusRow = {
           key: { text: 'Diseases status category' }, // Pigs
