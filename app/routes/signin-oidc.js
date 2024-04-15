@@ -49,7 +49,9 @@ module.exports = [{
             name: organisationSummary.organisation.name,
             email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
             orgEmail: organisationSummary.organisation.email,
-            address: getOrganisationAddress(organisationSummary.organisation.address)
+            address: getOrganisationAddress(organisationSummary.organisation.address),
+            crn: personSummary.customerReferenceNumber,
+            frn: organisationSummary.businessReference
           }
         )
 
