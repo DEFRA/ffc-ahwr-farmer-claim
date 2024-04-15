@@ -5,7 +5,6 @@ const { getOrganisationAddress } = require('./rpa-api/index')
 
 async function updateContactHistory (data) {
   try {
-    console.log('%%%%%%%%%%%%%%%updateContactHistory', `${config.applicationApiUri}/application/contact-history`)
     const response = await Wreck.put(`${config.applicationApiUri}/application/contact-history`, {
       payload: data,
       json: true
@@ -18,7 +17,7 @@ async function updateContactHistory (data) {
     }
     return response.payload
   } catch (error) {
-    console.error(`${new Date().toISOString()} claim submission failed`)
+    console.error(`${new Date().toISOString()} updating contact history`)
     appInsights.defaultClient.trackException({ exception: error })
     return null
   }

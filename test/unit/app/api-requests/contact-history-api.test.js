@@ -1,7 +1,9 @@
-const { updateContactHistory } = require('../../../../app/api-requests/claim-service-api')
+const { updateContactHistory } = require('../../../../app/api-requests/contact-history-api')
 const Wreck = require('@hapi/wreck')
 
 jest.mock('@hapi/wreck')
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+const consoleErrorSpy = jest.spyOn(console, 'error')
 
 describe('updateContactHistory', () => {
   const mockConfig = {
@@ -51,8 +53,9 @@ describe('updateContactHistory', () => {
         statusMessage: 'Internal Server Error'
       }
     })
-
-    await expect(updateContactHistory(data, mockConfig)).rejects.toThrow()
+    const result = await updateContactHistory(data, mockConfig)
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
+    expect(result).toBe(null)
   })
 
   test('returns the response payload on success', async () => {
