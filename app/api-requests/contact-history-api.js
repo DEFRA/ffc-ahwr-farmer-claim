@@ -24,7 +24,6 @@ async function updateContactHistory (data) {
 }
 
 const changeContactHistory = async (personSummary, organisationSummary, reference) => {
-  console.log('%%%%%%%%%%%%%%personSummary', personSummary)
   const currentAddress = getOrganisationAddress(organisationSummary.organisation.address)
 
   await updateContactHistory({

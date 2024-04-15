@@ -1,5 +1,6 @@
 const { updateContactHistory } = require('../../../../app/api-requests/contact-history-api')
 const Wreck = require('@hapi/wreck')
+const config = require('../../../../app/config')
 
 jest.mock('@hapi/wreck')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
@@ -7,7 +8,7 @@ const consoleErrorSpy = jest.spyOn(console, 'error')
 
 describe('updateContactHistory', () => {
   const mockConfig = {
-    applicationApiUri: 'http://localhost:3001'
+    applicationApiUri: config.applicationApiUri
   }
 
   beforeEach(() => {
