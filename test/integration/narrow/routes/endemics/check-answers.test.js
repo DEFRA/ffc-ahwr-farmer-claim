@@ -111,7 +111,7 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
       expect($('.govuk-summary-list__value').text()).toContain('Endemic disease follow-ups')
 
-      expect($('.govuk-summary-list__key').text()).toContain('Date of visit')
+      expect($('.govuk-summary-list__key').text()).toContain('Date of review or follow-up')
       expect($('.govuk-summary-list__value').text()).toContain('19 December 2023')
 
       expect($('.govuk-summary-list__key').text()).toContain('Date of testing')

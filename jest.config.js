@@ -33,9 +33,10 @@ module.exports = {
   ],
   testEnvironment: 'node',
   testPathIgnorePatterns: [],
-  verbose: true,
+  verbose: false,
   setupFilesAfterEnv: [
     '<rootDir>/test/setup.js',
     '<rootDir>/test/teardown.js'
-  ]
+  ],
+  workerIdleMemoryLimit: '500MB'
 }
