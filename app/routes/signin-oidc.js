@@ -8,6 +8,7 @@ const { farmerClaim } = require('../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
 const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMadeError, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
 const { raiseIneligibilityEvent } = require('../event')
+const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
 
 module.exports = [{
@@ -38,6 +39,7 @@ module.exports = [{
         const apimAccessToken = await auth.retrieveApimAccessToken()
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
+        changeContactHistory(personSummary, organisationSummary)
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
@@ -47,7 +49,9 @@ module.exports = [{
             name: organisationSummary.organisation.name,
             email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
             orgEmail: organisationSummary.organisation.email,
-            address: getOrganisationAddress(organisationSummary.organisation.address)
+            address: getOrganisationAddress(organisationSummary.organisation.address),
+            crn: personSummary.customerReferenceNumber,
+            frn: organisationSummary.businessReference
           }
         )
 
@@ -61,7 +65,9 @@ module.exports = [{
               name: organisationSummary.organisation.name,
               email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
               orgEmail: organisationSummary.organisation.email,
-              address: getOrganisationAddress(organisationSummary.organisation.address)
+              address: getOrganisationAddress(organisationSummary.organisation.address),
+              crn: personSummary.customerReferenceNumber,
+              frn: organisationSummary.businessReference
             }
           )
         }
