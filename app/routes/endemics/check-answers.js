@@ -1,14 +1,13 @@
 const routes = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
-const { livestockTypes, claimType } = require('../../constants/claim')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
-const { getSpeciesEligibleNumberForDisplay, upperFirstLetter, isSpecies, formatDate } = require('../../lib/display-helpers')
+const { getSpeciesEligibleNumberForDisplay, upperFirstLetter, formatDate } = require('../../lib/display-helpers')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getReviewType } = require('../../lib/get-review-type')
 const { sheepPackages, sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
-
-const { beef, dairy, pigs, sheep } = livestockTypes
 
 const getBackLink = (isReview, isSheep) => {
   if (isReview) {
@@ -27,13 +26,9 @@ module.exports = [
         const sessionData = getEndemicsClaim(request)
         const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, numberAnimalsTested, testResults } = sessionData
 
-        const isBeef = isSpecies(typeOfLivestock, beef)
-        const isDairy = isSpecies(typeOfLivestock, dairy)
-        const isPigs = isSpecies(typeOfLivestock, pigs)
-        const isSheep = isSpecies(typeOfLivestock, sheep)
+        const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
+        const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-        const isReview = typeOfReview === claimType.review
-        const isEndemicsFollowUp = typeOfReview === claimType.endemics
         const backLink = getBackLink(isReview, isSheep)
 
         const noChangeRows = [{
@@ -191,6 +186,9 @@ module.exports = [
           numberOfSamplesTested
         } = getEndemicsClaim(request)
 
+        const { isSheep } = getLivestockTypes(typeOfLivestock)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+
         const claim = await submitNewClaim({
           applicationReference: latestEndemicsApplication?.reference,
           type: typeOfReview,
@@ -212,7 +210,7 @@ module.exports = [
             diseaseStatus,
             sheepEndemicsPackage,
             numberOfSamplesTested,
-            ...(typeOfReview === claimType.endemics && typeOfLivestock === sheep && {
+            ...(isEndemicsFollowUp && isSheep && {
               testResults: sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,
                 result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
