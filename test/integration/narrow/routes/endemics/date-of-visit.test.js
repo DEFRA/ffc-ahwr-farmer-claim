@@ -368,7 +368,7 @@ describe('Date of vet visit', () => {
       },
       {
         description: 'previous review claim difference is more than 10 months',
-        content: 'There must be no more than 10 months between your annual health and welfare reviews and endemic disease follow-ups.',
+        content: 'There must be no more than 10 months between your reviews and follow-ups.',
         dateOfVetVisitException: 'no review within 10 months past',
         day: '01',
         month: '05',
@@ -377,7 +377,7 @@ describe('Date of vet visit', () => {
       },
       {
         description: 'previous review claim difference is more than 10 months',
-        content: 'There must be at least 10 months between your endemics follow-ups.',
+        content: 'There must be at least 10 months between your follow-ups.',
         dateOfVetVisitException: 'another endemics within 10 months',
         day: '01',
         month: '05',
@@ -386,7 +386,7 @@ describe('Date of vet visit', () => {
       },
       {
         description: 'previous review claim difference is more than 10 months',
-        content: 'There must be at least 10 months between your annual health and welfare reviews.',
+        content: 'There must be at least 10 months between your reviews.',
         dateOfVetVisitException: 'another review within 10 months',
         day: '01',
         month: '05',
