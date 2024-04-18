@@ -1,5 +1,5 @@
 const { getReviewType } = require('../../../../app/lib/get-review-type')
-const { claimType } = require('../../../../../ffc-ahwr-farmer-claim/app/constants/claim')
+const { claimType } = require('../../../../app/constants/claim')
 
 describe('getReviewType', () => {
   let typeOfReview
