@@ -350,7 +350,7 @@ const expectedEndemicsFollowUpPigs = {
     ...commonVetRowKeys,
     'Herd vaccination status',
     'Test results URN',
-    'Samples tested',
+    'Number of samples tested',
     'Diseases status category',
     'Biosecurity assessment'
   ],

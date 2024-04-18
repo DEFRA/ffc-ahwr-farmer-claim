@@ -104,7 +104,7 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change diseases status category' }] }
         }
         const samplesTestedRow = {
-          key: { text: 'Samples tested' }, // Pigs
+          key: { text: 'Number of samples tested' }, // Pigs
           value: { html: sessionData?.numberOfSamplesTested },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`, text: 'Change', visuallyHiddenText: 'change number of samples tested' }] }
         }
@@ -195,7 +195,6 @@ module.exports = [
         ]
 
         const rowsWithData = rows.filter((row) => row.value?.html !== undefined)
-        console.log('rowsWithData', rowsWithData)
         return h.view(routes.endemicsCheckAnswers, { listData: { rows: rowsWithData }, backLink })
       }
     }
