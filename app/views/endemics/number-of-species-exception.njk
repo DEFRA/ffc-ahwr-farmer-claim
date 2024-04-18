@@ -44,10 +44,7 @@
             Your claim will be checked by our team.
          </strong>
       </div>
-      <h2 class="govuk-heading-m">Get help with your claim</h2>
-      <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
-      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
-      <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
+      {% include './chunks/get-help-with-claim.njk' %}
     </div>
   </div>
 {% endblock %}
