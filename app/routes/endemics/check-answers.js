@@ -124,20 +124,41 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, text: 'Change', visuallyHiddenText: 'change sheep health package' }] }
         }
 
-        const rows = [
-          ...noChangeRows,
-          ...commonRowsWithChangeLinks,
-          (isPigs || isBeef || isSheep) && numberOfAnimalsTestedRow,
+        const beefRows = [
+          numberOfAnimalsTestedRow,
           ...vetDetailsRows,
-          (isPigs || isDairy || isBeef) && vetVisitsReviewTestResultsRow,
-          isPigs && herdVaccinationStatusRow,
+          vetVisitsReviewTestResultsRow,
           laboratoryUrnRow,
-          isPigs && oralFluidSamplesRow, // review claim
           testResultsRow,
-          isPigs && samplesTestedRow, // endemics claim
-          isPigs && diseaseStatusRow,
-          isSheep && sheepPackageRow,
-          ...(isSheep && isEndemicsFollowUp && sessionData?.sheepTestResults?.length)
+          isEndemicsFollowUp && biosecurityAssessmentRow
+        ]
+        const dairyRows = [
+          numberOfAnimalsTestedRow,
+          ...vetDetailsRows,
+          vetVisitsReviewTestResultsRow,
+          laboratoryUrnRow,
+          testResultsRow,
+          isEndemicsFollowUp && biosecurityAssessmentRow
+        ]
+        const pigRows = [
+          numberOfAnimalsTestedRow,
+          ...vetDetailsRows,
+          vetVisitsReviewTestResultsRow,
+          herdVaccinationStatusRow,
+          laboratoryUrnRow,
+          oralFluidSamplesRow, // review claim
+          testResultsRow,
+          samplesTestedRow, // endemics claim
+          diseaseStatusRow,
+          isEndemicsFollowUp && biosecurityAssessmentRow
+        ]
+        const sheepRows = [
+          numberOfAnimalsTestedRow,
+          ...vetDetailsRows,
+          laboratoryUrnRow,
+          testResultsRow,
+          sheepPackageRow,
+          ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length)
             ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
                 return {
                   key: { text: index === 0 ? 'Disease test and result' : '' },
@@ -149,8 +170,28 @@ module.exports = [
                   actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`, text: 'Change', visuallyHiddenText: `change disease type ${sheepTest.diseaseType} and test result` }] }
                 }
               })
-            : [],
-          (isPigs || isBeef || isDairy) && isEndemicsFollowUp && biosecurityAssessmentRow
+            : []
+        ]
+
+        const speciesRows = () => {
+          switch (true) {
+            case isBeef:
+              return beefRows
+            case isDairy:
+              return dairyRows
+            case isPigs:
+              return pigRows
+            case isSheep:
+              return sheepRows
+            default:
+              return []
+          }
+        }
+
+        const rows = [
+          ...noChangeRows,
+          ...commonRowsWithChangeLinks,
+          ...speciesRows()
         ]
 
         const rowsWithData = rows.filter((row) => row.value?.html !== undefined)
