@@ -113,12 +113,16 @@ describe('Species numbers test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/number-of-species-tested' },
-      { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/vet-name' },
-      { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/number-of-species-tested' },
-      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' }
-    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
+      { typeOfReview: 'R', typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'R', typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/vet-name' },
+      { typeOfReview: 'R', typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'R', typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' }
+    ])('redirects to $nextPageUrl page when payload is valid for $typeOfLivestock for $typeOfReview', async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,

@@ -16,7 +16,9 @@ const pageUrl = `${urlPrefix}/${endemicsVetName}`
 
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
-  if (typeOfLivestock === livestockTypes.dairy && typeOfReview === claimType.review) return `${urlPrefix}/${endemicsSpeciesNumbers}`
+  if (typeOfLivestock === livestockTypes.dairy && typeOfReview === claimType.review) {
+    return `${urlPrefix}/${endemicsSpeciesNumbers}`
+  }
 
   return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 }

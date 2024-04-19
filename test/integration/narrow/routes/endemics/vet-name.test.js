@@ -61,6 +61,31 @@ describe('Vet name test', () => {
       expectPhaseBanner.ok($)
     })
 
+    test.each([
+      { typeOfReview: 'R', typeOfLivestock: 'beef', backLink: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'R', typeOfLivestock: 'dairy', backLink: '/claim/endemics/species-numbers' },
+      { typeOfReview: 'R', typeOfLivestock: 'sheep', backLink: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'R', typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'beef', backLink: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'dairy', backLink: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'sheep', backLink: '/claim/endemics/number-of-species-tested' },
+      { typeOfReview: 'E', typeOfLivestock: 'pigs', backLink: '/claim/endemics/number-of-species-tested' }
+    ])('$backLink when $typeOfLivestock for $typeOfReview', async ({ backLink, typeOfLivestock, typeOfReview }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').text()).toMatch('Back')
+      expect($('.govuk-back-link').attr('href')).toMatch(backLink)
+    })
+
     test('when not logged in redirects to defra id', async () => {
       const options = {
         method: 'GET',
