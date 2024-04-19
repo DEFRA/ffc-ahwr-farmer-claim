@@ -85,7 +85,7 @@ module.exports = [
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
           },
           {
-            key: { text: 'Test results' }, // Pigs, Dairy, Beef
+            key: { text: [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock) && typeOfReview === claimType.endemics ? 'Follow-up test result' : 'Test results' }, // Pigs, Dairy, Beef
             value: { html: capitalize(sessionData?.testResults) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
           },
