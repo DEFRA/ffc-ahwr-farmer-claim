@@ -151,7 +151,7 @@ const PHONE_NUMBER_ORAL_SAMPLES_ACTUAL='//*[@id="main-content"]/div/div/div[2]/d
 const NUMBER_OF_ANIMALS_HEADER_EXPECTED='How many animals did the vet test?'
 const NUMBER_OF_ANIMALS_HEADER_ACTUAL='//*[@id="main-content"]/div/div/form/h1'
 const NUMBER_OF_ORAL_FLUID_SAMPLES_HEADER_ACTUAL='//*[@id="main-content"]/div/div/form/h1'
-const NUMBER_OF_ORAL_FLUID_SAMPLES_EXPECTED='How many oral fluid samples did the vet do?'
+const NUMBER_OF_ORAL_FLUID_SAMPLES_EXPECTED='How many oral fluid samples did the vet take?'
 const NO_OF_SPECIES_TESTED='#numberAnimalsTested'
 const NO_OF_ORAL_TESTED='#numberOfOralFluidSamples'
 const SPECIES_NUMBER_CONTINUE='#btnContinue'
