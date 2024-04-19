@@ -55,7 +55,7 @@ describe('Number of fluid oral samples test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
+      expect($('h1').text()).toMatch('How many oral fluid samples did the vet take?')
       expect($('title').text()).toEqual('Oral fluid samples - Annual health and welfare review of livestock')
 
       expectPhaseBanner.ok($)
@@ -108,7 +108,7 @@ describe('Number of fluid oral samples test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
+      expect($('h1').text()).toMatch('How many oral fluid samples did the vet take?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of oral fluid samples collected')
       expect($('#numberOfOralFluidSamples-error').text()).toMatch('Enter the number of oral fluid samples collected')
     })
