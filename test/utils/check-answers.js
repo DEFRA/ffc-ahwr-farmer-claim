@@ -235,6 +235,7 @@ const baseEndemicsFollowUpClaim = {
 }
 
 const sheepEndemicsPackage = 'reducedExternalParasites'
+const sheepTests = ['flystrike', 'sheepScab', 'other']
 const sheepTestResults = [
   { diseaseType: 'flystrike', result: 'clinicalSymptomsPresent' },
   { diseaseType: 'sheepScab', result: 'negative' },
@@ -250,7 +251,7 @@ const sheepTestResults = [
 const beefEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive', biosecurity: 'yes' }
 const dairyEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'dairy', testResults: 'positive', biosecurity: 'yes' }
 const pigEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfSamplesTested: '5', diseaseStatus: '3', herdVaccinationStatus: 'vaccinated', biosecurity: { biosecurity: 'yes', assessmentPercentage: '50' } }
-const sheepEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42', sheepEndemicsPackage, sheepTestResults }
+const sheepEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42', sheepEndemicsPackage, sheepTests, sheepTestResults }
 
 const expectedEndemicsFollowUpBeef = {
   rowKeys: [
@@ -405,7 +406,8 @@ const expectedEndemicsFollowUpSheep = {
     ...commonVetRowKeys,
     'Test results URN',
     'Sheep health package',
-    'Disease test and result',
+    'Diseases or conditions tested for',
+    'Disease or condition test result',
     '',
     ''
   ],
@@ -421,6 +423,7 @@ const expectedEndemicsFollowUpSheep = {
     '1234567',
     'laboratoryURN',
     'Reduced level of external parasites',
+    'Flystrike Sheep scab Other',
     'Flystrike (Clinical symptoms present)',
     'Sheep scab (Negative)',
     'disease one (test result one) disease two (test result two)'
@@ -433,6 +436,7 @@ const expectedEndemicsFollowUpSheep = {
     ...commonVetRowActionTexts,
     'Change change test URN',
     'Change change sheep health package',
+    'Change change diseases or conditions tested for',
     'Change change disease type flystrike and test result',
     'Change change disease type sheepScab and test result',
     'Change change disease type other and test result'
@@ -446,6 +450,7 @@ const expectedEndemicsFollowUpSheep = {
     '/claim/endemics/vet-rcvs',
     '/claim/endemics/test-urn',
     '/claim/endemics/sheep-endemics-package',
+    '/claim/endemics/sheep-tests',
     '/claim/endemics/sheep-test-results?diseaseType=flystrike',
     '/claim/endemics/sheep-test-results?diseaseType=sheepScab',
     '/claim/endemics/sheep-test-results?diseaseType=other'

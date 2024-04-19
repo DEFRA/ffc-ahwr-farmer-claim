@@ -123,6 +123,18 @@ module.exports = [
           value: { html: sheepPackages[sessionData?.sheepEndemicsPackage] },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, text: 'Change', visuallyHiddenText: 'change sheep health package' }] }
         }
+        const sheepDiseasesTestedRow = () => {
+          if (isEndemicsFollowUp && sessionData?.sheepTestResults?.length) {
+            const testList = sessionData?.sheepTestResults.map(sheepTest => `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text}</br>`).join(' ')
+            return {
+              key: { text: 'Diseases or conditions tested for' }, // Sheep
+              value: { html: testList },
+              actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'change diseases or conditions tested for' }] }
+            }
+          } else {
+            return []
+          }
+        }
 
         const beefRows = [
           numberOfAnimalsTestedRow,
@@ -158,10 +170,11 @@ module.exports = [
           laboratoryUrnRow,
           testResultsRow,
           sheepPackageRow,
+          sheepDiseasesTestedRow(),
           ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length)
             ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
                 return {
-                  key: { text: index === 0 ? 'Disease test and result' : '' },
+                  key: { text: index === 0 ? 'Disease or condition test result' : '' },
                   value: {
                     html: typeof sheepTest.result === 'object'
                       ? sheepTest.result.map(testResult => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
