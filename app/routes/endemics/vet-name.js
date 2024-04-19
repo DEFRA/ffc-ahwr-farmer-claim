@@ -1,6 +1,7 @@
 const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
+const { claimType, livestockTypes } = require('../../constants/claim')
 const { name: nameErrorMessages } = require('../../../app/lib/error-messages')
 const {
   endemicsSpeciesNumbers,
@@ -16,7 +17,7 @@ const pageUrl = `${urlPrefix}/${endemicsVetName}`
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
   if (typeOfLivestock === livestockTypes.dairy && typeOfReview === claimType.review) return `${urlPrefix}/${endemicsSpeciesNumbers}`
-  
+
   return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 }
 
