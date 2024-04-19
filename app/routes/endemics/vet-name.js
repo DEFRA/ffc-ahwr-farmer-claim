@@ -3,6 +3,7 @@ const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { name: nameErrorMessages } = require('../../../app/lib/error-messages')
 const {
+  endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
   endemicsVetName,
   endemicsVetRCVS
@@ -11,7 +12,13 @@ const {
   endemicsClaim: { vetsName: vetsNamedKey }
 } = require('../../session/keys')
 const pageUrl = `${urlPrefix}/${endemicsVetName}`
-const backLink = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+
+const previousPageUrl = (request) => {
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  if (typeOfLivestock === livestockTypes.dairy && typeOfReview === claimType.review) return `${urlPrefix}/${endemicsSpeciesNumbers}`
+  
+  return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+}
 
 module.exports = [
   {
@@ -22,7 +29,7 @@ module.exports = [
         const { vetsName } = session.getEndemicsClaim(request)
         return h.view(endemicsVetName, {
           vetsName,
-          backLink
+          backLink: previousPageUrl(request)
         })
       }
     }
@@ -46,7 +53,7 @@ module.exports = [
           return h
             .view(endemicsVetName, {
               ...request.payload,
-              backLink,
+              backLink: previousPageUrl(request),
               errorMessage: { text: error.details[0].message, href: `#${vetsNamedKey}}` }
             })
             .code(400)

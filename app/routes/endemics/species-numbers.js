@@ -3,6 +3,7 @@ const boom = require('@hapi/boom')
 const urlPrefix = require('../../config').urlPrefix
 const session = require('../../session')
 const config = require('../../config')
+const { claimType, livestockTypes } = require('../../constants/claim')
 const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
@@ -74,7 +75,7 @@ module.exports = [
         session.setEndemicsClaim(request, speciesNumbers, request.payload[speciesNumbers])
 
         if (answer === 'yes') {
-          if (claim.typeOfLivestock === 'dairy') {
+          if (claim.typeOfLivestock === livestockTypes.dairy && claim.typeOfReview === claimType.review) {
             return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
           return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
