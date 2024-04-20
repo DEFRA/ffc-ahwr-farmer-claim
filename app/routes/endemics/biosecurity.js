@@ -19,9 +19,9 @@ const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) 
     case assessmentPercentage === '':
       return 'Enter the assessment percentage'
     case Number(assessmentPercentage) < 1:
-      return 'Assessment percentage cannot be less than 1'
+      return 'The assessment percentage must be a number between 1% and 100%.'
     case Number(assessmentPercentage) > 100:
-      return 'Assessment percentage cannot be more than 100'
+      return 'The assessment percentage must be a number between 1% and 100%.'
     default:
       return 'The assessment percentage can only include numbers'
   }
