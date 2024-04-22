@@ -103,7 +103,7 @@ describe('Check answers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
 
       expect($('.govuk-summary-list__key').text()).toContain('Business name')
       expect($('.govuk-summary-list__value').text()).toContain('Business name')
@@ -230,7 +230,7 @@ describe('Check answers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
       expect($('.govuk-summary-list__key').text()).toContain(content)
       expect($('.govuk-summary-list__value').text()).toContain('SpeciesNumbers')
       expect($('.govuk-back-link').attr('href')).toEqual(backLink)
@@ -265,7 +265,7 @@ describe('Check answers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
       expect($('.govuk-summary-list__key').text()).not.toContain('Test results\n')
       expect($('.govuk-summary-list__value').text()).not.toContain('TestResults')
     })
@@ -308,7 +308,7 @@ describe('Check answers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
       expect($('.govuk-summary-list__key').text()).toContain('Type of review')
       expect($('.govuk-summary-list__value').text()).toContain(content)
     })
@@ -354,7 +354,7 @@ describe('Check answers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
       expect($('.govuk-summary-list__value').text()).toContain('VetVisitsReviewTestResults')
     })
   })

@@ -10,7 +10,7 @@ jest.mock('../../../../../app/session')
 
 function expectPageContentOk ($) {
   expect($('title').text()).toEqual(
-    'Date of visit - Annual health and welfare review of livestock'
+    'Date of visit - Get funding to improve animal health and welfare'
   )
   expect($('h1').text()).toMatch('Date of review or follow-up')
   expect($('p').text()).toMatch(

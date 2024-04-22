@@ -262,6 +262,9 @@ describe('Vet, enter date of visit', () => {
               getOrganisationUrl: 'dummy-get-organisation-url'
             }
           },
+          endemics: {
+            enabled: false
+          },
           dateOfTesting: {
             enabled: true
           }

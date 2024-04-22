@@ -62,7 +62,7 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(title)
-      expect($('title').text()).toEqual('Laboratory URN - Annual health and welfare review of livestock')
+      expect($('title').text()).toEqual('Laboratory URN - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
