@@ -1,9 +1,31 @@
 const cheerio = require('cheerio')
 const Wreck = require('@hapi/wreck')
 const getCrumbs = require('../../../../utils/get-crumbs')
-const { livestockTypes, claimType } = require('../../../../../app/constants/claim')
+const { livestockTypes } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const {
+  beefReviewClaim,
+  dairyReviewClaim,
+  pigsReviewClaim,
+  sheepReviewClaim,
+  beefEndemicsFollowUpClaim,
+  dairyEndemicsFollowUpClaim,
+  pigEndemicsFollowUpClaim,
+  sheepEndemicsFollowUpClaim,
+  expectedReviewBeef,
+  expectedReviewDairy,
+  expectedReviewPigs,
+  expectedReviewSheep,
+  expectedEndemicsFollowUpBeef,
+  expectedEndemicsFollowUpDairy,
+  expectedEndemicsFollowUpPigs,
+  expectedEndemicsFollowUpSheep,
+  getRowKeys,
+  getRowContents,
+  getRowActionTexts,
+  getRowLinks
+} = require('../../../../utils/check-answers')
 
 jest.mock('../../../../../app/session')
 jest.mock('@hapi/wreck')
@@ -13,18 +35,7 @@ describe('Check answers test', () => {
   const url = '/claim/endemics/check-answers'
   const latestVetVisitApplicationWithInLastTenMonths = { createdAt: new Date().toISOString() }
   const latestVetVisitApplicationNotWithInLastTenMonths = { createdAt: '2023-01-01T00:00:01T00' }
-  const sheepEndemicsPackage = 'reducedExternalParasites'
-  const sheepTestResults = [
-    { diseaseType: 'flystrike', result: 'clinicalSymptomsPresent' },
-    { diseaseType: 'sheepScab', result: 'negative' },
-    {
-      diseaseType: 'other',
-      result: [
-        { diseaseType: 'disease one', testResult: 'test result one' },
-        { diseaseType: 'disease two', testResult: 'test result two' }
-      ]
-    }
-  ]
+
   beforeAll(() => {
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -71,83 +82,234 @@ describe('Check answers test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
 
-    test('returns 200 and shows all fields that have values', async () => {
-      getEndemicsClaimMock.mockImplementation(() => {
-        return {
-          organisation: { name: 'business name' },
-          typeOfLivestock: 'beef',
-          typeOfReview: 'E',
-          dateOfVisit: '2023-12-19T10:25:11.318Z',
-          dateOfTesting: '2023-12-19T10:25:11.318Z',
-          speciesNumbers: 'speciesNumbers',
-          vetsName: 'vetsName',
-          vetRCVSNumber: 'vetRCVSNumber',
-          laboratoryURN: 'laboratoryURN',
-          numberOfOralFluidSamples: 'numberOfOralFluidSamples',
-          numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults',
-          diseaseStatus: 'diseaseStatus',
-          herdVaccinationStatus: 'herdVaccinationStatus',
-          biosecurity: 'biosecurity'
+    describe('shows fields for a review claim in the correct order for each species', () => {
+      test('for beef', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return beefReviewClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
         }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        expect(rowKeys).toEqual(expectedReviewBeef.rowKeys)
+        expect(rowContents).toEqual(expectedReviewBeef.rowContents)
+        expect(rowActionTexts).toEqual(expectedReviewBeef.rowActionTexts)
+        expect(rowLinks).toEqual(expectedReviewBeef.rowLinks)
+
+        expectPhaseBanner.ok($)
       })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
 
-      const res = await global.__SERVER__.inject(options)
+      test('for dairy', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return dairyReviewClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
 
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
+        const res = await global.__SERVER__.inject(options)
 
-      expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
+        expect($('h1').text()).toMatch('Check your answers')
+        expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Business name')
-      expect($('.govuk-summary-list__value').text()).toContain('Business name')
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Type of review')
-      expect($('.govuk-summary-list__value').text()).toContain('Endemic disease follow-ups')
+        expect(rowKeys).toEqual(expectedReviewDairy.rowKeys)
+        expect(rowContents).toEqual(expectedReviewDairy.rowContents)
+        expect(rowActionTexts).toEqual(expectedReviewDairy.rowActionTexts)
+        expect(rowLinks).toEqual(expectedReviewDairy.rowLinks)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Date of review or follow-up')
-      expect($('.govuk-summary-list__value').text()).toContain('19 December 2023')
+        expectPhaseBanner.ok($)
+      })
 
-      expect($('.govuk-summary-list__key').text()).toContain('Date of testing')
-      expect($('.govuk-summary-list__value').text()).toContain('19 December 2023')
+      test('for pigs', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return pigsReviewClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
 
-      expect($('.govuk-summary-list__key').text()).toContain('11 or more beef cattle')
-      expect($('.govuk-summary-list__value').text()).toContain('SpeciesNumbers')
+        const res = await global.__SERVER__.inject(options)
 
-      expect($('.govuk-summary-list__key').text()).toContain("Vet's name")
-      expect($('.govuk-summary-list__value').text()).toContain('VetsName')
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
 
-      expect($('.govuk-summary-list__key').text()).toContain("Vet's RCVS number")
-      expect($('.govuk-summary-list__value').text()).toContain('vetRCVSNumber')
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
 
-      expect($('.govuk-summary-list__key').text()).toContain('URN')
-      expect($('.govuk-summary-list__value').text()).toContain('laboratoryURN')
+        expect(rowKeys).toEqual(expectedReviewPigs.rowKeys)
+        expect(rowContents).toEqual(expectedReviewPigs.rowContents)
+        expect(rowActionTexts).toEqual(expectedReviewPigs.rowActionTexts)
+        expect(rowLinks).toEqual(expectedReviewPigs.rowLinks)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Number of tests')
-      expect($('.govuk-summary-list__value').text()).toContain('numberOfOralFluidSamples')
+        expectPhaseBanner.ok($)
+      })
 
-      expect($('.govuk-summary-list__key').text()).toContain('Number of animals tested')
-      expect($('.govuk-summary-list__value').text()).toContain('numberAnimalsTested')
+      test('for sheep', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return sheepReviewClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
 
-      expect($('.govuk-summary-list__key').text()).toContain('Test results')
-      expect($('.govuk-summary-list__value').text()).toContain('TestResults')
+        const res = await global.__SERVER__.inject(options)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Diseases status category')
-      expect($('.govuk-summary-list__value').text()).toContain('diseaseStatus')
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Herd vaccination status')
-      expect($('.govuk-summary-list__value').text()).toContain('HerdVaccinationStatus')
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
 
-      expect($('.govuk-summary-list__key').text()).toContain('Biosecurity assessment')
-      expect($('.govuk-summary-list__value').text()).toContain('Biosecurity')
+        expect(rowKeys).toEqual(expectedReviewSheep.rowKeys)
+        expect(rowContents).toEqual(expectedReviewSheep.rowContents)
+        expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
+        expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
 
-      expectPhaseBanner.ok($)
+        expectPhaseBanner.ok($)
+      })
+    })
+
+    describe('shows fields for an endemics claim in the correct order for each species', () => {
+      test('for beef', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return beefEndemicsFollowUpClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        expect(rowKeys).toEqual(expectedEndemicsFollowUpBeef.rowKeys)
+        expect(rowContents).toEqual(expectedEndemicsFollowUpBeef.rowContents)
+        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpBeef.rowActionTexts)
+        expect(rowLinks).toEqual(expectedEndemicsFollowUpBeef.rowLinks)
+
+        expectPhaseBanner.ok($)
+      })
+
+      test('for dairy', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return dairyEndemicsFollowUpClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        expect(rowKeys).toEqual(expectedEndemicsFollowUpDairy.rowKeys)
+        expect(rowContents).toEqual(expectedEndemicsFollowUpDairy.rowContents)
+        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairy.rowActionTexts)
+        expect(rowLinks).toEqual(expectedEndemicsFollowUpDairy.rowLinks)
+
+        expectPhaseBanner.ok($)
+      })
+
+      test('for pigs', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return pigEndemicsFollowUpClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        expect(rowKeys).toEqual(expectedEndemicsFollowUpPigs.rowKeys)
+        expect(rowContents).toEqual(expectedEndemicsFollowUpPigs.rowContents)
+        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpPigs.rowActionTexts)
+        expect(rowLinks).toEqual(expectedEndemicsFollowUpPigs.rowLinks)
+
+        expectPhaseBanner.ok($)
+      })
+
+      test('for sheep', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return sheepEndemicsFollowUpClaim
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        expect(rowKeys).toEqual(expectedEndemicsFollowUpSheep.rowKeys)
+        expect(rowContents).toEqual(expectedEndemicsFollowUpSheep.rowContents)
+        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpSheep.rowActionTexts)
+        expect(rowLinks).toEqual(expectedEndemicsFollowUpSheep.rowLinks)
+
+        expectPhaseBanner.ok($)
+      })
     })
 
     test.each([
@@ -199,7 +361,7 @@ describe('Check answers test', () => {
         content: '21 or more sheep',
         backLink: '/claim/endemics/sheep-test-results'
       }
-    ])('check content and back links are correct for typeOfLivestock: $typeOfLivestock and whichReview $whichReview', async ({ typeOfLivestock, typeOfReview, content, backLink }) => {
+    ])('check species content and back links are correct for typeOfLivestock: $typeOfLivestock and typeOfReview: $typeOfReview}', async ({ typeOfLivestock, typeOfReview, content, backLink }) => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
@@ -213,9 +375,7 @@ describe('Check answers test', () => {
           laboratoryURN: 'laboratoryURN',
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults',
-          sheepEndemicsPackage,
-          sheepTestResults
+          testResults: 'testResults'
         }
       })
       const options = {
@@ -236,7 +396,7 @@ describe('Check answers test', () => {
       expect($('.govuk-back-link').attr('href')).toEqual(backLink)
     })
 
-    test('check row doesnt appear if no value', async () => {
+    test("check row doesn't appear if no value", async () => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
@@ -323,7 +483,7 @@ describe('Check answers test', () => {
       {
         typeOfLivestock: livestockTypes.dairy
       }
-    ])('check content and back links are correct for typeOfLivestock: $typeOfLivestock', async ({ typeOfLivestock }) => {
+    ])('check vetVisitsReviewTestResults is included when provided for typeOfLivestock: $typeOfLivestock', async ({ typeOfLivestock }) => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
@@ -335,11 +495,7 @@ describe('Check answers test', () => {
           vetsName: 'vetsName',
           vetRCVSNumber: 'vetRCVSNumber',
           laboratoryURN: 'laboratoryURN',
-          numberOfOralFluidSamples: 'numberOfOralFluidSamples',
-          numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults',
-          vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
-          latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths
+          vetVisitsReviewTestResults: 'vetVisitsReviewTestResults'
         }
       })
       const options = {
@@ -355,6 +511,7 @@ describe('Check answers test', () => {
 
       expect($('h1').text()).toMatch('Check your answers')
       expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
+      expect($('.govuk-summary-list__key').text()).toContain('Review test result')
       expect($('.govuk-summary-list__value').text()).toContain('VetVisitsReviewTestResults')
     })
   })
@@ -383,13 +540,10 @@ describe('Check answers test', () => {
             typeOfReview: 'review',
             dateOfVisit: '2023-12-19T10:25:11.318Z',
             dateOfTesting: '2023-12-19T10:25:11.318Z',
-            speciesNumbers: 'yes',
+            speciesNumbers: 'Yes',
             vetsName: 'VetName',
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
-            numberOfOralFluidSamples: '5',
-            numberAnimalsTested: '30',
-            testResults: 'positive',
             latestVetVisitApplication,
             latestEndemicsApplication: {
               reference: '123'
@@ -440,19 +594,14 @@ describe('Check answers test', () => {
             typeOfReview: 'E',
             dateOfVisit: '2023-12-19T10:25:11.318Z',
             dateOfTesting: '2023-12-19T10:25:11.318Z',
-            speciesNumbers: 'yes',
+            speciesNumbers: 'Yes',
             vetsName: 'VetName',
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
-            numberOfOralFluidSamples: '5',
-            numberAnimalsTested: '30',
-            testResults: 'positive',
             latestVetVisitApplication,
             latestEndemicsApplication: {
               reference: '123'
-            },
-            sheepEndemicsPackage,
-            sheepTestResults
+            }
           }
         })
 

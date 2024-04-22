@@ -11,7 +11,7 @@ describe('Test Results test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => {
-      return { typeOfLivestock: 'beef' }
+      return { typeOfLivestock: 'sheep' }
     })
 
     jest.mock('../../../../../app/config', () => {
