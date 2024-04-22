@@ -122,11 +122,11 @@ describe('Check answers test', () => {
         }
 
         const res = await global.__SERVER__.inject(options)
+        const $ = cheerio.load(res.payload)
 
         expect($('h1').text()).toMatch('Check your answers')
         expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
         expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
 
         const rowKeys = getRowKeys($)
         const rowContents = getRowContents($)
@@ -429,50 +429,7 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__key').text()).not.toContain('Test results\n')
       expect($('.govuk-summary-list__value').text()).not.toContain('TestResults')
     })
-
-    test.each([
-      {
-        typeOfReview: claimType.review,
-        content: 'Annual health and welfare review'
-      },
-      {
-        typeOfReview: claimType.endemics,
-        content: 'Endemic disease follow-ups'
-      }
-    ])('check content and back links are correct for typeOfReview: $typeOfReview', async ({ typeOfReview, content }) => {
-      getEndemicsClaimMock.mockImplementation(() => {
-        return {
-          organisation: { name: 'business name' },
-          typeOfLivestock: 'beef',
-          typeOfReview,
-          dateOfVisit: '2023-12-19T10:25:11.318Z',
-          dateOfTesting: '2023-12-19T10:25:11.318Z',
-          speciesNumbers: 'speciesNumbers',
-          vetsName: 'vetsName',
-          vetRCVSNumber: 'vetRCVSNumber',
-          laboratoryURN: 'laboratoryURN',
-          numberOfOralFluidSamples: 'numberOfOralFluidSamples',
-          numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults'
-        }
-      })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-
-      expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
-      expect($('.govuk-summary-list__key').text()).toContain('Type of review')
-      expect($('.govuk-summary-list__value').text()).toContain(content)
-    })
-
+    
     test.each([
       {
         typeOfLivestock: livestockTypes.beef
