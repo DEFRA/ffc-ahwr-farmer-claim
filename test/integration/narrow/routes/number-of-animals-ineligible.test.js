@@ -33,6 +33,9 @@ describe('Number of animals ineligible test', () => {
             getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
+        },
+        endemics: {
+          enabled: false
         }
       }
     })
