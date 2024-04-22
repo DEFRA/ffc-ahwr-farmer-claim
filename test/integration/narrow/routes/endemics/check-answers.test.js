@@ -429,7 +429,7 @@ describe('Check answers test', () => {
       expect($('.govuk-summary-list__key').text()).not.toContain('Test results\n')
       expect($('.govuk-summary-list__value').text()).not.toContain('TestResults')
     })
-    
+
     test.each([
       {
         typeOfLivestock: livestockTypes.beef
