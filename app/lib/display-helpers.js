@@ -9,6 +9,10 @@ function getTypeOfReviewForDisplay (claimData) {
   }[getClaimType(claimData)]
 }
 
+const isSpecies = (typeOfLivestock, species) => {
+  return typeOfLivestock === species
+}
+
 function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false) {
   return {
     beef: isEndemicsClaims ? '11 or more beef cattle ' : '11 or more cattle ',
@@ -27,13 +31,17 @@ function getEligibleNumberRowForDisplay (claimData) {
 }
 
 function upperFirstLetter (str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+  if (str) return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
 
 module.exports = {
   getTypeOfReviewRowForDisplay,
   getEligibleNumberRowForDisplay,
   upperFirstLetter,
   getSpeciesEligibleNumberForDisplay,
-  getTypeOfReviewForDisplay
+  getTypeOfReviewForDisplay,
+  isSpecies,
+  formatDate
 }
