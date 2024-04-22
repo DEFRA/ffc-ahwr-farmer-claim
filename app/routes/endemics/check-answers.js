@@ -132,7 +132,7 @@ module.exports = [
               actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'change diseases or conditions tested for' }] }
             }
           } else {
-            return []
+            return {}
           }
         }
 
