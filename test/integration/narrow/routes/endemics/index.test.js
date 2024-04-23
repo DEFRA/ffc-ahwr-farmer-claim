@@ -52,6 +52,66 @@ describe('Claim endemics home page test', () => {
     jest.clearAllMocks()
   })
 
+  test('Redirects us to endemicsWhichTypeOfReviewURI if latest VV application is within 10 months', async () => {
+    applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
+      {
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 1,
+        type: 'EE'
+      },
+      {
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 9,
+        type: 'VV'
+      }
+    ])
+    claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
+    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+
+    const options = {
+      method: 'GET',
+      url,
+      auth
+    }
+
+    const res = await global.__SERVER__.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
+  })
+
+  test('Redirects us to endemicsWhichSpeciesURI if latest VV application is NOT within 10 months', async () => {
+    applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
+      {
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 1,
+        type: 'EE'
+      },
+      {
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 9,
+        type: 'VV'
+      }
+    ])
+    claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
+    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(false)
+
+    const options = {
+      method: 'GET',
+      url,
+      auth
+    }
+
+    const res = await global.__SERVER__.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/which-species')
+  })
+
   test('Redirects us to endemicsWhichTypeOfReviewURI if latest claim is within 10 months and status is NOT rejected', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
