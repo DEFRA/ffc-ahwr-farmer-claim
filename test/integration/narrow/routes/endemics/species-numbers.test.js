@@ -56,7 +56,7 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 11 or more beef cattle  on the date of the review?')
-      expect($('title').text().trim()).toEqual('Number - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })

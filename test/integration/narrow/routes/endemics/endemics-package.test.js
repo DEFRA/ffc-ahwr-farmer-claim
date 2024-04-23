@@ -9,6 +9,7 @@ describe('Endemics package test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    process.env.ENDEMICS_ENABLED = 'true'
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -55,7 +56,7 @@ describe('Endemics package test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('Which package did you choose?')
-      expect($('title').text()).toEqual('Sheep Endemics Package - Annual health and welfare review of livestock')
+      expect($('title').text()).toEqual('Sheep Endemics Package - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })

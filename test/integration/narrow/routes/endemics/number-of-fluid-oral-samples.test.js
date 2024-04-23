@@ -10,6 +10,7 @@ describe('Number of fluid oral samples test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    process.env.ENDEMICS_ENABLED = 'true'
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -56,8 +57,7 @@ describe('Number of fluid oral samples test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many oral fluid samples did the vet take?')
-      expect($('title').text()).toEqual('Oral fluid samples - Annual health and welfare review of livestock')
-
+      expect($('title').text()).toEqual('Oral fluid samples - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 

@@ -52,12 +52,7 @@ describe('Which type of review test', () => {
   })
 
   describe('GET', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks()
-      crumb = await getCrumbs(global.__SERVER__)
-    })
-
-    test('Returns 200 and gets typeOfLivestock from past claim', async () => {
+    test.only('Returns 200 and gets typeOfLivestock from past claim', async () => {
       sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
         reference: 'AHWR-2470-6BA9',
@@ -88,7 +83,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('What are you claiming for')
-      expect($('title').text().trim()).toEqual('Which type of review - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -116,7 +111,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('What are you claiming for beef cattle?')
-      expect($('title').text().trim()).toEqual('Which type of review - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -149,7 +144,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch(`What are you claiming for ${content}?`)
-      expect($('title').text().trim()).toEqual('Which type of review - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
   })

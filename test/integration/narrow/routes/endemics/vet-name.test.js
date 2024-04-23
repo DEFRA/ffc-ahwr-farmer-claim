@@ -57,7 +57,7 @@ describe('Vet name test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('What is the vet\'s name?')
-      expect($('title').text().trim()).toEqual('What is the vet\'s name? - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('What is the vet\'s name? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
