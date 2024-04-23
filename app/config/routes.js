@@ -9,6 +9,7 @@ module.exports = {
   endemicsDateOfVisit: 'endemics/date-of-visit',
   endemicsDateOfVisitException: 'endemics/date-of-visit-exception',
   endemicsDateOfTesting: 'endemics/date-of-testing',
+  endemicsDateOfTestingException: 'endemics/date-of-testing-exception',
   endemicsVetName: 'endemics/vet-name',
   endemicsVetRCVS: 'endemics/vet-rcvs',
   endemicsTestUrn: 'endemics/test-urn',
