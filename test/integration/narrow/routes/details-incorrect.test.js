@@ -22,6 +22,9 @@ describe('Farmer claim - review details incorrect page test', () => {
           getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
           getOrganisationUrl: 'dummy-get-organisation-url'
         }
+      },
+      endemics: {
+        enabled: false
       }
     }))
     require('../../../../app/config')

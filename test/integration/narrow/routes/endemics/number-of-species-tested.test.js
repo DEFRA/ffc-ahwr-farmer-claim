@@ -56,7 +56,7 @@ describe('Number of species tested test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many animals did the vet test?')
-      expect($('title').text().trim()).toEqual('How many animals did the vet test? - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('How many animals did the vet test? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
