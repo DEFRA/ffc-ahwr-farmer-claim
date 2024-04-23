@@ -1,4 +1,3 @@
-const { REJECTED, READY_TO_PAY } = require('../../constants/status')
 const config = require('../../config')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
@@ -15,13 +14,11 @@ const {
 const {
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview,
-  endemicsYouCannotClaim
 } = require('../../config/routes')
 const {
   endemicsClaim: { landingPage: landingPageKey, latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }
 } = require('../../session/keys')
 
-const endemicsYouCannotClaimURI = `${urlPrefix}/${endemicsYouCannotClaim}`
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
 
@@ -54,24 +51,15 @@ module.exports = {
 
         // new claims
         if (Array.isArray(claims) && claims?.length) {
-          // new claim rejected in the last 10 months
-          if (isWithInLastTenMonths(claims[0].createdAt) && claims[0].statusId === REJECTED) {
-            logout()
-            return h.redirect(endemicsYouCannotClaimURI)
-          } else {
-            session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
-            return h.redirect(endemicsWhichTypeOfReviewURI)
-          }
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
+          return h.redirect(endemicsWhichTypeOfReviewURI)
         }
 
         // old claims NO new claims
-        const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.createdAt)
-        if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === READY_TO_PAY) {
+        const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
+        if (latestVetVisitApplicationIsWithinLastTenMonths) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
-        } else if (latestVetVisitApplicationIsWithinLastTenMonths && latestVetVisitApplication.statusId === REJECTED) {
-          logout()
-          return h.redirect(endemicsYouCannotClaimURI)
         } else {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)

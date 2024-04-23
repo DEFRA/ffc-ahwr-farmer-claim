@@ -52,69 +52,6 @@ describe('Claim endemics home page test', () => {
     jest.clearAllMocks()
   })
 
-  test('Redirects us to endemicsYouCannotClaimURI if latest VV application is within 10 months and status is rejected', async () => {
-    applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
-      {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 1,
-        type: 'EE'
-      },
-      {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 10,
-        type: 'VV'
-      }
-    ])
-    claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
-
-    const options = {
-      method: 'GET',
-      url,
-      auth
-    }
-
-    const res = await global.__SERVER__.inject(options)
-
-    expect(res.statusCode).toBe(302)
-    expect(logoutMock).toHaveBeenCalledTimes(1)
-    expect(res.headers.location).toEqual('/claim/endemics/you-cannot-claim')
-  })
-
-  test('Redirects us to endemicsYouCannotClaimURI if latest claim is within 10 months and status is rejected', async () => {
-    applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
-      {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 1,
-        type: 'EE'
-      }
-    ])
-    claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([
-      {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 10,
-        type: 'E'
-      }
-    ])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
-
-    const options = {
-      method: 'GET',
-      url,
-      auth
-    }
-
-    const res = await global.__SERVER__.inject(options)
-
-    expect(res.statusCode).toBe(302)
-    expect(logoutMock).toHaveBeenCalledTimes(1)
-    expect(res.headers.location).toEqual('/claim/endemics/you-cannot-claim')
-  })
-
   test('Redirects us to endemicsWhichTypeOfReviewURI if latest claim is within 10 months and status is NOT rejected', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
