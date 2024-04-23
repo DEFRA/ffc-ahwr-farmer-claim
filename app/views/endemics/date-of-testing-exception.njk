@@ -1,0 +1,45 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      <p class="govuk-body">
+        {% if exception === 'exceptionOne' %}
+          <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">Samples should have been taken no more than 4 months before or after the date of review.</a>
+        {% endif %}
+        {% if exception === 'exceptionTwo' %}
+          <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">Samples should have been taken no more than 4 months before or after the date of follow-up.</a>
+        {% endif %}
+        {% if exception === 'exceptionThree' %}
+          <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">The date of sampling for your follow-up cannot be before the date of the review that happened before it.</a>
+        {% endif %}
+      </p>
+      <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
+      <p class="govuk-body">
+        <a href={{backLink}}>Enter the date when samples were taken.</a>
+      </p>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+            Your claim will be checked by our team.
+        </strong>
+      </div>
+      {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}
