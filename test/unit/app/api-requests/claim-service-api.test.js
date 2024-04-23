@@ -76,23 +76,22 @@ describe('Claim Service API', () => {
     expect(result).toBe(null)
     expect(claimServiceApi.isWithInLastTenMonths()).toBe(false)
   })
-  test('Check if the date is with in 10 months', async () => {
-    const { isWithin10Months } = require('../../../../app/api-requests/claim-service-api')
-
-    expect(isWithin10Months(new Date('2024-04-23'), new Date('2024-06-23'))).toBe(true)
-    expect(isWithin10Months(new Date('2024-06-23'), new Date('2024-04-23'))).toBe(true)
-    expect(isWithin10Months(new Date('2024-06-23'), new Date('2025-06-23'))).toBe(false)
-  })
   test('Check if the date is with in 8 months', async () => {
     const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
     expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-06-23'))).toBe(true)
+    expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-08-23'))).toBe(true)
+    expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-08-24'))).toBe(false)
+    expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2023-12-23'))).toBe(true)
+    expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2023-12-22'))).toBe(false)
     expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-10-23'))).toBe(false)
   })
   test('Check if the date is with in 4 months after date of visit', async () => {
     const { isWithIn4MonthsAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
     expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-06-23'))).toBe(true)
+    expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-08-23'))).toBe(true)
+    expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-08-24'))).toBe(false)
     expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-10-23'))).toBe(false)
   })
   test('Check if date of visit is valid for when type of review is not review or endemics', async () => {

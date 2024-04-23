@@ -18,15 +18,7 @@
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
       <p class="govuk-body">
-        {% if exception === 'exceptionOne' %}
-          <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">Samples should have been taken no more than 4 months before or after the date of review.</a>
-        {% endif %}
-        {% if exception === 'exceptionTwo' %}
-          <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">Samples should have been taken no more than 4 months before or after the date of follow-up.</a>
-        {% endif %}
-        {% if exception === 'exceptionThree' %}
-          <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">The date of sampling for your follow-up cannot be before the date of the review that happened before it.</a>
-        {% endif %}
+        <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">{{errorMessage}}</a>
       </p>
       <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
       <p class="govuk-body">

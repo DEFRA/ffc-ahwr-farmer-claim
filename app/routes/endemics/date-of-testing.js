@@ -190,7 +190,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { dateOfVisit, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
+        const { dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication } = session.getEndemicsClaim(request)
         const dateOfTesting = request.payload.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
           ? dateOfVisit
           : new Date(
@@ -200,15 +200,15 @@ module.exports = [
           )
 
         if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.review) {
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, exception: 'exceptionOne' }).code(400).takeover()
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of review.' }).code(400).takeover()
         }
         if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.endemics) {
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, exception: 'exceptionTwo' }).code(400).takeover()
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of follow-up.' }).code(400).takeover()
         }
 
-        const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims)
+        const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
         if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, exception: 'exceptionThree' }).code(400).takeover()
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.' }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)

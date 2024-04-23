@@ -382,7 +382,6 @@ describe('Date of vet visit', () => {
 
       const res = await global.__SERVER__.inject(options)
       const $ = cheerio.load(res.payload)
-      console.log('🚀 ~ ]) ~ $:', $.html())
 
       expect(res.statusCode).toBe(400)
       expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
