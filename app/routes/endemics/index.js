@@ -13,7 +13,7 @@ const {
 } = require('../../api-requests/claim-service-api')
 const {
   endemicsWhichSpecies,
-  endemicsWhichTypeOfReview,
+  endemicsWhichTypeOfReview
 } = require('../../config/routes')
 const {
   endemicsClaim: { landingPage: landingPageKey, latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }

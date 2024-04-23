@@ -3,7 +3,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const applicationServiceApiMock = require('../../../../../app/api-requests/application-service-api')
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
-const logoutMock = require('../../../../../app/lib/logout')
+
 jest.mock('../../../../../app/api-requests/application-service-api')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/lib/logout')
