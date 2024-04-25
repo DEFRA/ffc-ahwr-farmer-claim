@@ -6,6 +6,7 @@ const { getSpeciesEligibleNumberForDisplay, upperFirstLetter, formatDate } = req
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const { sheepPackages, sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
+const { vaccination } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -110,7 +111,7 @@ module.exports = [
         }
         const herdVaccinationStatusRow = {
           key: { text: 'Herd vaccination status' }, // Pigs
-          value: { html: upperFirstLetter(sessionData?.herdVaccinationStatus) },
+          value: { html: sessionData?.herdVaccinationStatus === vaccination.vaccinated ? 'Vaccinated' : 'Not vaccinated' },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'change herd vaccination status' }] }
         }
         const biosecurityAssessmentRow = {

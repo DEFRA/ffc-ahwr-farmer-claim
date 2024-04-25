@@ -21,6 +21,10 @@ module.exports = {
     3: '3',
     4: '4'
   },
+  vaccination: {
+    vaccinated: 'vaccinated',
+    notVaccinated: 'notVaccinated'
+  },
   dateOfVetVisitExceptions: {
     rejectedReview: 'rejected review',
     endemicsWithin10: 'another endemics within 10 months',
