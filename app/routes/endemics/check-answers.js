@@ -2,11 +2,10 @@ const routes = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
-const { getSpeciesEligibleNumberForDisplay, upperFirstLetter, formatDate } = require('../../lib/display-helpers')
+const { getSpeciesEligibleNumberForDisplay, getVaccinationStatusForDisplay, upperFirstLetter, formatDate } = require('../../lib/display-helpers')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const { sheepPackages, sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
-const { vaccination } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -111,7 +110,7 @@ module.exports = [
         }
         const herdVaccinationStatusRow = {
           key: { text: 'Herd vaccination status' }, // Pigs
-          value: { html: sessionData?.herdVaccinationStatus === vaccination.vaccinated ? 'Vaccinated' : 'Not vaccinated' },
+          value: { html: getVaccinationStatusForDisplay(sessionData?.herdVaccinationStatus) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'change herd vaccination status' }] }
         }
         const biosecurityAssessmentRow = {

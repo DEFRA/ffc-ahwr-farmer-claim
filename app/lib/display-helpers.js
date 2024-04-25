@@ -1,4 +1,5 @@
 const { getClaimType } = require('./get-claim-type')
+const { vaccination } = require('../constants/claim')
 
 function getTypeOfReviewForDisplay (claimData) {
   return {
@@ -22,6 +23,12 @@ function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false
   }[getClaimType(claimData, isEndemicsClaims)]
 }
 
+function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
+  if (vaccinatedNotVaccinated === vaccination.vaccinated) return 'Vaccinated'
+  if (vaccinatedNotVaccinated === vaccination.notVaccinated) return 'Not vaccinated'
+  return undefined
+}
+
 function getTypeOfReviewRowForDisplay (claimData) {
   return { key: { text: 'Type of review' }, value: { text: getTypeOfReviewForDisplay(claimData) } }
 }
@@ -41,6 +48,7 @@ module.exports = {
   getEligibleNumberRowForDisplay,
   upperFirstLetter,
   getSpeciesEligibleNumberForDisplay,
+  getVaccinationStatusForDisplay,
   getTypeOfReviewForDisplay,
   isSpecies,
   formatDate
