@@ -52,7 +52,7 @@ describe('Which type of review test', () => {
   })
 
   describe('GET', () => {
-    test.only('Returns 200 and gets typeOfLivestock from past claim', async () => {
+    test('Returns 200 and gets typeOfLivestock from past claim', async () => {
       sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
         reference: 'AHWR-2470-6BA9',

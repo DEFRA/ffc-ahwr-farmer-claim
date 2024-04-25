@@ -40,7 +40,7 @@ describe('Claim Service API', () => {
 
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
     expect(result).toBe(null)
-    expect(claimServiceApi.isWithInLastTenMonths(Date.now())).toBe(true)
+    expect(claimServiceApi.isWithin10Months(Date.now())).toBe(false)
   })
   test('Post claim should return status 200', async () => {
     const mockResponse = {
@@ -74,7 +74,7 @@ describe('Claim Service API', () => {
     )
 
     expect(result).toBe(null)
-    expect(claimServiceApi.isWithInLastTenMonths()).toBe(false)
+    expect(claimServiceApi.isWithin10Months()).toBe(false)
   })
   test('Check if the date is with in 8 months', async () => {
     const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')

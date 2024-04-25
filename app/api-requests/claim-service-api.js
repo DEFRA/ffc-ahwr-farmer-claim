@@ -40,24 +40,11 @@ async function submitNewClaim (data) {
   }
 }
 
-function isWithInLastTenMonths (date) {
-  if (!date) {
-    return false // Date of visit was introduced more than 10 months ago
-  }
-
-  const start = new Date(date)
-  const end = new Date(start)
-
-  end.setMonth(end.getMonth() + 10)
-  end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
-
-  return Date.now() <= end
-}
-
-const isWithin10Months = (dateA, dateB) => {
+const isWithin10Months = (a, b) => {
+  const [dateA, dateB] = [new Date(a), new Date(b)]
   const [firstDate, secondDate] = dateA < dateB ? [dateA, dateB] : [dateB, dateA]
-  const firstDatelus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
-  return firstDatelus10Months >= secondDate
+  const firstDatePlus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
+  return firstDatePlus10Months >= secondDate
 }
 
 const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
@@ -143,7 +130,6 @@ module.exports = {
   submitNewClaim,
   isWithin10Months,
   isValidDateOfVisit,
-  isWithInLastTenMonths,
   getReviewWithinLast10Months,
   getClaimsByApplicationReference,
   isWithIn4MonthsAfterDateOfVisit,
