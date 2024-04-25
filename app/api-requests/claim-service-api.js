@@ -47,6 +47,32 @@ const isWithin10Months = (a, b) => {
   return firstDatePlus10Months >= secondDate
 }
 
+const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
+  const startDate = new Date(dateOfVisit)
+  const endDate = new Date(dateOfVisit)
+
+  // -4 months before dateOfVisit
+  startDate.setMonth(startDate.getMonth() - 4)
+  startDate.setHours(0, 0, 0, 0)
+
+  // +4 months from dateOfVisit
+  endDate.setMonth(endDate.getMonth() + 4)
+  endDate.setHours(23, 59, 59, 999)
+
+  return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
+}
+
+const isWithIn4MonthsAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
+  const startDate = new Date(dateOfVisit)
+  const endDate = new Date(dateOfVisit)
+
+  // +4 months from dateOfVisit
+  endDate.setMonth(endDate.getMonth() + 4)
+  endDate.setHours(23, 59, 59, 999)
+
+  return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
+}
+
 const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
   const pastReviewClaims = previousClaims?.filter((prevClaim) => (new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) && prevClaim.type === claimType.review)) ?? []
   if (vetVisitReview) {
@@ -103,7 +129,9 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
 module.exports = {
   submitNewClaim,
   isWithin10Months,
-  getClaimsByApplicationReference,
   isValidDateOfVisit,
-  getReviewWithinLast10Months
+  getReviewWithinLast10Months,
+  getClaimsByApplicationReference,
+  isWithIn4MonthsAfterDateOfVisit,
+  isWithIn4MonthsBeforeOrAfterDateOfVisit
 }
