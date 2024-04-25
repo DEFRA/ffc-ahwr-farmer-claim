@@ -26,5 +26,19 @@ module.exports = {
     endemicsWithin10: 'another endemics within 10 months',
     noReview: 'no review within 10 months past',
     reviewWithin10: 'another review within 10 months'
+  },
+  amount: {
+    R: {
+      beef: '£522',
+      dairy: '£372',
+      pigs: '£684',
+      sheep: '£436'
+    },
+    E: {
+      beef: '£[amount]',
+      dairy: '£[amount]',
+      pigs: '£[amount]',
+      sheep: '£[amount]'
+    }
   }
 }
