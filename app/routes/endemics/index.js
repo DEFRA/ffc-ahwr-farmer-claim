@@ -8,7 +8,7 @@ const {
   getLatestApplicationsBySbi
 } = require('../../api-requests/application-service-api')
 const {
-  isWithInLastTenMonths,
+  isWithin10Months,
   getClaimsByApplicationReference
 } = require('../../api-requests/claim-service-api')
 const {
@@ -34,7 +34,7 @@ module.exports = {
           return application.type === 'EE'
         })
         const latestVetVisitApplication = application.find((application) => {
-          return application.type === 'VV'
+          return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
         })
         const claims = await getClaimsByApplicationReference(
           latestEndemicsApplication.reference
@@ -56,13 +56,9 @@ module.exports = {
         }
 
         // old claims NO new claims
-        const latestVetVisitApplicationIsWithinLastTenMonths = isWithInLastTenMonths(latestVetVisitApplication?.data?.visitDate)
-        if (latestVetVisitApplicationIsWithinLastTenMonths) {
+        if (latestVetVisitApplication) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
-        } else {
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
-          return h.redirect(endemicsWhichSpeciesURI)
         }
       }
 

@@ -68,7 +68,7 @@ describe('Claim endemics home page test', () => {
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(true)
 
     const options = {
       method: 'GET',
@@ -98,7 +98,7 @@ describe('Claim endemics home page test', () => {
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(false)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(false)
 
     const options = {
       method: 'GET',
@@ -129,7 +129,7 @@ describe('Claim endemics home page test', () => {
         type: 'R'
       }
     ])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(true)
 
     const options = {
       method: 'GET',
@@ -153,7 +153,7 @@ describe('Claim endemics home page test', () => {
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(true)
 
     const options = {
       method: 'GET',
@@ -177,7 +177,7 @@ describe('Claim endemics home page test', () => {
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(false)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(false)
 
     const options = {
       method: 'GET',
