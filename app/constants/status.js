@@ -4,6 +4,7 @@ const status = {
   IN_CHECK: 5,
   ACCEPTED: 6,
   NOT_AGREED: 7,
+  PAID: 8,
   READY_TO_PAY: 9,
   REJECTED: 10,
   ON_HOLD: 11

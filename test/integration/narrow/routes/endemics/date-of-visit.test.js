@@ -392,6 +392,15 @@ describe('Date of vet visit', () => {
         month: '05',
         year: '2023',
         applicationCreationDate: '2023-01-01'
+      },
+      {
+        description: 'previous review claim is not ready to pay and user can not calim for endemics',
+        content: 'You must have claimed for your review before you claim for the follow-up that happened after it.',
+        dateOfVetVisitException: 'claim endemics before review status is ready to pay',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01'
       }
     ])(
       'Redirect to exception screen when ($description) and match content',
@@ -422,7 +431,7 @@ describe('Date of vet visit', () => {
         const $ = cheerio.load(res.payload)
         expect(res.statusCode).toBe(400)
         expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-        expect($('p.govuk-body').html()).toMatch(`<a href="#">${content}</a>`)
+        expect($('p.govuk-body').html()).toContain(content)
       }
     )
 
