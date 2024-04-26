@@ -1,7 +1,7 @@
 const Wreck = require('@hapi/wreck')
 const appInsights = require('applicationinsights')
 const config = require('../config')
-const { REJECTED } = require('../constants/status')
+const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
 const { claimType, dateOfVetVisitExceptions } = require('../constants/claim')
 
 async function getClaimsByApplicationReference (applicationReference) {
@@ -111,6 +111,10 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
       // Review within 10 months is REJECTED
       if (getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId === REJECTED) {
         return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
+      }
+      // Claim endemics before review status is READY_TO_PAY
+      if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
+        return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
       }
 
       // Cannot have another endemics dateOfVisit +- 10 months

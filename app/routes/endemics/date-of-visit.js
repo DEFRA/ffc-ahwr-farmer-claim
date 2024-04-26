@@ -182,6 +182,12 @@ module.exports = [
             case dateOfVetVisitExceptions.endemicsWithin10:
               mainMessage.text = 'There must be at least 10 months between your follow-ups.'
               backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
+              break
+            case dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment:
+              mainMessage.text = 'You must have claimed for your review before you claim for the follow-up that happened after it.'
+              mainMessage.url = 'https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers'
+              backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
+              break
           }
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
