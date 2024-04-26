@@ -40,24 +40,37 @@ async function submitNewClaim (data) {
   }
 }
 
-function isWithInLastTenMonths (date) {
-  if (!date) {
-    return false // Date of visit was introduced more than 10 months ago
-  }
-
-  const start = new Date(date)
-  const end = new Date(start)
-
-  end.setMonth(end.getMonth() + 10)
-  end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
-
-  return Date.now() <= end
+const isWithin10Months = (a, b) => {
+  const [dateA, dateB] = [new Date(a), new Date(b)]
+  const [firstDate, secondDate] = dateA < dateB ? [dateA, dateB] : [dateB, dateA]
+  const firstDatePlus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
+  return firstDatePlus10Months >= secondDate
 }
 
-const isWithin10Months = (dateA, dateB) => {
-  const [firstDate, secondDate] = dateA < dateB ? [dateA, dateB] : [dateB, dateA]
-  const firstDatelus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
-  return firstDatelus10Months >= secondDate
+const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
+  const startDate = new Date(dateOfVisit)
+  const endDate = new Date(dateOfVisit)
+
+  // -4 months before dateOfVisit
+  startDate.setMonth(startDate.getMonth() - 4)
+  startDate.setHours(0, 0, 0, 0)
+
+  // +4 months from dateOfVisit
+  endDate.setMonth(endDate.getMonth() + 4)
+  endDate.setHours(23, 59, 59, 999)
+
+  return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
+}
+
+const isWithIn4MonthsAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
+  const startDate = new Date(dateOfVisit)
+  const endDate = new Date(dateOfVisit)
+
+  // +4 months from dateOfVisit
+  endDate.setMonth(endDate.getMonth() + 4)
+  endDate.setHours(23, 59, 59, 999)
+
+  return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
 }
 
 const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
@@ -115,8 +128,10 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
 
 module.exports = {
   submitNewClaim,
-  isWithInLastTenMonths,
-  getClaimsByApplicationReference,
+  isWithin10Months,
   isValidDateOfVisit,
-  getReviewWithinLast10Months
+  getReviewWithinLast10Months,
+  getClaimsByApplicationReference,
+  isWithIn4MonthsAfterDateOfVisit,
+  isWithIn4MonthsBeforeOrAfterDateOfVisit
 }

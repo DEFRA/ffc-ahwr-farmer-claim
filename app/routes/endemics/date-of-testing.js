@@ -1,14 +1,15 @@
 const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
-const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers } = require('../../config/routes')
-const {
-  endemicsClaim: { dateOfTesting: dateOfTestingKey }
-} = require('../../session/keys')
-const validateDateInputDay = require('../govuk-components/validate-date-input-day')
-const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
-const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 const { addError } = require('../utils/validations')
+const { ruralPaymentsAgency } = require('../../config')
+const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isWithIn4MonthsAfterDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
+const validateDateInputDay = require('../govuk-components/validate-date-input-day')
+const validateDateInputYear = require('../govuk-components/validate-date-input-year')
+const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
+const { endemicsClaim: { dateOfTesting: dateOfTestingKey } } = require('../../session/keys')
+const { claimType } = require('../../constants/claim')
+const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException } = require('../../config/routes')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
@@ -189,7 +190,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { dateOfVisit } = session.getEndemicsClaim(request)
+        const { dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication } = session.getEndemicsClaim(request)
         const dateOfTesting = request.payload.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
           ? dateOfVisit
           : new Date(
@@ -197,7 +198,21 @@ module.exports = [
             request.payload['on-another-date-month'] - 1,
             request.payload['on-another-date-day']
           )
+
+        if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.review) {
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of review.' }).code(400).takeover()
+        }
+        if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.endemics) {
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of follow-up.' }).code(400).takeover()
+        }
+
+        const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
+        if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.' }).code(400).takeover()
+        }
+
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
+
         return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
       }
     }

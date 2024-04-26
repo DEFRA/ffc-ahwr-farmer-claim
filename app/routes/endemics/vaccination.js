@@ -9,6 +9,7 @@ const {
 } = require('../../config/routes')
 const { endemicsClaim: { herdVaccinationStatus: herdVaccinationStatusKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
+const { vaccination } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsVaccination}`
 
@@ -18,7 +19,7 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults, herdVaccinationStatus } = session.getEndemicsClaim(request)
-      const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: 'vaccinated', text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: 'notVaccinated', text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
+      const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: vaccination.vaccinated, text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
       const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsVetRCVS}` : `${urlPrefix}/${endemicsTestResults}`
       return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios })
     }
@@ -29,11 +30,11 @@ module.exports = [{
   options: {
     validate: {
       payload: Joi.object({
-        herdVaccinationStatus: Joi.string().valid('vaccinated', 'notVaccinated').required()
+        herdVaccinationStatus: Joi.string().valid(vaccination.vaccinated, vaccination.notVaccinated).required()
       }),
       failAction: async (request, h, error) => {
         const { vetVisitsReviewTestResults } = session.getEndemicsClaim(request)
-        const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: 'vaccinated', text: 'Vaccinated' }, { value: 'notVaccinated', text: 'Not vaccinated' }])
+        const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: vaccination.vaccinated, text: 'Vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated' }])
         const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsVaccination, {
           ...request.payload,

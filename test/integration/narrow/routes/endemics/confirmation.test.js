@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const { endemicsConfirmation } = require('../../../../../app/config/routes')
+const { amount } = require('../../../../../app/constants/claim')
 jest.mock('../../../../../app/session')
 
 describe('Claim confirmation', () => {
@@ -35,7 +36,16 @@ describe('Claim confirmation', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = `/claim/${endemicsConfirmation}`
 
-  test('GET endemicsConfirmation route', async () => {
+  test.each([
+    { typeOfLivestock: 'beef', typeOfReview: 'E' },
+    { typeOfLivestock: 'pigs', typeOfReview: 'E' },
+    { typeOfLivestock: 'dairy', typeOfReview: 'E' },
+    { typeOfLivestock: 'sheep', typeOfReview: 'E' },
+    { typeOfLivestock: 'beef', typeOfReview: 'R' },
+    { typeOfLivestock: 'pigs', typeOfReview: 'R' },
+    { typeOfLivestock: 'dairy', typeOfReview: 'R' },
+    { typeOfLivestock: 'sheep', typeOfReview: 'R' }
+  ])('GET endemicsConfirmation route', async ({ typeOfLivestock, typeOfReview }) => {
     const options = {
       method: 'GET',
       url,
@@ -44,7 +54,9 @@ describe('Claim confirmation', () => {
 
     getEndemicsClaim.mockImplementation(() => {
       return {
-        reference
+        reference,
+        typeOfLivestock,
+        typeOfReview
       }
     })
     const res = await global.__SERVER__.inject(options)
@@ -52,6 +64,7 @@ describe('Claim confirmation', () => {
     const $ = cheerio.load(res.payload)
 
     expect(res.statusCode).toBe(200)
+    expect($('#amount').text()).toContain(amount[typeOfReview][typeOfLivestock])
     expect($('#reference').text().trim()).toEqual(reference)
   })
 })
