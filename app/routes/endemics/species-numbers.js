@@ -13,14 +13,19 @@ const {
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
+const { claimType } = require('../../constants/claim')
 const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
-const legendText = 'Did you have $ on the date of the review?'
+const legendText = 'Did you have $ on the date of the'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
 const errorMessageText = 'Select yes or no'
 const isEndemicsClaims = true
+
+const generateLegendText = (legendText, typeOfReview) => {
+  return `${legendText} ${typeOfReview === claimType.review ? 'review' : 'follow-up'}?`
+}
 
 module.exports = [
   {
@@ -36,7 +41,7 @@ module.exports = [
         return h.view(
           endemicsSpeciesNumbers, {
             backLink,
-            ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
+            ...getYesNoRadios(generateLegendText(legendText.replace('$', speciesEligbileNumberForDisplay), claim?.typeOfReview), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
           }
         )
       }
@@ -61,7 +66,7 @@ module.exports = [
             {
               backLink,
               errorMessage: { text: errorMessageText },
-              ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), errorMessageText, radioOptions)
+              ...getYesNoRadios(generateLegendText(legendText.replace('$', speciesEligbileNumberForDisplay), claim?.typeOfReview), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), errorMessageText, radioOptions)
             }
           )
             .code(400)
