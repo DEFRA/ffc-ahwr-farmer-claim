@@ -38,7 +38,7 @@ const nextPageURL = (request) => {
 }
 const pageTitle = (request) => {
   const { typeOfReview } = session.getEndemicsClaim(request)
-  return typeOfReview === claimType.endemics ? 'What was the endemic disease test result?' : 'What was the test result?'
+  return typeOfReview === claimType.endemics ? 'What was the follow-up test result?' : 'What was the test result?'
 }
 
 module.exports = [{
