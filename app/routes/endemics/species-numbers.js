@@ -10,10 +10,10 @@ const {
   endemicsVetName,
   endemicsDateOfTesting
 } = require('../../config/routes')
+const { getReviewType } = require('../../lib/get-review-type')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
-const { claimType } = require('../../constants/claim')
 const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
@@ -23,7 +23,8 @@ const errorMessageText = 'Select yes or no'
 const isEndemicsClaims = true
 
 const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
-  return `Did you have ${speciesEligbileNumberForDisplay} on the date of the ${typeOfReview === claimType.review ? 'review' : 'follow-up'}?`
+  const { isReview } = getReviewType(typeOfReview)
+  return `Did you have ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}?`
 }
 
 module.exports = [
