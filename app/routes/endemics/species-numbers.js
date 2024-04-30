@@ -10,6 +10,7 @@ const {
   endemicsVetName,
   endemicsDateOfTesting
 } = require('../../config/routes')
+const { getReviewType } = require('../../lib/get-review-type')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
@@ -17,10 +18,14 @@ const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
-const legendText = 'Did you have $ on the date of the review?'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
 const errorMessageText = 'Select yes or no'
 const isEndemicsClaims = true
+
+const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
+  const { isReview } = getReviewType(typeOfReview)
+  return `Did you have ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}?`
+}
 
 module.exports = [
   {
@@ -36,7 +41,7 @@ module.exports = [
         return h.view(
           endemicsSpeciesNumbers, {
             backLink,
-            ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
+            ...getYesNoRadios(legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
           }
         )
       }
@@ -61,7 +66,7 @@ module.exports = [
             {
               backLink,
               errorMessage: { text: errorMessageText },
-              ...getYesNoRadios(legendText.replace('$', speciesEligbileNumberForDisplay), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), errorMessageText, radioOptions)
+              ...getYesNoRadios(legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), errorMessageText, radioOptions)
             }
           )
             .code(400)
