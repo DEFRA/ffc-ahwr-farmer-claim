@@ -45,7 +45,7 @@ describe('Test Results test', () => {
 
   describe(`GET ${url} route`, () => {
     test.each([
-      { typeOfReview: 'E', question: 'What was the endemic disease test result' },
+      { typeOfReview: 'E', question: 'What was the follow-up test result' },
       { typeOfReview: 'R', question: 'What was the test result?' }
     ])('returns 200', async ({ typeOfReview, question }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfReview } })
