@@ -512,11 +512,9 @@ describe('Date of vet visit', () => {
       }
     )
   })
-
-  test('checks if typeOfReview is "R" or "EE"', () => {
+  test('return review if reviewOrFollowUpText is review', () => {
     const typeOfReview = 'R'
-    const type = 'EE'
-    const review = ['R', type].includes(typeOfReview)
-    expect(review).toBeTruthy()
+    const reviewOrFollowUpText = typeOfReview === 'R' ? 'review' : 'follow-up'
+    expect(reviewOrFollowUpText).toMatch(/review/i)
   })
 })

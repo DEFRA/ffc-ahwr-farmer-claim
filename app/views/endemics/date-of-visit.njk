@@ -22,19 +22,9 @@
           errorList: errorSummary
         }) }}
       {% endif %}
-      <h1 class="govuk-heading-l">Date of 
-      {% if review %}
-        review 
-       {% else %}  
-         follow-up
-       {% endif %}
+      <h1 class="govuk-heading-l">Date of {{ reviewOrFollowUpText }}
       </h1>
-      <p>This is the date the vet last visited the farm for this
-      {% if review %}
-        review.
-      {% else %} 
-        follow-up.
-      {% endif %}
+      <p>This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
         You can find it on the summary the vet gave you.</p>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>

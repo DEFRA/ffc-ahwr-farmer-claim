@@ -13,6 +13,7 @@ const validateDateInputDay = require('../govuk-components/validate-date-input-da
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 const { addError } = require('../utils/validations')
+const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 
@@ -23,13 +24,13 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
-        const type = latestEndemicsApplication?.type
         const backLink = landingPage
-        const review = ['R', type].includes(typeOfReview)
+        const { isReview } = getReviewType(typeOfReview)
+        const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
         return h.view(endemicsDateOfVisit, {
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
-          review,
+          reviewOrFollowUpText,
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
@@ -128,14 +129,14 @@ module.exports = [
           const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
           if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
-          const { landingPage, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
+          const { landingPage, typeOfReview } = session.getEndemicsClaim(request)
           const backLink = landingPage
-          const type = latestEndemicsApplication?.type
-          const review = ['R', type].includes(typeOfReview)
+          const { isReview } = getReviewType(typeOfReview)
+          const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
           return h
             .view(endemicsDateOfVisit, {
               ...request.payload,
-              review,
+              reviewOrFollowUpText,
               errorSummary,
               dateOfVisit: {
                 day: {
