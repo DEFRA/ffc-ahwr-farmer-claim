@@ -12,6 +12,7 @@ const {
   endemicsClaim: { numberOfSamplesTested: numberOfSamplesTestedKey }
 } = require('../../session/keys')
 const { thresholds: { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } } = require('../../constants/amounts')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
 
@@ -63,6 +64,7 @@ module.exports = [
 
         if ((lastReviewTestResults === 'positive' && numberOfSamplesTested !== positiveReviewNumberOfSamplesTested) ||
               (lastReviewTestResults === 'negative' && numberOfSamplesTested !== negativeReviewNumberOfSamplesTested)) {
+          raiseInvalidDataEvent(request, numberOfSamplesTestedKey, `Value (${numberOfSamplesTested}) is less than required threshold`)
           return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
