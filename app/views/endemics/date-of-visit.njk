@@ -1,9 +1,10 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Date of visit - {{ serviceName }}{% endblock %}
+{% block pageTitle %}Date of visit - {{ serviceName }}
+{% endblock %}
 
 {% block beforeContent %}
-   {{ govukBackLink({
+  {{ govukBackLink({
     text: "Back",
     href: backLink,
     attributes: {
@@ -21,8 +22,20 @@
           errorList: errorSummary
         }) }}
       {% endif %}
-     <h1 class="govuk-heading-l">Date of review or follow-up</h1>
-     <p>This is the date the vet last visited the farm for this review or follow-up. You can find it on the summary the vet gave you.</p>
+      <h1 class="govuk-heading-l">Date of 
+      {% if review %}
+        review 
+       {% else %}  
+         follow-up
+       {% endif %}
+      </h1>
+      <p>This is the date the vet last visited the farm for this
+      {% if review %}
+        review.
+      {% else %} 
+        follow-up.
+      {% endif %}
+        You can find it on the summary the vet gave you.</p>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>

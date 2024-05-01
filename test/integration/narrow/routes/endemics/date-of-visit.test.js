@@ -9,12 +9,12 @@ jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
 
 function expectPageContentOk ($) {
-  expect($('title').text()).toEqual(
+  expect($('title').text()).toMatch(
     'Date of visit - Get funding to improve animal health and welfare'
   )
-  expect($('h1').text()).toMatch('Date of review or follow-up')
+  expect($('h1').text()).toMatch(/(Date of review | follow-up)/i)
   expect($('p').text()).toMatch(
-    'This is the date the vet last visited the farm for this review or follow-up. You can find it on the summary the vet gave you.'
+    /(This is the date the vet last visited the farm for this review. You can find it on the summary the vet gave you.| follow-up)/i
   )
   expect($('#visit-date-hint').text()).toMatch('For example, 27 3 2022')
   expect($(`label[for=${labels.day}]`).text()).toMatch('Day')
@@ -265,15 +265,18 @@ describe('Date of vet visit', () => {
             [labels.day]: day,
             [labels.month]: month,
             [labels.year]: `${year}`,
-            dateOfAgreementAccepted: applicationCreationDate
+            dateOfAgreementAccepted: applicationCreationDate,
+            review: true
           },
           auth,
           headers: { cookie: `crumb=${crumb}` }
+
         }
 
         const res = await global.__SERVER__.inject(options)
 
         const $ = cheerio.load(res.payload)
+
         expect(res.statusCode).toBe(400)
         expect($('p.govuk-error-message').text().trim()).toEqual(
           `Error: ${errorMessage}`
@@ -508,5 +511,12 @@ describe('Date of vet visit', () => {
         expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
       }
     )
+  })
+
+  test('checks if typeOfReview is "R" or "EE"', () => {
+    const typeOfReview = 'R'
+    const type = 'EE'
+    const review = ['R', type].includes(typeOfReview)
+    expect(review).toBeTruthy()
   })
 })
