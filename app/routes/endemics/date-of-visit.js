@@ -13,6 +13,7 @@ const validateDateInputDay = require('../govuk-components/validate-date-input-da
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 const { addError } = require('../utils/validations')
+const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 
@@ -22,11 +23,14 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, landingPage, latestEndemicsApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
         const backLink = landingPage
+        const { isReview } = getReviewType(typeOfReview)
+        const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
         return h.view(endemicsDateOfVisit, {
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
+          reviewOrFollowUpText,
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
@@ -125,12 +129,14 @@ module.exports = [
           const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
           if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
-          const { landingPage } = session.getEndemicsClaim(request)
+          const { landingPage, typeOfReview } = session.getEndemicsClaim(request)
           const backLink = landingPage
-
+          const { isReview } = getReviewType(typeOfReview)
+          const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
           return h
             .view(endemicsDateOfVisit, {
               ...request.payload,
+              reviewOrFollowUpText,
               errorSummary,
               dateOfVisit: {
                 day: {
