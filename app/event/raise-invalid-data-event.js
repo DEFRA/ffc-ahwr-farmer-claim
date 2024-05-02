@@ -3,13 +3,12 @@ const raiseEvent = require('./raise-event')
 const sessionKeys = require('../session/keys')
 
 const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
-  const { yar: id } = request
   const { reference, organisation: { sbi, email } } = getEndemicsClaim(request)
   const crn = getCustomer(request, sessionKeys.customer.crn)
 
-  if (id && exception) {
+  if (request?.yar?.id && exception) {
     const event = {
-      id,
+      id: request.yar.id,
       sbi,
       cph: 'n/a',
       email,
