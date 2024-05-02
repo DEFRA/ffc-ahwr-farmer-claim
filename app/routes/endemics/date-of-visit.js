@@ -1,11 +1,12 @@
 const Joi = require('joi')
-const { isValidDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
-const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../../constants/claim')
-const { labels } = require('../../config/visit-date')
 const session = require('../../session')
+const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../../constants/claim')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { labels } = require('../../config/visit-date')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
 const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting } = require('../../config/routes')
+const { isValidDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey, relevantReviewForEndemics: relevantReviewForEndemicsKey }
 } = require('../../session/keys')
@@ -195,6 +196,7 @@ module.exports = [
               backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
               break
           }
+          raiseInvalidDataEvent(request, dateOfVisitKey, `Value ${dateOfVisit} is invalid. Error: ${mainMessage.text}`)
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
 

@@ -19,6 +19,7 @@ const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
       data: {
         sbi,
         crn,
+        sessionKey,
         exception,
         raisedAt: new Date(),
         journey: 'claim',
@@ -26,8 +27,6 @@ const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
       },
       status: 'alert'
     }
-    await raiseEvent(event, 'alert')
-    event.name = 'send-session-event'
     await raiseEvent(event, 'alert')
   }
 }
