@@ -213,9 +213,9 @@ module.exports = [
 
         const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
         if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
-          const errorMessage = 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.' 
+          const errorMessage = 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.'
           raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage}).code(400).takeover()
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
