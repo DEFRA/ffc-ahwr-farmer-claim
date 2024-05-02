@@ -4,6 +4,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
 const { isWithIn4MonthsBeforeOrAfterDateOfVisit, getReviewWithinLast10Months, isWithIn4MonthsAfterDateOfVisit } = require('../../../../../app/api-requests/claim-service-api')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
@@ -20,7 +21,7 @@ function expectPageContentOk ($) {
 }
 
 jest.mock('../../../../../app/session')
-
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 const latestReviewApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: Date.now(),
@@ -41,6 +42,7 @@ describe('Date of vet visit', () => {
   const url = '/claim/endemics/date-of-testing'
 
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { latestReviewApplication } })
 
     jest.mock('../../../../../app/config', () => {
@@ -360,6 +362,7 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     jest.resetAllMocks()
     test.each([
@@ -385,6 +388,7 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
   })
 })
