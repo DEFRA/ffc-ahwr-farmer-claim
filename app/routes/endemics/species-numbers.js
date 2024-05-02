@@ -85,6 +85,7 @@ module.exports = [
           }
           return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
         }
+
         raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
         return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }

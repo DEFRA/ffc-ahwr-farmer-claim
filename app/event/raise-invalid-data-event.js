@@ -10,7 +10,7 @@ const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
   if (id && exception) {
     const event = {
       id,
-      sbi: `${sbi}`,
+      sbi,
       cph: 'n/a',
       email,
       name: 'send-invalid-data-event',
