@@ -6,13 +6,14 @@ const getCustomerMock = require('../../../../app/session').getCustomer
 jest.mock('../../../../app/event/raise-event')
 jest.mock('../../../../app/session')
 
-const request = { yar: { id: '123' }}
+const request = { yar: { id: '123' } }
 const reference = '321321'
 const sbi = 'sbi'
 const email = 'email'
 const sessionKey = 'sessionKey'
 const exception = 'exception'
 const crn = 'crn'
+const newDate = new Date()
 const event = {
   id: request.yar.id,
   sbi,
@@ -26,7 +27,7 @@ const event = {
     crn,
     sessionKey,
     exception,
-    raisedAt: new Date(),
+    raisedAt: newDate,
     journey: 'claim',
     reference
   },
@@ -35,21 +36,24 @@ const event = {
 
 describe('Send event on raise invalid data event', () => {
   beforeEach(async () => {
+    jest.useFakeTimers('modern')
+    jest.setSystemTime(newDate)
     getEndemicsClaimMock.mockImplementation(() => { return { reference, organisation: { sbi, email } } })
     getCustomerMock.mockImplementation(() => { return crn })
   })
 
   afterEach(async () => {
     jest.resetAllMocks()
+    jest.useRealTimers()
   })
 
   test('should call raiseEvent when a valid event is received', async () => {
     await raiseInvalidDataEvent(request, sessionKey, exception)
-    expect(raiseEvent).toHaveBeenCalled()
+    expect(raiseEvent).toHaveBeenCalledWith(event, 'alert')
   })
 
   test('should not call raiseEvent when an event with a null sessionId is received', async () => {
-    await raiseInvalidDataEvent({ yar: { id: undefined }}, sessionKey, exception)
+    await raiseInvalidDataEvent({ yar: { id: undefined } }, sessionKey, exception)
     expect(raiseEvent).not.toHaveBeenCalled()
   })
 
