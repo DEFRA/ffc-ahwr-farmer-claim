@@ -5,6 +5,8 @@ const {
   endemicsTestUrn,
   endemicsVetRCVS,
   endemicsVaccination,
+  endemicsDateOfVisit,
+  endemicsWhichTypeOfReview,
   endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey } } = require('../../session/keys')
@@ -12,7 +14,13 @@ const radios = require('../models/form-component/radios')
 const { livestockTypes } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
-const previousPageUrl = `${urlPrefix}/${endemicsVetRCVS}`
+const previousPageUrl = (request) => {
+  const { typeOfLivestock } = session.getEndemicsClaim(request)
+
+  if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsWhichTypeOfReview}`
+
+  return `${urlPrefix}/${endemicsVetRCVS}`
+}
 const nextPageURL = (request) => {
   const { typeOfLivestock } = session.getEndemicsClaim(request)
 
@@ -20,6 +28,7 @@ const nextPageURL = (request) => {
     case livestockTypes.pigs:
       return `${urlPrefix}/${endemicsVaccination}`
     case livestockTypes.beef:
+      return `${urlPrefix}/${endemicsDateOfVisit}`
     case livestockTypes.dairy:
       return `${urlPrefix}/${endemicsTestUrn}`
   }
@@ -32,7 +41,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults } = session.getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults')([{ value: 'positive', text: 'Positive', checked: vetVisitsReviewTestResults === 'positive' }, { value: 'negative', text: 'Negative', checked: vetVisitsReviewTestResults === 'negative' }])
-      return h.view(endemicsVetVisitsReviewTestResults, { backLink: previousPageUrl, ...positiveNegativeRadios })
+      return h.view(endemicsVetVisitsReviewTestResults, { backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
   }
 }, {
@@ -47,7 +56,7 @@ module.exports = [{
         const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsVetVisitsReviewTestResults, {
           ...request.payload,
-          backLink: previousPageUrl,
+          backLink: previousPageUrl(request),
           ...positiveNegativeRadios,
           errorMessage: {
             text: 'Select a test result',

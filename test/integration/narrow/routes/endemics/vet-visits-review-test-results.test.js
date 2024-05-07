@@ -110,7 +110,7 @@ describe('Test Results test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'beef', nextPageURL: '/claim/endemics/date-of-visit' },
       { typeOfLivestock: 'dairy', nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'pigs', nextPageURL: '/claim/endemics/vaccination' }
     ])('Redirect $nextPageURL When species $typeOfLivestock', async ({ typeOfLivestock, nextPageURL }) => {

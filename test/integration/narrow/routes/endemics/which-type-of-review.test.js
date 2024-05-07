@@ -174,6 +174,26 @@ describe('Which type of review test', () => {
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select which type of review you are claiming for')
     })
 
+    test('Returns 302 and redirect to vet visit review test result', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfLivestock: 'beef' } }] })
+
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/vet-visits-review-test-results')
+    })
+
     test.each([
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
       { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' } // todo update for endemics claim

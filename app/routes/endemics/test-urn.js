@@ -34,7 +34,7 @@ const previousPageUrl = (request) => {
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsVetRCVS}`
   if (typeOfReview === claimType.endemics) {
     if (latestVetVisitApplication) {
-      if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
+      if (typeOfLivestock === livestockTypes.dairy) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
     }
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
   }
