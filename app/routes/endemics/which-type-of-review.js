@@ -70,7 +70,7 @@ module.exports = [
 
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-        // If user has an old world application within last 10 months and a review claim and this is his first follow-up clai
+        // If user has an old world application within last 10 months and a review claim and this is his first follow-up claim
         if (latestVetVisitApplication && previousClaims && previousClaims?.length === 1) {
           return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
         }
