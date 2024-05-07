@@ -39,7 +39,7 @@ module.exports = [
         return h.view(endemicsWhichTypeOfReview, {
           backLink,
           typeOfLivestock: formattedTypeOfLivestock,
-          previousAnswer: typeOfReview
+          previousAnswer: typeOfReview === claimType.review ? 'review' : 'endemics'
         })
       }
     }
@@ -66,12 +66,12 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-        const { latestVetVisitApplication, previousClaims } = getEndemicsClaim(request)
+        const { latestVetVisitApplication } = getEndemicsClaim(request)
 
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-        // If user has an old world application within last 10 months and a review claim and this is his first follow-up claim
-        if (latestVetVisitApplication && previousClaims && previousClaims?.length === 1) {
+        // If user has an old world application within last 10 months
+        if (latestVetVisitApplication) {
           return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
         }
 

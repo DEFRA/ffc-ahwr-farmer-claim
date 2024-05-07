@@ -5,7 +5,7 @@ const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
-const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting } = require('../../config/routes')
+const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting, endemicsVetVisitsReviewTestResults } = require('../../config/routes')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey, relevantReviewForEndemics: relevantReviewForEndemicsKey }
 } = require('../../session/keys')
@@ -16,6 +16,13 @@ const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
+const previousPageUrl = (request) => {
+  const { latestVetVisitApplication, landingPage, typeOfReview } = session.getEndemicsClaim(request)
+
+  if (typeOfReview === claimType.endemics && latestVetVisitApplication && latestVetVisitApplication?.data?.whichReview === livestockTypes.beef) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
+
+  return landingPage
+}
 
 module.exports = [
   {
@@ -23,8 +30,7 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, landingPage, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
-        const backLink = landingPage
+        const { dateOfVisit, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
         const { isReview } = getReviewType(typeOfReview)
         const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -42,7 +48,7 @@ module.exports = [
               value: new Date(dateOfVisit).getFullYear()
             }
           },
-          backLink
+          backLink: previousPageUrl(request)
         })
       }
     }
@@ -129,8 +135,7 @@ module.exports = [
           const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
           if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
-          const { landingPage, typeOfReview } = session.getEndemicsClaim(request)
-          const backLink = landingPage
+          const { typeOfReview } = session.getEndemicsClaim(request)
           const { isReview } = getReviewType(typeOfReview)
           const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
           return h
@@ -155,7 +160,7 @@ module.exports = [
                   ? { text: error.details.find(e => e.context.label.startsWith('visit-date')).message }
                   : undefined
               },
-              backLink
+              backLink: previousPageUrl(request)
             })
             .code(400)
             .takeover()

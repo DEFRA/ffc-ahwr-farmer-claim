@@ -53,7 +53,7 @@ describe('Which type of review test', () => {
 
   describe('GET', () => {
     test('Returns 200 and gets typeOfLivestock from past claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
+      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'R' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -175,7 +175,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 302 and redirect to vet visit review test result', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfLivestock: 'beef' } }] })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } } })
 
       const options = {
         method: 'POST',
