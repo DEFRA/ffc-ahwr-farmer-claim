@@ -2,7 +2,6 @@ const Joi = require('joi')
 const session = require('../../session')
 const { urlPrefix } = require('../../config')
 const {
-  endemicsTestUrn,
   endemicsVetRCVS,
   endemicsVaccination,
   endemicsDateOfVisit,
@@ -29,8 +28,6 @@ const nextPageURL = (request) => {
       return `${urlPrefix}/${endemicsVaccination}`
     case livestockTypes.beef:
       return `${urlPrefix}/${endemicsDateOfVisit}`
-    case livestockTypes.dairy:
-      return `${urlPrefix}/${endemicsTestUrn}`
   }
 }
 

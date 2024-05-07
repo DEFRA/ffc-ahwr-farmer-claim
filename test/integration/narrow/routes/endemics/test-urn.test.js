@@ -72,7 +72,6 @@ describe('Test URN test', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vaccination' },
