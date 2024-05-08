@@ -108,6 +108,7 @@ describe('Date of vet visit', () => {
       expectPhaseBanner.ok($)
     })
     test('returns 200', async () => {
+      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           latestEndemicsApplication,

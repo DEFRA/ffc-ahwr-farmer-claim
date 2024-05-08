@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { isValidDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
+const { isValidDateOfVisit, getReviewWithinLast10Months, isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
@@ -17,9 +17,9 @@ const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
-  const { latestVetVisitApplication, landingPage, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
+  const { landingPage } = session.getEndemicsClaim(request)
 
-  if (claimType[typeOfReview] === claimType.endemics && latestVetVisitApplication && latestVetVisitApplication?.data?.whichReview === livestockTypes.beef && !previousClaims?.find(claim => claim?.data.typeOfReview === claimType.endemics)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
+  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
 
   return landingPage
 }
