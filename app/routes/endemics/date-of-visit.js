@@ -17,9 +17,9 @@ const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
-  const { latestVetVisitApplication, landingPage, typeOfReview } = session.getEndemicsClaim(request)
+  const { latestVetVisitApplication, landingPage, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
 
-  if (typeOfReview === claimType.endemics && latestVetVisitApplication && latestVetVisitApplication?.data?.whichReview === livestockTypes.beef) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
+  if (claimType[typeOfReview] === claimType.endemics && latestVetVisitApplication && latestVetVisitApplication?.data?.whichReview === livestockTypes.beef && !previousClaims?.find(claim => claim?.data.typeOfReview === claimType.endemics)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
 
   return landingPage
 }

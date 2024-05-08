@@ -112,8 +112,13 @@ describe('Date of vet visit', () => {
         return {
           latestEndemicsApplication,
           latestVetVisitApplication: latestVetVisitApplication,
-          typeOfReview: 'E',
-          typeOfLivestock: 'beef'
+          typeOfReview: 'endemics',
+          typeOfLivestock: 'beef',
+          previousClaims: [{
+            data: {
+              typeOfReview: 'R'
+            }
+          }]
         }
       })
       const options = {

@@ -66,12 +66,12 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-        const { latestVetVisitApplication } = getEndemicsClaim(request)
+        const { latestVetVisitApplication, previousClaims } = getEndemicsClaim(request)
 
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         // If user has an old world application within last 10 months
-        if (latestVetVisitApplication) {
+        if (claimType[typeOfReview] === claimType.endemics && latestVetVisitApplication && latestVetVisitApplication?.data?.whichReview === livestockTypes.beef && !previousClaims?.find(claim => claim?.data.typeOfReview === claimType.endemics)) {
           return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
         }
 
