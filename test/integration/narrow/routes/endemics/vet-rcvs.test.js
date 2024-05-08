@@ -138,8 +138,7 @@ describe('Vet rcvs test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'sheep', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/sheep-endemics-package' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/test-urn' },

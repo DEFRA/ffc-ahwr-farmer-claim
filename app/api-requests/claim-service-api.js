@@ -1,8 +1,9 @@
 const Wreck = require('@hapi/wreck')
+const session = require('../session')
 const appInsights = require('applicationinsights')
 const config = require('../config')
+const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../constants/claim')
 const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
-const { claimType, dateOfVetVisitExceptions } = require('../constants/claim')
 
 async function getClaimsByApplicationReference (applicationReference) {
   try {
@@ -130,6 +131,12 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
   }
 }
 
+const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
+  const { latestVetVisitApplication, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
+
+  return claimType[typeOfReview] === claimType.endemics && latestVetVisitApplication && latestVetVisitApplication?.data?.whichReview === livestockTypes.beef && !previousClaims?.find(claim => claim?.data.typeOfReview === claimType.endemics)
+}
+
 module.exports = {
   submitNewClaim,
   isWithin10Months,
@@ -137,5 +144,6 @@ module.exports = {
   getReviewWithinLast10Months,
   getClaimsByApplicationReference,
   isWithIn4MonthsAfterDateOfVisit,
-  isWithIn4MonthsBeforeOrAfterDateOfVisit
+  isWithIn4MonthsBeforeOrAfterDateOfVisit,
+  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
 }

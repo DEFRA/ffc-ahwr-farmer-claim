@@ -8,7 +8,7 @@ const claimServiceApiMock = require('../../../../../app/api-requests/claim-servi
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
 
-function expectPageContentOk ($) {
+function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
     'Date of visit - Get funding to improve animal health and welfare'
   )
@@ -23,14 +23,15 @@ function expectPageContentOk ($) {
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/endemics/which-species')
+  expect(backLink.attr('href')).toMatch(previousPageUrl)
 }
 
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: '2023-01-01',
   data: {
-    visitDate: '2023-01-01'
+    visitDate: '2023-01-01',
+    whichReview: 'beef'
   },
   statusId: 1,
   type: 'VV'
@@ -103,7 +104,35 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expectPageContentOk($)
+      expectPageContentOk($, '/claim/endemics/which-species')
+      expectPhaseBanner.ok($)
+    })
+    test('returns 200', async () => {
+      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      getEndemicsClaimMock.mockImplementation(() => {
+        return {
+          latestEndemicsApplication,
+          latestVetVisitApplication: latestVetVisitApplication,
+          typeOfReview: 'endemics',
+          typeOfLivestock: 'beef',
+          previousClaims: [{
+            data: {
+              typeOfReview: 'R'
+            }
+          }]
+        }
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expectPageContentOk($, '/claim/endemics/vet-visits-review-test-results')
       expectPhaseBanner.ok($)
     })
 
