@@ -42,7 +42,6 @@ module.exports = [{
         changeContactHistory(personSummary, organisationSummary)
         const entryValue = request.yar?.get('claim') || {}
         entryValue.organisation = {}
-        entryValue.data.organisation = {}
         entryValue.reference = undefined
         request.yar.set('claim', entryValue)
         session.setClaim(
