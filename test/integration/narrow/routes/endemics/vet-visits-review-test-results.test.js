@@ -56,7 +56,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('h1').text()).toMatch('What was the review test result?')
-      expect($('title').text()).toContain('Vet Visits Review Test Results - Annual health and welfare review of livestock')
+      expect($('title').text()).toContain('Vet Visits Review Test Results - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
@@ -110,8 +110,7 @@ describe('Test Results test', () => {
     })
 
     test.each([
-      { typeOfLivestock: 'beef', nextPageURL: '/claim/endemics/test-urn' },
-      { typeOfLivestock: 'dairy', nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'beef', nextPageURL: '/claim/endemics/date-of-visit' },
       { typeOfLivestock: 'pigs', nextPageURL: '/claim/endemics/vaccination' }
     ])('Redirect $nextPageURL When species $typeOfLivestock', async ({ typeOfLivestock, nextPageURL }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })

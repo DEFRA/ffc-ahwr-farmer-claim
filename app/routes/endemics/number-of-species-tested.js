@@ -12,7 +12,7 @@ const {
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
 } = require('../../session/keys')
-const { thresholds } = require('../../constants/amounts')
+const { thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
@@ -62,7 +62,7 @@ module.exports = [
         const { numberAnimalsTested } = request.payload
         const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
-        const isEligible = numberAnimalsTested >= thresholds[typeOfLivestock][typeOfReview]
+        const isEligible = numberAnimalsTested >= numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 

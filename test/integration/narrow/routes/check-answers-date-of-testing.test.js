@@ -29,6 +29,9 @@ describe('Check Answers test ', () => {
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
         },
+        endemics: {
+          enabled: false
+        },
         dateOfTesting: {
           enabled: true
         }

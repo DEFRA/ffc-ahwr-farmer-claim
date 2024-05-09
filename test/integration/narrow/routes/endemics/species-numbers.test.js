@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const { claimType } = require('../../../../../app/constants/claim')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 
 jest.mock('../../../../../app/session')
@@ -44,7 +45,11 @@ describe('Species numbers test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200', async () => {
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R' }
+    ])('returns 200', async ({ typeOfLivestock, typeOfReview }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'GET',
         auth,
@@ -55,8 +60,8 @@ describe('Species numbers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 11 or more beef cattle  on the date of the review?')
-      expect($('title').text().trim()).toEqual('Number - Annual health and welfare review of livestock')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimType.review ? 'review' : 'follow-up'}?`)
+      expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })
@@ -178,7 +183,7 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the review?')
+      expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the follow-up?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
     })
     test('redirect the user to 404 page in fail action and no claim object', async () => {

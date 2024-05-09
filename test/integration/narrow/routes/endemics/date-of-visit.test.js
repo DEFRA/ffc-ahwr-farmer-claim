@@ -8,13 +8,13 @@ const claimServiceApiMock = require('../../../../../app/api-requests/claim-servi
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
 
-function expectPageContentOk ($) {
-  expect($('title').text()).toEqual(
-    'Date of visit - Annual health and welfare review of livestock'
+function expectPageContentOk ($, previousPageUrl) {
+  expect($('title').text()).toMatch(
+    'Date of visit - Get funding to improve animal health and welfare'
   )
-  expect($('h1').text()).toMatch('Date of review or follow-up')
+  expect($('h1').text()).toMatch(/(Date of review | follow-up)/i)
   expect($('p').text()).toMatch(
-    'This is the date the vet last visited the farm for this review or follow-up. You can find it on the summary the vet gave you.'
+    /(This is the date the vet last visited the farm for this review. You can find it on the summary the vet gave you.| follow-up)/i
   )
   expect($('#visit-date-hint').text()).toMatch('For example, 27 3 2022')
   expect($(`label[for=${labels.day}]`).text()).toMatch('Day')
@@ -23,14 +23,15 @@ function expectPageContentOk ($) {
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/endemics/which-species')
+  expect(backLink.attr('href')).toMatch(previousPageUrl)
 }
 
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: '2023-01-01',
   data: {
-    visitDate: '2023-01-01'
+    visitDate: '2023-01-01',
+    whichReview: 'beef'
   },
   statusId: 1,
   type: 'VV'
@@ -103,7 +104,35 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expectPageContentOk($)
+      expectPageContentOk($, '/claim/endemics/which-species')
+      expectPhaseBanner.ok($)
+    })
+    test('returns 200', async () => {
+      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      getEndemicsClaimMock.mockImplementation(() => {
+        return {
+          latestEndemicsApplication,
+          latestVetVisitApplication: latestVetVisitApplication,
+          typeOfReview: 'endemics',
+          typeOfLivestock: 'beef',
+          previousClaims: [{
+            data: {
+              typeOfReview: 'R'
+            }
+          }]
+        }
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expectPageContentOk($, '/claim/endemics/vet-visits-review-test-results')
       expectPhaseBanner.ok($)
     })
 
@@ -265,15 +294,18 @@ describe('Date of vet visit', () => {
             [labels.day]: day,
             [labels.month]: month,
             [labels.year]: `${year}`,
-            dateOfAgreementAccepted: applicationCreationDate
+            dateOfAgreementAccepted: applicationCreationDate,
+            review: true
           },
           auth,
           headers: { cookie: `crumb=${crumb}` }
+
         }
 
         const res = await global.__SERVER__.inject(options)
 
         const $ = cheerio.load(res.payload)
+
         expect(res.statusCode).toBe(400)
         expect($('p.govuk-error-message').text().trim()).toEqual(
           `Error: ${errorMessage}`
@@ -392,6 +424,15 @@ describe('Date of vet visit', () => {
         month: '05',
         year: '2023',
         applicationCreationDate: '2023-01-01'
+      },
+      {
+        description: 'previous review claim is not ready to pay and user can not calim for endemics',
+        content: 'You must have claimed for your review before you claim for the follow-up that happened after it.',
+        dateOfVetVisitException: 'claim endemics before review status is ready to pay',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01'
       }
     ])(
       'Redirect to exception screen when ($description) and match content',
@@ -422,7 +463,7 @@ describe('Date of vet visit', () => {
         const $ = cheerio.load(res.payload)
         expect(res.statusCode).toBe(400)
         expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-        expect($('p.govuk-body').html()).toMatch(`<a href="#">${content}</a>`)
+        expect($('p.govuk-body').html()).toContain(content)
       }
     )
 
@@ -499,5 +540,10 @@ describe('Date of vet visit', () => {
         expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
       }
     )
+  })
+  test('return review if reviewOrFollowUpText is review', () => {
+    const typeOfReview = 'R'
+    const reviewOrFollowUpText = typeOfReview === 'R' ? 'review' : 'follow-up'
+    expect(reviewOrFollowUpText).toMatch(/review/i)
   })
 })

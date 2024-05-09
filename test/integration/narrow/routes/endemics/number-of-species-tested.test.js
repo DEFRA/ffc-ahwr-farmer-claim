@@ -56,7 +56,7 @@ describe('Number of species tested test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many animals did the vet test?')
-      expect($('title').text().trim()).toEqual('How many animals did the vet test? - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('How many animals did the vet test? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -122,7 +122,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '5' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '1' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '30' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '10' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '1' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', numberAnimalsTested: '1' }
     ])('Continue to vet name screen if the number of $typeOfLivestock is eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
@@ -144,8 +144,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '20' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '8' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '3' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
-      { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '6' }
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' }
     ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {

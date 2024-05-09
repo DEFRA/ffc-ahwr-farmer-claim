@@ -28,7 +28,8 @@ module.exports = {
         suiteName: 'jest tests',
         outputDirectory: 'test-output',
         outputName: 'junit.xml'
-      }
+      },
+      'jest-skipped-reporter'
     ]
   ],
   testEnvironment: 'node',

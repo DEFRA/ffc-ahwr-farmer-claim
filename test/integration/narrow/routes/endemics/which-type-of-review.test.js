@@ -52,13 +52,8 @@ describe('Which type of review test', () => {
   })
 
   describe('GET', () => {
-    beforeEach(async () => {
-      jest.clearAllMocks()
-      crumb = await getCrumbs(global.__SERVER__)
-    })
-
     test('Returns 200 and gets typeOfLivestock from past claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
+      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'R' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -88,7 +83,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('What are you claiming for')
-      expect($('title').text().trim()).toEqual('Which type of review - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -116,7 +111,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('What are you claiming for beef cattle?')
-      expect($('title').text().trim()).toEqual('Which type of review - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -149,7 +144,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch(`What are you claiming for ${content}?`)
-      expect($('title').text().trim()).toEqual('Which type of review - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
   })
@@ -177,6 +172,27 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select which type of review you are claiming for')
+    })
+
+    test('Returns 302 and redirect to vet visit review test result', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
+      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/vet-visits-review-test-results')
     })
 
     test.each([

@@ -2,8 +2,8 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit } = require('../../config/routes')
-const { getClaimsByApplicationReference } = require('../../api-requests/claim-service-api')
+const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults } = require('../../config/routes')
+const { getClaimsByApplicationReference, isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { getLatestApplicationsBySbi } = require('../../api-requests/application-service-api')
 const urlPrefix = require('../../config').urlPrefix
 
@@ -39,7 +39,7 @@ module.exports = [
         return h.view(endemicsWhichTypeOfReview, {
           backLink,
           typeOfLivestock: formattedTypeOfLivestock,
-          previousAnswer: typeOfReview
+          previousAnswer: typeOfReview === claimType.review ? 'review' : 'endemics'
         })
       }
     }
@@ -66,7 +66,11 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
+
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
+
+        // If user has an old world application within last 10 months
+        if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
 
         // For review claim
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
