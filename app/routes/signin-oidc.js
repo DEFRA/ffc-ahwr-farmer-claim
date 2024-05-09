@@ -40,6 +40,11 @@ module.exports = [{
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
         changeContactHistory(personSummary, organisationSummary)
+        const entryValue = request.yar?.get('claim') || {}
+        entryValue.organisation = {}
+        entryValue.data.organisation = {}
+        entryValue.reference = undefined
+        request.yar.set('claim', entryValue)
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
