@@ -678,7 +678,6 @@ describe('isValidDateOfVisit test', () => {
         previousClaims: [...generateMockPreviousClaim(['2026-11-01'], 'R', 10), ...generateMockPreviousClaim(['2023-05-01'], 'R', 10)],
         expected: { isValid: false, reason: 'no review within 10 months past' }
       },
-
       {
         test: 'vetVisitReview within 10 months (REJECTED), 0 previous review claims',
         dateOfVisit: '2024-11-01',
@@ -692,6 +691,13 @@ describe('isValidDateOfVisit test', () => {
         vetVisitReview: generateMockVetVisitReview('2023-05-01', 10),
         previousClaims: undefined,
         expected: { isValid: false, reason: 'no review within 10 months past' }
+      },
+      {
+        test: 'previous review claim status is not READY_TO_PAY or PAID and user tries to submit a new endemics claim',
+        dateOfVisit: '2024-05-01',
+        vetVisitReview: undefined,
+        previousClaims: generateMockPreviousClaim(['2024-01-01'], 'R', 5),
+        expected: { isValid: false, reason: 'claim endemics before review status is ready to pay' }
       }
     ])('$test | isValidDateOfVisit', ({ dateOfVisit, previousClaims, vetVisitReview, expected }) => {
       expect(isValidDateOfVisit(dateOfVisit, 'E', previousClaims, vetVisitReview)).toEqual(expected)

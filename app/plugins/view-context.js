@@ -1,4 +1,4 @@
-const { serviceName, applyServiceUri, urlPrefix } = require('../config')
+const { serviceName, applyServiceUri, urlPrefix, endemics } = require('../config')
 
 module.exports = {
   plugin: {
@@ -12,7 +12,7 @@ module.exports = {
 
           const { path } = request
 
-          ctx.serviceName = serviceName
+          ctx.serviceName = !endemics.enabled ? serviceName : 'Get funding to improve animal health and welfare'
           ctx.urlPrefix = path.startsWith('/cookies') ? '/cookies' : urlPrefix
           ctx.applyServiceUri = applyServiceUri
 

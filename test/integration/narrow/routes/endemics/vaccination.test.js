@@ -55,9 +55,8 @@ describe('Vaccination test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What\'s the herd vaccination status?')
-      expect($('title').text()).toEqual('Herd Vaccination Status - Annual health and welfare review of livestock')
-
+      expect($('title').text()).toEqual('Herd Vaccination Status - Get funding to improve animal health and welfare')
+      expect($('h1').text()).toMatch('What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?')
       expectPhaseBanner.ok($)
     })
 
@@ -130,7 +129,7 @@ describe('Vaccination test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What\'s the herd vaccination status?')
+      expect($('h1').text()).toMatch('What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
       expect($('#herdVaccinationStatus-error').text()).toMatch(errorMessage)
     })

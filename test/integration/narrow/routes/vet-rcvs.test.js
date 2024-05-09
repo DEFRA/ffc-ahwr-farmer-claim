@@ -43,6 +43,9 @@ describe('Vet, enter rcvs test', () => {
             getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
+        },
+        endemics: {
+          enabled: false
         }
       }
     })

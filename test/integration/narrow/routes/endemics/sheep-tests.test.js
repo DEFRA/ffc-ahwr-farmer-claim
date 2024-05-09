@@ -11,7 +11,7 @@ describe('Test Results test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => {
-      return { typeOfLivestock: 'beef' }
+      return { typeOfLivestock: 'sheep' }
     })
 
     jest.mock('../../../../../app/config', () => {
@@ -63,7 +63,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('h1').text()).toMatch('What did the vet test or sample for?')
-      expect($('title').text()).toMatch('Sheep Tests - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Sheep Tests - Get funding to improve animal health and welfare')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/sheep-endemics-package')
 
       expectPhaseBanner.ok($)
@@ -95,7 +95,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('What did the vet test or sample for?')
-      expect($('title').text()).toMatch('Sheep Tests - Annual health and welfare review of livestock')
+      expect($('title').text()).toMatch('Sheep Tests - Get funding to improve animal health and welfare')
       expect($('a').text()).toMatch('You must select a disease')
 
       expectPhaseBanner.ok($)

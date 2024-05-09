@@ -1,7 +1,7 @@
 const Wreck = require('@hapi/wreck')
 const appInsights = require('applicationinsights')
 const config = require('../config')
-const { getOrganisationAddress } = require('./rpa-api/index')
+const { getOrganisationAddress, getPersonName } = require('./rpa-api/index')
 
 async function updateContactHistory (data) {
   try {
@@ -27,7 +27,9 @@ const changeContactHistory = async (personSummary, organisationSummary, referenc
   const currentAddress = getOrganisationAddress(organisationSummary.organisation.address)
 
   await updateContactHistory({
-    email: personSummary.email,
+    farmerName: getPersonName(personSummary),
+    orgEmail: organisationSummary.organisation.email,
+    email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
     sbi: organisationSummary.organisation.sbi,
     address: currentAddress,
     user: 'admin'

@@ -62,17 +62,16 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(title)
-      expect($('title').text()).toEqual('Laboratory URN - Annual health and welfare review of livestock')
+      expect($('title').text()).toEqual('Laboratory URN - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
 
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vaccination' },

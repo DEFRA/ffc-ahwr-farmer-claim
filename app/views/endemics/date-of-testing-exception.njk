@@ -16,14 +16,13 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">There could be a problem with your claim</h1>
-      <br>
-      <p class="govuk-body">Testing is done on lambs less than 12 months old.</p>
-      <p class="govuk-body"><a href={{continueClaimLink}}>If you had less than 10 lambs on the date of the review and they were all tested, you can continue with your claim.</a></p>
-      <p class="govuk-body">If all the lambs were not tested, you cannot continue and need to ask the vet to test again.</p>
-      <p class="govuk-body">If you entered the wrong number, you’ll need to go back and enter the correct number.</p>
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
       <p class="govuk-body">
-        <a class="govuk-link" href={{ backLink }}>Enter the number of animals tested</a>
+        <a href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers">{{errorMessage}}</a>
+      </p>
+      <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
+      <p class="govuk-body">
+        <a href={{backLink}}>Enter the date when samples were taken.</a>
       </p>
       <div class="govuk-warning-text">
         <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

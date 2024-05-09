@@ -3,6 +3,9 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
+const { isWithIn4MonthsBeforeOrAfterDateOfVisit, getReviewWithinLast10Months, isWithIn4MonthsAfterDateOfVisit } = require('../../../../../app/api-requests/claim-service-api')
+
+jest.mock('../../../../../app/api-requests/claim-service-api')
 
 function expectPageContentOk ($) {
   // expect($('title').text()).toEqual('When were samples taken? - Annual health and welfare review of livestock')
@@ -331,6 +334,57 @@ describe('Date of vet visit', () => {
       expect($('#whenTestingWasCarriedOut-error').text().trim()).toEqual(`Error: ${errorMessage}`)
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
       expect($('#main-content > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
+    })
+    test.each([
+      {
+        typeOfReview: 'R',
+        claimGuidanceLinkText: 'Samples should have been taken no more than 4 months before or after the date of review.'
+      },
+      {
+        typeOfReview: 'E',
+        claimGuidanceLinkText: 'Samples should have been taken no more than 4 months before or after the date of follow-up.'
+      }
+    ])('Redirect to exception screen if type of review is $typeOfReview and claim guidance link text should be $claimGuidanceLinkText', async ({ typeOfReview, claimGuidanceLinkText }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
+      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementationOnce(() => { return false })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23' }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(400)
+      expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
+    })
+    jest.resetAllMocks()
+    test.each([
+      {
+        typeOfReview: 'E',
+        claimGuidanceLinkText: 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.'
+      }
+    ])('Redirect to exception screen if type of review is $typeOfReview and claim guidance link text should be $claimGuidanceLinkText', async ({ typeOfReview, claimGuidanceLinkText }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
+      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
+      isWithIn4MonthsAfterDateOfVisit.mockImplementationOnce(() => { return false })
+      getReviewWithinLast10Months.mockImplementationOnce(() => { return { data: { dateOfVisit: '2024-04-23' } } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23' }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(400)
+      expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
     })
   })
 })

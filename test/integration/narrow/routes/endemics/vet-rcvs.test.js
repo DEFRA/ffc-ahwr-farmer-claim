@@ -11,7 +11,6 @@ describe('Vet rcvs test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
-
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -57,7 +56,7 @@ describe('Vet rcvs test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1 > label').text().trim()).toMatch('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
-      expect($('title').text().trim()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -139,8 +138,7 @@ describe('Vet rcvs test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'sheep', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/sheep-endemics-package' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/test-urn' },

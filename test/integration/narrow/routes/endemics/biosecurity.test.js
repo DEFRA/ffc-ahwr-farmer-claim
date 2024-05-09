@@ -90,7 +90,7 @@ describe('Biosecurity test', () => {
       const response = await global.__SERVER__.inject(options)
 
       const $ = cheerio.load(response.payload)
-
+      expect($('title').text()).toMatch('Biosecurity - Get funding to improve animal health and welfare')
       expect($('h1').text()).toMatch('Did the vet do a biosecurity assessment?')
     })
     test("select 'yes' when biosecurity is 'yes'", async () => {
@@ -231,8 +231,8 @@ describe('Biosecurity test', () => {
     })
     test.each([
       { biosecurity: 'yes', assessmentPercentage: '', errorMessage: 'Enter the assessment percentage' },
-      { biosecurity: 'yes', assessmentPercentage: '0', errorMessage: 'Assessment percentage cannot be less than 1' },
-      { biosecurity: 'yes', assessmentPercentage: '101', errorMessage: 'Assessment percentage cannot be more than 100' },
+      { biosecurity: 'yes', assessmentPercentage: '0', errorMessage: 'The assessment percentage must be a number between 1% and 100%.' },
+      { biosecurity: 'yes', assessmentPercentage: '101', errorMessage: 'The assessment percentage must be a number between 1% and 100%.' },
       { biosecurity: 'yes', assessmentPercentage: 'abc', errorMessage: 'The assessment percentage can only include numbers' }
     ])('continue to Exception page when biosecurity  is "no" for any journey', async ({ biosecurity, assessmentPercentage, errorMessage }) => {
       const options = {

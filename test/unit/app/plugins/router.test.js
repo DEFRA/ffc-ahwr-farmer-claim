@@ -99,7 +99,6 @@ describe('routes plugin test', () => {
       '/claim/endemics/vet-visits-review-test-results',
       '/claim/endemics/which-species',
       '/claim/endemics/which-type-of-review',
-      '/claim/endemics/you-cannot-claim',
       '/claim/animals-tested',
       '/claim/cookies',
       '/claim/submit-claim',
