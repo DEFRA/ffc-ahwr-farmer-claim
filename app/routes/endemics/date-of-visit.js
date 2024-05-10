@@ -206,7 +206,7 @@ module.exports = [
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
-        if ([livestockTypes.beef, livestockTypes.pigs].includes(typeOfLivestock) && isEndemicsFollowUp) {
+        if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock) && isEndemicsFollowUp) {
           const reviewTestResultsValue = getReviewTestResultWithinLast10Months(request)
 
           session.setEndemicsClaim(request, reviewTestResults, reviewTestResultsValue)
