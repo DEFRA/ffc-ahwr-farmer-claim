@@ -9,7 +9,8 @@ const {
   endemicsVaccination,
   endemicsNumberOfOralFluidSamples,
   endemicsNumberOfSamplesTested,
-  endemicsTestResults
+  endemicsTestResults,
+  endemicsPIHunt
 } = require('../../config/routes')
 const {
   endemicsClaim: { laboratoryURN: laboratoryURNKey }
@@ -21,17 +22,18 @@ const title = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
   if (typeOfReview === claimType.endemics) {
-    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return 'What’s the laboratory unique reference number (URN) or certificate number of the test results?'
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) { return 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' }
   }
 
   return 'What’s the laboratory unique reference number (URN) for the test results?'
 }
 
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, reviewTestResults } = session.getEndemicsClaim(request)
 
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsVetRCVS}`
   if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+  if (reviewTestResults === 'positive') return `${urlPrefix}/${endemicsPIHunt}`
 
   return `${urlPrefix}/${endemicsVetRCVS}`
 }

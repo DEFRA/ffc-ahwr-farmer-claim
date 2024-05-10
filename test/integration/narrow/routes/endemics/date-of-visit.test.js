@@ -540,6 +540,63 @@ describe('Date of vet visit', () => {
         expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
       }
     )
+    test.each([
+      {
+        description: 'the type 0f review is endemic and type of livestock is beef and the previous claim is review test result is negative',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01',
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2022-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2022-01-01'
+          }
+        }
+      }
+    ])(
+      'Redirect to next page when ($description)',
+      async ({ day, month, year, applicationCreationDate, claim }) => {
+        getEndemicsClaimMock.mockImplementationOnce(() => {
+          return {
+            latestVetVisitApplication: {
+              ...latestVetVisitApplication,
+              createdAt: applicationCreationDate
+            },
+            previousClaims: [claim],
+            typeOfLivestock: 'beef',
+            typeOfReview: 'E'
+          }
+        })
+        const options = {
+          method: 'POST',
+          url,
+          payload: {
+            crumb,
+            [labels.day]: day.toString(),
+            [labels.month]: month.toString(),
+            [labels.year]: year.toString(),
+            dateOfAgreementAccepted: applicationCreationDate
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` }
+        }
+        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+          isValid: true
+        }))
+        claimServiceApiMock.getReviewTestResultWithinLast10Months.mockImplementationOnce(() => ('negative'))
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+      }
+    )
   })
   test('return review if reviewOrFollowUpText is review', () => {
     const typeOfReview = 'R'

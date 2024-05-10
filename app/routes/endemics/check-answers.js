@@ -24,7 +24,7 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const sessionData = getEndemicsClaim(request)
-        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, numberAnimalsTested, testResults } = sessionData
+        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, reviewTestResults, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, piHunt, laboratoryURN, numberAnimalsTested, testResults } = sessionData
 
         const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
         const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -40,6 +40,10 @@ module.exports = [
           value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
         },
         {
+          key: { text: 'Review test result' },
+          value: { html: upperFirstLetter(reviewTestResults) }
+        },
+        {
           key: { text: 'Review or follow-up' },
           value: { html: isReview ? 'Annual health and welfare review' : 'Endemic disease follow-up' }
         }]
@@ -52,7 +56,7 @@ module.exports = [
           },
           {
             key: { text: 'Date of sampling' },
-            value: { html: formatDate(dateOfTesting) },
+            value: { html: dateOfTesting && formatDate(dateOfTesting) },
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'change date of sampling' }] }
           },
           {
@@ -78,6 +82,11 @@ module.exports = [
             actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetRCVS}`, text: 'Change', visuallyHiddenText: 'change vet\'s rcvs number' }] }
           }
         ]
+        const piHuntRow = {
+          key: { text: 'PI hunt' },
+          value: { html: piHunt },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'change the piHunt' }] }
+        }
         const laboratoryUrnRow = {
           key: { text: 'Test results URN' },
           value: { html: laboratoryURN },
@@ -140,6 +149,7 @@ module.exports = [
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           vetVisitsReviewTestResultsRow,
+          piHuntRow,
           laboratoryUrnRow,
           testResultsRow,
           isEndemicsFollowUp && biosecurityAssessmentRow
@@ -226,6 +236,7 @@ module.exports = [
           vetsName,
           vetRCVSNumber,
           laboratoryURN,
+          piHunt,
           numberOfOralFluidSamples,
           numberAnimalsTested,
           testResults,
@@ -254,6 +265,7 @@ module.exports = [
             vetsName,
             vetRCVSNumber,
             laboratoryURN,
+            piHunt,
             numberOfOralFluidSamples,
             numberAnimalsTested,
             testResults,
