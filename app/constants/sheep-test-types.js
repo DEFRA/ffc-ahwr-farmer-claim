@@ -15,6 +15,7 @@ const sheepTestTypes = {
     { value: 'cla', text: 'Caseous Lymphadenitis (CLA)' },
     { value: 'opa', text: 'Ovine Pulmonary Adenocarcinoma (OPA)' },
     { value: 'traceElements', text: 'Trace elements' },
+    { value: 'liverFluke', text: 'Liver fluke' },
     { value: 'haemonchosis', text: 'Haemonchosis' },
     { value: 'eweNutritionStatus', text: 'Ewe nutrition status' },
     { value: 'mastitis', text: 'Mastitis' },
@@ -35,7 +36,6 @@ const sheepTestTypes = {
     { value: 'other', text: 'Other' }
   ],
   improvedLambPerformance: [
-    { value: 'lameness', text: 'Lameness' },
     { value: 'bd', text: 'Border disease (BD)' },
     { value: 'traceElements', text: 'Trace elements' },
     { value: 'liverFluke', text: 'Liver fluke' },
