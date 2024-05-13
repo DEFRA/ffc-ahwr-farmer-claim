@@ -14,7 +14,10 @@ const thresholds = {
   numberOfSpeciesTested: {
     [beef]: {
       [review]: 5,
-      [endemics]: 1
+      [endemics]: {
+        positive: 11,
+        negative: 1
+      }
     },
     [dairy]: {
       [review]: 5,
