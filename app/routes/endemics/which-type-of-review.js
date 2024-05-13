@@ -77,7 +77,7 @@ module.exports = [
           return h
             .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
               backLink: pageUrl,
-              manageYourClaims: claimDashboard,
+              claimDashboard,
               ruralPaymentsAgency
             })
             .code(400)
