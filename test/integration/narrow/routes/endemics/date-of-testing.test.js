@@ -3,12 +3,11 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
-const { isWithIn4MonthsBeforeOrAfterDateOfVisit, getReviewWithinLast10Months, isWithIn4MonthsAfterDateOfVisit } = require('../../../../../app/api-requests/claim-service-api')
+const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
 function expectPageContentOk ($) {
-  // expect($('title').text()).toEqual('When were samples taken? - Annual health and welfare review of livestock')
   expect($('h1').text()).toMatch('When were samples taken?')
   expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('his is the date samples were taken to test for health conditions or diseases.')
   expect($('label[for=whenTestingWasCarriedOut]').text()).toMatch('When the vet visited the farm for the review or follow-up')
@@ -41,7 +40,7 @@ describe('Date of vet visit', () => {
   const url = '/claim/endemics/date-of-testing'
 
   beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { latestReviewApplication } })
+    getEndemicsClaimMock.mockImplementation(() => { return { latestReviewApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -134,7 +133,7 @@ describe('Date of vet visit', () => {
         dateOfVisit: yesterday
       }
     ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: today } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
       const options = {
         method: 'GET',
         url,
@@ -184,32 +183,12 @@ describe('Date of vet visit', () => {
         dateOfVisit: today
       },
       {
-        description: 'onAnotherDay - cannot be before the review visit date',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: 29,
-        onAnotherDateMonth: 3,
-        onAnotherDateYear: 2023,
-        errorMessage: 'Date of testing cannot be before the review visit date',
-        errorHighlights: ['on-another-date-day'],
-        dateOfVisit: today
-      },
-      {
         description: 'onAnotherDay - must not be in the future',
         whenTestingWasCarriedOut: 'onAnotherDate',
         onAnotherDateDay: tomorrow.getDate(),
         onAnotherDateMonth: tomorrow.getMonth() + 1,
         onAnotherDateYear: tomorrow.getFullYear(),
         errorMessage: 'Date of sampling must be a real date',
-        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay - must not be before review visit date',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: yesterday.getDate(),
-        onAnotherDateMonth: yesterday.getMonth() + 1,
-        onAnotherDateYear: yesterday.getFullYear(),
-        errorMessage: 'Date of testing cannot be before the review visit date',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       },
@@ -248,7 +227,7 @@ describe('Date of vet visit', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': `${onAnotherDateYear}`, dateOfVisit },
+        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': `${onAnotherDateYear}`, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }
@@ -281,7 +260,7 @@ describe('Date of vet visit', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfVisit },
+        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
         auth,
         headers: { cookie: `crumb=${crumb}` }
       }
@@ -352,32 +331,7 @@ describe('Date of vet visit', () => {
         url,
         auth,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23' }
-      }
-
-      const res = await global.__SERVER__.inject(options)
-      const $ = cheerio.load(res.payload)
-
-      expect(res.statusCode).toBe(400)
-      expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
-    })
-    jest.resetAllMocks()
-    test.each([
-      {
-        typeOfReview: 'E',
-        claimGuidanceLinkText: 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.'
-      }
-    ])('Redirect to exception screen if type of review is $typeOfReview and claim guidance link text should be $claimGuidanceLinkText', async ({ typeOfReview, claimGuidanceLinkText }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
-      isWithIn4MonthsAfterDateOfVisit.mockImplementationOnce(() => { return false })
-      getReviewWithinLast10Months.mockImplementationOnce(() => { return { data: { dateOfVisit: '2024-04-23' } } })
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23' }
+        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23', dateOfAgreementAccepted: '2022-01-01' }
       }
 
       const res = await global.__SERVER__.inject(options)

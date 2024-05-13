@@ -20,8 +20,9 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, dateOfTesting } = session.getEndemicsClaim(request)
+        const { dateOfVisit, dateOfTesting, latestEndemicsApplication } = session.getEndemicsClaim(request)
         return h.view(endemicsDateOfTesting, {
+          dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit,
           whenTestingWasCarriedOut: dateOfTesting
             ? {
@@ -54,6 +55,7 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
+          dateOfAgreementAccepted: Joi.string().required(),
           dateOfVisit: Joi.string().required(),
           whenTestingWasCarriedOut: Joi.string()
             .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
@@ -107,6 +109,7 @@ module.exports = [
                         dateObject.getDate() === day
                       )
                     }
+
                     if (!isValidDate(
                       +helpers.state.ancestors[0]['on-another-date-year'],
                       +helpers.state.ancestors[0]['on-another-date-month'],
@@ -120,21 +123,24 @@ module.exports = [
                       helpers.state.ancestors[0]['on-another-date-month'] - 1,
                       helpers.state.ancestors[0]['on-another-date-day']
                     )
+
                     const currentDate = new Date()
                     if (dateOfTesting > currentDate) {
                       return helpers.error('dateOfTesting.future')
                     }
-                    const dateOfVisit = new Date(helpers.state.ancestors[0].dateOfVisit)
-                    if (dateOfTesting < dateOfVisit) {
-                      return helpers.error('dateOfTesting.beforeVetVisitDate', {
-                        dateOfVisit: new Date(dateOfVisit)
+
+                    const dateOfAgreementAccepted = new Date(helpers.state.ancestors[0].dateOfAgreementAccepted)
+                    if (dateOfTesting < dateOfAgreementAccepted) {
+                      return helpers.error('dateOfTesting.beforeAgreementDate', {
+                        dateOfAgreementAccepted: new Date(dateOfAgreementAccepted)
                           .toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
                       })
                     }
+
                     return value
                   }, {
                     'dateOfTesting.future': 'Date of sampling must be a real date',
-                    'dateOfTesting.beforeVetVisitDate': 'Date of testing cannot be before the review visit date'
+                    'dateOfTesting.beforeAgreementDate': 'Date of testing cannot be before the review visit date'
                   })
                 },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }

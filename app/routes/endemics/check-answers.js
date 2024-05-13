@@ -89,7 +89,7 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples taken' }] }
         }
         const testResultsRow = {
-          key: { text: 'Test results' }, // Pigs, Dairy, Beef
+          key: { text: isReview ? 'Test results' : 'Follow-up test result' }, // Pigs, Dairy, Beef
           value: { html: testResults && upperFirstLetter(testResults) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
         }
