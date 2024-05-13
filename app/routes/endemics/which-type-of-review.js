@@ -2,13 +2,13 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults } = require('../../config/routes')
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
 const { getClaimsByApplicationReference, isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { getLatestApplicationsBySbi } = require('../../api-requests/application-service-api')
-const urlPrefix = require('../../config').urlPrefix
+const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const backLink = vetVisits
+const backLink = claimDashboard
 
 const getTypeOfLivestockFromPastClaims = async (sbi) => {
   const applications = await getLatestApplicationsBySbi(sbi)
@@ -66,13 +66,24 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-
+        const { typeOfLivestock } = getEndemicsClaim(request)
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         // If user has an old world application within last 10 months
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
 
-        // For review claim
+        // Dairy follow up claim
+        if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
+          return h
+            .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+              backLink: pageUrl,
+              manageYourClaims: claimDashboard,
+              ruralPaymentsAgency
+            })
+            .code(400)
+            .takeover()
+        }
+
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
     }
