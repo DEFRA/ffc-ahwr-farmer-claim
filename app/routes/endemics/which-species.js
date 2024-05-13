@@ -3,14 +3,14 @@ const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const {
-  vetVisits,
+  claimDashboard,
   endemicsDateOfVisit,
   endemicsWhichSpecies
 } = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
-const backLink = vetVisits
+const backLink = claimDashboard
 const errorMessage = { text: 'Select which livestock you are claiming for' }
 
 module.exports = [

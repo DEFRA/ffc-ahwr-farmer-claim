@@ -1,10 +1,11 @@
 const config = require('../config')
 
 module.exports = {
-  vetVisits: `${config.dashboardServiceUri}/vet-visits`,
+  claimDashboard: `${config.dashboardServiceUri}/vet-visits`,
   endemicsIndex: 'endemics',
   endemicsWhichSpecies: 'endemics/which-species',
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
+  endemicsWhichTypeOfReviewDairyFollowUpException: 'endemics/which-type-of-review-dairy-follow-up-exception',
   endemicsDateOfVisit: 'endemics/date-of-visit',
   endemicsDateOfVisitException: 'endemics/date-of-visit-exception',
   endemicsDateOfTesting: 'endemics/date-of-testing',

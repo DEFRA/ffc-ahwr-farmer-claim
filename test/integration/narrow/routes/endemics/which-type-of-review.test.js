@@ -197,7 +197,7 @@ describe('Which type of review test', () => {
 
     test.each([
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
-      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' } // todo update for endemics claim
+      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
       const options = {
         method: 'POST',
@@ -214,6 +214,27 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
+    })
+
+    test('Returns 400 and redirects to error page for dairy follow-up', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+      expectPhaseBanner.ok($)
     })
   })
 })
