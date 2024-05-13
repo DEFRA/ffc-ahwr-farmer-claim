@@ -7,7 +7,8 @@ const entries = {
   organisation: 'organisation',
   pkcecodes: 'pkcecodes',
   tokens: 'tokens',
-  customer: 'customer'
+  customer: 'customer',
+  tempClaimReference: 'tempClaimReference'
 }
 
 function set (request, entryKey, key, value, status, endemics = false) {
@@ -40,6 +41,7 @@ function clear (request) {
   request.yar.clear(entries.endemicsClaim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
+  request.yar.clear(entries.tempClaimReference)
 }
 
 function getApplication (request, key) {
@@ -71,6 +73,10 @@ function clearEndemicsClaim (request) { // Remove all journey related data
   request.yar.clear(entries.endemicsClaim)
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
   setEndemicsClaim(request, 'reference', endemicsClaim?.reference)
+}
+
+function setTempClaimReference (request, key, value, status) {
+  set(request, entries.tempClaimReference, key, value, status, true)
 }
 
 function setToken (request, key, value) {
@@ -106,6 +112,7 @@ module.exports = {
   setEndemicsClaim,
   clearEndemicsClaim,
   clear,
+  setTempClaimReference,
   getToken,
   setToken,
   getCustomer,

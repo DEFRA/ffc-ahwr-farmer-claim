@@ -1,6 +1,6 @@
 const routes = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
-const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
+const { setEndemicsClaim, getEndemicsClaim, setTempClaimReference } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const { getSpeciesEligibleNumberForDisplay, getVaccinationStatusForDisplay, upperFirstLetter, formatDate } = require('../../lib/display-helpers')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
@@ -236,9 +236,11 @@ module.exports = [
           herdVaccinationStatus,
           diseaseStatus,
           sheepEndemicsPackage,
-          numberOfSamplesTested
+          numberOfSamplesTested,
+          reference
         } = getEndemicsClaim(request)
 
+        const tempClaimReference = reference
         const { isSheep } = getLivestockTypes(typeOfLivestock)
         const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
@@ -273,6 +275,7 @@ module.exports = [
         })
 
         setEndemicsClaim(request, 'reference', claim.reference)
+        setTempClaimReference(request, 'tempClaimReference', tempClaimReference)
 
         return h.redirect(
           `${urlPrefix}/${routes.endemicsConfirmation}`

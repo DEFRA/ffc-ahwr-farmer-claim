@@ -10,6 +10,7 @@ const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMad
 const { raiseIneligibilityEvent } = require('../event')
 const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
+const createClaimReference = require('../lib/create-claim-reference')
 
 module.exports = [{
   method: 'GET',
@@ -33,6 +34,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
+      const tempClaimId = createClaimReference()
       try {
         await auth.authenticate(request, session)
 
@@ -40,6 +42,10 @@ module.exports = [{
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
         changeContactHistory(personSummary, organisationSummary)
+        const entryValue = request.yar?.get('claim') || {}
+        entryValue.organisation = {}
+        entryValue.reference = undefined
+        request.yar.set('claim', entryValue)
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
@@ -70,6 +76,7 @@ module.exports = [{
               frn: organisationSummary.businessReference
             }
           )
+          session.setEndemicsClaim(request, sessionKeys.endemicsClaim.reference, tempClaimId)
         }
 
         if (!organisationSummary.organisationPermission) {

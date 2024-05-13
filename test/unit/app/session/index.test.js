@@ -7,6 +7,7 @@ describe('session', () => {
   const tokensSectionKey = 'tokens'
   const customerSectionKey = 'customer'
   const pkcecodesSectionKey = 'pkcecodes'
+  const tempClaimReferenceKey = 'tempClaimReference'
 
   const value = 'value'
   const objectValue = { key: value }
@@ -26,7 +27,8 @@ describe('session', () => {
     { func: 'setClaim', expectedSectionKey: claimKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
-    { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey }
+    { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey },
+    { func: 'setTempClaimReference', expectedSectionKey: tempClaimReferenceKey }
   ]
 
   const keysAndValuesToTest = [
@@ -126,11 +128,12 @@ describe('session', () => {
     const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
     session.clear(requestSetMock)
 
-    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(4)
+    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(5)
     expect(requestSetMock.yar.clear).toHaveBeenCalledWith('claim')
     expect(requestSetMock.yar.clear).toHaveBeenCalledWith('endemicsClaim')
     expect(requestSetMock.yar.clear).toHaveBeenCalledWith('application')
     expect(requestSetMock.yar.clear).toHaveBeenCalledWith('organisation')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('tempClaimReference')
   })
 
   test('session clearEndemicsClaim clears correct keys and keeps correct keys', async () => {
