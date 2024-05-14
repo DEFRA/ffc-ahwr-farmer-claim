@@ -11,6 +11,7 @@ const session = require('../../session')
 const {
   endemicsClaim: { reviewTestResults }
 } = require('../../session/keys')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
 const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting, endemicsVetVisitsReviewTestResults, endemicsSpeciesNumbers } = require('../../config/routes')
