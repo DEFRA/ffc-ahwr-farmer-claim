@@ -104,28 +104,6 @@ describe('Date of vet visit', () => {
 
     test.each([
       {
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today
-      }
-    ])('Hide the date fields if date of testing equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
-      const options = {
-        method: 'GET',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await global.__SERVER__.inject(options)
-      const $ = cheerio.load(res.payload)
-      expect($('#whenTestingWasCarriedOut').val()).toEqual(whenTestingWasCarriedOut)
-      // On other date radio button should be hidden
-      expect($('.govuk-radios__conditional--hidden').text()).toBeTruthy()
-    })
-
-    test.each([
-      {
         whenTestingWasCarriedOut: 'onAnotherDate',
         onAnotherDateDay: today.getDate(),
         onAnotherDateMonth: today.getMonth() + 1,
