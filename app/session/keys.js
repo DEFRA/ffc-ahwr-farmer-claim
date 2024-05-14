@@ -45,7 +45,9 @@ module.exports = {
     relevantReviewForEndemics: 'relevantReviewForEndemics',
     sheepTests: 'sheepTests',
     sheepTestResults: 'sheepTestResults',
-    previousClaims: 'previousClaims'
+    previousClaims: 'previousClaims',
+    reviewTestResults: 'reviewTestResults',
+    piHunt: 'piHunt'
   },
   claim: {
     animalsTested: 'animalsTested',

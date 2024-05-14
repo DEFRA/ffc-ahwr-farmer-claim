@@ -1,6 +1,6 @@
 const { clearEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { urlPrefix, ruralPaymentsAgency, customerSurvey } = require('../../config')
-const { endemicsConfirmation, vetVisits } = require('../../config/routes')
+const { endemicsConfirmation, claimDashboard } = require('../../config/routes')
 const { amount } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsConfirmation}`
@@ -17,7 +17,7 @@ module.exports = [
         clearEndemicsClaim(request)
 
         return h.view(endemicsConfirmation, {
-          vetVisits,
+          claimDashboard,
           reference,
           amount: getAmount,
           ruralPaymentsAgency: ruralPaymentsAgency,

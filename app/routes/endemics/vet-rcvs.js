@@ -9,6 +9,8 @@ const {
   endemicsVetRCVS,
   endemicsTestUrn,
   endemicsVaccination,
+  endemicsBiosecurity,
+  endemicsPIHunt,
   endemicsSheepEndemicsPackage,
   endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
@@ -51,7 +53,10 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]$/i).required()
+          vetRCVSNumber: Joi.string()
+            .trim()
+            .pattern(/^\d{6}[\dX]$/i)
+            .required()
             .messages({
               'any.required': rcvsErrorMessages.enterRCVS,
               'string.base': rcvsErrorMessages.enterRCVS,
@@ -72,7 +77,12 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
+        const { reviewTestResults } = session.getEndemicsClaim(request)
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
+
+        if (reviewTestResults === 'positive') return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
+        if (reviewTestResults === 'negative') return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+
         return h.redirect(nextPageURL(request))
       }
     }
