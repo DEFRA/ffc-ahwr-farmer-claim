@@ -120,10 +120,12 @@ describe('Vet rcvs test', () => {
     })
 
     test.each([
-      { vetRCVSNumber: '1234567' },
-      { vetRCVSNumber: '123456X' },
-      { vetRCVSNumber: '  123456X  ' }
-    ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber }) => {
+      { vetRCVSNumber: '1234567', reviewTestResults: 'positive', nextPageURL: '/claim/endemics/pi-hunt' },
+      { vetRCVSNumber: '123456X', reviewTestResults: 'negative', nextPageURL: '/claim/endemics/biosecurity' },
+      { vetRCVSNumber: '123456X', reviewTestResults: undefined, nextPageURL: '/claim/endemics/test-urn' }
+    ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber, reviewTestResults, nextPageURL }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults } })
+
       const options = {
         method: 'POST',
         url,
@@ -135,11 +137,10 @@ describe('Vet rcvs test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/test-urn')
+      expect(res.headers.location).toEqual(nextPageURL)
     })
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'sheep', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/sheep-endemics-package' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/test-urn' },

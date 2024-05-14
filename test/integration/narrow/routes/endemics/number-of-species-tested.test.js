@@ -123,7 +123,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '30' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '10' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '5' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '1' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '11' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '30' },
       { typeOfLivestock: 'sheep', typeOfReview: 'E', numberAnimalsTested: '1' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', numberAnimalsTested: '1' }
@@ -147,9 +147,10 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '20' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', numberAnimalsTested: '8' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', numberAnimalsTested: '3' },
-      { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' }
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '9' }
     ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,

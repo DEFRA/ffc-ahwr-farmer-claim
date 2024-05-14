@@ -45,12 +45,12 @@ describe('Test URN test', () => {
 
   describe(`GET ${url} route`, () => {
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) or certificate number of the test results?', reviewTestResults: 'positive' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' },
       { typeOfLivestock: 'sheep', typeOfReview: 'R', title: 'What’s the laboratory unique reference number (URN) for the test results?' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', title: 'What’s the laboratory unique reference number (URN) for the test results?' }
-    ])('Return 200 with Title $title when type of species is $typeOfLivestock and type of review is $typeOfReview', async ({ title, typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+    ])('Return 200 with Title $title when type of species is $typeOfLivestock and type of review is $typeOfReview', async ({ title, typeOfLivestock, typeOfReview, reviewTestResults }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'GET',
         url,
@@ -69,10 +69,9 @@ describe('Test URN test', () => {
 
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
-      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vet-visits-review-test-results' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vaccination' },

@@ -53,7 +53,7 @@ describe('Which type of review test', () => {
 
   describe('GET', () => {
     test('Returns 200 and gets typeOfLivestock from past claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
+      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'R' })
       applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -174,9 +174,30 @@ describe('Which type of review test', () => {
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select which type of review you are claiming for')
     })
 
+    test('Returns 302 and redirect to vet visit review test result', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
+      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/vet-visits-review-test-results')
+    })
+
     test.each([
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
-      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' } // todo update for endemics claim
+      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
       const options = {
         method: 'POST',
@@ -193,6 +214,27 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
+    })
+
+    test('Returns 400 and redirects to error page for dairy follow-up', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+      expectPhaseBanner.ok($)
     })
   })
 })

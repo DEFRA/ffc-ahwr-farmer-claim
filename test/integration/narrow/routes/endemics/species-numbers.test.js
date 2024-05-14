@@ -48,10 +48,10 @@ describe('Species numbers test', () => {
 
   describe(`GET ${url} route`, () => {
     test.each([
-      { typeOfLivestock: 'beef', typeOfReview: 'E' },
-      { typeOfLivestock: 'dairy', typeOfReview: 'R' }
-    ])('returns 200', async ({ typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+      { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
+    ])('returns 200', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'GET',
         auth,
@@ -123,9 +123,10 @@ describe('Species numbers test', () => {
       { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/number-of-species-tested' },
       { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/vet-name' },
       { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/number-of-species-tested' },
-      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' }
-    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
+      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/vet-name', typeOfReview: 'E', reviewTestResults: 'negative' }
+    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock, typeOfReview, reviewTestResults }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'POST',
         url,
@@ -139,6 +140,7 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
+
     test('Continue to eligible page if user select yes', async () => {
       const options = {
         method: 'POST',
@@ -173,7 +175,7 @@ describe('Species numbers test', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
         url,

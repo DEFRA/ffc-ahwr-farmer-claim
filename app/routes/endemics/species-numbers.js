@@ -9,14 +9,20 @@ const {
   endemicsNumberOfSpeciesTested,
   endemicsSpeciesNumbersException,
   endemicsVetName,
-  endemicsDateOfTesting
+  endemicsDateOfTesting,
+  endemicsDateOfVisit
 } = require('../../config/routes')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 
-const backLink = `${urlPrefix}/${endemicsDateOfTesting}`
+const backLink = (request) => {
+  const { reviewTestResults } = session.getEndemicsClaim(request)
+  if (reviewTestResults === 'negative') return `${urlPrefix}/${endemicsDateOfVisit}`
+
+  return `${urlPrefix}/${endemicsDateOfTesting}`
+}
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
@@ -39,12 +45,16 @@ module.exports = [
           return boom.notFound()
         }
         const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
-        return h.view(
-          endemicsSpeciesNumbers, {
-            backLink,
-            ...getYesNoRadios(legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), undefined, radioOptions)
-          }
-        )
+        return h.view(endemicsSpeciesNumbers, {
+          backLink: backLink(request),
+          ...getYesNoRadios(
+            legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
+            speciesNumbers,
+            session.getEndemicsClaim(request, speciesNumbers),
+            undefined,
+            radioOptions
+          )
+        })
       }
     }
   },
@@ -62,14 +72,17 @@ module.exports = [
             return boom.notFound()
           }
           const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
-          return h.view(
-            endemicsSpeciesNumbers,
-            {
-              backLink,
-              errorMessage: { text: errorMessageText },
-              ...getYesNoRadios(legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview), speciesNumbers, session.getEndemicsClaim(request, speciesNumbers), errorMessageText, radioOptions)
-            }
-          )
+          return h.view(endemicsSpeciesNumbers, {
+            backLink: backLink(request),
+            errorMessage: { text: errorMessageText },
+            ...getYesNoRadios(
+              legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
+              speciesNumbers,
+              session.getEndemicsClaim(request, speciesNumbers),
+              errorMessageText,
+              radioOptions
+            )
+          })
             .code(400)
             .takeover()
         }
@@ -80,9 +93,10 @@ module.exports = [
         session.setEndemicsClaim(request, speciesNumbers, answer)
 
         if (answer === 'yes') {
-          if (claim.typeOfLivestock === 'dairy') {
+          if (claim?.reviewTestResults === 'negative' || claim.typeOfLivestock === 'dairy') {
             return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
+
           return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
         }
 

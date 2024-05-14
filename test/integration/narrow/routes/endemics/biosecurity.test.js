@@ -83,6 +83,19 @@ describe('Biosecurity test', () => {
 
       expect(response.statusCode).toBe(200)
     })
+    test('Returns 200 when the review test result for beef is negative', async () => {
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reviewTestResults: 'negative' })
+
+      const response = await global.__SERVER__.inject(options)
+
+      expect(response.statusCode).toBe(200)
+    })
     test('display question text', async () => {
       const options = {
         method: 'GET',

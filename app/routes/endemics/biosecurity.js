@@ -3,14 +3,17 @@ const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
-const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException } = require('../../config/routes')
+const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS } = require('../../config/routes')
+
 const { livestockTypes } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
-
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
-  return (session?.typeOfLivestock === livestockTypes.pigs) ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
+
+  if (session?.reviewTestResults === 'negative') return `${urlPrefix}/${endemicsVetRCVS}`
+
+  return session?.typeOfLivestock === livestockTypes.pigs ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
 }
 
 const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {
@@ -35,14 +38,11 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const session = getEndemicsClaim(request)
-        return h.view(
-          endemicsBiosecurity,
-          {
-            previousAnswer: session?.biosecurity,
-            typeOfLivestock: session?.typeOfLivestock,
-            backLink: previousPageUrl(request)
-          }
-        )
+        return h.view(endemicsBiosecurity, {
+          previousAnswer: session?.biosecurity,
+          typeOfLivestock: session?.typeOfLivestock,
+          backLink: previousPageUrl(request)
+        })
       }
     }
   },
@@ -52,11 +52,9 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          biosecurity: Joi.string().valid('yes', 'no').required().messages(
-            {
-              'any.required': 'Select whether the vet did a biosecurity assessment'
-            }
-          ),
+          biosecurity: Joi.string().valid('yes', 'no').required().messages({
+            'any.required': 'Select whether the vet did a biosecurity assessment'
+          }),
           assessmentPercentage: Joi.when('biosecurity', {
             is: Joi.valid('yes'),
             then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
@@ -67,19 +65,22 @@ module.exports = [
           const { biosecurity, assessmentPercentage } = request.payload
           const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(biosecurity, assessmentPercentage)
 
-          const errorMessage = biosecurity ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
+          const errorMessage = biosecurity
+            ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' }
+            : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
           const errors = {
             errorMessage,
             radioErrorMessage: biosecurity === undefined ? { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
             inputErrorMessage: assessmentPercentageErrorMessage ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : undefined
           }
 
-          return h.view(endemicsBiosecurity, {
-            backLink: previousPageUrl(request),
-            typeOfLivestock: session?.typeOfLivestock,
-            ...errors,
-            previousAnswer: biosecurity
-          })
+          return h
+            .view(endemicsBiosecurity, {
+              backLink: previousPageUrl(request),
+              typeOfLivestock: session?.typeOfLivestock,
+              ...errors,
+              previousAnswer: biosecurity
+            })
             .code(400)
             .takeover()
         }
