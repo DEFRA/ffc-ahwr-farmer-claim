@@ -16,6 +16,7 @@ module.exports = {
   endemicsNumberOfTests: 'endemics/number-of-tests',
   endemicsSpeciesNumbers: 'endemics/species-numbers',
   endemicsSpeciesNumbersException: 'endemics/species-numbers-exception',
+  endemicsNumberOfSpeciesBeefException: 'endemics/number-of-species-beef-exception',
   endemicsNumberOfSpeciesTested: 'endemics/number-of-species-tested',
   endemicsNumberOfSpeciesException: 'endemics/number-of-species-exception',
   endemicsNumberOfOralFluidSamples: 'endemics/number-of-fluid-oral-samples',

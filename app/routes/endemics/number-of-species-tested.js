@@ -64,20 +64,10 @@ module.exports = [
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
-        if (typeOfLivestock === livestockTypes.beef && typeOfReview === claimType.endemics) {
-          if (numberAnimalsTested >= numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview][relevantReviewForEndemics?.data.testResults ?? vetVisitsReviewTestResults]) {
-            return h.redirect(nextPageURL)
-          }
-        } else {
-          if (numberAnimalsTested >= numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]) {
-            return h.redirect(nextPageURL)
-          }
-        }
-
+        if (isEligible) return h.redirect(nextPageURL)
         if (numberAnimalsTested === '0') {
           return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
-
         if (typeOfLivestock === livestockTypes.sheep) {
           return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
         }
