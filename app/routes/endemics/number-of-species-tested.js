@@ -13,7 +13,7 @@ const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
 } = require('../../session/keys')
 const { thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } } = require('../../constants/amounts')
-const { livestockTypes, claimType } = require('../../constants/claim')
+const { livestockTypes } = require('../../constants/claim')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
@@ -60,14 +60,18 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { numberAnimalsTested } = request.payload
-        const { typeOfLivestock, typeOfReview, vetVisitsReviewTestResults, relevantReviewForEndemics } = session.getEndemicsClaim(request)
+        const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+
+        const isEligible = numberAnimalsTested >= numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
         if (isEligible) return h.redirect(nextPageURL)
+
         if (numberAnimalsTested === '0') {
           return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
+        
         if (typeOfLivestock === livestockTypes.sheep) {
           return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
         }
