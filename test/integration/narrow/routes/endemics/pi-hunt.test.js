@@ -2,11 +2,11 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-jest.mock('../../../../../app/session')
 
-describe('Test Results test', () => {
+jest.mock('../../../../../app/session')
+describe('Species numbers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/vet-visits-review-test-results'
+  const url = '/claim/endemics/pi-hunt'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
@@ -47,32 +47,17 @@ describe('Test Results test', () => {
     test('returns 200', async () => {
       const options = {
         method: 'GET',
-        url,
-        auth
+        auth,
+        url
       }
 
       const res = await global.__SERVER__.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('What was the review test result?')
-      expect($('title').text()).toContain('Vet Visits Review Test Results - Get funding to improve animal health and welfare')
-
-      expectPhaseBanner.ok($)
-    })
-
-    test('backLink test', async () => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestocl: 'beef' } })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await global.__SERVER__.inject(options)
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/vet-rcvs')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did the vet do a persistently infected (PI) hunt for BVD?')
+      expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
+      expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })
 
@@ -88,6 +73,7 @@ describe('Test Results test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
   })
+
   describe(`POST ${url} route`, () => {
     let crumb
 
@@ -99,7 +85,7 @@ describe('Test Results test', () => {
       const options = {
         method: 'POST',
         url,
-        payload: { crumb, testResults: 'positive' },
+        payload: { crumb, laboratoryURN: '123' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -108,33 +94,45 @@ describe('Test Results test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
-
-    test.each([
-      { typeOfLivestock: 'beef', nextPageURL: '/claim/endemics/date-of-visit' },
-      { typeOfLivestock: 'pigs', nextPageURL: '/claim/endemics/vaccination' }
-    ])('Redirect $nextPageURL When species $typeOfLivestock', async ({ typeOfLivestock, nextPageURL }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock } })
-
+    test('Continue to eligible page if user select yes', async () => {
       const options = {
         method: 'POST',
-        url,
+        payload: { crumb, piHunt: 'yes' },
         auth,
-        payload: { crumb, vetVisitsReviewTestResults: 'positive' },
+        url,
         headers: { cookie: `crumb=${crumb}` }
       }
+
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageURL))
+      expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
+    test('Continue to ineligible page if user select no', async () => {
+      const options = {
+        method: 'POST',
+        payload: { crumb, piHunt: 'no' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
+    })
     test('shows error when payload is invalid', async () => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, vetVisitsReviewTestResults: undefined },
+        payload: { crumb, piHunt: undefined },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -142,9 +140,8 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the review test result?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
-      expect($('#vetVisitsReviewTestResults-error').text()).toMatch('Select a test result')
+      expect($('h1').text().trim()).toMatch('Did the vet do a persistently infected (PI) hunt for BVD?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
     })
   })
 })

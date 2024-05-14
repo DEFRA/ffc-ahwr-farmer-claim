@@ -9,6 +9,8 @@ const {
   endemicsVetRCVS,
   endemicsTestUrn,
   endemicsVaccination,
+  endemicsBiosecurity,
+  endemicsPIHunt,
   endemicsSheepEndemicsPackage,
   endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
@@ -22,9 +24,7 @@ const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = session.getEndemicsClaim(request)
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
   if (typeOfReview === claimType.endemics) {
-    if (relevantReviewForEndemics.type === claimType.vetVisits) {
-      if ([livestockTypes.beef, livestockTypes.pigs, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
-    }
+    if (relevantReviewForEndemics.type === claimType.vetVisits && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
     if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
     if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
@@ -53,7 +53,10 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]$/i).required()
+          vetRCVSNumber: Joi.string()
+            .trim()
+            .pattern(/^\d{6}[\dX]$/i)
+            .required()
             .messages({
               'any.required': rcvsErrorMessages.enterRCVS,
               'string.base': rcvsErrorMessages.enterRCVS,
@@ -74,7 +77,12 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
+        const { reviewTestResults } = session.getEndemicsClaim(request)
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
+
+        if (reviewTestResults === 'positive') return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
+        if (reviewTestResults === 'negative') return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+
         return h.redirect(nextPageURL(request))
       }
     }

@@ -1,9 +1,11 @@
 const Wreck = require('@hapi/wreck')
+const sessionMock = require('../../../../app/session')
 
 const consoleErrorSpy = jest.spyOn(console, 'error')
 
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('@hapi/wreck')
+jest.mock('../../../../app/session')
 
 describe('Claim Service API', () => {
   test('Get claims by application reference should return status 200', async () => {
@@ -98,5 +100,11 @@ describe('Claim Service API', () => {
     const { isValidDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
     expect(isValidDateOfVisit('T')).toMatchObject({ isValid: false })
+  })
+  test('Check if is first time endemic claim for active old world review claim', () => {
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
+
+    expect(claimServiceApi.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim()).toBe(true)
   })
 })
