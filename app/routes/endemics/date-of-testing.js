@@ -208,6 +208,7 @@ module.exports = [
         if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.review) {
           return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of review.' }).code(400).takeover()
         }
+
         if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.endemics) {
           return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of follow-up.' }).code(400).takeover()
         }

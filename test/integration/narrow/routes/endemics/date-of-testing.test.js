@@ -3,7 +3,7 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
-const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../../app/api-requests/claim-service-api')
+const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isWithIn4MonthsAfterDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
@@ -27,7 +27,7 @@ const latestReviewApplication = {
   type: 'VV'
 }
 
-describe('Date of vet visit', () => {
+describe('Date of testing', () => {
   let crumb
   const today = new Date()
   const yearPast = new Date(today)
@@ -110,7 +110,7 @@ describe('Date of vet visit', () => {
         onAnotherDateYear: today.getFullYear(),
         dateOfVisit: yesterday
       }
-    ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
+    ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
       const options = {
         method: 'GET',
@@ -292,6 +292,7 @@ describe('Date of vet visit', () => {
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
       expect($('#main-content > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
     })
+
     test.each([
       {
         typeOfReview: 'R',
@@ -317,6 +318,28 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
+    })
+
+    test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative eview', async () => {
+      getEndemicsClaimMock.mockImplementation(() => { return { dateOfVisit: '2024-04-23', typeOfReview: 'E' } })
+      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
+      isWithIn4MonthsAfterDateOfVisit.mockImplementation(() => { return false })
+      getReviewWithinLast10Months.mockImplementation(() => { return { test: 'mockPreviousReview' } })
+
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23', dateOfAgreementAccepted: '2022-01-01' }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(400)
+      expect(res.statusCode).toBe(400)
+      expect($('.govuk-body').text()).toContain('The date of sampling for your follow-up cannot be before the date of the review that happened before it.')
     })
   })
 })
