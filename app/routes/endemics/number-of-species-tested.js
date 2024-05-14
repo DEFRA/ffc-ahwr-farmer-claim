@@ -7,16 +7,25 @@ const {
   endemicsNumberOfSpeciesTested,
   endemicsNumberOfSpeciesException,
   endemicsVetName,
-  endemicsNumberOfSpeciesSheepException
+  endemicsNumberOfSpeciesSheepException,
+  endemicsNumberOfSpeciesBeefException
 } = require('../../config/routes')
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
 } = require('../../session/keys')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getReviewType } = require('../../lib/get-review-type')
 const { thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
+const isBeefEndemics = (typeOfLivestock, typeOfReview) => {
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+  const { isBeef } = getLivestockTypes(typeOfLivestock)
+
+  return isBeef && isEndemicsFollowUp
+}
 
 module.exports = [
   {
@@ -67,11 +76,10 @@ module.exports = [
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
         if (isEligible) return h.redirect(nextPageURL)
-
+        if (isBeefEndemics(typeOfLivestock, typeOfReview)) return h.view(endemicsNumberOfSpeciesBeefException, { ruralPaymentsAgency: config.ruralPaymentsAgency, backLink: pageUrl }).code(400).takeover()
         if (numberAnimalsTested === '0') {
           return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
-
         if (typeOfLivestock === livestockTypes.sheep) {
           return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
         }
