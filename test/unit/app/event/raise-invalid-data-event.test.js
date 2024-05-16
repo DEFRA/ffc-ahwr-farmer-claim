@@ -20,7 +20,7 @@ const event = {
   cph: 'n/a',
   email,
   name: 'send-invalid-data-event',
-  type: 'claim-sessionKey-invalid-data-entered',
+  type: 'claim-sessionKey-invalid',
   message: `${sessionKey}: ${exception}`,
   data: {
     sbi,
