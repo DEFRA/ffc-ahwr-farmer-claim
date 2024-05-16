@@ -4,12 +4,16 @@ const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemics
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { livestockTypes } = require('../../constants/claim')
 const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
+  const { isBeef } = getLivestockTypes(session?.typeOfLivestock)
+  const { isNegative } = getTestResult(session?.reviewTestResults)
 
-  if (session?.reviewTestResults === 'negative') return `${urlPrefix}/${endemicsVetRCVS}`
+  if (isBeef && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
 
   return session?.typeOfLivestock === livestockTypes.pigs ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
 }
