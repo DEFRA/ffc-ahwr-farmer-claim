@@ -4,14 +4,17 @@ const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsCl
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS } = require('../../config/routes')
-
 const { livestockTypes } = require('../../constants/claim')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
+  const { isBeef } = getLivestockTypes(session?.typeOfLivestock)
+  const { isNegative } = getTestResult(session?.reviewTestResults)
 
-  if (session?.reviewTestResults === 'negative') return `${urlPrefix}/${endemicsVetRCVS}`
+  if (isBeef && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
 
   return session?.typeOfLivestock === livestockTypes.pigs ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
 }

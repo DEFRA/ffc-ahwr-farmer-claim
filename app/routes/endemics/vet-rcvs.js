@@ -17,6 +17,9 @@ const {
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
 } = require('../../session/keys')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
+
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
 
@@ -77,11 +80,16 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
-        const { reviewTestResults } = session.getEndemicsClaim(request)
+        const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
+        const { isBeef } = getLivestockTypes(typeOfLivestock)
+        const { isNegative, isPositive } = getTestResult(reviewTestResults)
+
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
-        if (reviewTestResults === 'positive') return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
-        if (reviewTestResults === 'negative') return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+        if (isBeef) {
+          if (isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
+          if (isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+        }
 
         return h.redirect(nextPageURL(request))
       }
