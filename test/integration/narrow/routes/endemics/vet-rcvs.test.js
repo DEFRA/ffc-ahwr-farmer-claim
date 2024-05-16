@@ -124,7 +124,7 @@ describe('Vet rcvs test', () => {
       { vetRCVSNumber: '123456X', reviewTestResults: 'negative', nextPageURL: '/claim/endemics/biosecurity' },
       { vetRCVSNumber: '123456X', reviewTestResults: undefined, nextPageURL: '/claim/endemics/test-urn' }
     ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber, reviewTestResults, nextPageURL }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults } })
+      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults, typeOfLivestock: 'beef' } })
 
       const options = {
         method: 'POST',
