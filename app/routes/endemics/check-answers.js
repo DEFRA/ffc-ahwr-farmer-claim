@@ -24,7 +24,7 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const sessionData = getEndemicsClaim(request)
-        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, reviewTestResults, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, piHunt, laboratoryURN, numberAnimalsTested, testResults } = sessionData
+        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, piHunt, laboratoryURN, numberAnimalsTested, testResults } = sessionData
 
         const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
         const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -38,10 +38,6 @@ module.exports = [
         {
           key: { text: 'Livestock' },
           value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
-        },
-        {
-          key: { text: 'Review test result' },
-          value: { html: upperFirstLetter(reviewTestResults) }
         },
         {
           key: { text: 'Review or follow-up' },
@@ -98,7 +94,7 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples taken' }] }
         }
         const testResultsRow = {
-          key: { text: 'Test results' }, // Pigs, Dairy, Beef
+          key: { text: isReview ? 'Test results' : 'Follow-up test result' }, // Pigs, Dairy, Beef
           value: { html: testResults && upperFirstLetter(testResults) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
         }
@@ -247,7 +243,8 @@ module.exports = [
           herdVaccinationStatus,
           diseaseStatus,
           sheepEndemicsPackage,
-          numberOfSamplesTested
+          numberOfSamplesTested,
+          reviewTestResults
         } = getEndemicsClaim(request)
 
         const { isSheep } = getLivestockTypes(typeOfLivestock)
@@ -275,6 +272,7 @@ module.exports = [
             diseaseStatus,
             sheepEndemicsPackage,
             numberOfSamplesTested,
+            reviewTestResults,
             ...(isEndemicsFollowUp && isSheep && {
               testResults: sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,

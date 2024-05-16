@@ -260,7 +260,7 @@ const expectedEndemicsFollowUpBeef = {
     'Number of animals tested',
     ...commonVetRowKeys,
     'Test results URN',
-    'Test results',
+    'Follow-up test result',
     'Biosecurity assessment'
   ],
   rowContents: [
@@ -306,7 +306,7 @@ const expectedEndemicsFollowUpDairy = {
     '11 or more dairy cattle',
     ...commonVetRowKeys,
     'Test results URN',
-    'Test results',
+    'Follow-up test result',
     'Biosecurity assessment'
   ],
   rowContents: [
