@@ -15,10 +15,15 @@ const { getReviewType } = require('../../lib/get-review-type')
 const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
 const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
 
 const backLink = (request) => {
-  const { reviewTestResults } = session.getEndemicsClaim(request)
-  if (reviewTestResults === 'negative') return `${urlPrefix}/${endemicsDateOfVisit}`
+  const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
+  const { isBeef } = getLivestockTypes(typeOfLivestock)
+  const { isNegative } = getTestResult(reviewTestResults)
+
+  if (isBeef && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
 
   return `${urlPrefix}/${endemicsDateOfTesting}`
 }
@@ -90,10 +95,12 @@ module.exports = [
       handler: async (request, h) => {
         const answer = request.payload[speciesNumbers]
         const claim = session.getEndemicsClaim(request)
+        const { isBeef } = getLivestockTypes(claim?.typeOfLivestock)
+        const { isNegative } = getTestResult(claim?.reviewTestResults)
         session.setEndemicsClaim(request, speciesNumbers, request.payload[speciesNumbers])
 
         if (answer === 'yes') {
-          if (claim?.reviewTestResults === 'negative' || claim.typeOfLivestock === 'dairy') {
+          if ((isBeef && isNegative) || claim.typeOfLivestock === 'dairy') {
             return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
 

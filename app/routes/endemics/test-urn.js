@@ -15,6 +15,8 @@ const {
 const {
   endemicsClaim: { laboratoryURN: laboratoryURNKey }
 } = require('../../session/keys')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
@@ -30,10 +32,12 @@ const title = (request) => {
 
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview, reviewTestResults } = session.getEndemicsClaim(request)
+  const { isBeef } = getLivestockTypes(typeOfLivestock)
+  const { isPositive } = getTestResult(reviewTestResults)
 
   if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsVetRCVS}`
   if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
-  if (reviewTestResults === 'positive') return `${urlPrefix}/${endemicsPIHunt}`
+  if (isBeef && isPositive) return `${urlPrefix}/${endemicsPIHunt}`
 
   return `${urlPrefix}/${endemicsVetRCVS}`
 }
