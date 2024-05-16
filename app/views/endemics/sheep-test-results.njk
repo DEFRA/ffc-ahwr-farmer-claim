@@ -30,7 +30,26 @@
         {% else %}
           {% if result | length %}
             {% for item in result %}
-              <h2 class="govuk-heading-m">Disease tested or sampled for</h2>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                  <h2 class="govuk-heading-m">Condition or disease</h2>
+                </div>
+                <div class="govuk-grid-column-one-quarter">
+                  {% if loop.index !== 1 %}
+                    {{ govukButton({
+                        text: "Remove",
+                        attributes: {
+                          id: "Delete"
+                        },
+                        value: loop.index - 1,
+                        name: "delete",
+                        classes: "govuk-button--secondary",
+                        preventDoubleClick: true  
+                      }) 
+                    }}
+                  {% endif %}
+                </div>
+              </div>
               <div class="govuk-grid-row">
                 <div class="govuk-grid-column-three-quarters">
                   {{ govukInput({
@@ -43,21 +62,6 @@
                       errorMessage: item.errorMessage.diseaseType
                     }) 
                   }}
-                </div>
-                <div class="govuk-grid-column-one-quarter  govuk-!-padding-top-6">
-                  {% if loop.index !== 1 %}
-                    {{ govukButton({
-                        text: "Delete",
-                        attributes: {
-                          id: "Delete"
-                        },
-                        value: loop.index - 1,
-                        name: "delete",
-                        classes: "govuk-button--secondary",
-                        preventDoubleClick: true  
-                      }) 
-                    }}
-                  {% endif %}
                 </div>
               </div>
 
@@ -74,15 +78,17 @@
               }}
             {% endfor %}
           {% endif %}
-          <p class="govuk-body govuk-hint">You can find this on the summary the vet gave you.</p>
-          {% for inputText in inputTexts %}
-            {{ govukInput(inputText) }}
-          {% endfor %}
+          {% if resultLength != 10 %}
+            {% for inputText in inputTexts %}
+              {{ govukInput(inputText) }}
+            {% endfor %}
+          {% endif %}
           {{ govukButton({
               text: "Add another",
               attributes: {
                 id: "Add another"
               },
+              disabled: disableAddAnotherButton,
               value: "addAnother",
               name: "submitButton",
               classes: "govuk-button--secondary",

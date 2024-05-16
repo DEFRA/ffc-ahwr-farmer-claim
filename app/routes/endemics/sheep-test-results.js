@@ -66,7 +66,9 @@ const getPageContent = (request, data) => {
   return {
     title: 'Give details of the other disease tested or sampled for',
     inputTexts,
-    result
+    result,
+    resultLength: result.length,
+    disableAddAnotherButton: result.length === 10
   }
 }
 
