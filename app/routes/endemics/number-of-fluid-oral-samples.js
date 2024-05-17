@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const {
@@ -59,6 +60,7 @@ module.exports = [
         session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
         if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
+          raiseInvalidDataEvent(request, numberOfOralFluidSamplesKey, `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`)
           return h.view(
             endemicsNumberOfOralFluidSamplesException,
             {

@@ -3,6 +3,7 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isWithIn4MonthsAfterDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -19,7 +20,7 @@ function expectPageContentOk ($) {
 }
 
 jest.mock('../../../../../app/session')
-
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 const latestReviewApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: Date.now(),
@@ -318,9 +319,10 @@ describe('Date of testing', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
 
-    test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative eview', async () => {
+    test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative review', async () => {
       getEndemicsClaimMock.mockImplementation(() => { return { dateOfVisit: '2024-04-23', typeOfReview: 'E' } })
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
       isWithIn4MonthsAfterDateOfVisit.mockImplementation(() => { return false })
@@ -338,7 +340,7 @@ describe('Date of testing', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect(res.statusCode).toBe(400)
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
       expect($('.govuk-body').text()).toContain('The date of sampling for your follow-up cannot be before the date of the review that happened before it.')
     })
   })

@@ -10,6 +10,7 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const { endemicsClaim: { dateOfTesting: dateOfTestingKey } } = require('../../session/keys')
 const { claimType } = require('../../constants/claim')
 const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException } = require('../../config/routes')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
@@ -206,16 +207,22 @@ module.exports = [
           )
 
         if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.review) {
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of review.' }).code(400).takeover()
+          const errorMessage = 'Samples should have been taken no more than 4 months before or after the date of review.'
+          raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage }).code(400).takeover()
         }
 
         if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) && typeOfReview === claimType.endemics) {
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'Samples should have been taken no more than 4 months before or after the date of follow-up.' }).code(400).takeover()
+          const errorMessage = 'Samples should have been taken no more than 4 months before or after the date of follow-up.'
+          raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage }).code(400).takeover()
         }
 
         const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
         if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage: 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.' }).code(400).takeover()
+          const errorMessage = 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.'
+          raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)

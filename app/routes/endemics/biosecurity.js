@@ -1,9 +1,10 @@
 const Joi = require('joi')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
+const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS } = require('../../config/routes')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { livestockTypes } = require('../../constants/claim')
-const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 
@@ -91,12 +92,13 @@ module.exports = [
         const { pigs } = livestockTypes
         const { typeOfLivestock } = getEndemicsClaim(request)
         const { biosecurity, assessmentPercentage } = request.payload
+        setEndemicsClaim(request, biosecurityKey, typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity)
 
         if (biosecurity === 'no') {
+          raiseInvalidDataEvent(request, biosecurityKey, `Value ${biosecurity} is not equal to required value yes`)
           return h.view(endemicsBiosecurityException, { backLink: pageUrl, ruralPaymentsAgency }).code(400).takeover()
         }
 
-        setEndemicsClaim(request, biosecurityKey, typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity)
         return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
       }
     }
