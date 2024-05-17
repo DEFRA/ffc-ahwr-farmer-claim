@@ -12,6 +12,8 @@ const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
 const createClaimReference = require('../lib/create-temp-claim-reference')
 
+const endemicsEnabled = config.endemicsEnabled
+
 module.exports = [{
   method: 'GET',
   path: '/claim/signin-oidc',
@@ -34,7 +36,6 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const tempClaimId = createClaimReference()
       try {
         await auth.authenticate(request, session)
 
@@ -61,7 +62,8 @@ module.exports = [{
           }
         )
 
-        if (config.endemics.enabled) {
+        if (endemicsEnabled) {
+          const tempClaimId = createClaimReference()
           session.setEndemicsClaim(
             request,
             sessionKeys.endemicsClaim.organisation,
