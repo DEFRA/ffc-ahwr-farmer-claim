@@ -10,6 +10,9 @@ const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMad
 const { raiseIneligibilityEvent } = require('../event')
 const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
+const createClaimReference = require('../lib/create-temp-claim-reference')
+
+const endemicsEnabled = config.endemicsEnabled
 
 module.exports = [{
   method: 'GET',
@@ -59,7 +62,8 @@ module.exports = [{
           }
         )
 
-        if (config.endemics.enabled) {
+        if (endemicsEnabled) {
+          const tempClaimId = createClaimReference()
           session.setEndemicsClaim(
             request,
             sessionKeys.endemicsClaim.organisation,
@@ -74,6 +78,7 @@ module.exports = [{
               frn: organisationSummary.businessReference
             }
           )
+          session.setEndemicsClaim(request, sessionKeys.endemicsClaim.reference, tempClaimId)
         }
 
         if (!organisationSummary.organisationPermission) {
