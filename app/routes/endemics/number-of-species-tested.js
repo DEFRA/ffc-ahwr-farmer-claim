@@ -14,6 +14,7 @@ const {
 } = require('../../session/keys')
 const { thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
@@ -62,7 +63,8 @@ module.exports = [
         const { numberAnimalsTested } = request.payload
         const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
-        const isEligible = numberAnimalsTested >= numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
+        const threshold = numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
+        const isEligible = numberAnimalsTested >= threshold
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
@@ -73,9 +75,11 @@ module.exports = [
         }
 
         if (typeOfLivestock === livestockTypes.sheep) {
+          raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`)
           return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
         }
 
+        raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`)
         return h.view(endemicsNumberOfSpeciesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
     }
