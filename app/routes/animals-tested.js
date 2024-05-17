@@ -49,6 +49,7 @@ module.exports = [{
         session.setClaim(request, animalsTestedKey, animalsTested)
         return h.redirect('/claim/vet-name')
       } else {
+        session.setClaim(request, animalsTestedKey, animalsTested, 'fail-threshold')
         return h.redirect('/claim/number-of-animals-ineligible')
       }
     }

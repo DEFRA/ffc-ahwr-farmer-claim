@@ -43,17 +43,6 @@ describe('Send event on session set', () => {
   })
 
   test('should call raiseEvent with event including sessionId', async () => {
-    // event = {
-    //   ...event,
-    //   reference: claim.reference,
-    //   sbi: claim.organisation.sbi,
-    //   email: claim.organisation.email,
-    //   cph: 'n/a',
-    //   id: sessionId,
-    //   ip,
-    //   data: { reference: claim.reference, [key]: value }
-    // }
-
     await sendSessionEvent(claim, sessionId, entryKey, key, value, ip)
     expect(raiseEvent).toHaveBeenCalledWith(event, 'success')
   })

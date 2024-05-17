@@ -194,6 +194,8 @@ describe('Number of animals tested', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/number-of-animals-ineligible')
+      expect(session.setClaim).toHaveBeenCalledTimes(1)
+      expect(session.setClaim).toHaveBeenCalledWith(res.request, animalsTestedKey, animalsTested, 'fail-threshold')
 
       session.getClaim.mockRestore()
     })
