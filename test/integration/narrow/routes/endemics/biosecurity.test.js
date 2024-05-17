@@ -1,12 +1,14 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { getEndemicsClaim } = require('../../../../../app/session')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { urlPrefix } = require('../../../../../app/config')
 const {
   endemicsBiosecurity,
   endemicsCheckAnswers
 } = require('../../../../../app/config/routes')
 
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('../../../../../app/session')
 
 describe('Biosecurity test', () => {
@@ -22,6 +24,7 @@ describe('Biosecurity test', () => {
   })
 
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -208,6 +211,7 @@ describe('Biosecurity test', () => {
 
       expect(response.statusCode).toBe(400)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('continue without provideing biosecurity', async () => {
       const options = {

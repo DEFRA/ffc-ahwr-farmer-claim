@@ -11,6 +11,7 @@ const session = require('../../session')
 const {
   endemicsClaim: { reviewTestResults }
 } = require('../../session/keys')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
 const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting, endemicsVetVisitsReviewTestResults, endemicsSpeciesNumbers } = require('../../config/routes')
@@ -197,6 +198,7 @@ module.exports = [
               backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
               break
           }
+          raiseInvalidDataEvent(request, dateOfVisitKey, `Value ${dateOfVisit} is invalid. Error: ${mainMessage.text}`)
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
 

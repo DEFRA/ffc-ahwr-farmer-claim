@@ -2,14 +2,16 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const { claimType } = require('../../../../../app/constants/claim')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 describe('Species numbers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/species-numbers'
-
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -170,6 +172,7 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })

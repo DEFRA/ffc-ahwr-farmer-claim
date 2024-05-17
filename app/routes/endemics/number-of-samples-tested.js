@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const {
@@ -61,8 +62,9 @@ module.exports = [
         const endemicsClaim = session.getEndemicsClaim(request)
         const lastReviewTestResults = endemicsClaim.vetVisitsReviewTestResults ?? endemicsClaim.relevantReviewForEndemics?.data?.testResults
 
-        if ((lastReviewTestResults === 'positive' && numberOfSamplesTested !== positiveReviewNumberOfSamplesTested) ||
-              (lastReviewTestResults === 'negative' && numberOfSamplesTested !== negativeReviewNumberOfSamplesTested)) {
+        const threshold = lastReviewTestResults === 'positive' ? positiveReviewNumberOfSamplesTested : negativeReviewNumberOfSamplesTested
+        if (numberOfSamplesTested !== threshold) {
+          raiseInvalidDataEvent(request, numberOfSamplesTestedKey, `Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
           return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 

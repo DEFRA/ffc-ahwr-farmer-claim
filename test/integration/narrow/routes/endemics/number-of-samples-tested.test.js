@@ -1,14 +1,17 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-jest.mock('../../../../../app/session')
 
+jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 describe('Number of samples tested test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/number-of-samples-tested'
 
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -158,6 +161,7 @@ describe('Number of samples tested test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
   })
 })

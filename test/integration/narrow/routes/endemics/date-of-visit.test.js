@@ -2,11 +2,14 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const { labels } = require('../../../../../app/config/visit-date')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock =
   require('../../../../../app/session').getEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
+
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 
 function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
@@ -51,6 +54,7 @@ describe('Date of vet visit', () => {
   const url = '/claim/endemics/date-of-visit'
 
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => {
       return {
         latestVetVisitApplication,
@@ -385,6 +389,7 @@ describe('Date of vet visit', () => {
         expect($('h1').text().trim()).toMatch(
           'You cannot continue with your claim'
         )
+        expect(raiseInvalidDataEvent).toHaveBeenCalled()
       }
     )
 
@@ -464,6 +469,7 @@ describe('Date of vet visit', () => {
         expect(res.statusCode).toBe(400)
         expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
         expect($('p.govuk-body').html()).toContain(content)
+        expect(raiseInvalidDataEvent).toHaveBeenCalled()
       }
     )
 
