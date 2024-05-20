@@ -10,19 +10,12 @@ const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
 
-const getTypeOfLivestockFromPastClaims = async (sbi) => {
-  const applications = await getLatestApplicationsBySbi(sbi)
-
-  const endemicsApplication = applications[0]
-  const { reference } = endemicsApplication
-  const claims = await getClaimsByApplicationReference(reference)
-
-  if (claims?.length) {
+const getTypeOfLivestockFromPastClaims = (previousClaims, latestVetVisitApplication) => {
+  if (previousClaims?.length) {
     return claims[0].data?.typeOfLivestock
   }
 
-  const latestVetVisitsApplication = applications.filter((application) => application.type === 'VV')[0]
-  return latestVetVisitsApplication.data?.whichReview
+  return latestVetVisitApplication.data?.whichReview
 }
 
 const getPreviousAnswer = (typeOfReview) => {
@@ -41,8 +34,8 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { organisation, typeOfReview } = getEndemicsClaim(request)
-        const typeOfLivestock = await getTypeOfLivestockFromPastClaims(organisation.sbi)
+        const { typeOfReview, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
+        const typeOfLivestock = getTypeOfLivestockFromPastClaims(previousClaims, latestVetVisitApplication)
         setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
 
         const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
@@ -65,6 +58,7 @@ module.exports = [
             .required()
         }),
         failAction: (_request, h, _err) => {
+          const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
           return h
             .view(endemicsWhichTypeOfReview, {
               errorMessage: { text: 'Select which type of review you are claiming for', href: '#typeOfReview' },
