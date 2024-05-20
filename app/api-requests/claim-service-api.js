@@ -138,7 +138,7 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
   const { latestVetVisitApplication, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
 
   return (
-    claimType[typeOfReview] === claimType.endemics &&
+    typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&
     latestVetVisitApplication?.data?.whichReview === livestockTypes.beef &&
     !previousClaims?.find((claim) => claim?.data.typeOfReview === claimType.endemics)
