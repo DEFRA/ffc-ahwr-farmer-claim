@@ -3,8 +3,7 @@ const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
-const { getClaimsByApplicationReference, isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
-const { getLatestApplicationsBySbi } = require('../../api-requests/application-service-api')
+const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -12,7 +11,7 @@ const backLink = claimDashboard
 
 const getTypeOfLivestockFromPastClaims = (previousClaims, latestVetVisitApplication) => {
   if (previousClaims?.length) {
-    return claims[0].data?.typeOfLivestock
+    return previousClaims[0].data?.typeOfLivestock
   }
 
   return latestVetVisitApplication.data?.whichReview
@@ -57,7 +56,8 @@ module.exports = [
             .valid('review', 'endemics')
             .required()
         }),
-        failAction: (_request, h, _err) => {
+        failAction: (request, h, _err) => {
+          const { typeOfLivestock } = getEndemicsClaim(request)
           const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
           return h
             .view(endemicsWhichTypeOfReview, {
