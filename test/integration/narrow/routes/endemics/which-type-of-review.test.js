@@ -4,10 +4,8 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const { endemicsWhichTypeOfReview } = require('../../../../../app/config/routes')
 const sessionMock = require('../../../../../app/session')
-const applicationServiceApiMock = require('../../../../../app/api-requests/application-service-api')
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
-jest.mock('../../../../../app/api-requests/application-service-api')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
 describe('Which type of review test', () => {
@@ -17,6 +15,8 @@ describe('Which type of review test', () => {
     strategy: 'cookie'
   }
   let crumb
+  const previousClaims = []
+  const latestVetVisitApplication = { data: { whichReview: 'beef' } }
 
   beforeAll(() => {
     jest.mock('../../../../../app/config', () => {
@@ -53,25 +53,7 @@ describe('Which type of review test', () => {
 
   describe('GET', () => {
     test('Returns 200 and gets typeOfLivestock from past claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'R' })
-      applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 10,
-        type: 'EE'
-      }])
-      claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([
-        {
-          reference: 'AHWR-C2EA-C718',
-          applicationReference: 'AHWR-2470-6BA9',
-          statusId: 1,
-          type: 'R',
-          createdAt: '2023-12-19T10:25:11.318Z',
-          data: {
-            typeOfLivestock: 'beef'
-          }
-        }
-      ])
+      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'R', latestVetVisitApplication, previousClaims })
       const options = {
         method: 'GET',
         url,
@@ -88,24 +70,12 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 200 and gets typeOfLivestock from past application claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
-      applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 10,
-        type: 'VV',
-        data: {
-          whichReview: 'beef'
-        }
-      }])
-
-      claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
+      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'review', latestVetVisitApplication, previousClaims })
       const options = {
         method: 'GET',
         url,
         auth
       }
-
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(200)
@@ -121,24 +91,12 @@ describe('Which type of review test', () => {
       { typeOfLivestock: 'sheep', content: 'sheep' },
       { typeOfLivestock: 'pigs', content: 'pigs' }
     ])('Returns 200 and formats content correct from typeOfLivestock $typeOfLivestock', async ({ typeOfLivestock, content }) => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ organisation: { sbi: '1234567' }, typeOfReview: 'review' })
-      applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([{
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 10,
-        type: 'VV',
-        data: {
-          whichReview: typeOfLivestock
-        }
-      }])
-
-      claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
+      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'review', latestVetVisitApplication: { data: { whichReview: typeOfLivestock } }, previousClaims })
       const options = {
         method: 'GET',
         url,
         auth
       }
-
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(200)
@@ -156,6 +114,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 400 and shows error message when payload is invalid', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
         url,
@@ -175,7 +134,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 302 and redirect to vet visit review test result', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims })
       claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
 
       const options = {
@@ -199,6 +158,7 @@ describe('Which type of review test', () => {
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
       { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
         url,
