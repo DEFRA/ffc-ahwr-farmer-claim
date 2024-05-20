@@ -25,6 +25,16 @@ const getTypeOfLivestockFromPastClaims = async (sbi) => {
   return latestVetVisitsApplication.data?.whichReview
 }
 
+const getPreviousAnswer = (typeOfReview) => {
+  if (typeOfReview === claimType.review) {
+    return 'review'
+  } else if (typeOfReview === claimType.endemics) {
+    return 'endemics'
+  } else {
+    return undefined
+  }
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -39,7 +49,7 @@ module.exports = [
         return h.view(endemicsWhichTypeOfReview, {
           backLink,
           typeOfLivestock: formattedTypeOfLivestock,
-          previousAnswer: typeOfReview === claimType.review ? 'review' : 'endemics'
+          previousAnswer: getPreviousAnswer(typeOfReview)
         })
       }
     }
@@ -58,7 +68,8 @@ module.exports = [
           return h
             .view(endemicsWhichTypeOfReview, {
               errorMessage: { text: 'Select which type of review you are claiming for', href: '#typeOfReview' },
-              backLink
+              backLink,
+              typeOfLivestock: formattedTypeOfLivestock
             })
             .code(400)
             .takeover()
