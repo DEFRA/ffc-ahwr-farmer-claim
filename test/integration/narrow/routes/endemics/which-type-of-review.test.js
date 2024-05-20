@@ -15,7 +15,7 @@ describe('Which type of review test', () => {
     strategy: 'cookie'
   }
   let crumb
-  const previousClaims = []
+  const previousClaims = [{ data: { typeOfLivestock: 'beef' } }]
   const latestVetVisitApplication = { data: { whichReview: 'beef' } }
 
   beforeAll(() => {
@@ -53,7 +53,7 @@ describe('Which type of review test', () => {
 
   describe('GET', () => {
     test('Returns 200 and gets typeOfLivestock from past claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'R', latestVetVisitApplication, previousClaims })
+      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'R', latestVetVisitApplication, previousClaims: [] })
       const options = {
         method: 'GET',
         url,
@@ -91,7 +91,7 @@ describe('Which type of review test', () => {
       { typeOfLivestock: 'sheep', content: 'sheep' },
       { typeOfLivestock: 'pigs', content: 'pigs' }
     ])('Returns 200 and formats content correct from typeOfLivestock $typeOfLivestock', async ({ typeOfLivestock, content }) => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'review', latestVetVisitApplication: { data: { whichReview: typeOfLivestock } }, previousClaims })
+      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'review', latestVetVisitApplication: { data: { whichReview: typeOfLivestock } }, previousClaims: [] })
       const options = {
         method: 'GET',
         url,
