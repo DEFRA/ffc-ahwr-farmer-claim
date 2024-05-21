@@ -8,7 +8,7 @@ const {
   endemicsWhichTypeOfReview,
   endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
-const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey } } = require('../../session/keys')
+const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
 const { livestockTypes } = require('../../constants/claim')
 
@@ -66,6 +66,8 @@ module.exports = [{
       const { vetVisitsReviewTestResults } = request.payload
 
       session.setEndemicsClaim(request, vetVisitsReviewTestResultsKey, vetVisitsReviewTestResults)
+      session.setEndemicsClaim(request, reviewTestResultsKey, vetVisitsReviewTestResults)
+
       return h.redirect(nextPageURL(request))
     }
   }
