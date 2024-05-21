@@ -9,7 +9,7 @@ const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../../c
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const {
-  endemicsClaim: { reviewTestResults }
+  endemicsClaim: { reviewTestResults: reviewTestResultsKey }
 } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../../app/config')
@@ -168,7 +168,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { typeOfReview, previousClaims, latestVetVisitApplication, typeOfLivestock, organisation } = session.getEndemicsClaim(request)
+        const { typeOfReview, previousClaims, latestVetVisitApplication, typeOfLivestock, organisation, reviewTestResults } = session.getEndemicsClaim(request)
         const { isEndemicsFollowUp } = getReviewType(typeOfReview)
         const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
 
@@ -209,9 +209,8 @@ module.exports = [
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock) && isEndemicsFollowUp) {
-          const reviewTestResultsValue = getReviewTestResultWithinLast10Months(request)
-
-          session.setEndemicsClaim(request, reviewTestResults, reviewTestResultsValue)
+          const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
+          session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
           if (reviewTestResultsValue === 'negative') return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
