@@ -2,7 +2,9 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const { isURNUnique } = require('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/api-requests/claim-service-api')
 
 describe('Test URN test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -132,7 +134,8 @@ describe('Test URN test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', nextPageUrl: '/claim/endemics/number-of-samples-tested' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock and $typeOfReview', async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
+      isURNUnique.mockImplementation(() => { return { isURNUnique: true } })
       const options = {
         method: 'POST',
         url,
@@ -146,7 +149,23 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
+    test('redirects to exception screen when the URN number is not unique', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', typeOfReview: 'E', laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
+      isURNUnique.mockImplementationOnce(() => { return { isURNUnique: false } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, laboratoryURN: '123' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
 
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(400)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
+    })
     test('shows error when payload is invalid', async () => {
       const options = {
         method: 'POST',

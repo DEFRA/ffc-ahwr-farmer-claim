@@ -78,6 +78,36 @@ describe('Claim Service API', () => {
     expect(result).toBe(null)
     expect(claimServiceApi.isWithin10Months()).toBe(false)
   })
+  test('Check if URN number is unique', async () => {
+    const payload = { isURNUnique: true }
+    const mockResponse = {
+      res: {
+        statusCode: 200,
+        statusMessage: 'OK'
+      },
+      payload
+    }
+    Wreck.post.mockResolvedValue(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const result = await claimServiceApi.isURNUnique({ sbi: '123456789', laboratoryURN: '1234567' })
+
+    expect(result).toBe(payload)
+  })
+  test('Check if URN number is unique with wrong data', async () => {
+    const mockResponse = {
+      res: {
+        statusCode: 400,
+        statusMessage: 'Bad Request'
+      }
+    }
+    Wreck.post.mockResolvedValue(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const result = await claimServiceApi.isURNUnique('new claim with invalid data')
+
+    expect(result).toBe(null)
+  })
   test('Check if the date is with in 8 months', async () => {
     const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
