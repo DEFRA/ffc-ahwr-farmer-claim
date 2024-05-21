@@ -16,8 +16,13 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
         <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
-        <p class="govuk-body">This test result unique reference number(URN) was used in a previouse claim.</p>
-        <p class="govuk-body">If you entered the wrong URN, you'll need to go back and enter the correct URN.</p>
+        {% if isBeefOrDairyEndemics %}
+          <p class="govuk-body">This test result unique reference number(URN) or certificate number was used in a previous claim.</p>
+          <p class="govuk-body">If you entered the wrong URN or certificate number, you'll need to go back and enter the correct URN.</p>
+        {% else %}
+          <p class="govuk-body">This test result unique reference number(URN) was used in a previous claim.</p>
+          <p class="govuk-body">If you entered the wrong URN, you'll need to go back and enter the correct URN.</p>
+        {% endif %}
         <p class="govuk-body"><a class="govuk-link" href={{backLink}}>Enter the URN.</a></p>
         <div class="govuk-warning-text">
             <span class="govuk-warning-text__icon" aria-hidden="true">!</span>

@@ -17,6 +17,7 @@ const {
   endemicsClaim: { laboratoryURN: laboratoryURNKey }
 } = require('../../session/keys')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getReviewType } = require('../../lib/get-review-type')
 const { getTestResult } = require('../../lib/get-test-result')
 const { isURNUnique } = require('../../api-requests/claim-service-api')
 
@@ -102,12 +103,15 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { laboratoryURN } = request.payload
-        const { organisation } = session.getEndemicsClaim(request)
+        const { organisation, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+        const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+        const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
         const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN })
 
         session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
-        if (!response?.isURNUnique) return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency }).code(400).takeover()
+        if (!response?.isURNUnique) return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
 
         return h.redirect(nextPageUrl(request))
       }

@@ -149,8 +149,11 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
-    test('redirects to exception screen when the URN number is not unique', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', typeOfReview: 'E', laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', message: 'This test result unique reference number(URN) or certificate number was used in a previous claim.' },
+      { typeOfLivestock: 'beef', typeOfReview: 'R', message: 'This test result unique reference number(URN) was used in a previous claim.' }
+    ])('redirects to exception screen when the URN number is not unique', async ({ typeOfLivestock, typeOfReview, message }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
       isURNUnique.mockImplementationOnce(() => { return { isURNUnique: false } })
       const options = {
         method: 'POST',
@@ -165,6 +168,7 @@ describe('Test URN test', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect($('p').text()).toContain(message)
     })
     test('shows error when payload is invalid', async () => {
       const options = {
