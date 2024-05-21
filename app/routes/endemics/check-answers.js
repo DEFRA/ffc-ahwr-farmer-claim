@@ -80,8 +80,8 @@ module.exports = [
         ]
         const piHuntRow = {
           key: { text: 'PI hunt' },
-          value: { html: piHunt },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'change the piHunt' }] }
+          value: { html: upperFirstLetter(piHunt) },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'change the pi hunt' }] }
         }
         const laboratoryUrnRow = {
           key: { text: 'Test results URN' },
