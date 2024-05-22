@@ -18,6 +18,25 @@ async function getClaimsByApplicationReference (applicationReference) {
   }
 }
 
+async function isURNUnique (data) {
+  try {
+    const response = await Wreck.post(`${config.applicationApiUri}/claim/is-urn-unique`, {
+      payload: data,
+      json: true
+    })
+
+    if (response.res.statusCode !== 200) {
+      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
+    }
+
+    return response.payload
+  } catch (error) {
+    console.error(`${new Date().toISOString()} URN check failed`)
+    appInsights.defaultClient.trackException({ exception: error })
+    return null
+  }
+}
+
 async function submitNewClaim (data) {
   try {
     const response = await Wreck.post(`${config.applicationApiUri}/claim`, {
@@ -146,6 +165,7 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
 }
 
 module.exports = {
+  isURNUnique,
   submitNewClaim,
   isWithin10Months,
   isValidDateOfVisit,
