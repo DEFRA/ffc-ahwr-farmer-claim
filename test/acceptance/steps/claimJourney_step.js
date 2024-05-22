@@ -1,6 +1,8 @@
 const { Given, When, Then,} = require('@wdio/cucumber-framework')
 const ClaimJourney = require('../page-objects/claimJourney-page')
+const EndemicsJourney = require('../page-objects/endemicsJourney-page')
 const claimJourney = new ClaimJourney()
+const endemicsJourney = new EndemicsJourney()
 
 Given(/^user is on the (.*) landing page$/,async function (page) {
   await claimJourney.getHomepage(page)
@@ -56,8 +58,10 @@ When(/^asked about the date the review was completed$/, async function () {
 });
 When(/^user input the date in (.*) order$/, async function (dateFormat) {
  await claimJourney.inputCurrentDate(dateFormat)
-})
-
+});
+When(/^validate date of visit error message for (.*) date/, async function (dateFormat) {
+  await claimJourney.inputCurrentDate(dateFormat)
+ });
 When(/^enter the (.*) date to check if the error message is displayed$/, async function (day) {
   await claimJourney.verifyDate_Error(day)
  });
@@ -67,6 +71,9 @@ Then(/^validate the error message$/, async function () {
 When(/^user input missing (.*) or (.*) or (.*)$/, async function (day,month,year) {
 await claimJourney.invalidDateFormat(day, month,year)
 });
+When(/^farmer input missing (.*) or (.*) or (.*) for samples taken$/, async function (day,month,year) {
+  await claimJourney.invalidDateFormatSampleTaken(day, month,year)
+  });
 
 Then(/^validation of error message Date of review must include a day and a year$/, async function(){
 await claimJourney.dateAndYearmissing_Error_Validation()
@@ -78,38 +85,45 @@ Then(/^validation of error message Date of review must be a real date$/, async f
   Then(/^enter the name with more than 50 characters$/, async function(){
   await claimJourney.errorVetName()
   });
+  Then(/^enter no value value in vets name$/, async function(){
+    await claimJourney.errorVetNamBlankValue ()
+  }); 
   Then(/^validation for more characters in vets visits name$/, async function(){
     await claimJourney.name_error_validation()
   });  
-Then(/^validation of error message Date of review must include a day and a month$/, async function(){
+  Then(/^validation for more characters in vets visits name for endemics$/, async function(){
+    await claimJourney.name_error_validation_endemics()
+  }); 
+  Then(/^validation of error message Date of review must include a day and a month$/, async function(){
   await claimJourney.dateAndMonthmissing_Error_Validation()
   });
-Then(/^validation of error message Date of review must include a month and a year$/, async function(){
+  Then(/^validation of error message Date of review must include a month and a year$/, async function(){
     await claimJourney.yearAndMonthmissing_Error_Validation()
-    });
-Then(/^validation of error message Date of review must include a month$/, async function(){
-    await claimJourney.monthmissing_Error_Validation()
-     });
-Then(/^validation of error message Date of review must include a year$/, async function(){
-      await claimJourney.yearmissing_Error_Validation()
-       });
-Then(/^validation of error message Date of review must include a date$/, async function(){
-        await claimJourney.datemissing_Error_Validation()
-         });
-
-Then(/^validation of invalid error message$/, async function () {
+  });
+  Then(/^validation of error message Date of review must include a month$/, async function(){
+   await claimJourney.monthmissing_Error_Validation()
+   });
+  Then(/^validation of error message Date of review must include a year$/, async function(){
+  await claimJourney.yearmissing_Error_Validation()
+  });
+  Then(/^validation of error message Date of review must include a date$/, async function(){
+  await claimJourney.datemissing_Error_Validation()
+  });
+  Then(/^validation of invalid error message$/, async function () {
   await claimJourney.invalidDateValidate()
- });
-
-When(/^validation of Error$/, async function () {
+  });
+  When(/^validation of Error$/, async function () {
   await claimJourney.blankErrorValidation()
- });
-When(/^enter the past date to check if the error message is displayed$/, async function () {
- await claimJourney.VerifyError_BeforeApplicationDate()
-});
-Then(/^validation of the error message$/, async function () {
- await claimJourney.validate_Application_DateError()
-});
+  });
+  When(/^enter the past date to check if the error message is displayed$/, async function () {
+  await claimJourney.VerifyError_BeforeApplicationDate()
+  });
+  Then(/^validation of the error message$/, async function () {
+  await claimJourney.validate_Application_DateError()
+  });
+  When(/^validate the Date of testing cannot be blank for another date$/, async function () {
+  await claimJourney.blank_Error_Validation_For_AnotherDate()
+  })
 
 Then(/^click on another date$/, async function () {
  await claimJourney.clickOnAnotherDay()
@@ -118,15 +132,26 @@ Then(/^click on another date$/, async function () {
 When(/^click on the option when vet visited the farm to carry out the review$/, async function () {
  await claimJourney.clickOnSameDay()
 })
+Then(/^close browser$/, async function () {
+  await claimJourney.closeBrowser()
+})
+
 Then(/^clicked on continue button$/, async function () {
  await claimJourney.continueAfterInputData()
 });
+Then(/^clicked on continue button for endemics$/, async function () {
+  await claimJourney.continueAfterEndemicsInputData()
+ });
+ Then(/^clicked on back button biosecurity page$/, async function () {
+  await claimJourney.click_BackLink_BioSecurity()
+ });
+ 
 //..... Vet-Name
 Given(/^user is on vet name page$/, async function () {
  await  claimJourney.vetNamePage()
 });
 Given(/^user enters the (.*) name and (.*)$/, async function (species,value) {
-  await  claimJourney.animalTestingValidation(species,value)
+  await  claimJourney.animalTestingValidationTest(species,value)
  });
 When(/^check the question on the page$/, async function () {
  await claimJourney.pageQuestion()
@@ -140,6 +165,21 @@ Then(/^click to continue the claim$/, async function () {
 Then(/^validate the error for (.*) error message$/, async function (type) {
   await claimJourney.noOfSpeciesErrorValidation(type)
 });  
+Then(/^validate pigs error message$/, async function () {
+  await claimJourney.validateBeefandPigsErrorMessage()
+});
+Then(/^validate beef error message$/, async function () {
+  await claimJourney.validateBeefandPigsErrorMessage()
+});
+Then(/^validate sheep error message$/, async function () {
+  await claimJourney.validatesheepErrorMessage()
+});
+
+Then(/^validate blank error message$/, async function () {
+  await claimJourney.validateSpeciesBlankErrorMessage()
+});
+
+
 Given(/^user navigate to vet rcvs page$/, async function () {
  await claimJourney.vet_rcvsPage()
 });
@@ -149,18 +189,28 @@ When(/^user read the question$/, async function () {
 When(/^user enter the rcvs number$/, async function () {
  await claimJourney.numberBox()
 });
+When(/^user enter the rcvs number in endemics$/, async function () {
+  await claimJourney.numberBoxEndemics()
+ });
 Then(/^proceed to next page$/,  async function () {
  await claimJourney.continueAfterInputData()
 });
 Given(/^user is on urn result page$/, async function () {
  await claimJourney.urnPage()
 });
+Given(/^user is on urn result page of endemics$/, async function () {
+  await claimJourney.urnPageEndemics()
+ });
+
 When(/^check what's required$/, async function () {
  await claimJourney.pageDisplay()
 });
 When(/^user input the test unique reference number$/, async function () {
  await claimJourney.urnInputField()
 });
+When(/^user input the test unique reference number in endemics$/, async function () {
+  await claimJourney.urnInputFieldEndemics()
+ });
 // check-answer page
 Given(/^user confirm to be on check answer page$/, async function () {
  await claimJourney.checkAnswerPage()
@@ -192,6 +242,10 @@ Then(/^user submit the claim$/, async function () {
 When(/^user is on submit claim page$/, async function () {
  await claimJourney.completeClaimPage()
 });
+
+When(/^user clicks on endemics claim submit$/, async function () {
+  await claimJourney.clickOnSubmit()
+ });
 When(/^User complete the claim$/, async function () {
  await claimJourney.claimCompleteMessage()
 });
@@ -232,14 +286,28 @@ Then(/^validation of special characters in the vets visits name$/, async functio
 Then(/^validation of error message for special characters in the vets visits name$/, async function () {
   await claimJourney.errorValidationVetNameSplCharacters()
 });
-
+Then(/^validation of error message for special characters in the vets visits name for endemics$/, async function () {
+  await claimJourney.errorValidationVetNameSplCharactersEndemics()
+});
 
 Then(/^user enter the rcvs number with (.*) characters$/, async function (condition) {
   await claimJourney.numberBoxError(condition)
 });
 
+Then(/^user enter the rcvs number with (.*) characters in endemics$/, async function (condition) {
+  await claimJourney.numberRCVSBoxError(condition)
+});
+
 Then(/^Validation of RCVS error message$/, async function () {
   await claimJourney.errorValidationRCVS()
+});
+
+Then(/^Validation of RCVS error message for endemics$/, async function () {
+  await claimJourney.errorValidationEndemicsRCVS()
+});
+
+When(/^Enter URN field for endemics with (.*)$/, async function (condition) {
+  await claimJourney.urnInputFieldErrorEndemics(condition)
 });
 
 When(/^Enter URN field with (.*)$/, async function (condition) {
@@ -248,6 +316,9 @@ When(/^Enter URN field with (.*)$/, async function (condition) {
 
 Then(/^Validation of URN error message for (.*) characters$/, async function (condition) {
   await claimJourney.errorValidationURN(condition)
+});
+Then(/^Endemics validation of URN error message for (.*) characters$/, async function (condition) {
+  await claimJourney.errorValidationURNEndemics(condition)
 });
 
 Then(/^Create an Entry in the database$/,async function (){
@@ -310,6 +381,9 @@ When(/^click to oral samples continue the claim$/, async function () {
  Then(/^validate the pig testing link in exception screen$/, async function(){
   await claimJourney.pigTestingLink()
  })
+Then (/^clicks back$/, async function(){
+  await claimJourney.clickBrowserback()
+})
  Then(/^validate the enter the no of animals tested link in exception screen$/, async function(){
   await claimJourney.enterNoOfAnimalsTestingLink()
  })
@@ -334,6 +408,15 @@ Then(/^check defra email ID exists$/,async function(){
 Then(/^check phone number exists$/,async function(){
   await claimJourney.phoneNumberValidate()
 })
+Then(/^validate the test results error message$/,async function(){
+  await claimJourney.validateTestResultsErrorMessage();
+})
+Then(/^click on the positive test results$/, async function(){
+  await claimJourney.clickPositiveTestResults();
+})
+Then(/^validate the results exception error message$/, async function(){
+  await claimJourney.validateResultsErrorMessgae()
+})
 Then(/^check phone number exists for oral samples$/,async function(){
   await claimJourney.phoneNumberOralSamplesValidate()
 })
@@ -350,3 +433,152 @@ When(/^user agreed the business details is correct$/, async function () {
 Then(/^user continue to next page$/, async function () {
   await claimJourney.proceedWithApplication()
 })
+When(/^user choose (.*) cattle for review$/, async function (LiveStockName) {
+  await claimJourney.liveStockReview(LiveStockName)
+})
+Then (/^user clicks on Manage your claim$/, async function (){
+  await claimJourney.clickManageclaim()
+})
+When(/^user confirm to meet the requirement$/, async function () {
+  await claimJourney.accurateLivestockNumber()
+})
+When(/^user doesnt confirm to meet the requirement$/, async function () {
+  await claimJourney.noAccurateLivestockNumber()
+})
+Then(/^click on the minimum livestock review link$/, async function (){
+  await claimJourney.validateMinimumLivestock()
+})
+Then(/^click change your answerfor number of livestock$/, async function (){
+  await claimJourney.validatechangeyouranswer()
+})
+Then(/^validate the no option selected error message for date of testing$/, async function () {
+await claimJourney.noOptionSelectedErrorValidation()
+})
+When(/^click on another date which is earlier than review date$/, async function () {
+await claimJourney.clickOnAnotherDay_WrongMonth()
+})
+Then(/^validate the Date of testing cannot be before the review visit date$/, async function () {
+await claimJourney.earlyReviewDateErrorValidation()
+})
+When(/^validate that date is missing for data of visit in endemics$/, async function () {
+await claimJourney.dateMissing_Visit_Error_Validation()
+})
+When(/^validate that year is missing for data of visit in endemics$/, async function () {
+await claimJourney.yearMissing_Visit_Error_Validation()
+})
+When(/^validate that month is missing for data of visit in endemics$/, async function () {
+await claimJourney.monthMissing_Visit_Error_Validation()
+}) 
+When(/^Validate if Agreement is generated$/, async function () {
+  await claimJourney.validateReferenceNumber()
+})
+When(/^Validate if amount is displayed$/, async function () {
+await claimJourney.validateAmount()
+})
+When(/^check Guidance click$/, async function () {
+await claimJourney.clickGuidanceLink()
+})
+When(/^check Manage your claims$/, async function () {
+await claimJourney.clickManageYourClaim
+})
+When(/^check what is that you think of this service$/, async function () {
+  await claimJourney.clickWhatYOuLikeAboutThisIsService()
+})
+Then (/^click on gov.uk in the left pane$/,async function (){ 
+  await claimJourney.clickGovUKPane()
+})
+Then (/^validate if the user redirected to gov.uk$/,async function (){ 
+  await claimJourney.urlValidation()
+})
+Then (/^user is able to see the Annual health and welfare review of livestock link on the middle top of the header$/,async function  (){ 
+  await claimJourney.getHeaderText()
+})
+Then (/^user clicks on the service name link$/,async function (){ 
+  await claimJourney.clickAHWR()
+})
+Then (/^user must be redirected to service guidance start pages$/,async function (){ 
+  await claimJourney.urlValidationAHWR()
+})
+
+
+Then(/^click on Endemics disease follow up review$/, async function (){
+  await claimJourney.clickEndemicDiseaseFollowUpReview()
+ })
+
+ Then(/^Validate the no option clicked for type of review message$/, async function () {
+  await claimJourney.validateTypeOfReviewErrorMessage()
+ })
+
+ Then(/^validate if the user landded on Date of Visit page$/, async function(){
+  await claimJourney.validateDateOfVisitHeader()
+ })
+
+ Then(/^Validate the Type Of Review URL$/, async function(){
+  await claimJourney.typeOfReviewUrlValidation()
+ })
+
+ Then(/^click on the enter the animal tested$/, async function(){
+ await claimJourney.sheep_error_link_enter_the_animal_tested()
+ })
+
+ Then(/^click on the continue with your claim$/, async function(){
+  await claimJourney.sheep_error_link_continue_to_claim()
+  })
+ 
+  Then(/^check (.*) for the (.*) for the agreement$/, async function(tagToCheck,status){
+    await endemicsJourney.validateResultsErrorMessgae(tagToCheck,status)
+    })
+
+  Then(/^click on the HerdVaccination postive$/, async function(){
+      await endemicsJourney.click_Herd_Vaccination()
+    })
+  Then(/^enter the (.*) no of pig samples that were tested$/, async function(sampleValue){
+      await endemicsJourney.enterNoOfSamplesTested(sampleValue)
+    })
+
+  Then(/^validate the sample error message$/, async function(){
+    await endemicsJourney.validateNoOfSamplesError()
+  })
+  Then(/^validate incorrect number of samples error message$/, async function(){
+    await endemicsJourney.validateIncorrectNoOfSamplesError()
+  })  
+  Then(/^validate the disease status category$/, async function(){
+    await endemicsJourney.validateDiseaseStatusCategory()
+  })  
+  
+Then(/^validate type of review header$/, async function () {
+  await claimJourney.validateReviewErrorMessgae()
+ });
+ Then(/^validate you cannot continue to claim$/, async function () {
+  await claimJourney.validateReviewClaimError()
+ });
+ Then(/^click on ten month guidance link$/, async function () {
+  await claimJourney.ten_month_guidance_link()
+ });
+ Then(/^click on date of visit link$/, async function () {
+  await claimJourney.date_of_visit_link()
+ });
+ Then(/^click on AHWR link$/, async function () {
+  await claimJourney.ahwr_radio()
+ });
+ Then(/^click on the disease category$/, async function () {
+  await  endemicsJourney.clickOnDiseaseStatusCategory()
+ });
+ Then(/^click yes on biosecurity link$/, async function () {
+  await endemicsJourney.clickYesBiosecurityAssesssment()
+ });
+ Then(/^click no on biosecurity link$/, async function () {
+  await endemicsJourney.clickNoBiosecurityAssesssment()
+ });
+ Then(/^Enter the percentage$/, async function () {
+  await  endemicsJourney.enterBioSecurityPercentage()
+ });
+ Then(/^check if user had landed in the check your answers page$/, async function () {
+  await claimJourney.ahwr_radio()
+ });
+Then(/^validate that no options selected for assessment error message$/, async function () {
+  await endemicsJourney.validateNoOptionSelectedForBiosecurity()
+ });
+ Then(/^validate no assessment percentage is entered$/, async function () {
+  await endemicsJourney.validateNoPercentageEntered()
+ });
