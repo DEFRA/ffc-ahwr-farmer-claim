@@ -212,7 +212,7 @@ module.exports = [
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
-          if (reviewTestResultsValue === 'negative') return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+          if (reviewTestResultsValue === 'negative' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
