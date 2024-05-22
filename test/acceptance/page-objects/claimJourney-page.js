@@ -112,7 +112,7 @@ const RCVS_ERROR = '#rcvs-error'
 const RCVS_ERROR_ENDEMICS = 'a[href="#vetRCVSNumber}"]'
 const URN_ERROR = '#urn-error'
 const URN_ERROR_ENDEMICS = 'a[href="#laboratoryURN"]'
-const RCVS_ERRORMESSAGE = 'RCVS number must be 7 characters and only include letters a to z and numbers, like 1234567'
+const RCVS_ERRORMESSAGE = 'RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
 const URN_SPL_CHARACTERERRORMESSAGE = 'URN must only include letters a to z, numbers and a hyphen'
 const URN_ERRORMESSAGE = 'URN must be 50 characters or fewer'
 const URN_EMPTY_ERRORMESSAGE = 'Enter the URN'
@@ -160,8 +160,8 @@ const PHONE_NUMBER_ACTUAL = '//*[@class="govuk-list"]//li[3]'
 const PHONE_NUMBER_ORAL_SAMPLES_ACTUAL = '//*[@class="govuk-list"]//li[3]'
 const NUMBER_OF_ANIMALS_HEADER_EXPECTED = 'How many animals did the vet test?'
 const NUMBER_OF_ANIMALS_HEADER_ACTUAL = '//*[@id="main-content"]/div/div/form/h1'
-const NUMBER_OF_ORAL_FLUID_SAMPLES_HEADER_ACTUAL = '//*[contains(text(),"How many oral fluid samples did the vet do?")]'
-const NUMBER_OF_ORAL_FLUID_SAMPLES_EXPECTED = 'How many oral fluid samples did the vet do?'
+const NUMBER_OF_ORAL_FLUID_SAMPLES_HEADER_ACTUAL = '//*[contains(text(),"How many oral fluid samples did the vet take?")]'
+const NUMBER_OF_ORAL_FLUID_SAMPLES_EXPECTED = 'How many oral fluid samples did the vet take?'
 const NO_OF_SPECIES_TESTED = '#numberAnimalsTested'
 const NO_OF_ORAL_TESTED = '#numberOfOralFluidSamples'
 const SPECIES_NUMBER_CONTINUE = '#btnContinue'
@@ -171,8 +171,10 @@ const FARMER_DETAILS = '.govuk-summary-list'
 const DETAILS_BUTTON = '#confirmCheckDetails'
 const CONTINUE_BUTTON1 = '#btnContinue'
 const DETAILS = 'Check your details'
-const CONTENT1 = 'Farmer name'
+const CONTENT1 = 'Business name'
 const MANAGE_CLAIM = '//*[contains(text(),"Start a new claim")]'
+
+
 const SHEEP = '#typeOfLivestock-3'
 const PIGS = '#typeOfLivestock-4'
 const DAIRY_CATTLE = '#typeOfLivestock-2'
@@ -234,6 +236,7 @@ let TYPE_OF_REVIEW_ACTUAL_ERROR_MESSAGE='a[href="#typeOfReview"]'
 let DATE_OF_VISIT_HEADER_ACTUAL='Date of visit'
 let DATE_OF_VISIT_HEADER_EXPECTED='//*[@id="main-content"]/div/div/h1'
 let TYPE_OF_REVIEW_URL='https://ffc-ahwr-farmer-test.azure.defra.cloud/claim/endemics/which-type-of-review'
+let CHANGE_YOUR_ANSWERS='//*[@id="main-content"]/div/div/p[3]/a'
 
 
 //sheep error page links
@@ -367,6 +370,9 @@ class StartPageActions extends CommonActions {
 
   } async proceedClaim() {
     await this.clickOn(CONTINUE_BUTTON)
+  }
+  async clickChangeTheAnswers() {
+    await this.clickOn(CHANGE_YOUR_ANSWERS)
   }
   async visitDatePage() {
     await this.urlContain('vet-visit-date')
@@ -774,9 +780,9 @@ class StartPageActions extends CommonActions {
     if (condition = '50 characters') {
       await this.sendKey(URN_FIELD_ENDEMICS, 'wererrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr	')
     } else if (condition = 'empty') {
-      await this.sendKey(RN_FIELD_ENDEMICS, '')
+      await this.sendKey(URN_FIELD_ENDEMICS, '')
     } else if (condition = 'specialcharacters') {
-      await this.sendKey(RN_FIELD_ENDEMICS, 'auto%$^^mation')
+      await this.sendKey(URN_FIELD_ENDEMICS, 'auto%$^^mation')
     }
   }
 

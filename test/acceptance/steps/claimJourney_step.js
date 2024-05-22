@@ -81,6 +81,13 @@ await claimJourney.dateAndYearmissing_Error_Validation()
 Then(/^validation of error message Date of review must be a real date$/, async function(){
   await claimJourney.realDate_Error_Validation()
   });
+Then(/^validation of error message for (.*) date format for Date of visit must be a real date$/, async function(dateError){
+    await claimJourney.validateDateOfVisitError(dateError)
+    });
+Then(/^validation of error message for (.*) date format for Enter the date of vet testing$/, async function(dateError){
+      await claimJourney.inputDifferentDate(dateError)
+      });
+ 
 
   Then(/^enter the name with more than 50 characters$/, async function(){
   await claimJourney.errorVetName()
@@ -360,6 +367,10 @@ When(/^click to oral samples continue the claim$/, async function () {
  Then(/^validate the exception for oral samples screen$/, async function(){
   await claimJourney.validateExceptionOralSamplesHeader()
  })
+
+ Then(/^validate the ypu cannot continue to claim/, async function(){
+  await claimJourney.validateExceptionOralSamplesHeader()
+ })
  Then(/^validate the error message for special character$/, async function(){
   await claimJourney.validate_SpecialChar_Error()
  })
@@ -444,6 +455,9 @@ When(/^user confirm to meet the requirement$/, async function () {
 })
 When(/^user doesnt confirm to meet the requirement$/, async function () {
   await claimJourney.noAccurateLivestockNumber()
+})
+When(/^click on change your answers$/, async function () {
+await claimJourney.clickChangeTheAnswers()
 })
 Then(/^click on the minimum livestock review link$/, async function (){
   await claimJourney.validateMinimumLivestock()
@@ -582,3 +596,16 @@ Then(/^validate that no options selected for assessment error message$/, async f
  Then(/^validate no assessment percentage is entered$/, async function () {
   await endemicsJourney.validateNoPercentageEntered()
  });
+ Then(/^choose the sheep health package$/, async function () {
+  await endemicsJourney.chooseSheepHealthPackage()
+});
+Then(/^choose What did the vet test or sample for$/, async function () {
+  await endemicsJourney.clickSheepVetTest()
+});
+Then(/^choose What was the Johne’s test result$/, async function () {
+  await endemicsJourney.clickSheepPositiveTestResult()
+});
+Then(/^user clicks on click for endemics follow-up$/, async function () {
+  await endemicsJourney.clickClaimEndemicsFollowUp()
+});
+

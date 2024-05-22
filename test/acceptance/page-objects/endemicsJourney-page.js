@@ -53,7 +53,14 @@ const BIO_SECURITY_PERCENTAGE='#assessmentPercentage'
 const BIO_SECURITY_NO_OPTION_SELECTED='Select whether the vet did a biosecurity assessment' 	
 const BIO_SECURITY_NO_PERCENTAGE_ENTERED='Enter the assessment percentage'
 const BIO_SECURITY_ERROR_HEADER='//*[@id="main-content"]/div/div/div/div[1]/div/ul'
+//Sheep
+const SHEEP_HEALTH_PACKAGE='#sheepEndemicsPackage'
+const SHEEP_VET_TEST='#sheepTests'
+const POSITIVE_TEST_RESULT_SHEEP = '#testResult'
 
+//
+
+const CLAIM_FOR_ENDEMICS_FOLLOW_UP='//*[contains(text(),"Claim for endemics follow-up")]'
 
 
 class EndemicsPageActions extends CommonActions {
@@ -153,9 +160,21 @@ async validateIncorrectNoOfSamplesError(){
   async validateNoPercentageEntered(){
     await this.elementToContainErrorText(BIO_SECURITY_ERROR_HEADER,BIO_SECURITY_NO_PERCENTAGE_ENTERED)
   } 
+  async chooseSheepHealthPackage(){
+    await this.clickOn(SHEEP_HEALTH_PACKAGE)
   }
+  async clickSheepVetTest(){
+    await this.clickOn(SHEEP_VET_TEST)
+  }
+  async clickSheepPositiveTestResult(){
+    await this.clickOn(POSITIVE_TEST_RESULT_SHEEP)
+  }
+  async clickClaimEndemicsFollowUp(){
+    await this.clickOn(CLAIM_FOR_ENDEMICS_FOLLOW_UP)
 
-// Regular expression pattern to match AHWR-69DD-B341
+  }
+  
+  }
 
 
 
