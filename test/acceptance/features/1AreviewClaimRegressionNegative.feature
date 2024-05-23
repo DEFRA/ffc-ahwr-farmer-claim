@@ -15,7 +15,7 @@ When user continue to next page
 #Feature: Date of Visit validations
 When user input the date in invalid order
 Then clicked on continue button for endemics
-When validation of error message for invalid date format for Date of visit must be a real date
+When validation of error message for invalid date format for Date errors
 When user input the date in correct order
 Then clicked on continue button for endemics
 #Feature: Date of testing validations

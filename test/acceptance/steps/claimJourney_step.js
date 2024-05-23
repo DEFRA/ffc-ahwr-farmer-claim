@@ -81,7 +81,7 @@ await claimJourney.dateAndYearmissing_Error_Validation()
 Then(/^validation of error message Date of review must be a real date$/, async function(){
   await claimJourney.realDate_Error_Validation()
   });
-Then(/^validation of error message for (.*) date format for Date of visit must be a real date$/, async function(dateError){
+Then(/^validation of error message for (.*) date format for Date errors$/, async function(dateError){
     await claimJourney.validateDateOfVisitError(dateError)
     });
 Then(/^validation of error message for (.*) date format for Enter the date of vet testing$/, async function(dateError){
