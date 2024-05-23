@@ -1,0 +1,28 @@
+@smoketest
+Feature:294699-Dev: 5a 'Did you have at least X number of animals' Screen
+Scenario Outline:Dev:10-'Claim submission confirmation' Screen
+ Given user is on the /claim/endemics landing page
+   When user clicks on Start now
+   Then redirected to Defra ID page
+   And user login with Single business crn and password(for DefraId)
+   Then user click on sign in button
+   And user confirm the org-review page
+   And user agreed the business details is correct
+   Then user continue to next page
+   Then user clicks on Manage your claim
+   And user choose <LiveStockName> cattle for review
+   Then user continue to next page
+   When user input the date in correct order
+   Then clicked on continue button for endemics
+    And click on the option when vet visited the farm to carry out the review
+    Then clicked on continue button for endemics
+    And user confirm to meet the requirement
+    Then user continue to next page
+    When user enters the <species> name and <value>
+    Then clicked on continue button
+    When enter vet's full name
+    Then click to continue the claim
+     Examples:
+      | LiveStockName |species|value|
+      | Pigs          |Pigs   | 57  |
+      

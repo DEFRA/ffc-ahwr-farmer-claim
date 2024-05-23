@@ -283,33 +283,20 @@ exports.config = {
    * @param {string}             result.error    error stack if scenario failed
    * @param {number}             result.duration duration of scenario in milliseconds
    */
-//   afterStep: async function (step, scenario, result) {
-//     try {
-//         // Check if the browser session is still active
-//         if (browser.sessionId) {
-//             // Execute commands only if the session is active
-//             const zoomPercentage = 80;
-//             await browser.execute((zoom) => {
-//                 document.body.style.zoom = `${zoom}%`;
-//             }, zoomPercentage);
-            
-//             // Save screenshot
-//             const date = Date.now();
-//             await browser.saveScreenshot('.ffc-ahwr-farmer-claim/test/acceptance/screenShots/chrome-' + date + '.png');
-            
-//             // Reset zoom to 100%
-//             const zoomPercentage1 = 100;
-//             await browser.execute((zoom) => {
-//                 document.body.style.zoom = `${zoom}%`;
-//             }, zoomPercentage1);
-//         } else {
-//             console.log('Browser session is closed. Skipping afterStep hook.');
-//         }
-//     } catch (error) {
-//         console.error('Error in afterStep hook:', error);
-//     }
-// },
-
+  afterStep: async function (step, scenario, result) {
+      // cucumberJson.attach(await browser.takeScreenshot(), 'image/png')
+   const zoomPercentage = 80;
+   browser.execute((zoom) => {
+     document.body.style.zoom = `${zoom}%`;
+ }, zoomPercentage);
+   var date=Date.now();
+   await browser.saveScreenshot('.ffc-ahwr-farmer-claim/test/acceptance/screenShots/chrome-'+date+'.png')
+   const zoomPercentage1 = 100;
+   browser.execute((zoom) => {
+     document.body.style.zoom = `${zoom}%`;
+ }, zoomPercentage1);
+ 
+  },
   afterTest: async function (test, context, { error, result, duration, passed, retries }) {
    
 //     const originalWidth = 1200;  // Replace with your original width
