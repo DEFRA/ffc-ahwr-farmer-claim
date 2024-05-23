@@ -160,7 +160,7 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
     typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&
     latestVetVisitApplication?.data?.whichReview === livestockTypes.beef &&
-    !previousClaims?.find((claim) => claim?.data.typeOfReview === claimType.endemics)
+    !previousClaims?.find((claim) => claim.type === claimType.endemics)
   )
 }
 
