@@ -1,18 +1,59 @@
 const Joi = require('joi')
 const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
+const { urlPrefix, ruralPaymentsAgency } = require('../../config')
+const { claimType, livestockTypes } = require('../../constants/claim')
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
   endemicsTestUrn,
+  endemicsVaccination,
+  endemicsTestUrnException,
   endemicsNumberOfOralFluidSamples,
-  endemicsTestResults
+  endemicsNumberOfSamplesTested,
+  endemicsTestResults,
+  endemicsPIHunt
 } = require('../../config/routes')
 const {
   endemicsClaim: { laboratoryURN: laboratoryURNKey }
 } = require('../../session/keys')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getReviewType } = require('../../lib/get-review-type')
+const { getTestResult } = require('../../lib/get-test-result')
+const { isURNUnique } = require('../../api-requests/claim-service-api')
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
+
+const title = (request) => {
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+
+  if (typeOfReview === claimType.endemics) {
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) { return 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' }
+  }
+
+  return 'What’s the laboratory unique reference number (URN) for the test results?'
+}
+
+const previousPageUrl = (request) => {
+  const { typeOfLivestock, typeOfReview, reviewTestResults } = session.getEndemicsClaim(request)
+  const { isBeef } = getLivestockTypes(typeOfLivestock)
+  const { isPositive } = getTestResult(reviewTestResults)
+
+  if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsVetRCVS}`
+  if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+  if (isBeef && isPositive) return `${urlPrefix}/${endemicsPIHunt}`
+
+  return `${urlPrefix}/${endemicsVetRCVS}`
+}
+
+const nextPageUrl = (request) => {
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+
+  if (typeOfLivestock === livestockTypes.pigs && typeOfReview === claimType.review) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+  if (typeOfLivestock === livestockTypes.pigs && typeOfReview === claimType.endemics) return `${urlPrefix}/${endemicsNumberOfSamplesTested}`
+  if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+
+  return `${urlPrefix}/${endemicsCheckAnswers}`
+}
 
 module.exports = [
   {
@@ -22,8 +63,9 @@ module.exports = [
       handler: async (request, h) => {
         const { laboratoryURN } = session.getEndemicsClaim(request)
         return h.view(endemicsTestUrn, {
+          title: title(request),
           laboratoryURN,
-          backLink: `${urlPrefix}/${endemicsVetRCVS}`
+          backLink: previousPageUrl(request)
         })
       }
     }
@@ -51,8 +93,9 @@ module.exports = [
           return h
             .view(endemicsTestUrn, {
               ...request.payload,
+              title: title(request),
               errorMessage: { text: error.details[0].message, href: '#laboratoryURN' },
-              backLink: `${urlPrefix}/${endemicsVetRCVS}`
+              backLink: previousPageUrl(request)
             })
             .code(400)
             .takeover()
@@ -60,17 +103,17 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { laboratoryURN } = request.payload
-        const { typeOfLivestock } = session.getEndemicsClaim(request)
+        const { organisation, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+        const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+        const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
+        const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN })
 
         session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
-        if (typeOfLivestock === 'beef' || typeOfLivestock === 'dairy') {
-          return h.redirect(`${urlPrefix}/${endemicsTestResults}`)
-        } else if (typeOfLivestock === 'pigs') {
-          return h.redirect(`${urlPrefix}/${endemicsNumberOfOralFluidSamples}`)
-        }
-        // else if (typeOfLivestock === "sheep") {
-        return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
+        if (!response?.isURNUnique) return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
+
+        return h.redirect(nextPageUrl(request))
       }
     }
   }

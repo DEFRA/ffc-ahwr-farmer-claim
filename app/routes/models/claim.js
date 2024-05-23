@@ -6,12 +6,13 @@ const legendText = 'Are these details correct?'
 
 const getRows = (claim) => {
   const claimData = claim.data
-
   const rows = [
     { key: { text: 'Agreement number' }, value: { text: claim.reference } },
     { key: { text: 'Business name' }, value: { text: claimData.organisation.name } },
     getTypeOfReviewRowForDisplay(claimData),
-    getEligibleNumberRowForDisplay(claimData)
+    getEligibleNumberRowForDisplay(claimData),
+    { key: { text: 'Organisation email address' }, value: { text: claim.organisation.orgEmail } },
+    { key: { text: 'User email address' }, value: { text: claim.organisation.email } }
   ]
 
   return rows

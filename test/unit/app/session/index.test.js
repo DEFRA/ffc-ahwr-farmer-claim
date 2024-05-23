@@ -7,6 +7,7 @@ describe('session', () => {
   const tokensSectionKey = 'tokens'
   const customerSectionKey = 'customer'
   const pkcecodesSectionKey = 'pkcecodes'
+  const tempClaimReferenceKey = 'tempClaimReference'
 
   const value = 'value'
   const objectValue = { key: value }
@@ -26,7 +27,8 @@ describe('session', () => {
     { func: 'setClaim', expectedSectionKey: claimKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
-    { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey }
+    { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey },
+    { func: 'setTempClaimReference', expectedSectionKey: tempClaimReferenceKey }
   ]
 
   const keysAndValuesToTest = [
@@ -115,5 +117,36 @@ describe('session', () => {
     expect(requestSetMock.yar.get).toHaveBeenCalledWith(expectedSectionKey)
     expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
     expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { [key]: objectValue })
+  })
+
+  test('session clear clears correct keys', async () => {
+    const yarMock = {
+      get: jest.fn(),
+      set: jest.fn(),
+      clear: jest.fn()
+    }
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
+    session.clear(requestSetMock)
+
+    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(5)
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('claim')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('endemicsClaim')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('application')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('organisation')
+    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('tempClaimReference')
+  })
+
+  test('session clearEndemicsClaim clears correct keys and keeps correct keys', async () => {
+    const yarMock = {
+      get: jest.fn(),
+      set: jest.fn(),
+      clear: jest.fn()
+    }
+    yarMock.get.mockReturnValue({ organisation: 'org', reference: 'ref' })
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
+    session.clearEndemicsClaim(requestSetMock)
+
+    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(1)
+    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(2)
   })
 })

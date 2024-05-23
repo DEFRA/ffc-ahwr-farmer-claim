@@ -19,6 +19,9 @@ module.exports = {
     dateOfTesting: 'dateOfTesting'
   },
   endemicsClaim: {
+    biosecurity: 'biosecurity',
+    diseaseStatus: 'diseaseStatus',
+    landingPage: 'landingPage',
     reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
     typeOfReview: 'typeOfReview',
@@ -26,16 +29,25 @@ module.exports = {
     dateOfTesting: 'dateOfTesting',
     vetsName: 'vetsName',
     vetRCVSNumber: 'vetRCVSNumber',
+    herdVaccinationStatus: 'herdVaccinationStatus',
     laboratoryURN: 'laboratoryURN',
     numberOfOralFluidSamples: 'numberOfOralFluidSamples',
+    numberOfSamplesTested: 'numberOfSamplesTested',
     numberAnimalsTested: 'numberAnimalsTested',
     minimumNumberAnimalsRequired: 'minimumNumberAnimalsRequired',
     testResults: 'testResults',
+    vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
     organisation: 'organisation',
     speciesNumbers: 'speciesNumbers',
+    sheepEndemicsPackage: 'sheepEndemicsPackage',
     latestEndemicsApplication: 'latestEndemicsApplication',
     latestVetVisitApplication: 'latestVetVisitApplication',
-    previousClaims: 'previousClaims'
+    relevantReviewForEndemics: 'relevantReviewForEndemics',
+    sheepTests: 'sheepTests',
+    sheepTestResults: 'sheepTestResults',
+    previousClaims: 'previousClaims',
+    reviewTestResults: 'reviewTestResults',
+    piHunt: 'piHunt'
   },
   claim: {
     animalsTested: 'animalsTested',
@@ -57,5 +69,6 @@ module.exports = {
     crn: 'crn',
     organisationId: 'organisationId',
     attachedToMultipleBusinesses: 'attachedToMultipleBusinesses'
-  }
+  },
+  tempClaimReference: 'tempClaimReference'
 }

@@ -1,28 +1,30 @@
 const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
-const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
+const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { vetVisits, endemicsWhichTypeOfReview, endemicsDateOfVisit } = require('../../config/routes')
-const { getClaimsByApplicationReference } = require('../../api-requests/claim-service-api')
-const { getLatestApplicationsBySbi } = require('../../api-requests/application-service-api')
-const urlPrefix = require('../../config').urlPrefix
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
+const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
+const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const backLink = vetVisits
+const backLink = claimDashboard
 
-const getTypeOfLivestockFromPastClaims = async (sbi) => {
-  const applications = await getLatestApplicationsBySbi(sbi)
-
-  const endemicsApplication = applications[0]
-  const { reference } = endemicsApplication
-  const claims = await getClaimsByApplicationReference(reference)
-
-  if (claims?.length) {
-    return claims[0].data?.typeOfLivestock
+const getTypeOfLivestockFromPastClaims = (previousClaims, latestVetVisitApplication) => {
+  if (previousClaims?.length) {
+    return previousClaims[0].data?.typeOfLivestock
   }
 
-  const latestVetVisitsApplication = applications.filter((application) => application.type === 'VV')[0]
-  return latestVetVisitsApplication.data?.whichReview
+  return latestVetVisitApplication.data?.whichReview
+}
+
+const getPreviousAnswer = (typeOfReview) => {
+  if (typeOfReview === claimType.review) {
+    return 'review'
+  } else if (typeOfReview === claimType.endemics) {
+    return 'endemics'
+  } else {
+    return undefined
+  }
 }
 
 module.exports = [
@@ -31,14 +33,15 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { organisation, typeOfReview } = getEndemicsClaim(request)
-        const typeOfLivestock = await getTypeOfLivestockFromPastClaims(organisation.sbi)
+        const { typeOfReview, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
+        const typeOfLivestock = getTypeOfLivestockFromPastClaims(previousClaims, latestVetVisitApplication)
+        setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
 
         const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
         return h.view(endemicsWhichTypeOfReview, {
           backLink,
           typeOfLivestock: formattedTypeOfLivestock,
-          previousAnswer: typeOfReview
+          previousAnswer: getPreviousAnswer(typeOfReview)
         })
       }
     }
@@ -53,11 +56,14 @@ module.exports = [
             .valid('review', 'endemics')
             .required()
         }),
-        failAction: (_request, h, _err) => {
+        failAction: (request, h, _err) => {
+          const { typeOfLivestock } = getEndemicsClaim(request)
+          const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
           return h
             .view(endemicsWhichTypeOfReview, {
               errorMessage: { text: 'Select which type of review you are claiming for', href: '#typeOfReview' },
-              backLink
+              backLink,
+              typeOfLivestock: formattedTypeOfLivestock
             })
             .code(400)
             .takeover()
@@ -65,12 +71,25 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
+        const { typeOfLivestock } = getEndemicsClaim(request)
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-        // For review claim
-        return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
+        // If user has an old world application within last 10 months
+        if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
 
-        // todo: For endemics claim
+        // Dairy follow up claim
+        if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
+          return h
+            .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+              backLink: pageUrl,
+              claimDashboard,
+              ruralPaymentsAgency
+            })
+            .code(400)
+            .takeover()
+        }
+
+        return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
     }
   }

@@ -2,16 +2,23 @@ const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { name: nameErrorMessages } = require('../../../app/lib/error-messages')
-const {
-  endemicsNumberOfSpeciesTested,
-  endemicsVetName,
-  endemicsVetRCVS
-} = require('../../config/routes')
+const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers } = require('../../config/routes')
 const {
   endemicsClaim: { vetsName: vetsNamedKey }
 } = require('../../session/keys')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
+
 const pageUrl = `${urlPrefix}/${endemicsVetName}`
-const backLink = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+const backLink = (request) => {
+  const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
+  const { isBeef } = getLivestockTypes(typeOfLivestock)
+  const { isNegative } = getTestResult(reviewTestResults)
+
+  if (isBeef && isNegative) return `${urlPrefix}/${endemicsSpeciesNumbers}`
+
+  return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+}
 
 module.exports = [
   {
@@ -22,7 +29,7 @@ module.exports = [
         const { vetsName } = session.getEndemicsClaim(request)
         return h.view(endemicsVetName, {
           vetsName,
-          backLink
+          backLink: backLink(request)
         })
       }
     }
@@ -33,7 +40,11 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          vetsName: Joi.string().trim().max(50).pattern(/^[A-Za-z0-9&,' \-/()]+$/).required()
+          vetsName: Joi.string()
+            .trim()
+            .max(50)
+            .pattern(/^[A-Za-z0-9&,' \-/()]+$/)
+            .required()
             .messages({
               'any.required': nameErrorMessages.enterName,
               'string.base': nameErrorMessages.enterName,
@@ -46,7 +57,7 @@ module.exports = [
           return h
             .view(endemicsVetName, {
               ...request.payload,
-              backLink,
+              backLink: backLink(request),
               errorMessage: { text: error.details[0].message, href: `#${vetsNamedKey}}` }
             })
             .code(400)

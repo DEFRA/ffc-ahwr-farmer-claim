@@ -1,0 +1,43 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}You cannot continue with your claim - {{ serviceName }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      <br>
+      {% if mainMessage.url %}
+        <p class="govuk-body">
+          <a href={{ mainMessage.url  }}>{{ mainMessage.text  }}</a>
+        </p>
+      {% endif %}
+      {% if not mainMessage.url %}
+        <p class="govuk-body">{{ mainMessage.text }}</p>
+      {% endif %}
+      <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
+      <p class="govuk-body">
+        <a class="govuk-link" href={{ backLink }}>{{backToPageMessage}}</a>
+      </p>
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+           Your claim will be checked by our team.
+        </strong>
+      </div>
+      {% include './chunks/get-help-with-claim.njk' %}
+    </div>
+  </div>
+{% endblock %}

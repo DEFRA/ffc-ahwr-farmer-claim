@@ -2,16 +2,39 @@ const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { rcvs: rcvsErrorMessages } = require('../../../app/lib/error-messages')
+const { claimType, livestockTypes } = require('../../constants/claim')
+
 const {
   endemicsVetName,
   endemicsVetRCVS,
-  endemicsTestUrn
+  endemicsTestUrn,
+  endemicsVaccination,
+  endemicsBiosecurity,
+  endemicsPIHunt,
+  endemicsSheepEndemicsPackage,
+  endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
 } = require('../../session/keys')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
+
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
+
+const nextPageURL = (request) => {
+  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = session.getEndemicsClaim(request)
+  if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
+  if (typeOfReview === claimType.endemics) {
+    if (relevantReviewForEndemics.type === claimType.vetVisits && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
+    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
+    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
+    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+  }
+
+  return `${urlPrefix}/${endemicsTestUrn}`
+}
 
 module.exports = [
   {
@@ -33,7 +56,10 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          vetRCVSNumber: Joi.string().trim().pattern(/^\d{6}[\dX]{1}$/i).required()
+          vetRCVSNumber: Joi.string()
+            .trim()
+            .pattern(/^\d{6}[\dX]$/i)
+            .required()
             .messages({
               'any.required': rcvsErrorMessages.enterRCVS,
               'string.base': rcvsErrorMessages.enterRCVS,
@@ -54,8 +80,18 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
+        const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
+        const { isBeef } = getLivestockTypes(typeOfLivestock)
+        const { isNegative, isPositive } = getTestResult(reviewTestResults)
+
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
-        return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
+
+        if (isBeef) {
+          if (isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
+          if (isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+        }
+
+        return h.redirect(nextPageURL(request))
       }
     }
   }

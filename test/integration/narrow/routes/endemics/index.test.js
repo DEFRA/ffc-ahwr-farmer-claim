@@ -3,7 +3,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const applicationServiceApiMock = require('../../../../../app/api-requests/application-service-api')
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
-const logoutMock = require('../../../../../app/lib/logout')
+
 jest.mock('../../../../../app/api-requests/application-service-api')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/lib/logout')
@@ -52,7 +52,7 @@ describe('Claim endemics home page test', () => {
     jest.clearAllMocks()
   })
 
-  test('Redirects us to endemicsYouCannotClaimURI if latest VV application is within 10 months and status is rejected', async () => {
+  test('Redirects us to endemicsWhichTypeOfReviewURI if latest VV application is within 10 months', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
         reference: 'AHWR-2470-6BA9',
@@ -63,12 +63,12 @@ describe('Claim endemics home page test', () => {
       {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
-        statusId: 10,
+        statusId: 9,
         type: 'VV'
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(true)
 
     const options = {
       method: 'GET',
@@ -79,28 +79,26 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(logoutMock).toHaveBeenCalledTimes(1)
-    expect(res.headers.location).toEqual('/claim/endemics/you-cannot-claim')
+    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
   })
 
-  test('Redirects us to endemicsYouCannotClaimURI if latest claim is within 10 months and status is rejected', async () => {
+  test('Redirects us to endemicsWhichSpeciesURI if latest VV application is NOT within 10 months', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
         statusId: 1,
         type: 'EE'
-      }
-    ])
-    claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([
+      },
       {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
-        statusId: 10,
-        type: 'E'
+        statusId: 9,
+        type: 'VV'
       }
     ])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
+    claimServiceApiMock.isWithin10Months.mockReturnValue(false)
 
     const options = {
       method: 'GET',
@@ -111,8 +109,7 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(logoutMock).toHaveBeenCalledTimes(1)
-    expect(res.headers.location).toEqual('/claim/endemics/you-cannot-claim')
+    expect(res.headers.location).toEqual('/claim/endemics/which-species')
   })
 
   test('Redirects us to endemicsWhichTypeOfReviewURI if latest claim is within 10 months and status is NOT rejected', async () => {
@@ -132,7 +129,7 @@ describe('Claim endemics home page test', () => {
         type: 'R'
       }
     ])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(true)
 
     const options = {
       method: 'GET',
@@ -156,7 +153,7 @@ describe('Claim endemics home page test', () => {
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(true)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(true)
 
     const options = {
       method: 'GET',
@@ -180,7 +177,7 @@ describe('Claim endemics home page test', () => {
       }
     ])
     claimServiceApiMock.getClaimsByApplicationReference.mockReturnValue([])
-    claimServiceApiMock.isWithInLastTenMonths.mockReturnValue(false)
+    claimServiceApiMock.isWithin10Months.mockReturnValue(false)
 
     const options = {
       method: 'GET',
@@ -205,8 +202,8 @@ describe('Claim endemics home page test', () => {
 
     expect(res.statusCode).toBe(200)
     const $ = cheerio.load(res.payload)
-    expect($('h1').text().trim()).toMatch('Claim for funding for livestock health and welfare reviews and endemic disease follow-ups')
-    expect($('title').text().trim()).toEqual('Claim funding - Annual health and welfare review of livestock')
+    expect($('h1').text().trim()).toMatch('Claim funding to improve animal health and welfare')
+    expect($('title').text().trim()).toEqual('Claim funding - Get funding to improve animal health and welfare')
     expectPhaseBanner.ok($)
   })
 })

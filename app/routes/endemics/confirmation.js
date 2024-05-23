@@ -1,6 +1,7 @@
-const { getEndemicsClaim } = require('../../session')
-const { urlPrefix, ruralPaymentsAgency } = require('../../config')
-const { endemicsConfirmation, vetVisits } = require('../../config/routes')
+const { clearEndemicsClaim, getEndemicsClaim } = require('../../session')
+const { urlPrefix, ruralPaymentsAgency, customerSurvey } = require('../../config')
+const { endemicsConfirmation, claimDashboard } = require('../../config/routes')
+const { amount } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsConfirmation}`
 
@@ -10,12 +11,17 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { reference } = getEndemicsClaim(request)
+        const { reference, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+        const getAmount = amount[typeOfReview][typeOfLivestock]
+
+        clearEndemicsClaim(request)
 
         return h.view(endemicsConfirmation, {
-          vetVisits,
+          claimDashboard,
           reference,
-          ruralPaymentsAgency: ruralPaymentsAgency
+          amount: getAmount,
+          ruralPaymentsAgency: ruralPaymentsAgency,
+          claimSurveyUri: customerSurvey.uri
         })
       }
     }

@@ -1,14 +1,17 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const { claimType } = require('../../../../../app/constants/claim')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 describe('Species numbers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/species-numbers'
-
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -44,7 +47,11 @@ describe('Species numbers test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200', async () => {
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
+    ])('returns 200', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'GET',
         auth,
@@ -55,8 +62,8 @@ describe('Species numbers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 11 or more beef cattle  on the date of the review?')
-      expect($('title').text().trim()).toEqual('Number - Annual health and welfare review of livestock')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimType.review ? 'review' : 'follow-up'}?`)
+      expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })
@@ -116,9 +123,10 @@ describe('Species numbers test', () => {
       { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/number-of-species-tested' },
       { typeOfLivestock: 'dairy', nextPageUrl: '/claim/endemics/vet-name' },
       { typeOfLivestock: 'sheep', nextPageUrl: '/claim/endemics/number-of-species-tested' },
-      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' }
-    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock } })
+      { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' },
+      { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/vet-name', typeOfReview: 'E', reviewTestResults: 'negative' }
+    ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock, typeOfReview, reviewTestResults }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'POST',
         url,
@@ -132,6 +140,7 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
     })
+
     test('Continue to eligible page if user select yes', async () => {
       const options = {
         method: 'POST',
@@ -163,9 +172,10 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
         url,
@@ -178,8 +188,8 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the review?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a response')
+      expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the follow-up?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
     })
     test('redirect the user to 404 page in fail action and no claim object', async () => {
       const options = {

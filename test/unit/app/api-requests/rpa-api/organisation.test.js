@@ -48,19 +48,19 @@ describe('Organisation', () => {
       data: {
         personRoles: [
           {
-            personId: personId,
+            personId,
             role: 'Business Partner'
           }
         ],
         personPrivileges: [
           {
-            personId: personId,
+            personId,
             privilegeNames: [
               'Full permission - business'
             ]
           },
           {
-            personId: personId,
+            personId,
             privilegeNames: [
               'Submit - bps'
             ]
@@ -127,13 +127,13 @@ describe('Organisation', () => {
       data: {
         personRoles: [
           {
-            personId: personId,
+            personId,
             role: 'Fake Permission'
           }
         ],
         personPrivileges: [
           {
-            personId: personId,
+            personId,
             privilegeNames: [
               'Invalid permission'
             ]
@@ -163,10 +163,10 @@ describe('Organisation', () => {
   ])('when getOrganisationAddress called with individual address fields, returns full address as $expectedResult',
     async ({ address1, city, county, postalCode, expectedResult }) => {
       const address = {
-        address1: address1,
-        city: city,
-        county: county,
-        postalCode: postalCode
+        address1,
+        city,
+        county,
+        postalCode
       }
       const result = organisation.getOrganisationAddress(address)
       expect(result).toEqual(expectedResult)

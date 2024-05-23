@@ -1,4 +1,5 @@
 const { getClaimType } = require('./get-claim-type')
+const { vaccination } = require('../constants/claim')
 
 function getTypeOfReviewForDisplay (claimData) {
   return {
@@ -7,6 +8,10 @@ function getTypeOfReviewForDisplay (claimData) {
     pigs: 'Pigs',
     sheep: 'Sheep'
   }[getClaimType(claimData)]
+}
+
+const isSpecies = (typeOfLivestock, species) => {
+  return typeOfLivestock === species
 }
 
 function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false) {
@@ -18,6 +23,12 @@ function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false
   }[getClaimType(claimData, isEndemicsClaims)]
 }
 
+function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
+  if (vaccinatedNotVaccinated === vaccination.vaccinated) return 'Vaccinated'
+  if (vaccinatedNotVaccinated === vaccination.notVaccinated) return 'Not vaccinated'
+  return undefined
+}
+
 function getTypeOfReviewRowForDisplay (claimData) {
   return { key: { text: 'Type of review' }, value: { text: getTypeOfReviewForDisplay(claimData) } }
 }
@@ -27,13 +38,18 @@ function getEligibleNumberRowForDisplay (claimData) {
 }
 
 function upperFirstLetter (str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
+  if (str) return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
 
 module.exports = {
   getTypeOfReviewRowForDisplay,
   getEligibleNumberRowForDisplay,
   upperFirstLetter,
   getSpeciesEligibleNumberForDisplay,
-  getTypeOfReviewForDisplay
+  getVaccinationStatusForDisplay,
+  getTypeOfReviewForDisplay,
+  isSpecies,
+  formatDate
 }

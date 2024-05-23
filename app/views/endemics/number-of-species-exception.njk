@@ -44,16 +44,7 @@
             Your claim will be checked by our team.
          </strong>
       </div>
-      <h2 class="govuk-heading-m">Get help with your claim</h2>
-      <p class="govuk-body">If you need help with your application, contact the Rural Payments Agency.</p>
-      <p class="govuk-body">
-        Email: <a href="mailto:{{ ruralPaymentsAgency.email }}" class="govuk-link">ruralpayments@defra.gov.uk</a>
-      </p>
-      <p class="govuk-body">Telephone: {{ ruralPaymentsAgency.telephone }}<br>Monday to Friday, 8:30am to 5pm, except bank holidays</p>
-      <p class="govuk-body">
-        <a href="https://www.gov.uk/call-charges" class="govuk-link" rel="noreferrer noopener" target="_blank">Find out about call charges (opens in a new tab)</a>
-      </p>
-      <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
+      {% include './chunks/get-help-with-claim.njk' %}
     </div>
   </div>
 {% endblock %}

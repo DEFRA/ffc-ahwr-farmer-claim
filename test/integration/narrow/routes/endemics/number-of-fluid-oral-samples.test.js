@@ -2,14 +2,19 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 
 describe('Number of fluid oral samples test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/number-of-fluid-oral-samples'
 
   beforeAll(() => {
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    process.env.ENDEMICS_ENABLED = 'true'
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -55,9 +60,8 @@ describe('Number of fluid oral samples test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
-      expect($('title').text()).toEqual('Oral fluid samples - Annual health and welfare review of livestock')
-
+      expect($('h1').text()).toMatch('How many oral fluid samples did the vet take?')
+      expect($('title').text()).toEqual('Oral fluid samples - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -108,7 +112,7 @@ describe('Number of fluid oral samples test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many oral fluid samples did the vet do?')
+      expect($('h1').text()).toMatch('How many oral fluid samples did the vet take?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of oral fluid samples collected')
       expect($('#numberOfOralFluidSamples-error').text()).toMatch('Enter the number of oral fluid samples collected')
     })
@@ -127,6 +131,7 @@ describe('Number of fluid oral samples test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
 
     test('redirects to next page when number of tests is >= 5', async () => {
