@@ -5,7 +5,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: backLink.href,
+    href: backLink,
 	  attributes: {id: "back"}
   }) }}
 {% endblock %}
@@ -17,7 +17,7 @@
       {{ govukErrorSummary({
         titleText: "There is a problem",
         errorList:[{
-           text: errorMessage.text,
+            text: errorMessage.text,
             href: "#terms"
         }]
       }) }}

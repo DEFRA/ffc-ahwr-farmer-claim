@@ -8,7 +8,11 @@ const { farmerClaim } = require('../constants/user-types')
 const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
 const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMadeError, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
 const { raiseIneligibilityEvent } = require('../event')
+const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
+const createClaimReference = require('../lib/create-temp-claim-reference')
+
+const endemicsEnabled = config.endemics.enabled
 
 module.exports = [{
   method: 'GET',
@@ -38,6 +42,11 @@ module.exports = [{
         const apimAccessToken = await auth.retrieveApimAccessToken()
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
+        changeContactHistory(personSummary, organisationSummary)
+        const entryValue = request.yar?.get('claim') || {}
+        entryValue.organisation = {}
+        entryValue.reference = undefined
+        request.yar.set('claim', entryValue)
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
@@ -46,21 +55,31 @@ module.exports = [{
             farmerName: getPersonName(personSummary),
             name: organisationSummary.organisation.name,
             email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
-            address: getOrganisationAddress(organisationSummary.organisation.address)
+            orgEmail: organisationSummary.organisation.email,
+            address: getOrganisationAddress(organisationSummary.organisation.address),
+            crn: personSummary.customerReferenceNumber,
+            frn: organisationSummary.businessReference
           }
         )
 
-        session.setEndemicsClaim(
-          request,
-          sessionKeys.endemicsClaim.organisation,
-          {
-            sbi: organisationSummary.organisation.sbi?.toString(),
-            farmerName: getPersonName(personSummary),
-            name: organisationSummary.organisation.name,
-            email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
-            address: getOrganisationAddress(organisationSummary.organisation.address)
-          }
-        )
+        if (endemicsEnabled) {
+          const tempClaimId = createClaimReference()
+          session.setEndemicsClaim(
+            request,
+            sessionKeys.endemicsClaim.organisation,
+            {
+              sbi: organisationSummary.organisation.sbi?.toString(),
+              farmerName: getPersonName(personSummary),
+              name: organisationSummary.organisation.name,
+              email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
+              orgEmail: organisationSummary.organisation.email,
+              address: getOrganisationAddress(organisationSummary.organisation.address),
+              crn: personSummary.customerReferenceNumber,
+              frn: organisationSummary.businessReference
+            }
+          )
+          session.setEndemicsClaim(request, sessionKeys.endemicsClaim.reference, tempClaimId)
+        }
 
         if (!organisationSummary.organisationPermission) {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)
@@ -114,7 +133,8 @@ module.exports = [{
           organisation?.sbi,
           crn,
           organisation?.email,
-          error.name
+          error.name,
+          error.organisation?.reference
         )
         return h.view('you-cannot-claim-for-a-livestock-review', {
           permissionError: error instanceof InvalidPermissionsError,

@@ -6,21 +6,18 @@ const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
   endemicsNumberOfSpeciesException,
-  endemicsVetName
+  endemicsVetName,
+  endemicsNumberOfSpeciesSheepException
 } = require('../../config/routes')
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
 } = require('../../session/keys')
-const {
-  thresholds: {
-    minimumNumberOFBeefTested,
-    minimumNumberOFPigsTested,
-    minimumNumberOFSheepTested
-  }
-} = require('../../constants/amounts')
+const { thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
+const nextPageURL = `${urlPrefix}/${endemicsVetName}`
 
 module.exports = [
   {
@@ -29,6 +26,7 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { numberAnimalsTested } = session.getEndemicsClaim(request)
+
         return h.view(endemicsNumberOfSpeciesTested, {
           numberAnimalsTested,
           backLink
@@ -55,7 +53,7 @@ module.exports = [
             .view(endemicsNumberOfSpeciesTested, {
               ...request.payload,
               backLink,
-              errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}}` }
+              errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}` }
             })
             .code(400)
             .takeover()
@@ -63,16 +61,25 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { numberAnimalsTested } = request.payload
-        const { typeOfLivestock } = session.getEndemicsClaim(request)
-        const eligibleBeef = livestockTypes.beef === typeOfLivestock && numberAnimalsTested >= minimumNumberOFBeefTested
-        const eligiblePigs = livestockTypes.pigs === typeOfLivestock && numberAnimalsTested >= minimumNumberOFPigsTested
-        const eligibleSheep = livestockTypes.sheep === typeOfLivestock && numberAnimalsTested >= minimumNumberOFSheepTested
+        const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+
+        const threshold = numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
+        const isEligible = numberAnimalsTested >= threshold
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
-        if (eligibleBeef || eligiblePigs || eligibleSheep) {
-          return h.redirect(`${urlPrefix}/${endemicsVetName}`)
+        if (isEligible) return h.redirect(nextPageURL)
+
+        if (numberAnimalsTested === '0') {
+          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
+
+        if (typeOfLivestock === livestockTypes.sheep) {
+          raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`)
+          return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
+        }
+
+        raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`)
         return h.view(endemicsNumberOfSpeciesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
     }

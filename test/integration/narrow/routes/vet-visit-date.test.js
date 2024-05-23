@@ -46,6 +46,9 @@ describe('Vet, enter date of visit', () => {
               getOrganisationUrl: 'dummy-get-organisation-url'
             }
           },
+          endemics: {
+            enabled: false
+          },
           dateOfTesting: {
             enabled: false
           }
@@ -261,6 +264,9 @@ describe('Vet, enter date of visit', () => {
               getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
               getOrganisationUrl: 'dummy-get-organisation-url'
             }
+          },
+          endemics: {
+            enabled: false
           },
           dateOfTesting: {
             enabled: true

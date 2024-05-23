@@ -5,13 +5,12 @@ const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsCl
 const { rcvs: rcvsErrorMessages } = require('../../../../../app/lib/error-messages')
 jest.mock('../../../../../app/session')
 
-describe('Vet name test', () => {
+describe('Vet rcvs test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/vet-rcvs'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
-
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -57,7 +56,7 @@ describe('Vet name test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1 > label').text().trim()).toMatch('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
-      expect($('title').text().trim()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Annual health and welfare review of livestock')
+      expect($('title').text().trim()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -121,10 +120,12 @@ describe('Vet name test', () => {
     })
 
     test.each([
-      { vetRCVSNumber: '1234567' },
-      { vetRCVSNumber: '123456X' },
-      { vetRCVSNumber: '  123456X  ' }
-    ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber }) => {
+      { vetRCVSNumber: '1234567', reviewTestResults: 'positive', nextPageURL: '/claim/endemics/pi-hunt' },
+      { vetRCVSNumber: '123456X', reviewTestResults: 'negative', nextPageURL: '/claim/endemics/biosecurity' },
+      { vetRCVSNumber: '123456X', reviewTestResults: undefined, nextPageURL: '/claim/endemics/test-urn' }
+    ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber, reviewTestResults, nextPageURL }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults, typeOfLivestock: 'beef' } })
+
       const options = {
         method: 'POST',
         url,
@@ -136,7 +137,34 @@ describe('Vet name test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/test-urn')
+      expect(res.headers.location).toEqual(nextPageURL)
+    })
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/sheep-endemics-package' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/vet-visits-review-test-results' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/sheep-endemics-package' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', relevantReviewForEndemics: { type: undefined }, nextPageURL: '/claim/endemics/vaccination' },
+      { typeOfLivestock: 'beef', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'sheep', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' }
+    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $relevantReviewForEndemics ', async ({ typeOfLivestock, typeOfReview, relevantReviewForEndemics, nextPageURL }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, relevantReviewForEndemics } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, vetRCVSNumber: '1234567' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual(nextPageURL)
     })
   })
 })

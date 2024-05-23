@@ -1,13 +1,15 @@
 const config = require('../config')
 
 module.exports = {
-  vetVisits: config.vetVisits,
+  claimDashboard: `${config.dashboardServiceUri}/vet-visits`,
   endemicsIndex: 'endemics',
   endemicsWhichSpecies: 'endemics/which-species',
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
-  endemicsYouCannotClaim: 'endemics/you-cannot-claim',
+  endemicsWhichTypeOfReviewDairyFollowUpException: 'endemics/which-type-of-review-dairy-follow-up-exception',
   endemicsDateOfVisit: 'endemics/date-of-visit',
+  endemicsDateOfVisitException: 'endemics/date-of-visit-exception',
   endemicsDateOfTesting: 'endemics/date-of-testing',
+  endemicsDateOfTestingException: 'endemics/date-of-testing-exception',
   endemicsVetName: 'endemics/vet-name',
   endemicsVetRCVS: 'endemics/vet-rcvs',
   endemicsTestUrn: 'endemics/test-urn',
@@ -18,7 +20,21 @@ module.exports = {
   endemicsNumberOfSpeciesException: 'endemics/number-of-species-exception',
   endemicsNumberOfOralFluidSamples: 'endemics/number-of-fluid-oral-samples',
   endemicsNumberOfOralFluidSamplesException: 'endemics/number-of-fluid-oral-samples-exception',
+  endemicsNumberOfSamplesTested: 'endemics/number-of-samples-tested',
+  endemicsNumberOfSamplesTestedException: 'endemics/number-of-samples-tested-exception',
   endemicsTestResults: 'endemics/test-results',
   endemicsCheckAnswers: 'endemics/check-answers',
-  endemicsConfirmation: 'endemics/confirmation'
+  endemicsConfirmation: 'endemics/confirmation',
+  endemicsVaccination: 'endemics/vaccination',
+  endemicsDiseaseStatus: 'endemics/disease-status',
+  endemicsSheepEndemicsPackage: 'endemics/sheep-endemics-package',
+  endemicsSheepTests: 'endemics/sheep-tests',
+  endemicsBiosecurity: 'endemics/biosecurity',
+  endemicsBiosecurityException: 'endemics/biosecurity-exception',
+  endemicsNumberOfSpeciesSheepException: 'endemics/number-of-species-sheep-exception',
+  endemicsVetVisitsReviewTestResults: 'endemics/vet-visits-review-test-results',
+  endemicsSheepTestResults: 'endemics/sheep-test-results',
+  endemicsPIHunt: 'endemics/pi-hunt',
+  endemicsPIHuntException: 'endemics/pi-hunt-exception',
+  endemicsTestUrnException: 'endemics/test-urn-exception'
 }

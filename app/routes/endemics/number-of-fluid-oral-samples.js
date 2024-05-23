@@ -1,5 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const {
@@ -35,12 +36,12 @@ module.exports = [
     options: {
       validate: {
         payload: Joi.object({
-          numberOfOralFluidSamples: Joi.string().pattern(/^\d+$/).max(6).required()
+          numberOfOralFluidSamples: Joi.string().pattern(/^\d+$/).max(4).required()
             .messages({
               'string.base': 'Enter the number of oral fluid samples collected',
               'string.empty': 'Enter the number of oral fluid samples collected',
-              'string.max': 'The number of animals tested should not exceed 999999',
-              'string.pattern.base': 'Number of animals tested must only include numbers'
+              'string.max': 'The number of oral fluid samples should not exceed 9999',
+              'string.pattern.base': 'Number of oral fluid samples must only include numbers'
             })
         }),
         failAction: async (request, h, error) => {
@@ -59,7 +60,14 @@ module.exports = [
         session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
         if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
-          return h.view(endemicsNumberOfOralFluidSamplesException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+          raiseInvalidDataEvent(request, numberOfOralFluidSamplesKey, `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`)
+          return h.view(
+            endemicsNumberOfOralFluidSamplesException,
+            {
+              backLink: pageUrl,
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              minimumNumberFluidOralSamples
+            }).code(400).takeover()
         }
 
         return h.redirect(`${urlPrefix}/${endemicsTestResults}`)

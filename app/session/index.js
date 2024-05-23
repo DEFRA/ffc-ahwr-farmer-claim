@@ -7,21 +7,22 @@ const entries = {
   organisation: 'organisation',
   pkcecodes: 'pkcecodes',
   tokens: 'tokens',
-  customer: 'customer'
+  customer: 'customer',
+  tempClaimReference: 'tempClaimReference'
 }
 
-function set (request, entryKey, key, value, status) {
+function set (request, entryKey, key, value, status, endemics = false) {
   const entryValue = request.yar?.get(entryKey) || {}
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
-  const claim = getClaim(request)
+  const claim = endemics ? getEndemicsClaim(request) : getClaim(request)
   const xForwardedForHeader = request.headers['x-forwarded-for']
   const ip = xForwardedForHeader
     ? xForwardedForHeader.split(',')[0]
     : request.info.remoteAddress
   claim &&
     sendSessionEvent(
-      claim.organisation,
+      claim,
       request.yar.id,
       entryKey,
       key,
@@ -40,6 +41,7 @@ function clear (request) {
   request.yar.clear(entries.endemicsClaim)
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
+  request.yar.clear(entries.tempClaimReference)
 }
 
 function getApplication (request, key) {
@@ -59,15 +61,22 @@ function getClaim (request, key) {
 }
 
 function setEndemicsClaim (request, key, value, status) {
-  set(request, entries.endemicsClaim, key, value, status)
+  set(request, entries.endemicsClaim, key, value, status, true)
 }
 
 function getEndemicsClaim (request, key) {
   return get(request, entries.endemicsClaim, key)
 }
 
-function clearEndemicsClaim (request) {
+function clearEndemicsClaim (request) { // Remove all journey related data
+  const endemicsClaim = getEndemicsClaim(request)
   request.yar.clear(entries.endemicsClaim)
+  setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
+  setEndemicsClaim(request, 'reference', endemicsClaim?.reference)
+}
+
+function setTempClaimReference (request, key, value, status) {
+  set(request, entries.tempClaimReference, key, value, status, true)
 }
 
 function setToken (request, key, value) {
@@ -103,6 +112,7 @@ module.exports = {
   setEndemicsClaim,
   clearEndemicsClaim,
   clear,
+  setTempClaimReference,
   getToken,
   setToken,
   getCustomer,

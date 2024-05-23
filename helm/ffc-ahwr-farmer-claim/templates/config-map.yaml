@@ -21,6 +21,7 @@ data:
   REDIS_PORT: {{ quote .Values.container.redisPort }}
   SERVICE_URI: {{ quote .Values.container.serviceUri }}
   APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
+  DASHBOARD_SERVICE_URI: {{ quote .Values.container.dashboardServiceUri }}
   APPLICATION_API_URI: {{ quote .Values.container.applicationApiUri }}
   DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
   DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
