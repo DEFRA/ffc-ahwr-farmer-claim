@@ -1,21 +1,22 @@
-@negative
+@smokereg1
 Feature: claim journey landing page
 
   Scenario: claim with valid credentials
-    Given user is on the /claim landing page
-    And user check the page title
-    When user start the application
-    When redirected to Defra ID page
-     And user login with Single business crn and password(for DefraId)
-    Then user click on sign in button
-
-  Scenario: user check all business details
-    When the agreement number is shown
-    When the business name is correct
-    When user type of review is correct
-    When user accept the displayed business details to be correct
-    Then user continue to claim
- 
+Given user is on the /claim/endemics landing page
+When user clicks on Start now
+Then redirected to Defra ID page
+And user login with Single business crn and password(for DefraId)
+Then user click on sign in button
+#When user check the business details
+And user confirm the org-review page
+And user agreed the business details is correct
+Then user continue to next page
+Then user clicks on Manage your claim
+And user choose <LiveStockName> cattle for review
+Then user continue to next page
+ Examples:
+      | LiveStockName |
+      | Pigs          |
 
   Scenario: To validate the error "Enter the date the vet completed the review" and "Select if testing was carried out when the vet visited the farm or on another date"
    Given user is on vet visit date page

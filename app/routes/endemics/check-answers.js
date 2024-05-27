@@ -142,15 +142,17 @@ module.exports = [
         }
 
         const beefRows = [
+          vetVisitsReviewTestResultsRow,
+          ...commonRowsWithChangeLinks,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
-          vetVisitsReviewTestResultsRow,
           piHuntRow,
           laboratoryUrnRow,
           testResultsRow,
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const dairyRows = [
+          ...commonRowsWithChangeLinks,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           vetVisitsReviewTestResultsRow,
@@ -159,6 +161,7 @@ module.exports = [
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const pigRows = [
+          ...commonRowsWithChangeLinks,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           vetVisitsReviewTestResultsRow,
@@ -171,6 +174,7 @@ module.exports = [
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const sheepRows = [
+          ...commonRowsWithChangeLinks,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           laboratoryUrnRow,
@@ -209,7 +213,6 @@ module.exports = [
 
         const rows = [
           ...noChangeRows,
-          ...commonRowsWithChangeLinks,
           ...speciesRows()
         ]
 

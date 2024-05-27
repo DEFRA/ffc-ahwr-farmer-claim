@@ -1,0 +1,45 @@
+@smoketest
+
+Feature: Dev: 5b Exception screen for 'Did you have at least X number of animals' 
+
+Scenario: AC1 Content on the exception screen 
+   Given user is on the /claim/endemics landing page
+   When user clicks on Start now
+   Then redirected to Defra ID page
+   And user login with Single business crn and password(for DefraId)
+   Then user click on sign in button
+   # check-detail page content development in progress
+   When user check the business details
+   And user confirm the org-review page
+   And user agreed the business details is correct
+   Then user continue to next page
+   Then user clicks on Manage your claim 
+   And user choose <LiveStockName> cattle for review
+   Then user continue to next page
+   #Given user is on vet visit date page
+   #When asked about the date the review was completed
+   When user input the date in correct order
+   #And click on the option when vet visited the farm to carry out the review
+   Then clicked on continue button for endemics
+    Examples:
+      | LiveStockName |
+      | Pigs          |
+   
+   Scenario:AC3 Get help with your claim
+   And click on the option when vet visited the farm to carry out the review
+   Then clicked on continue button for endemics
+   And user doesnt confirm to meet the requirement
+   Then user continue to next page
+   #Then validate the exception for the requirements
+   Then validate call charges screen
+   Then click on the back link
+   And user doesnt confirm to meet the requirement
+   Then user continue to next page
+   Then click change your answerfor number of livestock
+   And user doesnt confirm to meet the requirement
+   Then user continue to next page
+   Then click on the minimum livestock review link
+
+   
+  
+

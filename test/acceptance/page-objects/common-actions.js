@@ -5,13 +5,35 @@ require("dotenv").config({path:`.env.${process.env.ENV}`})
 
 class CommonActions {
   async open (path) {
+    try{
     const url = process.env.TEST_ENVIRONMENT_ROOT_URL + path
     await browser.url(url)
+      // }
+  }
+  catch (error) {
+    // Handle the "invalid session id" error by restarting the WebDriver session
+    if (error.message.includes('invalid session id')) {
+      console.log('Invalid session ID encountered. Restarting the session...');
+      await browser.reloadSession(); // Assuming reloadSession is available in your setup
+      
+    const url = process.env.TEST_ENVIRONMENT_ROOT_URL + path
+      await browser.url(url); // Retry the navigation
+    } else {
+     // this.skip();
+     console.log(error)
+      
+    }
+  }
   }
 
   async clickOn (element) {
     const locator = browser.$(element)
     await locator.click()
+  }
+
+  async navigateBack(){
+       await browser.back()
+
   }
 
   async sendKey (element, text) {
@@ -25,13 +47,33 @@ async elementGetText(element){
   return Text
 }
 
+async normalizeString(str) {
+  return str.normalize('NFKC'); // Normalize using Compatibility Decomposition followed by Canonical Composition
+}
+
   async elementToContainText (element, text) {
     const locator = await browser.$(element)
     let errormessage=await locator.getText()
+    this.normalizeString(errormessage)
     console.log(errormessage)
     expect(await locator.getText()).to.include(text)
   }
 
+
+  async openNewTab(){
+   const windowHandles = await browser.getWindowHandles();
+    await browser.switchToWindow(windowHandles[1]);
+    await this.screenShot()
+   
+}
+
+
+async closeNewTab(){
+  const windowHandles = await browser.getWindowHandles();
+  await browser.closeWindow();
+  await browser.switchToWindow(windowHandles[0]);
+
+}
   async elementToContainErrorText (element, text) {
     const locator = await browser.$(element)
     let errormessage=await locator.getText()
@@ -81,6 +123,33 @@ async elementGetText(element){
     const locator = await browser.$(element)
     return locator.isExisting()
   }
+
+  async closeBrowser1() {
+    try {
+        await browser.closeWindow();
+        console.log('Window closed successfully.');
+    } catch (error) {
+        // Check if the error is due to an invalid session ID
+        if (error.message.includes('invalid session id')) {
+            console.error('Encountered an invalid session ID. Starting a new session...');
+            
+            try {
+                // Start a new WebDriver session (replace with your specific setup)
+                // Example: browser = webdriverio.remote(options);
+                
+                // Retry closing the window after starting a new session
+                await browser.closeWindow();
+                console.log('Window closed successfully after starting a new session.');
+            } catch (newError) {
+                console.error('Error closing the window after starting a new session:', newError);
+            }
+        } else {
+            console.error('Error closing the window:', error);
+        }
+    }
+}
+
+
 }
 
 module.exports = CommonActions

@@ -1,4 +1,4 @@
-@smoketest1
+@smoketest
 Feature: Endemics Claim Journey
 
   Scenario: US-298130-1a-AC3-call charges link
