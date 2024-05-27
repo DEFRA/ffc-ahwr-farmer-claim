@@ -47,7 +47,8 @@ module.exports = {
     sheepTestResults: 'sheepTestResults',
     previousClaims: 'previousClaims',
     reviewTestResults: 'reviewTestResults',
-    piHunt: 'piHunt'
+    piHunt: 'piHunt',
+    amount: 'amount'
   },
   claim: {
     animalsTested: 'animalsTested',
