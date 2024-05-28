@@ -3,8 +3,11 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { isURNUnique } = require('../../../../../app/api-requests/claim-service-api')
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
 
 describe('Test URN test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -169,6 +172,7 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
       expect($('p').text()).toContain(message)
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
       const options = {
