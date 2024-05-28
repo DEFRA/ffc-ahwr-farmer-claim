@@ -1,5 +1,7 @@
 const raiseEvent = require('./raise-event')
 
+// This has been done to keep consistent with old journey.
+// Should look at refactoring this for best name options.
 const renameSessionKeysForEventReporting = (key) => {
   switch (key) {
     case 'laboratoryURN': {
@@ -16,6 +18,10 @@ const renameSessionKeysForEventReporting = (key) => {
     }
     case 'dateOfVisit': {
       key = 'visitDate'
+      break
+    }
+    case 'numberAnimalsTested': {
+      key = 'animalsTested'
       break
     }
   }

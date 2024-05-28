@@ -47,6 +47,8 @@ module.exports = [{
         entryValue.organisation = {}
         entryValue.reference = undefined
         request.yar.set('claim', entryValue)
+
+        // Do we need this to be set on claim if endemics IS enabled? Currently set in both places.
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
@@ -58,7 +60,7 @@ module.exports = [{
             orgEmail: organisationSummary.organisation.email,
             address: getOrganisationAddress(organisationSummary.organisation.address),
             crn: personSummary.customerReferenceNumber,
-            frn: organisationSummary.businessReference
+            frn: organisationSummary.organisation.businessReference
           }
         )
 
@@ -75,7 +77,7 @@ module.exports = [{
               orgEmail: organisationSummary.organisation.email,
               address: getOrganisationAddress(organisationSummary.organisation.address),
               crn: personSummary.customerReferenceNumber,
-              frn: organisationSummary.businessReference
+              frn: organisationSummary.organisation.businessReference
             }
           )
           session.setEndemicsClaim(request, sessionKeys.endemicsClaim.reference, tempClaimId)
