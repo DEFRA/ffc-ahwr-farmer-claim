@@ -20,6 +20,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getTestResult } = require('../../lib/get-test-result')
 const { isURNUnique } = require('../../api-requests/claim-service-api')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
@@ -111,8 +112,10 @@ module.exports = [
 
         session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
-        if (!response?.isURNUnique) return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
-
+        if (!response?.isURNUnique) {
+          raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
+          return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
+        }
         return h.redirect(nextPageUrl(request))
       }
     }
