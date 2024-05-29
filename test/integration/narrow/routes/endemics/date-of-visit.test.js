@@ -5,6 +5,7 @@ const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock =
   require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -55,6 +56,7 @@ describe('Date of vet visit', () => {
 
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => {
       return {
         latestVetVisitApplication,
@@ -544,6 +546,7 @@ describe('Date of vet visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+        expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
     test.each([
@@ -601,6 +604,7 @@ describe('Date of vet visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+        expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
   })

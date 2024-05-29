@@ -4,14 +4,17 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const { claimType } = require('../../../../../app/constants/claim')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+
 describe('Species numbers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/species-numbers'
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -139,6 +142,7 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test('Continue to eligible page if user select yes', async () => {
