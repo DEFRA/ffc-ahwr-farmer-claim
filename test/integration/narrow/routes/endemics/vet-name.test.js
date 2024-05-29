@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { name: nameErrorMessages } = require('../../../../../app/lib/error-messages')
 jest.mock('../../../../../app/session')
 
@@ -11,6 +12,7 @@ describe('Vet name test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    setEndemicsClaimMock.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -133,6 +135,7 @@ describe('Vet name test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-rcvs')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })
 })

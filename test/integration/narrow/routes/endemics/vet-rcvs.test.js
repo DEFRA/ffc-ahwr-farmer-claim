@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { rcvs: rcvsErrorMessages } = require('../../../../../app/lib/error-messages')
 jest.mock('../../../../../app/session')
 
@@ -11,6 +12,8 @@ describe('Vet rcvs test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    setEndemicsClaimMock.mockImplementation(() => { })
+
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -138,6 +141,7 @@ describe('Vet rcvs test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/test-urn' },
@@ -165,6 +169,7 @@ describe('Vet rcvs test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })
 })
