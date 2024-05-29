@@ -48,7 +48,6 @@ module.exports = [{
         entryValue.reference = undefined
         request.yar.set('claim', entryValue)
 
-        // Do we need this to be set on claim if endemics IS enabled? Currently set in both places.
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
