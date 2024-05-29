@@ -47,6 +47,7 @@ module.exports = [{
         entryValue.organisation = {}
         entryValue.reference = undefined
         request.yar.set('claim', entryValue)
+
         session.setClaim(
           request,
           sessionKeys.farmerApplyData.organisation,
@@ -58,7 +59,7 @@ module.exports = [{
             orgEmail: organisationSummary.organisation.email,
             address: getOrganisationAddress(organisationSummary.organisation.address),
             crn: personSummary.customerReferenceNumber,
-            frn: organisationSummary.businessReference
+            frn: organisationSummary.organisation.businessReference
           }
         )
 
@@ -75,7 +76,7 @@ module.exports = [{
               orgEmail: organisationSummary.organisation.email,
               address: getOrganisationAddress(organisationSummary.organisation.address),
               crn: personSummary.customerReferenceNumber,
-              frn: organisationSummary.businessReference
+              frn: organisationSummary.organisation.businessReference
             }
           )
           session.setEndemicsClaim(request, sessionKeys.endemicsClaim.reference, tempClaimId)

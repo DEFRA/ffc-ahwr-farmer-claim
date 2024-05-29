@@ -113,5 +113,19 @@ describe('Send event on session set', () => {
       await sendSessionEvent(claim, sessionId, entryKey, key, value, ip)
       expect(raiseEvent).toHaveBeenCalledWith(expectedEvent, 'success')
     })
+
+    test('renames numberAnimalsTested to animalsTested', async () => {
+      key = 'numberAnimalsTested'
+      const newValue = 'animalsTested'
+      const expectedEvent = {
+        ...event,
+        type: `${entryKey}-${newValue}`,
+        data: { reference: claim.reference, animalsTested: value },
+        message: `Session set for ${entryKey} and ${newValue}.`
+      }
+
+      await sendSessionEvent(claim, sessionId, entryKey, key, value, ip)
+      expect(raiseEvent).toHaveBeenCalledWith(expectedEvent, 'success')
+    })
   })
 })
