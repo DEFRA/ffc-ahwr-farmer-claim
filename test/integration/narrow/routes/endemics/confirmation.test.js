@@ -1,7 +1,6 @@
 const cheerio = require('cheerio')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const { endemicsConfirmation } = require('../../../../../app/config/routes')
-const { amount } = require('../../../../../app/constants/claim')
 jest.mock('../../../../../app/session')
 
 describe('Claim confirmation', () => {
@@ -55,8 +54,7 @@ describe('Claim confirmation', () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         reference,
-        typeOfLivestock,
-        typeOfReview
+        amount: 55
       }
     })
     const res = await global.__SERVER__.inject(options)
@@ -64,7 +62,7 @@ describe('Claim confirmation', () => {
     const $ = cheerio.load(res.payload)
 
     expect(res.statusCode).toBe(200)
-    expect($('#amount').text()).toContain(amount[typeOfReview][typeOfLivestock])
+    expect($('#amount').text()).toContain('55')
     expect($('#reference').text().trim()).toEqual(reference)
   })
 })
