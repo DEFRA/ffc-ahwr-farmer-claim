@@ -132,6 +132,7 @@ describe('Check answers test', () => {
         const rowContents = getRowContents($)
         const rowActionTexts = getRowActionTexts($)
         const rowLinks = getRowLinks($)
+        
 
         expect(rowKeys).toEqual(expectedReviewDairy.rowKeys)
         expect(rowContents).toEqual(expectedReviewDairy.rowContents)
