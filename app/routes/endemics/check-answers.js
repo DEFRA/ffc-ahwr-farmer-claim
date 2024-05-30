@@ -48,85 +48,85 @@ module.exports = [
           {
             key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
             value: { html: formatDate(dateOfVisit) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `change date of ${isReview ? 'review' : 'follow-up'}` }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}` }] }
           },
           {
             key: { text: 'Date of sampling' },
             value: { html: dateOfTesting && formatDate(dateOfTesting) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'change date of sampling' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'date of sampling' }] }
           },
           {
             key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
             value: { html: upperFirstLetter(speciesNumbers) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'change number of species' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'number of species' }] }
           }
         ]
         const numberOfAnimalsTestedRow = {
           key: { text: 'Number of animals tested' }, // Pigs, Beef, Sheep
           value: { html: numberAnimalsTested },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'number of animals tested' }] }
         }
         const vetDetailsRows = [
           {
             key: { text: 'Vet\'s name' },
             value: { html: upperFirstLetter(vetsName) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetName}`, text: 'Change', visuallyHiddenText: 'change vet\'s name' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetName}`, text: 'Change', visuallyHiddenText: 'vet\'s name' }] }
           },
           {
             key: { text: 'Vet\'s RCVS number' },
             value: { html: vetRCVSNumber },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetRCVS}`, text: 'Change', visuallyHiddenText: 'change vet\'s rcvs number' }] }
+            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetRCVS}`, text: 'Change', visuallyHiddenText: 'vet\'s rcvs number' }] }
           }
         ]
         const piHuntRow = {
           key: { text: 'PI hunt' },
           value: { html: upperFirstLetter(piHunt) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'change the pi hunt' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'the pi hunt' }] }
         }
         const laboratoryUrnRow = {
           key: { text: 'Test results URN' },
           value: { html: laboratoryURN },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'change test URN' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'test URN' }] }
         }
         const oralFluidSamplesRow = {
           key: { text: 'Number of oral fluid samples taken' }, // Pigs
           value: { html: sessionData?.numberOfOralFluidSamples },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'change number of oral fluid samples taken' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'number of oral fluid samples taken' }] }
         }
         const testResultsRow = {
           key: { text: isReview ? 'Test results' : 'Follow-up test result' }, // Pigs, Dairy, Beef
           value: { html: testResults && upperFirstLetter(testResults) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'change test results' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'test results' }] }
         }
         const vetVisitsReviewTestResultsRow = {
           key: { text: 'Review test result' }, // Pigs, Dairy, Beef, when coming from old world agreement
           value: { html: upperFirstLetter(sessionData?.vetVisitsReviewTestResults) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'change review test results' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'review test results' }] }
         }
         const diseaseStatusRow = {
           key: { text: 'Diseases status category' }, // Pigs
           value: { html: sessionData?.diseaseStatus },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'change diseases status category' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'diseases status category' }] }
         }
         const samplesTestedRow = {
           key: { text: 'Number of samples tested' }, // Pigs
           value: { html: sessionData?.numberOfSamplesTested },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`, text: 'Change', visuallyHiddenText: 'change number of samples tested' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`, text: 'Change', visuallyHiddenText: 'number of samples tested' }] }
         }
         const herdVaccinationStatusRow = {
           key: { text: 'Herd vaccination status' }, // Pigs
           value: { html: getVaccinationStatusForDisplay(sessionData?.herdVaccinationStatus) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'change herd vaccination status' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'herd vaccination status' }] }
         }
         const biosecurityAssessmentRow = {
           key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
           value: { html: isPigs ? upperFirstLetter(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : upperFirstLetter(sessionData?.biosecurity) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'change biosecurity assessment' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'biosecurity assessment' }] }
         }
         const sheepPackageRow = {
           key: { text: 'Sheep health package' }, // Sheep
           value: { html: sheepPackages[sessionData?.sheepEndemicsPackage] },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, text: 'Change', visuallyHiddenText: 'change sheep health package' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, text: 'Change', visuallyHiddenText: 'sheep health package' }] }
         }
         const sheepDiseasesTestedRow = () => {
           if (isEndemicsFollowUp && sessionData?.sheepTestResults?.length) {
@@ -134,7 +134,7 @@ module.exports = [
             return {
               key: { text: 'Diseases or conditions tested for' }, // Sheep
               value: { html: testList },
-              actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'change diseases or conditions tested for' }] }
+              actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'diseases or conditions tested for' }] }
             }
           } else {
             return {}
@@ -190,7 +190,7 @@ module.exports = [
                       ? sheepTest.result.map(testResult => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
                       : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find(resultType => resultType.value === sheepTest.result).text})`
                   },
-                  actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`, text: 'Change', visuallyHiddenText: `change disease type ${sheepTest.diseaseType} and test result` }] }
+                  actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`, text: 'Change', visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result` }] }
                 }
               })
             : []
