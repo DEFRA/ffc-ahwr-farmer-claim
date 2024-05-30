@@ -4,7 +4,7 @@ const urlPrefix = require('../../config').urlPrefix
 const { name: nameErrorMessages } = require('../../../app/lib/error-messages')
 const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers } = require('../../config/routes')
 const {
-  endemicsClaim: { vetsName: vetsNamedKey }
+  endemicsClaim: { vetsName: vetsNameKey }
 } = require('../../session/keys')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
@@ -58,7 +58,7 @@ module.exports = [
             .view(endemicsVetName, {
               ...request.payload,
               backLink: backLink(request),
-              errorMessage: { text: error.details[0].message, href: `#${vetsNamedKey}}` }
+              errorMessage: { text: error.details[0].message, href: `#${vetsNameKey}}` }
             })
             .code(400)
             .takeover()
@@ -66,7 +66,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { vetsName } = request.payload
-        session.setEndemicsClaim(request, vetsNamedKey, vetsName)
+        session.setEndemicsClaim(request, vetsNameKey, vetsName)
         return h.redirect(`${urlPrefix}/${endemicsVetRCVS}`)
       }
     }
