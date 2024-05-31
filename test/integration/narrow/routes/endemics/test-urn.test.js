@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { isURNUnique } = require('../../../../../app/api-requests/claim-service-api')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 
@@ -15,6 +16,7 @@ describe('Test URN test', () => {
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    setEndemicsClaimMock.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -151,6 +153,7 @@ describe('Test URN test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'E', message: 'This test result unique reference number(URN) or certificate number was used in a previous claim.' },

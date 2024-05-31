@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 
 jest.mock('../../../../../app/session')
@@ -12,6 +13,7 @@ describe('Number of species tested test', () => {
 
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -141,6 +143,7 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-name')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'R', numberAnimalsTested: '4' },

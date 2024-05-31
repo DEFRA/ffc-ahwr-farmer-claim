@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { getEndemicsClaim } = require('../../../../../app/session')
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { urlPrefix } = require('../../../../../app/config')
 const {
@@ -25,6 +26,7 @@ describe('Biosecurity test', () => {
 
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -178,6 +180,7 @@ describe('Biosecurity test', () => {
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test('continue to next page when biosecurity is "yes" for other journeys besides pig', async () => {
       const options = {
@@ -194,6 +197,7 @@ describe('Biosecurity test', () => {
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test('continue to Exception page when biosecurity  is "no" for any journey', async () => {
       const options = {
@@ -213,7 +217,7 @@ describe('Biosecurity test', () => {
       expect($('h1').text()).toMatch('You cannot continue with your claim')
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
-    test('continue without provideing biosecurity', async () => {
+    test('continue without providing biosecurity', async () => {
       const options = {
         method: 'POST',
         auth,
@@ -230,7 +234,7 @@ describe('Biosecurity test', () => {
       expect(response.statusCode).toBe(400)
       expect($('a').text()).toMatch('Select whether the vet did a biosecurity assessment')
     })
-    test('continue without with providing biosecurity and assessmentPercentage', async () => {
+    test('continue with providing biosecurity and assessmentPercentage', async () => {
       const options = {
         method: 'POST',
         auth,
@@ -245,6 +249,7 @@ describe('Biosecurity test', () => {
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test.each([
       { biosecurity: 'yes', assessmentPercentage: '', errorMessage: 'Enter the assessment percentage' },

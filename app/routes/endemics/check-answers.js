@@ -287,7 +287,7 @@ module.exports = [
           }
         })
 
-        setEndemicsClaim(request, 'reference', claim.reference)
+        setEndemicsClaim(request, 'reference', claim.dataValues.reference)
         setEndemicsClaim(request, 'amount', claim.amount)
         setTempClaimReference(request, 'tempClaimReference', tempClaimReference)
 

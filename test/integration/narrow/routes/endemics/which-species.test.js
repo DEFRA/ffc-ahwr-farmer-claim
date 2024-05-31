@@ -2,9 +2,11 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 
 jest.mock('../../../../../app/session')
 describe('Endemics which species test', () => {
+  setEndemicsClaimMock.mockImplementation(() => { })
   jest.mock('../../../../../app/config', () => {
     const originalModule = jest.requireActual('../../../../../app/config')
     return {
@@ -93,5 +95,6 @@ describe('Endemics which species test', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
+    expect(setEndemicsClaimMock).toHaveBeenCalled()
   })
 })
