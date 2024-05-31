@@ -3,7 +3,8 @@ const session = require('../session')
 const appInsights = require('applicationinsights')
 const config = require('../config')
 const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../constants/claim')
-const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
+// const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
+const { REJECTED } = require('../constants/status')
 
 async function getClaimsByApplicationReference (applicationReference) {
   try {
@@ -136,9 +137,9 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
         return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
       }
       // Claim endemics before review status is READY_TO_PAY
-      if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
-        return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
-      }
+      // if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
+      //   return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
+      // }
 
       // Cannot have another endemics dateOfVisit +- 10 months
       const isValid = !isAClaimTypeWithin10Months(claimType.endemics, dateOfVisit, previousClaims, vetVisitReview)
