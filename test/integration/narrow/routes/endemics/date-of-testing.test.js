@@ -152,12 +152,12 @@ describe('Date of testing', () => {
     })
     test.each([
       {
-        description: 'onAnotherDay - Year must include 4 numbers',
+        description: 'onAnotherDay - Date of testing must be a real date',
         whenTestingWasCarriedOut: 'onAnotherDate',
         onAnotherDateDay: today.getDate(),
         onAnotherDateMonth: today.getMonth(),
         onAnotherDateYear: 202,
-        errorMessage: 'Year must include 4 numbers',
+        errorMessage: 'Date of testing must be a real date',
         errorHighlights: ['on-another-date-day'],
         dateOfVisit: today
       },
