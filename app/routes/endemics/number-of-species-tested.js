@@ -45,7 +45,7 @@ module.exports = [
               'string.base': 'Enter the number of animals tested',
               'string.empty': 'Enter the number of animals tested',
               'string.max': 'The number of animals tested should not exceed 9999',
-              'string.pattern.base': 'Number of animals tested must only include numbers'
+              'string.pattern.base': 'The number of animals samples were taken from must only include numbers'
             })
         }),
         failAction: async (request, h, error) => {

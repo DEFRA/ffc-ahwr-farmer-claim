@@ -11,7 +11,7 @@ const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = claimDashboard
-const errorMessage = { text: 'Select which livestock you are claiming for' }
+const errorMessage = { text: 'Select which species you are claiming for' }
 
 module.exports = [
   {
