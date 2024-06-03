@@ -76,7 +76,7 @@ describe('Endemics which species test', () => {
 
     const res = await global.__SERVER__.inject(options)
     const $ = cheerio.load(res.payload)
-    const errorMessage = 'Select which livestock you are claiming for'
+    const errorMessage = 'Select which species you are claiming for'
 
     expect($('p.govuk-error-message').text()).toMatch(errorMessage)
   })

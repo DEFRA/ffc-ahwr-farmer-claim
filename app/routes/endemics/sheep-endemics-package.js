@@ -6,7 +6,7 @@ const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = re
 const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = require('../../session/keys')
 const pageUrl = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
 const options = {
-  hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might test for are listed with each package.'
+  hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might take samples to test for are listed with each package.'
 }
 const pageHeading = 'Which sheep health package did you choose?'
 module.exports = [{
@@ -20,7 +20,7 @@ module.exports = [{
           value: 'improvedEwePerformance',
           text: 'Ewe condition',
           hint: {
-            text: 'Includes: Johne’s, Maedi Visna (MV), Caseous lymphadenitis (CLA), Ovine pulmonary adenocarcinoma (OPA), trace elements, liver fluke, aemonchosis, ewe nutrition status, mastitis, tick-borne fever, louping ill, orf, pulpy kidney'
+            text: 'Includes: Caseous lymphadenitis (CLA), ewe nutrition status, haemonchosis, Johne’s, liver fluke, louping ill, Maedi Visna (MV), mastitis, orf, ovine pulmonary adenocarcinoma (OPA), pulpy kidney, tick-borne fever, trace elements'
           },
           checked: session?.sheepEndemicsPackage === 'improvedEwePerformance'
         },
@@ -28,7 +28,7 @@ module.exports = [{
           value: 'improvedReproductivePerformance',
           text: 'Reproductive performance',
           hint: {
-            text: 'Includes: enzootic abortion of ewes (EAE), border disease (BD), toxoplasmosis, ewe nutrition status, trace elements, liver fluke, tick-borne fever'
+            text: 'Includes: border disease (BD), enzootic abortion of ewes (EAE), ewe nutrition status, liver fluke, tick-borne fever, toxoplasmosis, trace elements'
           },
           checked: session?.sheepEndemicsPackage === 'improvedReproductivePerformance'
         },
@@ -36,7 +36,7 @@ module.exports = [{
           value: 'improvedLambPerformance',
           text: 'Lamb performance',
           hint: {
-            text: 'Includes: border disease (BD), trace elements, liver fluke, parasitic gastroenteritis (PGE), coccidiosis, mastitis, tick-borne fever, louping ill, tick pyaemia, lamb nutrition status, orf, pulpy kidney, lamb dysentery, pasteurellosis'
+            text: 'Includes: border disease (BD), coccidiosis, lamb dysentery. lamb nutrition status, liver fluke, louping ill, mastitis, orf, parasitic gastroenteritis (PGE), pasteurellosis, pulpy kidney, tick-borne fever, tick pyaemia, trace elements'
           },
           checked: session?.sheepEndemicsPackage === 'improvedLambPerformance'
         },
@@ -44,7 +44,7 @@ module.exports = [{
           value: 'improvedNeonatalLambSurvival',
           text: 'Neonatal lamb survival',
           hint: {
-            text: 'Includes: border disease (BD), toxoplasmosis, joint ill, ewe nutrition status, trace elements, watery mouth, mastitis, tick pyaemia, lamb dysentery, pasteurellosis'
+            text: 'Includes: border disease (BD), ewe nutrition status, joint ill, lamb dysentery, mastitis, pasteurellosis, tick pyaemia, toxoplasmosis, trace elements, watery mouth'
           },
           checked: session?.sheepEndemicsPackage === 'improvedNeonatalLambSurvival'
         },
@@ -60,7 +60,7 @@ module.exports = [{
           value: 'reducedLameness',
           text: 'Lameness',
           hint: {
-            text: 'Includes: joint ill, lameness, foot rot, scald, contagious ovine digital dermatitis (CODD), granuloma, heel or toe abscess, shelly hoof, tick pyaemia'
+            text: 'Includes: contagious ovine digital dermatitis (CODD), foot rot, granuloma, heel or toe abscess, joint ill, lameness, scald, shelly hoof, tick pyaemia'
           },
           checked: session?.sheepEndemicsPackage === 'reducedLameness'
         }

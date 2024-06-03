@@ -61,7 +61,7 @@ module.exports = [
           const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
           return h
             .view(endemicsWhichTypeOfReview, {
-              errorMessage: { text: 'Select which type of review you are claiming for', href: '#typeOfReview' },
+              errorMessage: { text: 'Select what you are claiming for', href: '#typeOfReview' },
               backLink,
               typeOfLivestock: formattedTypeOfLivestock
             })
