@@ -22,66 +22,72 @@
           errorList: errorSummary
         }) }}
       {% endif %}
-      <h1 class="govuk-heading-l">Date of {{ reviewOrFollowUpText }}
-      </h1>
-      <p>This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
-        You can find it on the summary the vet gave you.</p>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
 
         <div id="when-was-the-vet-visit" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
-          {% if dateOfVisit.day.error %}
-            {% set dateOfVisitDay = {
+          <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+               Date of {{ reviewOrFollowUpText }}
+              </h1>
+            </legend>
+            <p>This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
+        You can find it on the summary the vet gave you.</p>
+            {% if dateOfVisit.day.error %}
+              {% set dateOfVisitDay = {
               name: 'day',
               value: dateOfVisit.day.value,
               classes: 'govuk-input--width-2 govuk-input--error'
             } %}
-          {% else %}
-            {% set dateOfVisitDay = {
+            {% else %}
+              {% set dateOfVisitDay = {
               name: 'day',
               value: dateOfVisit.day.value,
               classes: 'govuk-input--width-2'
             } %}
-          {% endif %}
+            {% endif %}
 
-          {% if dateOfVisit.month.error %}
-            {% set dateOfVisitMonth = {
+            {% if dateOfVisit.month.error %}
+              {% set dateOfVisitMonth = {
               name: 'month',
               value: dateOfVisit.month.value,
               classes: 'govuk-input--width-2 govuk-input--error'
             } %}
-          {% else %}
-            {% set dateOfVisitMonth = {
+            {% else %}
+              {% set dateOfVisitMonth = {
               name: 'month',
               value: dateOfVisit.month.value,
               classes: 'govuk-input--width-2'
             } %}
-          {% endif %}
+            {% endif %}
 
-          {% if dateOfVisit.year.error %}
-            {% set dateOfVisitYear = {
+            {% if dateOfVisit.year.error %}
+              {% set dateOfVisitYear = {
               name: 'year',
               value: dateOfVisit.year.value,
               classes: 'govuk-input--width-4 govuk-input--error'
             } %}
-          {% else %}
-            {% set dateOfVisitYear = {
+            {% else %}
+              {% set dateOfVisitYear = {
               name: 'year',
               value: dateOfVisit.year.value,
               classes: 'govuk-input--width-4'
             } %}
-          {% endif %}
+            {% endif %}
 
-          {{ govukDateInput({
+            {{ govukDateInput({
             id: "visit-date",
             namePrefix: "visit-date",
             hint: {
-              html: "For example, 27 3 2022"
+              html: "For example, 27 3 2022",
+              id: "date-of-visit-hint"
             },
             errorMessage: dateOfVisit.errorMessage,
             items: [dateOfVisitDay, dateOfVisitMonth, dateOfVisitYear]
           }) }}
+          </fieldset>
         </div>
         {{ govukButton({
           text: "Continue",
