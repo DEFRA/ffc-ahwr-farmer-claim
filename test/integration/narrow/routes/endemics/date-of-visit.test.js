@@ -207,18 +207,61 @@ describe('Date of vet visit', () => {
         day: '1',
         month: '1',
         year: '3000',
-        errorMessage: 'Date of visit must be in the past',
+        errorMessage: 'The date of review must be in the past',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'R'
+      },
+      {
+        description:
+          'visit date in future - application created today, visit date tomorrow',
+        day: '1',
+        month: '1',
+        year: '3000',
+        errorMessage: 'The date of follow-up must be in the past',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day and month and year',
         day: '',
         month: '',
         year: '',
-        errorMessage: 'Enter the date the vet completed the review',
+        errorMessage: 'Enter the date of review',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'R'
+      },
+      {
+        description: 'missing day and month and year',
+        day: '',
+        month: '',
+        year: '',
+        errorMessage: 'Enter the date of follow-up',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
+      },
+      {
+        description: 'use real date',
+        day: '234',
+        month: '234',
+        year: '234',
+        errorMessage: 'The date of review must be a real date',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'R'
+      },
+      {
+        description: 'use real date',
+        day: '234',
+        month: '234',
+        year: '234',
+        errorMessage: 'The date of follow-up must be a real date',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day',
@@ -281,11 +324,12 @@ describe('Date of vet visit', () => {
         month,
         year,
         errorMessage,
-        errorHighlights,
-        applicationCreationDate
+        applicationCreationDate,
+        typeOfReview
       }) => {
         getEndemicsClaimMock.mockImplementationOnce(() => {
           return {
+            ...(typeOfReview && { typeOfReview }),
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
               createdAt: applicationCreationDate

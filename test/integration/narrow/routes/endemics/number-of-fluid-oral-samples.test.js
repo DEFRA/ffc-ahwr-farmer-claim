@@ -115,8 +115,8 @@ describe('Number of fluid oral samples test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many oral fluid samples did the vet take?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of oral fluid samples collected')
-      expect($('#numberOfOralFluidSamples-error').text()).toMatch('Enter the number of oral fluid samples collected')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of oral fluid samples')
+      expect($('#numberOfOralFluidSamples-error').text()).toMatch('Enter the number of oral fluid samples')
     })
 
     test('shows error page when number of tests is < 5', async () => {
