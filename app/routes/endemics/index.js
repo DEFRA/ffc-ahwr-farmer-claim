@@ -16,8 +16,15 @@ const {
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
 const {
-  endemicsClaim: { landingPage: landingPageKey, latestEndemicsApplication: latestEndemicsApplicationKey, latestVetVisitApplication: latestVetVisitApplicationKey, previousClaims: previousClaimsKey }
+  endemicsClaim: {
+    landingPage: landingPageKey,
+    latestEndemicsApplication: latestEndemicsApplicationKey,
+    latestVetVisitApplication: latestVetVisitApplicationKey,
+    previousClaims: previousClaimsKey,
+    reference: referenceKey
+  }
 } = require('../../session/keys')
+const createClaimReference = require('../../lib/create-temp-claim-reference')
 
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -39,9 +46,11 @@ module.exports = {
         const claims = await getClaimsByApplicationReference(
           latestEndemicsApplication.reference
         )
+        const tempClaimId = createClaimReference()
         session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
         session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
         session.setEndemicsClaim(request, previousClaimsKey, claims)
+        session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
         // new user
         if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
