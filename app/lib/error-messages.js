@@ -19,7 +19,7 @@ module.exports = {
     urnPattern: 'URN must only include letters a to z, numbers and a hyphen'
   },
   rcvs: {
-    enterRCVS: 'Enter the RCVS number',
+    enterRCVS: 'Enter an RCVS number',
     validRCVS: 'RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
   },
   visitDate: {

@@ -2,6 +2,8 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const { claimType } = require('../../../../../app/constants/claim')
+const { getSpeciesEligibleNumberForDisplay } = require('../../../../../app/lib/display-helpers')
+const { getReviewType } = require('../../../../../app/lib/get-review-type')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
@@ -179,6 +181,7 @@ describe('Species numbers test', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
+      const { isReview } = getReviewType('E')
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
@@ -192,8 +195,8 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('Did you have 11 or more beef cattle  on the date of the follow-up?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
+      expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}?`)
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(`Select if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}.`)
     })
     test('redirect the user to 404 page in fail action and no claim object', async () => {
       const options = {

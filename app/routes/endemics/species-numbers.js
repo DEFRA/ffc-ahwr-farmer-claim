@@ -31,9 +31,12 @@ const backLink = (request) => {
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
-const errorMessageText = 'Select yes or no'
 const isEndemicsClaims = true
 
+const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay) => {
+  const { isReview } = getReviewType(typeOfReview)
+  return `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}.`
+}
 const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
   return `Did you have ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}?`
@@ -79,12 +82,12 @@ module.exports = [
           const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
           return h.view(endemicsSpeciesNumbers, {
             backLink: backLink(request),
-            errorMessage: { text: errorMessageText },
+            errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay) },
             ...getYesNoRadios(
               legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
               speciesNumbers,
               session.getEndemicsClaim(request, speciesNumbers),
-              errorMessageText,
+              errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay),
               radioOptions
             )
           })

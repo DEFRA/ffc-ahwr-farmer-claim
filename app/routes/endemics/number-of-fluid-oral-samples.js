@@ -38,10 +38,10 @@ module.exports = [
         payload: Joi.object({
           numberOfOralFluidSamples: Joi.string().pattern(/^\d+$/).max(4).required()
             .messages({
-              'string.base': 'Enter the number of oral fluid samples collected',
-              'string.empty': 'Enter the number of oral fluid samples collected',
+              'string.base': 'Enter the number of oral fluid samples',
+              'string.empty': 'Enter the number of oral fluid samples',
               'string.max': 'The number of oral fluid samples should not exceed 9999',
-              'string.pattern.base': 'Number of oral fluid samples must only include numbers'
+              'string.pattern.base': 'The number of oral fluid samples must only include numbers'
             })
         }),
         failAction: async (request, h, error) => {
