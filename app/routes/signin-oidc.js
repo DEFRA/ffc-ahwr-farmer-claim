@@ -10,7 +10,6 @@ const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMad
 const { raiseIneligibilityEvent } = require('../event')
 const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
-// const createClaimReference = require('../lib/create-temp-claim-reference')
 
 const endemicsEnabled = config.endemics.enabled
 
