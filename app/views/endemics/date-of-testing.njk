@@ -22,13 +22,18 @@
           errorList: errorSummary
         }) }}
       {% endif %}
-      <h1 class="govuk-heading-l">When were samples taken?</h1>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
         <input type="hidden" name="dateOfVisit" value="{{dateOfVisit}}"/>
 
         <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingWasCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
+          <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+              <h1 class="govuk-fieldset__heading">
+               When were samples taken?
+              </h1>
+            </legend>
           {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
             {% set onAnotherDateDay = {
               name: 'day',
@@ -105,6 +110,7 @@
               }
             ]
           }) }}
+          </fieldset>
         </div>
         {{ govukButton({
           text: "Continue",
