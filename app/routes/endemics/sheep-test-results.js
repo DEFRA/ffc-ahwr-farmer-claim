@@ -47,7 +47,7 @@ const getPageContent = (request, data) => {
   if (testResultOptions) {
     const diseaseTypeText = sheepTestTypes[sheepEndemicsPackage].find((test) => test.value === diseaseType).text
 
-    return radios(title(diseaseTypeText), 'testResult', data?.error && 'Select a test result', {
+    return radios(title(diseaseTypeText), 'testResult', data?.error && 'Select a result', {
       hintHtml: 'You can find this on the summary the vet gave you.'
     })(testResultOptions.map((test) => ({ value: test.value, text: test.text, checked: result === test.value })))
   }

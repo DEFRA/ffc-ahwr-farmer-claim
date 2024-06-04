@@ -8,7 +8,7 @@ const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
-const errorMessageText = 'Select yes or no'
+const errorMessageText = 'Select if the vet did a PI hunt'
 
 module.exports = [
   {

@@ -61,7 +61,7 @@ describe('Species numbers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did the vet do a persistently infected (PI) hunt for BVD?')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did the vet do a persistently infected (PI) hunt for bovine viral diarrhea (BVD)?')
       expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
@@ -148,8 +148,8 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('Did the vet do a persistently infected (PI) hunt for BVD?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
+      expect($('h1').text().trim()).toMatch('Did the vet do a persistently infected (PI) hunt for bovine viral diarrhea (BVD)?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select if the vet did a PI hunt')
     })
   })
 })

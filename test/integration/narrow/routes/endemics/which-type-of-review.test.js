@@ -134,7 +134,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select which type of review you are claiming for')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select what you are claiming for')
     })
 
     test('Returns 302 and redirect to vet visit review test result', async () => {

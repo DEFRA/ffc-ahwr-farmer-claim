@@ -74,7 +74,7 @@ module.exports = [
               {
                 is: Joi.exist(),
                 then: validateDateInputDay('visit-date', 'Date of visit').messages({
-                  'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed the review'
+                  'dateInputDay.ifNothingIsEntered': 'Enter the date of'
                 })
               }
             ]
@@ -132,13 +132,31 @@ module.exports = [
           })
         }),
         failAction: async (request, h, error) => {
-          const errorSummary = []
+          let errorSummary = []
           const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
           if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
           const { typeOfReview } = session.getEndemicsClaim(request)
           const { isReview } = getReviewType(typeOfReview)
           const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
+
+          errorSummary = errorSummary.map((err) => {
+            switch (err.text) {
+              case 'Enter the date of': return { ...err, text: `Enter the date of ${reviewOrFollowUpText}` }
+              case 'Date of visit must be a real date': return { ...err, text: `The date of ${reviewOrFollowUpText} must be a real date` }
+              case 'Date of visit must be in the past': return { ...err, text: `The date of ${reviewOrFollowUpText} must be in the past` }
+              default: return err
+            }
+          })
+          error.details = error.details.map((err) => {
+            switch (err.message) {
+              case 'Enter the date of': return { ...err, message: `Enter the date of ${reviewOrFollowUpText}` }
+              case 'Date of visit must be a real date': return { ...err, message: `The date of ${reviewOrFollowUpText} must be a real date` }
+              case 'Date of visit must be in the past': return { ...err, message: `The date of ${reviewOrFollowUpText} must be in the past` }
+              default: return err
+            }
+          })
+
           return h
             .view(endemicsDateOfVisit, {
               ...request.payload,
