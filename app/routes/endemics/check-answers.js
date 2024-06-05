@@ -62,9 +62,9 @@ module.exports = [
           }
         ]
         const numberOfAnimalsTestedRow = {
-          key: { text: 'Number of Samples Taken' }, // Pigs, Beef, Sheep
+          key: { text: 'Number of samples taken' }, // Pigs, Beef, Sheep
           value: { html: numberAnimalsTested },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'Number of Samples Taken' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'number of samples taken' }] }
         }
         const vetDetailsRows = [
           {
@@ -116,7 +116,7 @@ module.exports = [
         const herdVaccinationStatusRow = {
           key: { text: 'Herd PRRS vaccination status' }, // Pigs
           value: { html: getVaccinationStatusForDisplay(sessionData?.herdVaccinationStatus) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'Herd PRRS vaccination status' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'herd PRRS vaccination status' }] }
         }
         const biosecurityAssessmentRow = {
           key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
