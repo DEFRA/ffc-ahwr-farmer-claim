@@ -40,9 +40,9 @@ module.exports = {
           actions: { items: [{ href: '/claim/vet-visit-date', text: 'Change', visuallyHiddenText: 'change date of testing' }] }
         },
         {
-          key: { text: 'Number of animals tested' },
+          key: { text: 'Number of Samples Taken' },
           value: { html: animalsTested + '' },
-          actions: { items: [{ href: '/claim/animals-tested', text: 'Change', visuallyHiddenText: 'change number of animals tested' }] }
+          actions: { items: [{ href: '/claim/animals-tested', text: 'Change', visuallyHiddenText: 'change Number of Samples Taken' }] }
         },
         {
           key: { text: 'Vet\'s name' },
@@ -66,7 +66,7 @@ module.exports = {
       }
 
       if (!animalsTested) {
-        rows = rows.filter(row => row.key.text !== 'Number of animals tested')
+        rows = rows.filter(row => row.key.text !== 'Number of Samples Taken')
       }
 
       return h.view('check-answers', { listData: { rows }, backLink })
