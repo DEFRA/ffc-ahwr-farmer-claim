@@ -38,7 +38,7 @@ function getEligibleNumberRowForDisplay (claimData) {
 }
 
 function upperFirstLetter (str) {
-  if (str) return str.charAt(0).toUpperCase() + str.slice(1)
+  if (str && typeof str === 'string' && str !== '') return str?.charAt(0)?.toUpperCase() + str?.slice(1)
 }
 
 const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
