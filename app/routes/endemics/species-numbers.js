@@ -32,7 +32,10 @@ const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
 const isEndemicsClaims = true
-
+const sheepNumbersExceptionsText = {
+  R: 'review',
+  E: 'follow-up'
+}
 const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay) => {
   const { isReview } = getReviewType(typeOfReview)
   return `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}.`
@@ -112,7 +115,7 @@ module.exports = [
         }
 
         raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
-        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[claim?.typeOfReview] }).code(400).takeover()
       }
     }
   }

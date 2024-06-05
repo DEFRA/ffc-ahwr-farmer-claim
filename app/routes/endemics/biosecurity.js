@@ -24,11 +24,11 @@ const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) 
 
   switch (true) {
     case assessmentPercentage === '':
-      return 'Enter the assessment percentage'
+      return 'Please provide a value for the assessment percentage.'
     case Number(assessmentPercentage) < 1:
-      return 'The assessment percentage must be a number between 1% and 100%.'
+      return 'Please enter a number between 1 and 100.'
     case Number(assessmentPercentage) > 100:
-      return 'The assessment percentage must be a number between 1% and 100%.'
+      return 'Please enter a number between 1 and 100.'
     default:
       return 'The assessment percentage can only include numbers'
   }
@@ -56,7 +56,7 @@ module.exports = [
       validate: {
         payload: Joi.object({
           biosecurity: Joi.string().valid('yes', 'no').required().messages({
-            'any.required': 'Select whether the vet did a biosecurity assessment'
+            'any.required': 'Please select an option to proceed.'
           }),
           assessmentPercentage: Joi.when('biosecurity', {
             is: Joi.valid('yes'),
@@ -70,10 +70,10 @@ module.exports = [
 
           const errorMessage = biosecurity
             ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' }
-            : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
+            : { text: 'Please select an option to proceed.', href: '#biosecurity' }
           const errors = {
             errorMessage,
-            radioErrorMessage: biosecurity === undefined ? { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
+            radioErrorMessage: biosecurity === undefined ? { text: 'Please select an option to proceed.', href: '#biosecurity' } : undefined,
             inputErrorMessage: assessmentPercentageErrorMessage ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : undefined
           }
 
