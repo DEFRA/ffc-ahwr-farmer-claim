@@ -58,7 +58,7 @@ const expectedReviewBeef = {
   rowKeys: [
     ...commonReviewRowKeys,
     '11 or more beef cattle',
-    'Number of Samples Taken',
+    'Number of samples taken',
     ...commonVetRowKeys,
     'Test results URN',
     'Test results'
@@ -80,7 +80,7 @@ const expectedReviewBeef = {
     'Change date of review',
     'Change date of sampling',
     'Change number of species',
-    'Change Number of Samples Taken',
+    'Change number of samples taken',
     ...commonVetRowActionTexts,
     'Change test URN',
     'Change test results'
@@ -140,7 +140,7 @@ const expectedReviewPigs = {
   rowKeys: [
     ...commonReviewRowKeys,
     '51 or more pigs',
-    'Number of Samples Taken',
+    'Number of samples taken',
     ...commonVetRowKeys,
     'Test results URN',
     'Number of oral fluid samples taken',
@@ -164,7 +164,7 @@ const expectedReviewPigs = {
     'Change date of review',
     'Change date of sampling',
     'Change number of species',
-    'Change Number of Samples Taken',
+    'Change number of samples taken',
     ...commonVetRowActionTexts,
     'Change test URN',
     'Change number of oral fluid samples taken',
@@ -187,7 +187,7 @@ const expectedReviewSheep = {
   rowKeys: [
     ...commonReviewRowKeys,
     '21 or more sheep',
-    'Number of Samples Taken',
+    'Number of samples taken',
     ...commonVetRowKeys,
     'Test results URN'
   ],
@@ -207,7 +207,7 @@ const expectedReviewSheep = {
     'Change date of review',
     'Change date of sampling',
     'Change number of species',
-    'Change Number of Samples Taken',
+    'Change number of samples taken',
     ...commonVetRowActionTexts,
     'Change test URN'
   ],
@@ -257,7 +257,7 @@ const expectedEndemicsFollowUpBeef = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     '11 or more beef cattle',
-    'Number of Samples Taken',
+    'Number of samples taken',
     ...commonVetRowKeys,
     'Test results URN',
     'Follow-up test result',
@@ -281,7 +281,7 @@ const expectedEndemicsFollowUpBeef = {
     'Change date of follow-up',
     'Change date of sampling',
     'Change number of species',
-    'Change Number of Samples Taken',
+    'Change number of samples taken',
     ...commonVetRowActionTexts,
     'Change test URN',
     'Change test results',
@@ -347,7 +347,7 @@ const expectedEndemicsFollowUpPigs = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     '51 or more pigs',
-    'Number of Samples Taken',
+    'Number of samples taken',
     ...commonVetRowKeys,
     'Herd PRRS vaccination status',
     'Test results URN',
@@ -375,9 +375,9 @@ const expectedEndemicsFollowUpPigs = {
     'Change date of follow-up',
     'Change date of sampling',
     'Change number of species',
-    'Change Number of Samples Taken',
+    'Change number of samples taken',
     ...commonVetRowActionTexts,
-    'Change Herd PRRS vaccination status',
+    'Change herd PRRS vaccination status',
     'Change test URN',
     'Change number of samples tested',
     'Change diseases status category',
@@ -402,7 +402,7 @@ const expectedEndemicsFollowUpSheep = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     '21 or more sheep',
-    'Number of Samples Taken',
+    'Number of samples taken',
     ...commonVetRowKeys,
     'Test results URN',
     'Sheep health package',
@@ -432,7 +432,7 @@ const expectedEndemicsFollowUpSheep = {
     'Change date of follow-up',
     'Change date of sampling',
     'Change number of species',
-    'Change Number of Samples Taken',
+    'Change number of samples taken',
     ...commonVetRowActionTexts,
     'Change test URN',
     'Change sheep health package',
