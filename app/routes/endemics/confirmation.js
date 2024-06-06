@@ -18,7 +18,7 @@ module.exports = [
           claimDashboard,
           reference,
           amount,
-          ruralPaymentsAgency: ruralPaymentsAgency,
+          ruralPaymentsAgency,
           claimSurveyUri: customerSurvey.uri
         })
       }
