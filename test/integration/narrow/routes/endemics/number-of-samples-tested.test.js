@@ -60,8 +60,8 @@ describe('Number of samples tested test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many samples were tested?')
-      expect($('title').text()).toEqual('Number of samples tested - Get funding to improve animal health and welfare')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
+      expect($('title').text()).toEqual('How many animals were samples taken from or assessed? - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
@@ -113,7 +113,7 @@ describe('Number of samples tested test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many samples were tested?')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the number of samples tested')
       expect($('#numberOfSamplesTested-error').text()).toMatch('Enter the number of samples tested')
     })

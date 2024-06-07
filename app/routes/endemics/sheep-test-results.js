@@ -28,11 +28,11 @@ const emptyTestResultErrorMessage = 'Enter the test result'
 const duplicatedItemErrorMessage = 'You’ve already included this kind of disease'
 const emptyDiseaseTypeErrorMessage = 'Enter the name of the condition or disease'
 
-const fieldValidator = (fieldName) => Joi.string().trim().max(50).pattern(/^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,100}$/).required().messages({
+const fieldValidator = (fieldName) => Joi.string().trim().max(500).pattern(/^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,500}$/).required().messages({
   'any.required': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
   'string.base': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
   'string.empty': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
-  'string.max': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must be 100 characters or fewer`,
+  'string.max': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must be 500 characters or fewer`,
   'string.pattern.base': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must only include letters a to z, numbers, special characters such as hyphens and spaces`
 })
 
