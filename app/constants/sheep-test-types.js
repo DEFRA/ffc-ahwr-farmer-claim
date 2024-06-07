@@ -72,7 +72,7 @@ const sheepTestTypes = {
   ],
   reducedLameness: [
     { value: 'jointIll', text: 'Joint ill' },
-    { value: 'lameness', text: 'Lameness' },
+    { value: 'tickBorneFever', text: 'Tick-borne fever' },
     { value: 'footRot', text: 'Foot rot' },
     { value: 'scald', text: 'Scald' },
     { value: 'codd', text: 'CODD' },
