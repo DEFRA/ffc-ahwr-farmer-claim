@@ -146,7 +146,6 @@ module.exports = [
         return h.view(endemicsDateOfVisit, {
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           reviewOrFollowUpText,
-          typeOfReview,
           dateOfVisit: {
             day: {
               value: new Date(dateOfVisit).getDate()
