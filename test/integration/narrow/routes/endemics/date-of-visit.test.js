@@ -118,7 +118,7 @@ describe('Date of vet visit', () => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           latestEndemicsApplication,
-          latestVetVisitApplication: latestVetVisitApplication,
+          latestVetVisitApplication,
           typeOfReview: 'endemics',
           typeOfLivestock: 'beef',
           previousClaims: [{
@@ -197,7 +197,7 @@ describe('Date of vet visit', () => {
         month: '7',
         year: '2022',
         errorMessage:
-          'Date of visit cannot be before the date your agreement began',
+          'The date of follow-up cannot be before the date your agreement began',
         errorHighlights: allErrorHighlights,
         applicationCreationDate: '2022-07-10'
       },
@@ -268,7 +268,7 @@ describe('Date of vet visit', () => {
         day: '',
         month: '05',
         year: '2023',
-        errorMessage: 'Date of visit must include a day',
+        errorMessage: 'The date of follow-up must include a day',
         errorHighlights: [labels.day],
         applicationCreationDate: '2023-01-01'
       },
@@ -277,7 +277,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '',
         year: '2023',
-        errorMessage: 'Date of visit must include a month',
+        errorMessage: 'The date of follow-up must include a month',
         errorHighlights: [labels.month],
         applicationCreationDate: '2023-01-01'
       },
@@ -286,7 +286,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '',
-        errorMessage: 'Date of visit must include a year',
+        errorMessage: 'The date of follow-up must include a year',
         errorHighlights: [labels.year],
         applicationCreationDate: '2023-01-01'
       },
@@ -295,7 +295,7 @@ describe('Date of vet visit', () => {
         day: '',
         month: '',
         year: '2023',
-        errorMessage: 'Date of visit must include a day and a month',
+        errorMessage: 'The date of follow-up must include a day and a month',
         errorHighlights: [labels.day, labels.month],
         applicationCreationDate: '2023-01-01'
       },
@@ -304,7 +304,7 @@ describe('Date of vet visit', () => {
         day: '',
         month: '05',
         year: '',
-        errorMessage: 'Date of visit must include a day and a year',
+        errorMessage: 'The date of follow-up must include a day and a year',
         errorHighlights: [labels.day, labels.year],
         applicationCreationDate: '2023-01-01'
       },
@@ -313,7 +313,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '',
         year: '',
-        errorMessage: 'Date of visit must include a month and a year',
+        errorMessage: 'The date of follow-up must include a month and a year',
         errorHighlights: [labels.month, labels.year],
         applicationCreationDate: '2023-01-01'
       }

@@ -62,7 +62,7 @@ module.exports = [
             .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
             .required()
             .messages({
-              'any.required': 'Enter the date the vet completed testing'
+              'any.required': 'Enter the date samples were taken'
             }),
 
           'on-another-date-day': Joi
@@ -70,8 +70,8 @@ module.exports = [
               switch: [
                 {
                   is: 'onAnotherDate',
-                  then: validateDateInputDay('on-another-date', 'Date of testing').messages({
-                    'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed testing'
+                  then: validateDateInputDay('on-another-date', 'The date samples were taken').messages({
+                    'dateInputDay.ifNothingIsEntered': 'Enter the date samples were taken'
                   })
                 },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -82,7 +82,7 @@ module.exports = [
           'on-another-date-month': Joi
             .when('whenTestingWasCarriedOut', {
               switch: [
-                { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'Date of testing') },
+                { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'The date samples were taken') },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
               ],
               otherwise: Joi.allow('')
@@ -93,7 +93,7 @@ module.exports = [
               switch: [
                 {
                   is: 'onAnotherDate',
-                  then: validateDateInputYear('on-another-date', 'Date of testing', (value, helpers) => {
+                  then: validateDateInputYear('on-another-date', 'The date samples were taken', (value, helpers) => {
                     if (value > 9999 || value < 1000) {
                       return value
                     }
@@ -140,8 +140,8 @@ module.exports = [
 
                     return value
                   }, {
-                    'dateOfTesting.future': 'Date of sampling must be a real date',
-                    'dateOfTesting.beforeAgreementDate': 'Date of testing cannot be before the review visit date'
+                    'dateOfTesting.future': 'The date samples were taken must be a real date',
+                    'dateOfTesting.beforeAgreementDate': 'The date samples were taken cannot be before the date your agreement began'
                   })
                 },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }

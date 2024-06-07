@@ -167,7 +167,7 @@ describe('Date of testing', () => {
         onAnotherDateDay: tomorrow.getDate(),
         onAnotherDateMonth: tomorrow.getMonth() + 1,
         onAnotherDateYear: tomorrow.getFullYear(),
-        errorMessage: 'Date of sampling must be a real date',
+        errorMessage: 'The date samples were taken must be a real date',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       },
@@ -177,7 +177,7 @@ describe('Date of testing', () => {
         onAnotherDateDay: '',
         onAnotherDateMonth: yesterday.getMonth() + 1,
         onAnotherDateYear: yesterday.getFullYear(),
-        errorMessage: 'Date of testing must include a day',
+        errorMessage: 'The date samples were taken must include a day',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       },
@@ -187,7 +187,7 @@ describe('Date of testing', () => {
         onAnotherDateDay: tomorrow.getDate(),
         onAnotherDateMonth: '',
         onAnotherDateYear: yesterday.getFullYear(),
-        errorMessage: 'Date of testing must include a month',
+        errorMessage: 'The date samples were taken must include a month',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       },
@@ -197,7 +197,7 @@ describe('Date of testing', () => {
         onAnotherDateDay: tomorrow.getDate(),
         onAnotherDateMonth: yesterday.getMonth() + 1,
         onAnotherDateYear: '',
-        errorMessage: 'Date of testing must include a year',
+        errorMessage: 'The date samples were taken must include a year',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       }
@@ -274,7 +274,7 @@ describe('Date of testing', () => {
     test.each([
       {
         dateOfVisit: today,
-        errorMessage: 'Enter the date the vet completed testing'
+        errorMessage: 'Enter the date samples were taken'
       }
     ])('Show error when no option selected', async ({ dateOfVisit, errorMessage }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })

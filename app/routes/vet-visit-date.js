@@ -75,7 +75,6 @@ module.exports = [
         payload: config.dateOfTesting.enabled
           ? Joi.object({
               dateOfAgreementAccepted: Joi.string().required(),
-
               [labels.day]: Joi.when('dateOfAgreementAccepted', {
                 switch: [
                   {
@@ -85,7 +84,7 @@ module.exports = [
                       'Date of review'
                     ).messages({
                       'dateInputDay.ifNothingIsEntered':
-                          'Enter the date the vet completed the review'
+                        'Enter the date the vet completed the review'
                     })
                   }
                 ]
@@ -119,8 +118,8 @@ module.exports = [
                           const dateObject = new Date(year, month - 1, day)
                           return (
                             dateObject.getFullYear() === year &&
-                              dateObject.getMonth() === month - 1 &&
-                              dateObject.getDate() === day
+                            dateObject.getMonth() === month - 1 &&
+                            dateObject.getDate() === day
                           )
                         }
                         if (
@@ -174,11 +173,11 @@ module.exports = [
                       },
                       {
                         'dateOfReview.future':
-                            'The date the review was completed must be in the past',
+                          'The date the review was completed must be in the past',
                         'dateOfReview.beforeAccepted':
-                            'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                          'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                         'dateOfReview.expired':
-                            'The date the review was completed must be within six months of agreement date'
+                          'The date the review was completed must be within six months of agreement date'
                       }
                     )
                   }
@@ -193,7 +192,7 @@ module.exports = [
                 .required()
                 .messages({
                   'any.required':
-                      'Select if testing was carried out when the vet visited the farm or on another date'
+                    'Select if testing was carried out when the vet visited the farm or on another date'
                 }),
 
               'on-another-date-day': Joi.when('whenTestingWasCarriedOut', {
@@ -205,7 +204,7 @@ module.exports = [
                       'Date of testing'
                     ).messages({
                       'dateInputDay.ifNothingIsEntered':
-                          'Enter the date the vet completed testing'
+                        'Enter the date the vet completed testing'
                     })
                   },
                   {
@@ -247,7 +246,7 @@ module.exports = [
 
                         if (
                           value.whenTestingWasCarriedOut ===
-                            'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                          'whenTheVetVisitedTheFarmToCarryOutTheReview'
                         ) {
                           return value
                         }
@@ -256,8 +255,8 @@ module.exports = [
                           const dateObject = new Date(year, month - 1, day)
                           return (
                             dateObject.getFullYear() === year &&
-                              dateObject.getMonth() === month - 1 &&
-                              dateObject.getDate() === day
+                            dateObject.getMonth() === month - 1 &&
+                            dateObject.getDate() === day
                           )
                         }
                         if (
@@ -275,7 +274,7 @@ module.exports = [
                         const dateOfTesting = new Date(
                           helpers.state.ancestors[0]['on-another-date-year'],
                           helpers.state.ancestors[0]['on-another-date-month'] -
-                              1,
+                            1,
                           helpers.state.ancestors[0]['on-another-date-day']
                         )
                         const currentDate = new Date()
@@ -300,9 +299,9 @@ module.exports = [
                       },
                       {
                         'dateOfTesting.future':
-                            'Date of testing must be in the past',
+                          'Date of testing must be in the past',
                         'dateOfTesting.beforeAccepted':
-                            'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                          'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
                       }
                     )
                   },
