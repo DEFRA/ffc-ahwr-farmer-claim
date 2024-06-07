@@ -118,7 +118,7 @@ describe('Date of vet visit', () => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           latestEndemicsApplication,
-          latestVetVisitApplication: latestVetVisitApplication,
+          latestVetVisitApplication,
           typeOfReview: 'endemics',
           typeOfLivestock: 'beef',
           previousClaims: [{

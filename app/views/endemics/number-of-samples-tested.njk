@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Number of samples tested - {{ serviceName }}{% endblock %}
+{% block pageTitle %}How many animals were samples taken from or assessed? - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -27,7 +27,7 @@
 
         {{ govukInput({
             label: {
-              text: "How many samples were tested?",
+              text: "How many animals were samples taken from or assessed?",
               classes: "govuk-label--l",
               isPageHeading: true
             },
