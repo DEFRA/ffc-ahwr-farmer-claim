@@ -57,7 +57,7 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('What was the review test result?')
+      expect($('h1').text()).toMatch('What was the test result of your last annual health and welfare review?')
       expect($('title').text()).toContain('Vet Visits Review Test Results - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
@@ -145,7 +145,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the review test result?')
+      expect($('h1').text()).toMatch('What was the test result of your last annual health and welfare review?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
       expect($('#vetVisitsReviewTestResults-error').text()).toMatch('Select a test result')
     })
