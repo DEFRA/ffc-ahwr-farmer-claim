@@ -478,7 +478,7 @@ describe('Date of vet visit', () => {
       },
       {
         description: 'previous review claim is not ready to pay and user can not calim for endemics',
-        content: 'You must have claimed for your review before you claim for the follow-up that happened after it.',
+        content: 'Your review claim must have been approved before you claim for the follow-up that happened after it.',
         dateOfVetVisitException: 'claim endemics before review status is ready to pay',
         day: '01',
         month: '05',
