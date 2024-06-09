@@ -101,7 +101,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
   const { error } = dateModel.validate(request.payload)
   if (error) {
     const errorSummary = []
-    const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
+    const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
     if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
     data = error

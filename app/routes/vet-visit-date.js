@@ -449,7 +449,7 @@ module.exports = [
               text: error.details.find((e) =>
                 e.context.label.startsWith('visit-date')
               ).message,
-              href: '#when-was-the-review-completed'
+              href: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
             })
           }
 
@@ -462,7 +462,7 @@ module.exports = [
               text: error.details.find(
                 (e) => e.context.label === 'whenTestingWasCarriedOut'
               ).message,
-              href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+              href: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
             })
           }
           if (
@@ -486,7 +486,7 @@ module.exports = [
               text: error.details.find((e) =>
                 e.context.label.startsWith('on-another-date')
               ).message,
-              href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+              href: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
             })
           }
 
