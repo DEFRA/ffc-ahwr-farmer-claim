@@ -36,7 +36,7 @@ const fieldValidator = (fieldName) => Joi.string().trim().max(500).pattern(/^(?!
   'string.pattern.base': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must only include letters a to z, numbers, special characters such as hyphens and spaces`
 })
 
-const title = (diseaseType) => `What was the ${diseaseType} test result?`
+const title = (diseaseType) => `What was the ${diseaseType} result?`
 const inputText = (id, text, value, classes, errorMessage) => ({ id, name: id, label: { text }, value, classes, errorMessage })
 
 const getPageContent = (request, data) => {
