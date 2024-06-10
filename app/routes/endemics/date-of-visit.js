@@ -101,7 +101,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
   const { error } = dateModel.validate(request.payload)
   if (error) {
     const errorSummary = []
-    const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', '#when-was-the-review-completed')
+    const newError = addError(error, 'visit-date', 'ifTheDateIsIncomplete', 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
     if (Object.keys(newError).length > 0 && newError.constructor === Object) errorSummary.push(newError)
 
     data = error
@@ -183,21 +183,24 @@ module.exports = [
           switch (reason) {
             case dateOfVetVisitExceptions.reviewWithin10:
               mainMessage.text = 'There must be at least 10 months between your reviews.'
+              mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
               break
             case dateOfVetVisitExceptions.rejectedReview:
               mainMessage.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
               break
             case dateOfVetVisitExceptions.noReview:
               mainMessage.text = 'There must be no more than 10 months between your reviews and follow-ups.'
+              mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
               backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
               break
             case dateOfVetVisitExceptions.endemicsWithin10:
               mainMessage.text = 'There must be at least 10 months between your follow-ups.'
+              mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
               backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
               break
             case dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment:
-              mainMessage.text = 'You must have claimed for your review before you claim for the follow-up that happened after it.'
-              mainMessage.url = 'https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/claim-guidance-for-farmers'
+              mainMessage.text = 'Your review claim must have been approved before you claim for the follow-up that happened after it.'
+              mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
               backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
               break
           }

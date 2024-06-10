@@ -20,13 +20,13 @@
       <br>
       {% if mainMessage.url %}
         <p class="govuk-body">
-          <a href={{ mainMessage.url  }}>{{ mainMessage.text  }}</a>
+          <a class="govuk-link" rel="external" href={{ mainMessage.url  }}>{{ mainMessage.text  }}</a>
         </p>
       {% endif %}
       {% if not mainMessage.url %}
         <p class="govuk-body">{{ mainMessage.text }}</p>
       {% endif %}
-      <p class="govuk-body">If you entered the wrong date, you’ll need to go back and enter the correct date.</p>
+      <p class="govuk-body">If you entered the wrong date, you'll need to go back and enter the correct date.</p>
       <p class="govuk-body">
         <a class="govuk-link" href={{ backLink }}>{{backToPageMessage}}</a>
       </p>

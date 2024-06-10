@@ -15,20 +15,20 @@
       <h2 class="govuk-heading-m">What happens next</h2>
       <p>The Rural Payments Agency (RPA) may contact you to request the summary the vet gave you.</p>
       <p id="amount">We will process your claim within 28 days. If your claim is successful, you will get £{{amount}}.</p>
-      <p>Go to <a rel="external" href={{claimDashboard}} class="govuk-link">manage your claims</a> to make another claim or view:</p>
+      <p>Go to <a class="govuk-link" rel="external" href={{ claimDashboard }}>manage your claims</a> to make another claim or view:</p>
       <ul class="govuk-list govuk-list--bullet">
         <li>details of your claims</li>
         <li>service guidance</li>
         <li>your Terms and Conditions</li>
         <li>your agreement summary</li>
       </ul>
-      <p>If you want to arrange another review or follow-up, read the <a rel="external" href="https://apply-for-an-annual-health-and-welfare-review.defra.gov.uk/apply/guidance-for-farmers" class="govuk-link">guidance on timing of reviews and follow-ups</a>.</p>
+      <p>If you want to arrange another review or follow-up, read the <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups">guidance on timing of reviews and follow-ups</a>.</p>
       <h2 class="govuk-heading-m">Get help with your claim</h2>
       <p>If you need to change the details of your claim, contact the RPA and give your agreement number.</p>
       {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
       <br/>
       <p>
-        <a class='govuk-link' target='_blank' href={{ claimSurveyUri }}>
+        <a class='govuk-link' rel="external" target='_blank' href={{ claimSurveyUri }}>
         What did you think of this service?
       </a>
       (giving feedback takes about 5 minutes)
