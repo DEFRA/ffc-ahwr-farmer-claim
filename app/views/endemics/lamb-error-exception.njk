@@ -21,15 +21,21 @@
       <p class="govuk-body">Samples are taken from lambs less than 12 months old.</p>
       <p class="govuk-body">If you had less than 10 lambs on the date of the review and samples were taken from all of them, you can continue with your claim.</p>
       <p class="govuk-body">If samples were not taken from all the lambs, you cannot continue and samples need to be taken again.</p>
-      <p class="govuk-body">If you entered the wrong number, you'll need to go back and enter the correct number.</p>
+      <p class="govuk-body">If you have entered the wrong number, you’ll need to go back and enter the correct number.</p>
       <p class="govuk-body">
         <a class="govuk-link" href={{ backLink }}>Enter the number of animals tested.</a>
       </p>
-      {{ govukWarningText({
-        text: "Your claim will be checked by our team.",
-        iconFallbackText: "Warning"
-      }) }}
-      {% include './chunks/get-help-with-claim.njk' %}
+      <div class="govuk-warning-text">
+        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+        <strong class="govuk-warning-text__text">
+          <span class="govuk-warning-text__assistive">Warning</span>
+            Your claim will be checked by our team.
+        </strong>
+      </div>
+      <h2 class="govuk-heading-m">Get help with your claim</h2>
+      <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
+      {{ rpaContactDetails({email: ruralPaymentsAgency.email, callChargesUri: ruralPaymentsAgency.callChargesUri, telephone: ruralPaymentsAgency.telephone}) }}
+      <p class="govuk-body">Have your agreement number with you when you call or include it in your email.</p>
     </div>
   </div>
 {% endblock %}
