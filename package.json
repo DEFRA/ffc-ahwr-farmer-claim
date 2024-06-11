@@ -67,7 +67,6 @@
     "html-webpack-plugin": "^5.5.0",
     "jest": "^29.7.0",
     "jest-junit": "^13.0.0",
-    "jest-skipped-reporter": "^0.0.4",
     "jest-when": "^3.5.2",
     "mini-css-extract-plugin": "^2.5.3",
     "nodemon": "^2.0.12",
