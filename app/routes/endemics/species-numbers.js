@@ -29,8 +29,9 @@ const backLink = (request) => {
   return `${urlPrefix}/${endemicsDateOfTesting}`
 }
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
-const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
-const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
+const hintHtml = 'You can find this on the summary the vet gave you.'
+
+const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintText: hintHtml }
 const isEndemicsClaims = true
 const sheepNumbersExceptionsText = {
   R: 'review',
@@ -56,6 +57,7 @@ module.exports = [
           return boom.notFound()
         }
         const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
+
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
           ...getYesNoRadios(

@@ -41,7 +41,7 @@ module.exports = [
         },
         {
           key: { text: 'Review or follow-up' },
-          value: { html: isReview ? 'Annual health and welfare review' : 'Endemic disease follow-up' }
+          value: { html: isReview ? 'Animal health and welfare review' : 'Endemic disease follow-up' }
         }]
 
         const commonRowsWithChangeLinks = [
@@ -84,9 +84,9 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'the pi hunt' }] }
         }
         const laboratoryUrnRow = {
-          key: { text: 'Test results URN' },
+          key: { text: 'URN' },
           value: { html: laboratoryURN },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'test URN' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'URN' }] }
         }
         const oralFluidSamplesRow = {
           key: { text: 'Number of oral fluid samples taken' }, // Pigs

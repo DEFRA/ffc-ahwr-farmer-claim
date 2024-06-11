@@ -60,13 +60,13 @@ const expectedReviewBeef = {
     '11 or more beef cattle',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'Test results URN',
+    'URN',
     'Test results'
   ],
   rowContents: [
     'Business name',
     'Beef cattle',
-    'Annual health and welfare review',
+    'Animal health and welfare review',
     '19 December 2023',
     '19 December 2023',
     'Yes',
@@ -82,7 +82,7 @@ const expectedReviewBeef = {
     'Change number of species',
     'Change number of samples taken',
     ...commonVetRowActionTexts,
-    'Change test URN',
+    'Change URN',
     'Change test results'
   ],
   rowLinks: [
@@ -102,13 +102,13 @@ const expectedReviewDairy = {
     ...commonReviewRowKeys,
     '11 or more dairy cattle',
     ...commonVetRowKeys,
-    'Test results URN',
+    'URN',
     'Test results'
   ],
   rowContents: [
     'Business name',
     'Dairy cattle',
-    'Annual health and welfare review',
+    'Animal health and welfare review',
     '19 December 2023',
     '19 December 2023',
     'Yes',
@@ -122,7 +122,7 @@ const expectedReviewDairy = {
     'Change date of sampling',
     'Change number of species',
     ...commonVetRowActionTexts,
-    'Change test URN',
+    'Change URN',
     'Change test results'
   ],
   rowLinks: [
@@ -142,14 +142,14 @@ const expectedReviewPigs = {
     '51 or more pigs',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'Test results URN',
+    'URN',
     'Number of oral fluid samples taken',
     'Test results'
   ],
   rowContents: [
     'Business name',
     'Pigs',
-    'Annual health and welfare review',
+    'Animal health and welfare review',
     '19 December 2023',
     '19 December 2023',
     'Yes',
@@ -166,7 +166,7 @@ const expectedReviewPigs = {
     'Change number of species',
     'Change number of samples taken',
     ...commonVetRowActionTexts,
-    'Change test URN',
+    'Change URN',
     'Change number of oral fluid samples taken',
     'Change test results'
   ],
@@ -189,12 +189,12 @@ const expectedReviewSheep = {
     '21 or more sheep',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'Test results URN'
+    'URN'
   ],
   rowContents: [
     'Business name',
     'Sheep',
-    'Annual health and welfare review',
+    'Animal health and welfare review',
     '19 December 2023',
     '19 December 2023',
     'Yes',
@@ -209,7 +209,7 @@ const expectedReviewSheep = {
     'Change number of species',
     'Change number of samples taken',
     ...commonVetRowActionTexts,
-    'Change test URN'
+    'Change URN'
   ],
   rowLinks: [
     '/claim/endemics/date-of-visit',
@@ -259,7 +259,7 @@ const expectedEndemicsFollowUpBeef = {
     '11 or more beef cattle',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'Test results URN',
+    'URN',
     'Follow-up test result',
     'Biosecurity assessment'
   ],
@@ -283,7 +283,7 @@ const expectedEndemicsFollowUpBeef = {
     'Change number of species',
     'Change number of samples taken',
     ...commonVetRowActionTexts,
-    'Change test URN',
+    'Change URN',
     'Change test results',
     'Change biosecurity assessment'
   ],
@@ -305,7 +305,7 @@ const expectedEndemicsFollowUpDairy = {
     ...commonEndemicsFollowUpRowKeys,
     '11 or more dairy cattle',
     ...commonVetRowKeys,
-    'Test results URN',
+    'URN',
     'Follow-up test result',
     'Biosecurity assessment'
   ],
@@ -327,7 +327,7 @@ const expectedEndemicsFollowUpDairy = {
     'Change date of sampling',
     'Change number of species',
     ...commonVetRowActionTexts,
-    'Change test URN',
+    'Change URN',
     'Change test results',
     'Change biosecurity assessment'
   ],
@@ -350,7 +350,7 @@ const expectedEndemicsFollowUpPigs = {
     'Number of samples taken',
     ...commonVetRowKeys,
     'Herd PRRS vaccination status',
-    'Test results URN',
+    'URN',
     'Number of samples tested',
     'Diseases status category',
     'Biosecurity assessment'
@@ -378,7 +378,7 @@ const expectedEndemicsFollowUpPigs = {
     'Change number of samples taken',
     ...commonVetRowActionTexts,
     'Change herd PRRS vaccination status',
-    'Change test URN',
+    'Change URN',
     'Change number of samples tested',
     'Change diseases status category',
     'Change biosecurity assessment'
@@ -404,7 +404,7 @@ const expectedEndemicsFollowUpSheep = {
     '21 or more sheep',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'Test results URN',
+    'URN',
     'Sheep health package',
     'Diseases or conditions tested for',
     'Disease or condition test result',
@@ -434,7 +434,7 @@ const expectedEndemicsFollowUpSheep = {
     'Change number of species',
     'Change number of samples taken',
     ...commonVetRowActionTexts,
-    'Change test URN',
+    'Change URN',
     'Change sheep health package',
     'Change diseases or conditions tested for',
     'Change disease type flystrike and test result',
