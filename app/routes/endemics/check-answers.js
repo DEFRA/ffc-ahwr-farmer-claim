@@ -120,7 +120,7 @@ module.exports = [
         }
         const biosecurityAssessmentRow = {
           key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
-          value: { html: isPigs ? upperFirstLetter(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : upperFirstLetter(sessionData?.biosecurity) },
+          value: { html: isPigs && sessionData?.biosecurity ? upperFirstLetter(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : upperFirstLetter(sessionData?.biosecurity) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'biosecurity assessment' }] }
         }
         const sheepPackageRow = {
