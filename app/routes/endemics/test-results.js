@@ -41,13 +41,15 @@ const pageTitle = (request) => {
   return typeOfReview === claimType.endemics ? 'What was the follow-up test result?' : 'What was the test result?'
 }
 
+const hintHtml = 'You can find this on the summary the vet gave you.'
+
 module.exports = [{
   method: 'GET',
   path: pageUrl,
   options: {
     handler: async (request, h) => {
       const { testResults } = session.getEndemicsClaim(request)
-      const positiveNegativeRadios = radios('', 'testResults')([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
+      const positiveNegativeRadios = radios('', 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
       return h.view(endemicsTestResults, { title: pageTitle(request), backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
   }
@@ -60,7 +62,7 @@ module.exports = [{
         testResults: Joi.string().valid('positive', 'negative').required()
       }),
       failAction: async (request, h, error) => {
-        const positiveNegativeRadios = radios('', 'testResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
+        const positiveNegativeRadios = radios('', 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsTestResults, {
           ...request.payload,
           title: pageTitle(request),
