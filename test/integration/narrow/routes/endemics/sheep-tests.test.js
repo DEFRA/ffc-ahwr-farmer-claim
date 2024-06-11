@@ -64,7 +64,7 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('What did the vet test or sample for?')
+      expect($('h1').text()).toMatch('Which disease or condition did the vet take samples to test for?')
       expect($('title').text()).toMatch('Sheep Tests - Get funding to improve animal health and welfare')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/sheep-endemics-package')
 
@@ -96,9 +96,9 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('What did the vet test or sample for?')
+      expect($('h1').text()).toMatch('Which disease or condition did the vet take samples to test for?')
       expect($('title').text()).toMatch('Sheep Tests - Get funding to improve animal health and welfare')
-      expect($('a').text()).toMatch('You must select a disease')
+      expect($('a').text()).toMatch('Select a disease or condition')
 
       expectPhaseBanner.ok($)
     })

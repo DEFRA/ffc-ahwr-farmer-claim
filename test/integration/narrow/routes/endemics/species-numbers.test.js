@@ -69,6 +69,7 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimType.review ? 'review' : 'follow-up'}?`)
       expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
+      expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })
