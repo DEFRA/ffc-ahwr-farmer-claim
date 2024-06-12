@@ -20,7 +20,7 @@ module.exports = {
   },
   rcvs: {
     enterRCVS: 'Enter an RCVS number',
-    validRCVS: 'RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
+    validRCVS: 'An RCVS number is a 7 digit number or a 6 digit number ending in a letter.'
   },
   visitDate: {
     startDateOrAfter: (createdAt) => `The date of review must be the same or after ${new Date(createdAt).toLocaleString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })} when you accepted your agreement offer`,
