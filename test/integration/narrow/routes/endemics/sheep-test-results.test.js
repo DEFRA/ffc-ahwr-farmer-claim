@@ -134,8 +134,8 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the condition or disease')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and latest test and test result is not provided and Add another button pressed', async () => {
@@ -173,8 +173,8 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the condition or disease')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 302 when disease type is Other and test and test result is provided and Add continue button pressed', async () => {
@@ -242,7 +242,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('a').text()).toMatch('Enter the condition or disease')
     })
     test('Post Returns 400 when disease type is Other and latest test result is not provided and continue button pressed', async () => {
       const options = {
@@ -279,7 +279,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and test and test result is already in the list', async () => {
@@ -432,7 +432,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('a').text()).toMatch('Enter the condition or disease')
     })
 
     test('Post Returns 400 when disease type is Other and test result is not provided', async () => {
@@ -470,7 +470,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the result')
     })
     test('Post Returns 400 when one of the disease types is provided and Other is not provided', async () => {
       const options = {
@@ -507,7 +507,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and test result is not provided and test is already in the list', async () => {
@@ -546,7 +546,7 @@ describe('Sheep test result tests', () => {
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and test result is provided with invalid information', async () => {

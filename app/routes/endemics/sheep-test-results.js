@@ -24,9 +24,9 @@ const routes = (request) => {
   }
 }
 
-const emptyTestResultErrorMessage = 'Enter the test result'
+const emptyTestResultErrorMessage = 'Enter the result'
 const duplicatedItemErrorMessage = 'You’ve already included this kind of disease'
-const emptyDiseaseTypeErrorMessage = 'Enter the name of the condition or disease'
+const emptyDiseaseTypeErrorMessage = 'Enter the condition or disease'
 
 const fieldValidator = (fieldName) => Joi.string().trim().max(500).pattern(/^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,500}$/).required().messages({
   'any.required': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
