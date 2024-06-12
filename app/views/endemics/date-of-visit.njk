@@ -33,7 +33,7 @@
                 Date of {{ reviewOrFollowUpText }}
               </h1>
             </legend>
-            <p>This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
+            <p class="govuk-hint">This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
         You can find it on the summary the vet gave you.</p>
             {% if dateOfVisit.day.error %}
               {% set dateOfVisitDay = {

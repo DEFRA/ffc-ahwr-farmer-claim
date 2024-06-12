@@ -352,7 +352,7 @@ const expectedEndemicsFollowUpPigs = {
     'Herd PRRS vaccination status',
     'URN',
     'Number of samples tested',
-    'Diseases status category',
+    'Disease status category',
     'Biosecurity assessment'
   ],
   rowContents: [
@@ -380,7 +380,7 @@ const expectedEndemicsFollowUpPigs = {
     'Change herd PRRS vaccination status',
     'Change URN',
     'Change number of samples tested',
-    'Change diseases status category',
+    'Change disease status category',
     'Change biosecurity assessment'
   ],
   rowLinks: [

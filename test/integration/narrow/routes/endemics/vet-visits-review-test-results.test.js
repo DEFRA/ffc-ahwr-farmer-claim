@@ -145,7 +145,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('What was the test result of your last annual health and welfare review?')
+      expect($('h1').text()).toMatch('What was the review test result?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
       expect($('#vetVisitsReviewTestResults-error').text()).toMatch('Select a test result')
     })
