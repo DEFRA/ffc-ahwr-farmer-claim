@@ -60,8 +60,8 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals were samples taken from?')
-      expect($('title').text().trim()).toEqual('How many animals were samples taken from? - Get funding to improve animal health and welfare')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
+      expect($('title').text().trim()).toEqual('How many animals were samples taken from or assessed? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -116,7 +116,7 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals were samples taken from?')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(error)
       expect($('#numberAnimalsTested-error').text()).toMatch(error)
     })
@@ -184,7 +184,7 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals were samples taken from?')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('The number of animals tested cannot be 0')
       expect($('#numberAnimalsTested-error').text()).toMatch('The number of animals tested cannot be 0')
     })

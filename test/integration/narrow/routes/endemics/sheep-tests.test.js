@@ -132,7 +132,7 @@ describe('Test Results test', () => {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, sheepTests: 'other' },
+        payload: { crumb, sheepTests: 'test' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
