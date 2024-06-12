@@ -64,7 +64,7 @@ const getPageContent = (request, data) => {
   ]
 
   return {
-    title: 'Give details of the other disease tested or sampled for',
+    title: 'Other condition or disease details',
     inputTexts,
     result,
     resultLength: result.length,

@@ -133,7 +133,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the name of the condition or disease')
       expect($('a').text()).toMatch('Enter the test result')
     })
@@ -172,7 +172,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the name of the condition or disease')
       expect($('a').text()).toMatch('Enter the test result')
     })
@@ -241,7 +241,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the name of the condition or disease')
     })
     test('Post Returns 400 when disease type is Other and latest test result is not provided and continue button pressed', async () => {
@@ -278,7 +278,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the test result')
     })
 
@@ -317,7 +317,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
     })
 
@@ -355,7 +355,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
     })
 
@@ -393,7 +393,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
     })
 
@@ -431,7 +431,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the name of the condition or disease')
     })
 
@@ -469,7 +469,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the test result')
     })
     test('Post Returns 400 when one of the disease types is provided and Other is not provided', async () => {
@@ -506,7 +506,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Enter the test result')
     })
 
@@ -544,7 +544,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
       expect($('a').text()).toMatch('Enter the test result')
     })
@@ -583,7 +583,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Condition or disease must only include letters a to z, numbers, special characters such as hyphens and spaces')
       expect($('a').text()).toMatch('Test result must only include letters a to z, numbers, special characters such as hyphens and spaces')
     })
@@ -658,7 +658,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
@@ -696,7 +696,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })
