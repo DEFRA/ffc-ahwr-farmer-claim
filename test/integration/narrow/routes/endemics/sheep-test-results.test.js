@@ -134,7 +134,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('a').text()).toMatch('Enter condition or disease')
       expect($('a').text()).toMatch('Enter the test result')
     })
 
@@ -173,7 +173,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('a').text()).toMatch('Enter condition or disease')
       expect($('a').text()).toMatch('Enter the test result')
     })
 
@@ -242,7 +242,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('a').text()).toMatch('Enter condition or disease')
     })
     test('Post Returns 400 when disease type is Other and latest test result is not provided and continue button pressed', async () => {
       const options = {
@@ -432,7 +432,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(400)
       expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('a').text()).toMatch('Enter condition or disease')
     })
 
     test('Post Returns 400 when disease type is Other and test result is not provided', async () => {
