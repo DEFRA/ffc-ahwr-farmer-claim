@@ -21,15 +21,14 @@
             errorList: [errorMessage]
           }) }}
         {% endif %}
-
+     <h1 class="govuk-heading-l">How many animals were samples taken from or assessed?</h1>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
         {{ govukInput({
             label: {
-              text: "How many animals were samples taken from or assessed?",
-              classes: "govuk-label--l",
-              isPageHeading: true
+              text: "Enter a number",
+              isPageHeading: false
             },
             hint: {
               text: "You can find this on the summary the vet gave you."
