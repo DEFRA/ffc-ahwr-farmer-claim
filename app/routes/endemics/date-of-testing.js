@@ -11,18 +11,24 @@ const { endemicsClaim: { dateOfTesting: dateOfTestingKey } } = require('../../se
 const { claimType } = require('../../constants/claim')
 const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
-
+const optionSameReviewOrFollowUpDateText = (typeOfReview) => {
+  const { isReview } = getReviewType(typeOfReview)
+  const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
+  return `When the vet visited the farm for the ${reviewOrFollowUpText}`
+}
 module.exports = [
   {
     method: 'GET',
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, dateOfTesting, latestEndemicsApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, dateOfTesting, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
         return h.view(endemicsDateOfTesting, {
+          optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit,
           whenTestingWasCarriedOut: dateOfTesting
@@ -150,7 +156,7 @@ module.exports = [
             })
         }),
         failAction: async (request, h, error) => {
-          const { dateOfVisit } = session.getEndemicsClaim(request)
+          const { dateOfVisit, typeOfReview } = session.getEndemicsClaim(request)
           const errorSummary = []
           if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
             errorSummary.push({
@@ -167,6 +173,7 @@ module.exports = [
               ...request.payload,
               dateOfVisit,
               errorSummary,
+              optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
               whenTestingWasCarriedOut: {
                 value: request.payload.whenTestingWasCarriedOut,
                 errorMessage: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')

@@ -22,6 +22,7 @@
       {% endif %}
       {% if title %}
         <h1 class="govuk-heading-l">{{title}}</h1>
+        <p class="govuk-hint">You can find this on the summary the vet gave you.</p>
       {% endif %}
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -54,7 +55,7 @@
                 <div class="govuk-grid-column-three-quarters">
                   {{ govukInput({
                       label: {
-                        text: "Enter the name of the condition or disease"
+                        text: "Enter the condition or disease"
                       },
                       id: "diseaseType-"+ (loop.index - 1),
                       name: "diseaseType",
@@ -67,7 +68,7 @@
 
               {{ govukInput({
                   label: {
-                    text: "Enter the test result"
+                    text: "Enter the result"
                   },
                   classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
                   id: "testResult-" + (loop.index - 1),
@@ -79,6 +80,7 @@
             {% endfor %}
           {% endif %}
           {% if resultLength != 10 %}
+            <h2 class="govuk-heading-m">Condition or disease</h2>
             {% for inputText in inputTexts %}
               {{ govukInput(inputText) }}
             {% endfor %}
