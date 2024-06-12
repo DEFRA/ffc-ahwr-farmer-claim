@@ -25,13 +25,11 @@
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         <h1 class="govuk-heading-l govuk-!-margin-bottom-1">How many animals were samples taken from or assessed?</h1>
+        <p class="govuk-hint">You can find this on the summary the vet gave you.</p>
         {{ govukInput({
         label: {
           text: "Enter a number",
           isPageHeading: false
-        },
-        hint: {
-          text: "You can find this on the summary the vet gave you."
         },
         classes: "govuk-input govuk-input--width-10",
         id: "numberAnimalsTested",
