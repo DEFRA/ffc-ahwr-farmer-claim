@@ -304,7 +304,7 @@ module.exports = [
             return h.view(endemicsSheepTestResults, {
               ...pageContent,
               backLink: previousePage,
-              errorList: [{ text: 'Select a test result', href: '#testResult' }]
+              errorList: [{ text: 'Select a result', href: '#testResult' }]
             }).code(400).takeover()
           }
 

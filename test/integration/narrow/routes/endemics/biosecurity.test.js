@@ -142,7 +142,7 @@ describe('Biosecurity test', () => {
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)
-      const errorMessage = 'Please select an option to proceed.'
+      const errorMessage = 'Select whether the vet did a biosecurity assessment'
 
       expect($('li > a').text()).toMatch(errorMessage)
     })
@@ -159,7 +159,7 @@ describe('Biosecurity test', () => {
 
       const response = await global.__SERVER__.inject(options)
       const $ = cheerio.load(response.payload)
-      const errorMessage = 'Please provide a value for the assessment percentage.'
+      const errorMessage = 'Enter the assessment percentage'
 
       expect(response.statusCode).toBe(400)
       expect($('li > a').text().trim()).toContain(errorMessage)
@@ -231,7 +231,7 @@ describe('Biosecurity test', () => {
       const $ = cheerio.load(response.payload)
 
       expect(response.statusCode).toBe(400)
-      expect($('li > a').text()).toContain('Please select an option to proceed.')
+      expect($('li > a').text()).toContain('Select whether the vet did a biosecurity assessment')
     })
     test('continue with providing biosecurity and assessmentPercentage', async () => {
       const options = {
@@ -251,9 +251,9 @@ describe('Biosecurity test', () => {
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test.each([
-      { biosecurity: 'yes', assessmentPercentage: '', errorMessage: 'Please provide a value for the assessment percentage.' },
-      { biosecurity: 'yes', assessmentPercentage: '0', errorMessage: 'Please enter a number between 1 and 100.' },
-      { biosecurity: 'yes', assessmentPercentage: '101', errorMessage: 'Please enter a number between 1 and 100.' },
+      { biosecurity: 'yes', assessmentPercentage: '', errorMessage: 'Enter the assessment percentage' },
+      { biosecurity: 'yes', assessmentPercentage: '0', errorMessage: 'The assessment percentage must be a number between 1 and 100' },
+      { biosecurity: 'yes', assessmentPercentage: '101', errorMessage: 'The assessment percentage must be a number between 1 and 100' },
       { biosecurity: 'yes', assessmentPercentage: 'abc', errorMessage: 'The assessment percentage can only include numbers' }
     ])('continue to Exception page when biosecurity  is "no" for any journey', async ({ biosecurity, assessmentPercentage, errorMessage }) => {
       const options = {

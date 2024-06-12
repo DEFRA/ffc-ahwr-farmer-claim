@@ -13,13 +13,12 @@ const radios = require('../models/form-component/radios')
 const { livestockTypes } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
-const previousPageUrl = (request) => {
-  const { typeOfLivestock } = session.getEndemicsClaim(request)
 
+const previousPageUrl = (typeOfLivestock) => {
   if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsWhichTypeOfReview}`
-
   return `${urlPrefix}/${endemicsVetRCVS}`
 }
+
 const nextPageURL = (request) => {
   const { typeOfLivestock } = session.getEndemicsClaim(request)
 
@@ -36,9 +35,9 @@ module.exports = [{
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { vetVisitsReviewTestResults } = session.getEndemicsClaim(request)
+      const { vetVisitsReviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults')([{ value: 'positive', text: 'Positive', checked: vetVisitsReviewTestResults === 'positive' }, { value: 'negative', text: 'Negative', checked: vetVisitsReviewTestResults === 'negative' }])
-      return h.view(endemicsVetVisitsReviewTestResults, { backLink: previousPageUrl(request), ...positiveNegativeRadios })
+      return h.view(endemicsVetVisitsReviewTestResults, { typeOfLivestock, backLink: previousPageUrl(typeOfLivestock), ...positiveNegativeRadios })
     }
   }
 }, {
@@ -49,11 +48,13 @@ module.exports = [{
       payload: Joi.object({
         vetVisitsReviewTestResults: Joi.string().valid('positive', 'negative').required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h) => {
+        const { typeOfLivestock } = session.getEndemicsClaim(request)
         const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsVetVisitsReviewTestResults, {
           ...request.payload,
-          backLink: previousPageUrl(request),
+          typeOfLivestock,
+          backLink: previousPageUrl(typeOfLivestock),
           ...positiveNegativeRadios,
           errorMessage: {
             text: 'Select a test result',

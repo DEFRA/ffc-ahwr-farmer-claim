@@ -46,6 +46,19 @@ module.exports = [
           }).code(400).takeover()
         }
 
+        if (sheepTests === 'other') {
+          const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: session.sheepTests?.includes(test.value) }))
+
+          return h.view(endemicsSheepTests, {
+            sheepTestCheckboxItems,
+            backLink,
+            errorMessage: {
+              text: 'Select a disease or condition',
+              href: '#sheepTests'
+            }
+          }).code(400).takeover()
+        }
+
         setEndemicsClaim(request, sheepTestResultsKey,
           [...(typeof sheepTests === 'object' ? sheepTests : [sheepTests])]
             .map((test, index) => ({ diseaseType: test, result: session?.sheepTestResults?.find(item => item.diseaseType === test)?.result || '', isCurrentPage: index === 0 })))

@@ -180,7 +180,7 @@ describe('Date of testing', () => {
         onAnotherDateDay: tomorrow.getDate(),
         onAnotherDateMonth: tomorrow.getMonth() + 1,
         onAnotherDateYear: tomorrow.getFullYear(),
-        errorMessage: 'The date samples were taken must be a real date',
+        errorMessage: 'The date samples were taken must be in the past',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       },

@@ -71,7 +71,7 @@ module.exports = [
         if (isEligible) return h.redirect(nextPageURL)
 
         if (numberAnimalsTested === '0') {
-          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
+          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'The number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
 
         if (typeOfLivestock === livestockTypes.sheep) {
