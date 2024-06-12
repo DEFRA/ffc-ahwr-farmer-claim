@@ -61,7 +61,7 @@ describe('Number of samples tested test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many samples were tested?')
-      expect($('title').text()).toEqual('How many samples were tested? - Get funding to improve animal health and welfare')
+      expect($('title').text()).toEqual('How many samples were tested - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })

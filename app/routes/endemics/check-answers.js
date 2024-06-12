@@ -104,9 +104,9 @@ module.exports = [
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'review test results' }] }
         }
         const diseaseStatusRow = {
-          key: { text: 'Diseases status category' }, // Pigs
+          key: { text: 'Disease status category' }, // Pigs
           value: { html: sessionData?.diseaseStatus },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'diseases status category' }] }
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'disease status category' }] }
         }
         const samplesTestedRow = {
           key: { text: 'Number of samples tested' }, // Pigs
