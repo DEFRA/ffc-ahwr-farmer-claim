@@ -55,7 +55,7 @@
                 <div class="govuk-grid-column-three-quarters">
                   {{ govukInput({
                       label: {
-                        text: "Enter the name of the condition or disease"
+                        text: "Enter the condition or disease"
                       },
                       id: "diseaseType-"+ (loop.index - 1),
                       name: "diseaseType",
@@ -68,7 +68,7 @@
 
               {{ govukInput({
                   label: {
-                    text: "Enter the test result"
+                    text: "Enter the result"
                   },
                   classes: "govuk-!-width-one-half govuk-!-margin-bottom-6",
                   id: "testResult-" + (loop.index - 1),
