@@ -4,6 +4,8 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const { getReviewType } = require('../../../../../app/lib/get-review-type')
+
 const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isWithIn4MonthsAfterDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -11,7 +13,6 @@ jest.mock('../../../../../app/api-requests/claim-service-api')
 function expectPageContentOk ($) {
   expect($('h1').text()).toMatch('When were samples taken?')
   expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('his is the date samples were taken to test for health conditions or diseases.')
-  expect($('label[for=whenTestingWasCarriedOut]').text()).toMatch('When the vet visited the farm for the review or follow-up')
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
@@ -109,10 +110,21 @@ describe('Date of testing', () => {
         onAnotherDateDay: today.getDate(),
         onAnotherDateMonth: today.getMonth() + 1,
         onAnotherDateYear: today.getFullYear(),
-        dateOfVisit: yesterday
+        dateOfVisit: yesterday,
+        typeOfReview: 'R'
+      },
+      {
+        whenTestingWasCarriedOut: 'onAnotherDate',
+        onAnotherDateDay: today.getDate(),
+        onAnotherDateMonth: today.getMonth() + 1,
+        onAnotherDateYear: today.getFullYear(),
+        dateOfVisit: yesterday,
+        typeOfReview: 'E'
       }
-    ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
+    ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfReview }) => {
+      const { isReview } = getReviewType(typeOfReview)
+      const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfReview, dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
       const options = {
         method: 'GET',
         url,
@@ -129,6 +141,7 @@ describe('Date of testing', () => {
       expect($('#on-another-date-day').val()).toEqual(today.getDate().toString())
       expect($('#on-another-date-month').val()).toEqual((today.getMonth() + 1).toString())
       expect($('#on-another-date-year').val()).toEqual(today.getFullYear().toString())
+      expect($('label[for=whenTestingWasCarriedOut]').text()).toContain(`When the vet visited the farm for the ${reviewOrFollowUpText}`)
     })
   })
 

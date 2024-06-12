@@ -22,6 +22,7 @@
       {% endif %}
       {% if title %}
         <h1 class="govuk-heading-l">{{title}}</h1>
+        <p class="govuk-hint">You can find this on the summary the vet gave you.</p>
       {% endif %}
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -79,6 +80,7 @@
             {% endfor %}
           {% endif %}
           {% if resultLength != 10 %}
+            <h2 class="govuk-heading-m">Condition or disease</h2>
             {% for inputText in inputTexts %}
               {{ govukInput(inputText) }}
             {% endfor %}
