@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}How many animals were samples taken from or assessed? - {{ serviceName }}{% endblock %}
+{% block pageTitle %}How many samples were tested - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -21,7 +21,7 @@
             errorList: [errorMessage]
           }) }}
         {% endif %}
-     <h1 class="govuk-heading-l">How many animals were samples taken from or assessed?</h1>
+     <h1 class="govuk-heading-l">How many samples were tested?</h1>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
