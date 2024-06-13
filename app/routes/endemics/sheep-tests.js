@@ -53,7 +53,7 @@ module.exports = [
             sheepTestCheckboxItems,
             backLink,
             errorMessage: {
-              text: 'Select a disease or condition',
+              text: 'Select all diseases or conditions tested for in this package',
               href: '#sheepTests'
             }
           }).code(400).takeover()
