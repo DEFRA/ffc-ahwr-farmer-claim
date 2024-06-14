@@ -88,7 +88,7 @@ module.exports = [
           'on-another-date-month': Joi
             .when('whenTestingWasCarriedOut', {
               switch: [
-                { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'The date samples were taken') },
+                { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'Date of sampling') },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
               ],
               otherwise: Joi.allow('')
@@ -99,7 +99,7 @@ module.exports = [
               switch: [
                 {
                   is: 'onAnotherDate',
-                  then: validateDateInputYear('on-another-date', 'The date samples were taken', (value, helpers) => {
+                  then: validateDateInputYear('on-another-date', 'Date of sampling', (value, helpers) => {
                     if (value > 9999 || value < 1000) {
                       return value
                     }
