@@ -76,7 +76,7 @@ module.exports = [
               switch: [
                 {
                   is: 'onAnotherDate',
-                  then: validateDateInputDay('on-another-date', 'The date samples were taken').messages({
+                  then: validateDateInputDay('on-another-date', 'Date of sampling').messages({
                     'dateInputDay.ifNothingIsEntered': 'Enter the date samples were taken'
                   })
                 },
@@ -228,8 +228,9 @@ module.exports = [
         const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
         if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
           const errorMessage = 'You must do a review, including sampling, before you do the resulting follow-up.'
+          const errorLink = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
           raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage }).code(400).takeover()
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage, errorLink }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)

@@ -18,6 +18,7 @@ const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
+const { claimType } = require('../../constants/claim')
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
@@ -117,7 +118,7 @@ module.exports = [
         }
 
         raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
-        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[claim?.typeOfReview] }).code(400).takeover()
+        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[claim?.typeOfReview], isReview: claim?.typeOfReview === claimType.review }).code(400).takeover()
       }
     }
   }
