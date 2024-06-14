@@ -190,7 +190,7 @@ describe('Date of testing', () => {
         onAnotherDateDay: '',
         onAnotherDateMonth: yesterday.getMonth() + 1,
         onAnotherDateYear: yesterday.getFullYear(),
-        errorMessage: 'The date samples were taken must include a day',
+        errorMessage: 'Date of sampling must include a day',
         errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
         dateOfVisit: today
       },
