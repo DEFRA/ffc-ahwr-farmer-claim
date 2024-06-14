@@ -91,11 +91,16 @@ module.exports = [
             })
         }),
         failAction: async (request, h, error) => {
+          const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+          const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+          const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+          const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
+          const errorMessage = (error.details[0].message === 'Enter the URN' && isBeefOrDairyEndemics) ? 'Enter the URN or certificate number' : error.details[0].message
           return h
             .view(endemicsTestUrn, {
               ...request.payload,
               title: title(request),
-              errorMessage: { text: error.details[0].message, href: '#laboratoryURN' },
+              errorMessage: { text: errorMessage, href: '#laboratoryURN' },
               backLink: previousPageUrl(request)
             })
             .code(400)

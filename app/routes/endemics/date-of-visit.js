@@ -178,7 +178,7 @@ module.exports = [
         const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
         const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
         const mainMessage = { url: '#' }
-        let backToPageMessage = 'Enter the date the vet last visited your farm'
+        let backToPageMessage = 'Enter the date the vet last visited your farm for this review.'
         if (!isValid) {
           switch (reason) {
             case dateOfVetVisitExceptions.reviewWithin10:
