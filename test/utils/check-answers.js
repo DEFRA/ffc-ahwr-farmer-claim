@@ -474,6 +474,7 @@ module.exports = {
   expectedEndemicsFollowUpDairy,
   expectedEndemicsFollowUpPigs,
   expectedEndemicsFollowUpSheep,
+  sheepTestResults,
   getRowKeys,
   getRowContents,
   getRowActionTexts,
