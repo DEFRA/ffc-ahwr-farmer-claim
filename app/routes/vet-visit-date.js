@@ -11,6 +11,15 @@ const validateDateInputYear = require('./govuk-components/validate-date-input-ye
 const templatePath = 'vet-visit-date'
 const path = `/claim/${templatePath}`
 
+const isValidDate = (year, month, day) => {
+  const dateObject = new Date(year, month - 1, day)
+  return (
+    dateObject.getFullYear() === year &&
+    dateObject.getMonth() === month - 1 &&
+    dateObject.getDate() === day
+  )
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -114,14 +123,6 @@ module.exports = [
                           return value
                         }
 
-                        const isValidDate = (year, month, day) => {
-                          const dateObject = new Date(year, month - 1, day)
-                          return (
-                            dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
-                          )
-                        }
                         if (
                           !isValidDate(
                             +helpers.state.ancestors[0][labels.year],
@@ -251,14 +252,6 @@ module.exports = [
                           return value
                         }
 
-                        const isValidDate = (year, month, day) => {
-                          const dateObject = new Date(year, month - 1, day)
-                          return (
-                            dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
-                          )
-                        }
                         if (
                           !isValidDate(
                             +helpers.state.ancestors[0]['on-another-date-year'],
