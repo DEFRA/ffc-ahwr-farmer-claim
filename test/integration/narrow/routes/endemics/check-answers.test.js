@@ -21,6 +21,7 @@ const {
   expectedEndemicsFollowUpDairy,
   expectedEndemicsFollowUpPigs,
   expectedEndemicsFollowUpSheep,
+  sheepTestResults,
   getRowKeys,
   getRowContents,
   getRowActionTexts,
@@ -310,6 +311,27 @@ describe('Check answers test', () => {
 
         expectPhaseBanner.ok($)
       })
+
+      test('for unknown species', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return { sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowContents = getRowContents($)
+
+        expect(rowContents).toContain('Unknown cattle')
+        expectPhaseBanner.ok($)
+      })
     })
 
     test.each([
@@ -561,6 +583,7 @@ describe('Check answers test', () => {
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
             latestVetVisitApplication,
+            sheepTestResults,
             latestEndemicsApplication: {
               reference: '123'
             },
