@@ -3,7 +3,7 @@ const { labels } = require('../config/visit-date')
 const session = require('../session')
 const sessionKeys = require('../session/keys')
 const config = require('../../app/config')
-
+const { isValidDate } = require('../lib/check-date-validity')
 const validateDateInputDay = require('./govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('./govuk-components/validate-date-input-month')
 const validateDateInputYear = require('./govuk-components/validate-date-input-year')
@@ -47,9 +47,9 @@ module.exports = [
             config.dateOfTesting.enabled && dateOfReview
               ? {
                   value:
-                    dateOfReview === dateOfTesting
-                      ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-                      : 'onAnotherDate',
+                  dateOfReview === dateOfTesting
+                    ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                    : 'onAnotherDate',
                   onAnotherDate: {
                     day: {
                       value: new Date(dateOfTesting).getDate()
@@ -84,7 +84,7 @@ module.exports = [
                       'Date of review'
                     ).messages({
                       'dateInputDay.ifNothingIsEntered':
-                        'Enter the date the vet completed the review'
+                      'Enter the date the vet completed the review'
                     })
                   }
                 ]
@@ -114,14 +114,6 @@ module.exports = [
                           return value
                         }
 
-                        const isValidDate = (year, month, day) => {
-                          const dateObject = new Date(year, month - 1, day)
-                          return (
-                            dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
-                          )
-                        }
                         if (
                           !isValidDate(
                             +helpers.state.ancestors[0][labels.year],
@@ -173,11 +165,11 @@ module.exports = [
                       },
                       {
                         'dateOfReview.future':
-                          'The date the review was completed must be in the past',
+                        'The date the review was completed must be in the past',
                         'dateOfReview.beforeAccepted':
-                          'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                        'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                         'dateOfReview.expired':
-                          'The date the review was completed must be within six months of agreement date'
+                        'The date the review was completed must be within six months of agreement date'
                       }
                     )
                   }
@@ -192,7 +184,7 @@ module.exports = [
                 .required()
                 .messages({
                   'any.required':
-                    'Select if testing was carried out when the vet visited the farm or on another date'
+                  'Select if testing was carried out when the vet visited the farm or on another date'
                 }),
 
               'on-another-date-day': Joi.when('whenTestingWasCarriedOut', {
@@ -204,7 +196,7 @@ module.exports = [
                       'Date of testing'
                     ).messages({
                       'dateInputDay.ifNothingIsEntered':
-                        'Enter the date the vet completed testing'
+                      'Enter the date the vet completed testing'
                     })
                   },
                   {
@@ -246,19 +238,11 @@ module.exports = [
 
                         if (
                           value.whenTestingWasCarriedOut ===
-                          'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                        'whenTheVetVisitedTheFarmToCarryOutTheReview'
                         ) {
                           return value
                         }
 
-                        const isValidDate = (year, month, day) => {
-                          const dateObject = new Date(year, month - 1, day)
-                          return (
-                            dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
-                          )
-                        }
                         if (
                           !isValidDate(
                             +helpers.state.ancestors[0]['on-another-date-year'],
@@ -274,7 +258,7 @@ module.exports = [
                         const dateOfTesting = new Date(
                           helpers.state.ancestors[0]['on-another-date-year'],
                           helpers.state.ancestors[0]['on-another-date-month'] -
-                            1,
+                        1,
                           helpers.state.ancestors[0]['on-another-date-day']
                         )
                         const currentDate = new Date()
@@ -299,9 +283,9 @@ module.exports = [
                       },
                       {
                         'dateOfTesting.future':
-                          'Date of testing must be in the past',
+                        'Date of testing must be in the past',
                         'dateOfTesting.beforeAccepted':
-                          'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
+                        'Date of testing must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer'
                       }
                     )
                   },
@@ -325,7 +309,7 @@ module.exports = [
                     'Date of review'
                   ).messages({
                     'dateInputDay.ifNothingIsEntered':
-                        'Enter the date the vet completed the review'
+                      'Enter the date the vet completed the review'
                   })
                 }
               ]
@@ -359,8 +343,8 @@ module.exports = [
                         const dateObject = new Date(year, month - 1, day)
                         return (
                           dateObject.getFullYear() === year &&
-                            dateObject.getMonth() === month - 1 &&
-                            dateObject.getDate() === day
+                          dateObject.getMonth() === month - 1 &&
+                          dateObject.getDate() === day
                         )
                       }
                       if (
@@ -414,11 +398,11 @@ module.exports = [
                     },
                     {
                       'dateOfReview.future':
-                          'The date the review was completed must be in the past',
+                        'The date the review was completed must be in the past',
                       'dateOfReview.beforeAccepted':
-                          'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
+                        'Date of review must be the same or after {#dateOfAgreementAccepted} when you accepted your agreement offer',
                       'dateOfReview.expired':
-                          'The date the review was completed must be within six months of agreement date'
+                        'The date the review was completed must be within six months of agreement date'
                     }
                   )
                 }
@@ -549,7 +533,7 @@ module.exports = [
                         error: error.details.find(
                           (e) =>
                             e.context.label === 'on-another-date-day' ||
-                            e.type.startsWith('dateOfTesting')
+                          e.type.startsWith('dateOfTesting')
                         )
                       },
                       month: {
@@ -557,7 +541,7 @@ module.exports = [
                         error: error.details.find(
                           (e) =>
                             e.context.label === 'on-another-date-month' ||
-                            e.type.startsWith('dateOfTesting')
+                          e.type.startsWith('dateOfTesting')
                         )
                       },
                       year: {
@@ -565,7 +549,7 @@ module.exports = [
                         error: error.details.find(
                           (e) =>
                             e.context.label === 'on-another-date-year' ||
-                            e.type.startsWith('dateOfTesting')
+                          e.type.startsWith('dateOfTesting')
                         )
                       },
                       errorMessage: error.details.find((e) =>
@@ -600,7 +584,7 @@ module.exports = [
         if (config.dateOfTesting.enabled) {
           const dateOfTesting =
             request.payload.whenTestingWasCarriedOut ===
-            'whenTheVetVisitedTheFarmToCarryOutTheReview'
+              'whenTheVetVisitedTheFarmToCarryOutTheReview'
               ? dateOfReview
               : new Date(
                 request.payload['on-another-date-year'],

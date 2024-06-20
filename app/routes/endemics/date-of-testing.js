@@ -12,6 +12,7 @@ const { claimType } = require('../../constants/claim')
 const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { getReviewType } = require('../../lib/get-review-type')
+const { isValidDate } = require('./../../lib/check-date-validity')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
@@ -106,15 +107,6 @@ module.exports = [
 
                     if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
                       return value
-                    }
-
-                    const isValidDate = (year, month, day) => {
-                      const dateObject = new Date(year, month - 1, day)
-                      return (
-                        dateObject.getFullYear() === year &&
-                        dateObject.getMonth() === month - 1 &&
-                        dateObject.getDate() === day
-                      )
                     }
 
                     if (!isValidDate(
