@@ -154,7 +154,8 @@ exports.config = {
   // If you are using Cucumber you need to specify the location of your step definitions.
   cucumberOpts: {
     // <string[]> (file/dir) require files before executing features
-    require: ['./steps/**/*.js'],
+    require: ['./features/step_definitions/claimJourney_step.js'], // Your provided path for step definitions
+    // Add more paths as needed],
     // <boolean> show full backtrace for errors
     backtrace: false,
     // <string[]> ("extension:module") require files with the given EXTENSION after requiring MODULE (repeatable)

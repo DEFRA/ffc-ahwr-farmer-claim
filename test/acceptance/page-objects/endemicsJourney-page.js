@@ -34,6 +34,12 @@ let ONHOLD='ON HOLD'
 //Pig Herd Vaccination
 
 const HERD_VACCINATED='#herdVaccinationStatus'
+const HERD_VACCINATED_NO='#herdVaccinationStatus-2'
+
+//select a type of review error
+
+const SELECT_THE_TYPE_OF_REVIEW_ERROR='Select which type of review you are claiming for'
+const SELECT_THE_TYPE_OF_REVIEW_ERROR_ACTUAL='a[href="#typeOfReview"]'
 //How many sample Tested _pig
 
 const NO_OF_SAMPLES_TESTED='#numberOfSamplesTested'
@@ -43,6 +49,9 @@ const ACTUAL_INCORRECT_NO_OF_SAMPLES='//*[@id="main-content"]/div/div/h1'
 const DISEASE_CATEGORY_PAGE_HEADER='//*[@id="main-content"]/div/div/div/div/h1'
 const EXPECTED_INCORRECT_NO_OF_SAMPLES='You cannot continue with your claim'
 const DISEASE_CATEGORY_PAGE='What is the disease status category?'
+const DISEASE_CATEGORY_PAGE_ERROR='Enter the disease status category'
+const DISEASE_CATEGORY_PAGE_ERROR_ACTUAL='a[href="#diseaseStatus"]'
+
 // biosecurity 
 
 const BIO_SECURITY_YES='#biosecurity'
@@ -58,9 +67,27 @@ const SHEEP_HEALTH_PACKAGE='#sheepEndemicsPackage'
 const SHEEP_VET_TEST='#sheepTests'
 const POSITIVE_TEST_RESULT_SHEEP = '#testResult'
 
-//
+//select a package screen error
 
 const CLAIM_FOR_ENDEMICS_FOLLOW_UP='//*[contains(text(),"Claim for endemics follow-up")]'
+const START_A_NEW_CLAIM='//*[contains(text(),"Start a new claim")]'
+const SELECT_A_PACKAGE_ERROR='Select a package'
+const SELECT_A_PACKAGE_ERROR_ACTUAL = 'a[href="#sheepEndemicsPackage"]'
+
+//select a disease error 
+
+const VET_TEST_ERROR='You must select a disease'
+const VET_TEST_ERROR_ACTUAL = 'a[href="#sheepTests"]'
+
+//select a test result error
+const VET_TEST_RESULT_ERROR='Select a test result'
+const VET_TEST_RESULT_ERROR_ACTUAL='a[href="#testResult"]'
+
+//Beef
+const PI_HUNT_YES='#piHunt'
+const PI_HUNT_NO='#piHunt-2'
+const SELECT_PI_ERROR='Select yes or no'
+const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
 
 
 class EndemicsPageActions extends CommonActions {
@@ -135,7 +162,19 @@ async enterNoOfSamplesTested(sampleValue){
 async validateNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_NO_OF_SAMPLES_ERROR,EXPECTED_NO_OF_SAMPLES_ERROR)
   } 
+  async validateSelectTheTypeOfReview(){
+    await this.elementToContainErrorText(SELECT_THE_TYPE_OF_REVIEW_ERROR_ACTUAL,SELECT_THE_TYPE_OF_REVIEW_ERROR)
+  }
 
+  async validatePackageError(){
+    await this.elementToContainErrorText(SELECT_A_PACKAGE_ERROR_ACTUAL,SELECT_A_PACKAGE_ERROR)
+  } 
+  async validateVetTestError(){
+    await this.elementToContainErrorText(VET_TEST_ERROR_ACTUAL,VET_TEST_ERROR)
+  } 
+  async validateVetTestResultError(){
+    await this.elementToContainErrorText(VET_TEST_RESULT_ERROR_ACTUAL,VET_TEST_RESULT_ERROR)
+  } 
 async validateIncorrectNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_INCORRECT_NO_OF_SAMPLES,EXPECTED_INCORRECT_NO_OF_SAMPLES)
   }   
@@ -148,7 +187,10 @@ async validateIncorrectNoOfSamplesError(){
   async clickNoBiosecurityAssesssment(){
     await this.clickOn(BIO_SECURITY_NO)
   }
-  async clickOnDiseaseStatusCategory(){
+  async clickYesForPIHunt(){
+    await this.clickOn(PI_HUNT_YES)
+  }
+    async clickOnDiseaseStatusCategory(){
     await this.clickOn(DISEASE_STATUS_CATEGORY)
   }   
   async enterBioSecurityPercentage(){
@@ -170,11 +212,20 @@ async validateIncorrectNoOfSamplesError(){
     await this.clickOn(POSITIVE_TEST_RESULT_SHEEP)
   }
   async clickClaimEndemicsFollowUp(){
-    await this.clickOn(CLAIM_FOR_ENDEMICS_FOLLOW_UP)
+    await this.clickOn(START_A_NEW_CLAIM)
+  }
+  async clickStartNewClaim(){
+    await this.clickOn(START_A_NEW_CLAIM)
+  }
+  async validateSelectPIError(){
+    await this.elementToContainErrorText(SELECT_PI_ERROR_ACTUAL,SELECT_PI_ERROR)
+  } 
+  async validateBlankDiseaseStatus(){
+    await this.elementToContainErrorText(DISEASE_CATEGORY_PAGE_ERROR_ACTUAL,DISEASE_CATEGORY_PAGE_ERROR)
+  } 
 
   }
-  
-  }
+
 
 
 
