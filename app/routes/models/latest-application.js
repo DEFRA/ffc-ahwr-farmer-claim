@@ -3,7 +3,7 @@ const applicationStatus = require('../../constants/status')
 const { claimHasExpired } = require('../../lib/claim-has-expired')
 const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../exceptions')
 const { claimExpiryTimeMonths } = require('../../config')
-
+const { getLatestApplication } = require('../../lib/get-latest-application')
 function formatDate (date) {
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
 }
@@ -28,9 +28,7 @@ async function getLatestApplicationForSbi (sbi, name = '') {
       }
     )
   }
-  const latestApplication = latestApplicationsForSbi.reduce((a, b) => {
-    return new Date(a.createdAt) > new Date(b.createdAt) ? a : b
-  })
+  const latestApplication = getLatestApplication(latestApplicationsForSbi)
   switch (latestApplication.statusId) {
     case applicationStatus.AGREED:
       if (claimHasExpired(latestApplication)) {
