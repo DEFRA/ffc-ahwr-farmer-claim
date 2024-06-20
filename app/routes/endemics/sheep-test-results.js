@@ -256,13 +256,13 @@ module.exports = [
           payload.diseaseType = payload.diseaseType.filter((_, index) => index !== Number(payload.delete))
           payload.testResult = payload.testResult.filter((_, index) => index !== Number(payload.delete))
         }
-        if (typeof payload?.diseaseType === 'string' || typeof payload?.testResult === 'string') {
-          const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload?.diseaseType}`)?.error?.details[0]?.message
-          const testResultValidationError = fieldValidator('testResult').validate(`${payload?.testResult}`)?.error?.details[0]?.message
+        if (typeof payload === 'object' && (typeof payload.diseaseType === 'string' || typeof payload.testResult === 'string')) {
+          const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload.diseaseType}`).error?.details[0]?.message
+          const testResultValidationError = fieldValidator('testResult').validate(`${payload.testResult}`).error?.details[0]?.message
 
           const pageContent = getPageContent(request, {
-            diseaseType: { value: payload?.diseaseType, text: diseaseTypeValidationError },
-            testResult: { value: payload?.testResult, text: testResultValidationError }
+            diseaseType: { value: payload.diseaseType, text: diseaseTypeValidationError },
+            testResult: { value: payload.testResult, text: testResultValidationError }
           })
 
           if (diseaseTypeValidationError || testResultValidationError) {
