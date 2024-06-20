@@ -4,6 +4,7 @@ const appInsights = require('applicationinsights')
 const config = require('../config')
 const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../constants/claim')
 const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
+const { getReviewType } = require('../lib/get-review-type')
 
 async function getClaimsByApplicationReference (applicationReference) {
   try {
@@ -123,33 +124,41 @@ const isAClaimTypeWithin10Months = (typeOfClaim, dateOfVisit, previousClaims, ve
   return allClaimTypeClaimsWithin10Months.length > 0
 }
 
-const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitReview) => {
-  if (typeOfClaim === claimType.review) {
-    // Cannot have another review dateOfVisit +- 10 months
-    const isValid = !isAClaimTypeWithin10Months(claimType.review, dateOfVisit, previousClaims, vetVisitReview)
-    return { isValid, reason: !isValid ? dateOfVetVisitExceptions.reviewWithin10 : undefined }
-  } else if (typeOfClaim === claimType.endemics) {
-    const pastClaims = previousClaims?.filter((prevClaim) => new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit))
-    if (isAClaimTypeWithin10Months(claimType.review, dateOfVisit, pastClaims, vetVisitReview)) {
-      // Review within 10 months is REJECTED
-      if (getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId === REJECTED) {
-        return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
-      }
-      // Claim endemics before review status is READY_TO_PAY
-      if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
-        return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
-      }
+const getDateOfVetVisitException = (claimType) => {
+  const { isReview } = getReviewType(claimType)
+  return isReview ? dateOfVetVisitExceptions.reviewWithin10 : dateOfVetVisitExceptions.endemicsWithin10
+}
 
-      // Cannot have another endemics dateOfVisit +- 10 months
-      const isValid = !isAClaimTypeWithin10Months(claimType.endemics, dateOfVisit, previousClaims, vetVisitReview)
-      return { isValid, reason: !isValid ? dateOfVetVisitExceptions.endemicsWithin10 : undefined }
-    } else {
+const isValidClaimWithin10Months = (claimType, dateOfVisit, previousClaims, vetVisitReview) => {
+  const isValid = !isAClaimTypeWithin10Months(claimType, dateOfVisit, previousClaims, vetVisitReview)
+  return { isValid, ...(!isValid && { reason: getDateOfVetVisitException(claimType) }) }
+}
+
+const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitReview) => {
+  switch (typeOfClaim) {
+    case claimType.review:
+      // Cannot have another review dateOfVisit +- 10 months
+      return isValidClaimWithin10Months(claimType.review, dateOfVisit, previousClaims, vetVisitReview)
+    case claimType.endemics: {
+      const pastClaims = previousClaims?.filter((prevClaim) => new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit))
+      if (isAClaimTypeWithin10Months(claimType.review, dateOfVisit, pastClaims, vetVisitReview)) {
+        // Review within 10 months is REJECTED
+        if (getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId === REJECTED) {
+          return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
+        }
+        // Claim endemics before review status is READY_TO_PAY
+        if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
+          return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
+        }
+        // Cannot have another endemics dateOfVisit +- 10 months
+        return isValidClaimWithin10Months(claimType.endemics, dateOfVisit, previousClaims, vetVisitReview)
+      }
       // Need a review within the last 10 months for an endemics
       return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
     }
-  } else {
-    // typeOfClaim was not review or endemics
-    return { isValid: false }
+    default:
+      // typeOfClaim was not review or endemics
+      return { isValid: false }
   }
 }
 

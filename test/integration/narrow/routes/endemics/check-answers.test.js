@@ -21,6 +21,7 @@ const {
   expectedEndemicsFollowUpDairy,
   expectedEndemicsFollowUpPigs,
   expectedEndemicsFollowUpSheep,
+  sheepTestResults,
   getRowKeys,
   getRowContents,
   getRowActionTexts,
@@ -310,6 +311,27 @@ describe('Check answers test', () => {
 
         expectPhaseBanner.ok($)
       })
+
+      test('for unknown species', async () => {
+        getEndemicsClaimMock.mockImplementation(() => {
+          return { sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowContents = getRowContents($)
+
+        expect(rowContents).toContain('Unknown cattle')
+        expectPhaseBanner.ok($)
+      })
     })
 
     test.each([
@@ -504,7 +526,8 @@ describe('Check answers test', () => {
             latestVetVisitApplication,
             latestEndemicsApplication: {
               reference: '123'
-            }
+            },
+            reference: 'tempClaimReference'
           }
         })
 
@@ -514,7 +537,9 @@ describe('Check answers test', () => {
             statusMessage: 'OK'
           },
           payload: {
-            reference: '123'
+            dataValues: {
+              reference: '123'
+            }
           }
         }
 
@@ -523,7 +548,9 @@ describe('Check answers test', () => {
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
             submitNewClaim: jest.fn().mockReturnValue({
-              reference: '123'
+              dataValues: {
+                reference: '123'
+              }
             })
           }
         })
@@ -556,9 +583,11 @@ describe('Check answers test', () => {
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
             latestVetVisitApplication,
+            sheepTestResults,
             latestEndemicsApplication: {
               reference: '123'
-            }
+            },
+            reference: 'tempClaimReference'
           }
         })
 
@@ -568,7 +597,9 @@ describe('Check answers test', () => {
             statusMessage: 'OK'
           },
           payload: {
-            reference: '123'
+            dataValues: {
+              reference: '123'
+            }
           }
         }
 
@@ -577,7 +608,9 @@ describe('Check answers test', () => {
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
             submitNewClaim: jest.fn().mockReturnValue({
-              reference: '123'
+              dataValues: {
+                reference: '123'
+              }
             })
           }
         })

@@ -1,5 +1,7 @@
 const raiseEvent = require('./raise-event')
 
+// This has been done to keep consistent with old journey.
+// Should look at refactoring this for best name options.
 const renameSessionKeysForEventReporting = (key) => {
   switch (key) {
     case 'laboratoryURN': {
@@ -18,6 +20,10 @@ const renameSessionKeysForEventReporting = (key) => {
       key = 'visitDate'
       break
     }
+    case 'numberAnimalsTested': {
+      key = 'animalsTested'
+      break
+    }
   }
   return key
 }
@@ -27,7 +33,8 @@ const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, stat
   key = renameSessionKeysForEventReporting(key)
   entryKey = renameClaimEntryKeyForEventReporting(entryKey)
 
-  const { organisation, reference } = claim
+  const { organisation, reference, latestEndemicsApplication: { reference: applicationReference } = {} } = claim
+
   if (sessionId && organisation) {
     const event = {
       id: sessionId,
@@ -38,7 +45,7 @@ const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, stat
       name: 'send-session-event',
       type: `${entryKey}-${key}`,
       message: `Session set for ${entryKey} and ${key}.`,
-      data: { reference, [key]: value },
+      data: { reference, applicationReference, [key]: value },
       ip
     }
     await raiseEvent(event, status)

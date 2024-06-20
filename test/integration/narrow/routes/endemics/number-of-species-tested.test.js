@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 
 jest.mock('../../../../../app/session')
@@ -12,6 +13,7 @@ describe('Number of species tested test', () => {
 
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -58,8 +60,8 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals did the vet test?')
-      expect($('title').text().trim()).toEqual('How many animals did the vet test? - Get funding to improve animal health and welfare')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
+      expect($('title').text().trim()).toEqual('How many animals were samples taken from or assessed? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -97,7 +99,7 @@ describe('Number of species tested test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
     })
     test.each([
-      { numberAnimalsTested: '%%%%%%%%%%', error: 'Number of animals tested must only include numbers' },
+      { numberAnimalsTested: '%%%%%%%%%%', error: 'The number of animals samples were taken from must only include numbers' },
       { numberAnimalsTested: '6697979779779', error: 'The number of animals tested should not exceed 9999' },
       { numberAnimalsTested: '', error: 'Enter the number of animals tested' }
     ])('show error message when the number of animals tested is not valid', async ({ numberAnimalsTested, error }) => {
@@ -114,7 +116,7 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals did the vet test?')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
       expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(error)
       expect($('#numberAnimalsTested-error').text()).toMatch(error)
     })
@@ -141,6 +143,7 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-name')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'R', numberAnimalsTested: '4' },
@@ -181,9 +184,9 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals did the vet test?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Number of animals tested cannot be 0')
-      expect($('#numberAnimalsTested-error').text()).toMatch('Number of animals tested cannot be 0')
+      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('The number of animals tested cannot be 0')
+      expect($('#numberAnimalsTested-error').text()).toMatch('The number of animals tested cannot be 0')
     })
   })
 })

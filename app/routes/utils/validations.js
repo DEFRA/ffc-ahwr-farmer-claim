@@ -11,7 +11,7 @@ const addError = (error, label, type, href) => {
   if (error.details.filter(e => e.context.label.startsWith(label)).length) {
     return {
       text: error.details.find(e => e.context.label.startsWith(label)).message,
-      href: href
+      href
     }
   }
   return {}

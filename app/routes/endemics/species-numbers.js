@@ -18,6 +18,7 @@ const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
+const { claimType } = require('../../constants/claim')
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
@@ -29,11 +30,18 @@ const backLink = (request) => {
   return `${urlPrefix}/${endemicsDateOfTesting}`
 }
 const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
-const hintHtml = '<p>You can find this on the summary the vet gave you.</p>'
-const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintHtml }
-const errorMessageText = 'Select yes or no'
-const isEndemicsClaims = true
+const hintHtml = 'You can find this on the summary the vet gave you.'
 
+const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintText: hintHtml }
+const isEndemicsClaims = true
+const sheepNumbersExceptionsText = {
+  R: 'review',
+  E: 'follow-up'
+}
+const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay) => {
+  const { isReview } = getReviewType(typeOfReview)
+  return `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}.`
+}
 const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
   return `Did you have ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}?`
@@ -50,6 +58,7 @@ module.exports = [
           return boom.notFound()
         }
         const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
+
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
           ...getYesNoRadios(
@@ -79,12 +88,12 @@ module.exports = [
           const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
           return h.view(endemicsSpeciesNumbers, {
             backLink: backLink(request),
-            errorMessage: { text: errorMessageText },
+            errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay) },
             ...getYesNoRadios(
               legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
               speciesNumbers,
               session.getEndemicsClaim(request, speciesNumbers),
-              errorMessageText,
+              errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay),
               radioOptions
             )
           })
@@ -109,7 +118,7 @@ module.exports = [
         }
 
         raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
-        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[claim?.typeOfReview], isReview: claim?.typeOfReview === claimType.review }).code(400).takeover()
       }
     }
   }

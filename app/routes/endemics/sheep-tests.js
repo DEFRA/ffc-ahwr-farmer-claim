@@ -40,7 +40,20 @@ module.exports = [
             sheepTestCheckboxItems,
             backLink,
             errorMessage: {
-              text: 'You must select a disease',
+              text: 'Select a disease or condition',
+              href: '#sheepTests'
+            }
+          }).code(400).takeover()
+        }
+
+        if (sheepTests === 'other') {
+          const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: session.sheepTests?.includes(test.value) }))
+
+          return h.view(endemicsSheepTests, {
+            sheepTestCheckboxItems,
+            backLink,
+            errorMessage: {
+              text: 'Select all diseases or conditions tested for in this package',
               href: '#sheepTests'
             }
           }).code(400).takeover()

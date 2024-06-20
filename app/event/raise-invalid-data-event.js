@@ -3,7 +3,7 @@ const raiseEvent = require('./raise-event')
 const sessionKeys = require('../session/keys')
 
 const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
-  const { reference, organisation } = getEndemicsClaim(request)
+  const { reference, organisation, latestEndemicsApplication: { reference: applicationReference } = {} } = getEndemicsClaim(request)
   const crn = getCustomer(request, sessionKeys.customer.crn)
 
   if (request?.yar?.id && exception) {
@@ -22,7 +22,8 @@ const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
         exception,
         raisedAt: new Date(),
         journey: 'claim',
-        reference
+        reference,
+        applicationReference
       },
       status: 'alert'
     }

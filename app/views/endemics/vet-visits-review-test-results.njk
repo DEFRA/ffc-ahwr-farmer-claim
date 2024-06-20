@@ -25,13 +25,23 @@
 
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
+        {% if typeOfLivestock === 'beef' %}
+          <h1 class="govuk-heading-l">What was the test result of your last annual health and welfare review?</h1>
+        {% elif typeOfLivestock === 'pigs' %}
         <h1 class="govuk-heading-l">What was the review test result?</h1>
-        <p class="govuk-body">This should:</p>
-        <ul class="govuk-list govuk-list--bullet">
-          <li>be the test result from your last livestock health and welfare review</li>
-          <li>have happened within the last 10 months</li>
-        </ul>
-        <p class="govuk-body">You may need to provide evidence of the summary from this review.</p>
+        {% endif %}
+
+        {% if typeOfLivestock === 'beef' %}
+          <p class="govuk-body">This should have happened within the last 10 months.</p>
+        {% elif typeOfLivestock === 'pigs' %}
+          <p class="govuk-body">This should:</p>
+          <ul class="govuk-list govuk-list--bullet">
+            <li>be the test result from your last annual health and welfare review</li>
+            <li>have happened within the last 10 months</li>
+          </ul>
+        {% endif %}
+
+        <p class="govuk-body">You may need to provide the summary from this review as evidence.</p>
 
         {{ govukRadios(radios) }}
 

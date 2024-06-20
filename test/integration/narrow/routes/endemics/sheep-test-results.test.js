@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { getEndemicsClaim } = require('../../../../../app/session')
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 
 jest.mock('../../../../../app/session')
 
@@ -13,6 +14,7 @@ describe('Sheep test result tests', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/sheep-test-results'
 
+  setEndemicsClaimMock.mockImplementation(() => { })
   jest.mock('../../../../../app/config', () => {
     const originalModule = jest.requireActual('../../../../../app/config')
     return {
@@ -86,8 +88,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('What was the Flystrike test result?')
-      expect($('#testResult-error').text()).toMatch('Select a test result')
+      expect($('h1').text()).toMatch('What was the Flystrike result?')
+      expect($('#testResult-error').text()).toMatch('Select a result')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/sheep-tests')
     })
 
@@ -109,6 +111,7 @@ describe('Sheep test result tests', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test('Post Returns 400 when disease type is Other and test and test result is not provided', async () => {
@@ -130,9 +133,9 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the condition or disease')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and latest test and test result is not provided and Add another button pressed', async () => {
@@ -169,9 +172,9 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the condition or disease')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 302 when disease type is Other and test and test result is provided and Add continue button pressed', async () => {
@@ -202,6 +205,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toBe('/claim/endemics/check-answers')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test('Post Returns 400 when disease type is Other and latest test is not provided and continue button pressed', async () => {
       const options = {
@@ -237,8 +241,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the condition or disease')
     })
     test('Post Returns 400 when disease type is Other and latest test result is not provided and continue button pressed', async () => {
       const options = {
@@ -274,8 +278,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and test and test result is already in the list', async () => {
@@ -313,7 +317,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
     })
 
@@ -351,7 +355,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
     })
 
@@ -389,7 +393,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
     })
 
@@ -427,8 +431,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the name of the condition or disease')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the condition or disease')
     })
 
     test('Post Returns 400 when disease type is Other and test result is not provided', async () => {
@@ -465,8 +469,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the result')
     })
     test('Post Returns 400 when one of the disease types is provided and Other is not provided', async () => {
       const options = {
@@ -502,8 +506,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and test result is not provided and test is already in the list', async () => {
@@ -540,9 +544,9 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('You’ve already included this kind of disease')
-      expect($('a').text()).toMatch('Enter the test result')
+      expect($('a').text()).toMatch('Enter the result')
     })
 
     test('Post Returns 400 when disease type is Other and test result is provided with invalid information', async () => {
@@ -579,7 +583,7 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
       expect($('a').text()).toMatch('Condition or disease must only include letters a to z, numbers, special characters such as hyphens and spaces')
       expect($('a').text()).toMatch('Test result must only include letters a to z, numbers, special characters such as hyphens and spaces')
     })
@@ -618,6 +622,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toBe('/claim/endemics/check-answers')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test('Post Returns 200 when disease type is Other and test and test result is provided when add another button pressed', async () => {
       const options = {
@@ -653,7 +658,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test('Post Returns 200 when disease type is Other and delete button pressed', async () => {
@@ -690,7 +696,8 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('Give details of the other disease tested or sampled for')
+      expect($('h1').text()).toMatch('Other condition or disease details')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })
 })

@@ -45,7 +45,7 @@ module.exports = [
               'string.base': 'Enter the number of animals tested',
               'string.empty': 'Enter the number of animals tested',
               'string.max': 'The number of animals tested should not exceed 9999',
-              'string.pattern.base': 'Number of animals tested must only include numbers'
+              'string.pattern.base': 'The number of animals samples were taken from must only include numbers'
             })
         }),
         failAction: async (request, h, error) => {
@@ -71,7 +71,7 @@ module.exports = [
         if (isEligible) return h.redirect(nextPageURL)
 
         if (numberAnimalsTested === '0') {
-          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'Number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
+          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'The number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
 
         if (typeOfLivestock === livestockTypes.sheep) {

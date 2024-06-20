@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 
 jest.mock('../../../../../app/session')
 
@@ -13,6 +14,7 @@ describe('Test Results test', () => {
     getEndemicsClaimMock.mockImplementation(() => {
       return { typeOfLivestock: 'sheep' }
     })
+    setEndemicsClaimMock.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -62,7 +64,7 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('What did the vet test or sample for?')
+      expect($('h1').text()).toMatch('Which disease or condition did the vet take samples to test for?')
       expect($('title').text()).toMatch('Sheep Tests - Get funding to improve animal health and welfare')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/sheep-endemics-package')
 
@@ -94,9 +96,9 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect($('h1').text()).toMatch('What did the vet test or sample for?')
+      expect($('h1').text()).toMatch('Which disease or condition did the vet take samples to test for?')
       expect($('title').text()).toMatch('Sheep Tests - Get funding to improve animal health and welfare')
-      expect($('a').text()).toMatch('You must select a disease')
+      expect($('a').text()).toMatch('Select a disease or condition')
 
       expectPhaseBanner.ok($)
     })
@@ -118,6 +120,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/sheep-test-results')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test('returns 200  when user select one test', async () => {
@@ -129,7 +132,7 @@ describe('Test Results test', () => {
         method: 'POST',
         url,
         auth,
-        payload: { crumb, sheepTests: 'other' },
+        payload: { crumb, sheepTests: 'test' },
         headers: { cookie: `crumb=${crumb}` }
       }
 
@@ -137,6 +140,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/sheep-test-results')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })
 })

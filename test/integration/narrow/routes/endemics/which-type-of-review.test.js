@@ -4,6 +4,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const { endemicsWhichTypeOfReview } = require('../../../../../app/config/routes')
 const sessionMock = require('../../../../../app/session')
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -19,6 +20,8 @@ describe('Which type of review test', () => {
   const latestVetVisitApplication = { data: { whichReview: 'beef' } }
 
   beforeAll(() => {
+    setEndemicsClaimMock.mockImplementation(() => { })
+
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -104,6 +107,7 @@ describe('Which type of review test', () => {
       expect($('h1').text().trim()).toMatch(`What are you claiming for ${content}?`)
       expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })
 
@@ -130,7 +134,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select which type of review you are claiming for')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select what you are claiming for')
     })
 
     test('Returns 302 and redirect to vet visit review test result', async () => {
@@ -152,6 +156,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-visits-review-test-results')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test.each([
@@ -174,6 +179,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test('Returns 400 and redirects to error page for dairy follow-up', async () => {

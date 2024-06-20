@@ -2,14 +2,20 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
+const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/event/raise-invalid-data-event')
+
 describe('Species numbers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/pi-hunt'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -55,7 +61,7 @@ describe('Species numbers test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did the vet do a persistently infected (PI) hunt for BVD?')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did the vet do a persistently infected (PI) hunt for bovine viral diarrhea (BVD)?')
       expect($('title').text().trim()).toEqual('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
@@ -109,6 +115,7 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test('Continue to ineligible page if user select no', async () => {
       const options = {
@@ -125,6 +132,7 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
       getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
@@ -140,8 +148,8 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('Did the vet do a persistently infected (PI) hunt for BVD?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select yes or no')
+      expect($('h1').text().trim()).toMatch('Did the vet do a persistently infected (PI) hunt for bovine viral diarrhea (BVD)?')
+      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select if the vet did a PI hunt')
     })
   })
 })

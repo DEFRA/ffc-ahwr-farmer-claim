@@ -24,19 +24,19 @@ const routes = (request) => {
   }
 }
 
-const emptyTestResultErrorMessage = 'Enter the test result'
+const emptyTestResultErrorMessage = 'Enter the result'
 const duplicatedItemErrorMessage = 'You’ve already included this kind of disease'
-const emptyDiseaseTypeErrorMessage = 'Enter the name of the condition or disease'
+const emptyDiseaseTypeErrorMessage = 'Enter the condition or disease'
 
-const fieldValidator = (fieldName) => Joi.string().trim().max(50).pattern(/^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,100}$/).required().messages({
+const fieldValidator = (fieldName) => Joi.string().trim().max(500).pattern(/^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,500}$/).required().messages({
   'any.required': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
   'string.base': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
   'string.empty': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
-  'string.max': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must be 100 characters or fewer`,
+  'string.max': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must be 500 characters or fewer`,
   'string.pattern.base': `${fieldName === 'diseaseType' ? 'Condition or disease' : 'Test result'} must only include letters a to z, numbers, special characters such as hyphens and spaces`
 })
 
-const title = (diseaseType) => `What was the ${diseaseType} test result?`
+const title = (diseaseType) => `What was the ${diseaseType} result?`
 const inputText = (id, text, value, classes, errorMessage) => ({ id, name: id, label: { text }, value, classes, errorMessage })
 
 const getPageContent = (request, data) => {
@@ -47,7 +47,7 @@ const getPageContent = (request, data) => {
   if (testResultOptions) {
     const diseaseTypeText = sheepTestTypes[sheepEndemicsPackage].find((test) => test.value === diseaseType).text
 
-    return radios(title(diseaseTypeText), 'testResult', data?.error && 'Select a test result', {
+    return radios(title(diseaseTypeText), 'testResult', data?.error && 'Select a result', {
       hintHtml: 'You can find this on the summary the vet gave you.'
     })(testResultOptions.map((test) => ({ value: test.value, text: test.text, checked: result === test.value })))
   }
@@ -64,7 +64,7 @@ const getPageContent = (request, data) => {
   ]
 
   return {
-    title: 'Give details of the other disease tested or sampled for',
+    title: 'Other condition or disease details',
     inputTexts,
     result,
     resultLength: result.length,
@@ -304,7 +304,7 @@ module.exports = [
             return h.view(endemicsSheepTestResults, {
               ...pageContent,
               backLink: previousePage,
-              errorList: [{ text: 'Select a test result', href: '#testResult' }]
+              errorList: [{ text: 'Select a result', href: '#testResult' }]
             }).code(400).takeover()
           }
 

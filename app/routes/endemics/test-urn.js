@@ -20,6 +20,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getTestResult } = require('../../lib/get-test-result')
 const { isURNUnique } = require('../../api-requests/claim-service-api')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
@@ -90,11 +91,16 @@ module.exports = [
             })
         }),
         failAction: async (request, h, error) => {
+          const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+          const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+          const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+          const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
+          const errorMessage = (error.details[0].message === 'Enter the URN' && isBeefOrDairyEndemics) ? 'Enter the URN or certificate number' : error.details[0].message
           return h
             .view(endemicsTestUrn, {
               ...request.payload,
               title: title(request),
-              errorMessage: { text: error.details[0].message, href: '#laboratoryURN' },
+              errorMessage: { text: errorMessage, href: '#laboratoryURN' },
               backLink: previousPageUrl(request)
             })
             .code(400)
@@ -111,8 +117,10 @@ module.exports = [
 
         session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
-        if (!response?.isURNUnique) return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
-
+        if (!response?.isURNUnique) {
+          raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
+          return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
+        }
         return h.redirect(nextPageUrl(request))
       }
     }

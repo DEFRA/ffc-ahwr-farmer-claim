@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 jest.mock('../../../../../app/session')
 
 describe('Test Results test', () => {
@@ -9,6 +10,7 @@ describe('Test Results test', () => {
   const url = '/claim/endemics/vet-visits-review-test-results'
 
   beforeAll(() => {
+    setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -55,7 +57,7 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('What was the review test result?')
+      expect($('h1').text()).toMatch('What was the test result of your last annual health and welfare review?')
       expect($('title').text()).toContain('Vet Visits Review Test Results - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
@@ -127,6 +129,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageURL))
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
     test('shows error when payload is invalid', async () => {

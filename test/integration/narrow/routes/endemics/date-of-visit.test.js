@@ -5,6 +5,7 @@ const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock =
   require('../../../../../app/session').getEndemicsClaim
+const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -55,6 +56,7 @@ describe('Date of vet visit', () => {
 
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => {
       return {
         latestVetVisitApplication,
@@ -116,7 +118,7 @@ describe('Date of vet visit', () => {
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           latestEndemicsApplication,
-          latestVetVisitApplication: latestVetVisitApplication,
+          latestVetVisitApplication,
           typeOfReview: 'endemics',
           typeOfLivestock: 'beef',
           previousClaims: [{
@@ -195,7 +197,7 @@ describe('Date of vet visit', () => {
         month: '7',
         year: '2022',
         errorMessage:
-          'Date of visit cannot be before the date your agreement began',
+          'The date of follow-up cannot be before the date your agreement began',
         errorHighlights: allErrorHighlights,
         applicationCreationDate: '2022-07-10'
       },
@@ -205,25 +207,68 @@ describe('Date of vet visit', () => {
         day: '1',
         month: '1',
         year: '3000',
-        errorMessage: 'Date of visit must be in the past',
+        errorMessage: 'The date of review must be in the past',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'R'
+      },
+      {
+        description:
+          'visit date in future - application created today, visit date tomorrow',
+        day: '1',
+        month: '1',
+        year: '3000',
+        errorMessage: 'The date of follow-up must be in the past',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day and month and year',
         day: '',
         month: '',
         year: '',
-        errorMessage: 'Enter the date the vet completed the review',
+        errorMessage: 'Enter the date of review',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'R'
+      },
+      {
+        description: 'missing day and month and year',
+        day: '',
+        month: '',
+        year: '',
+        errorMessage: 'Enter the date of follow-up',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
+      },
+      {
+        description: 'use real date',
+        day: '234',
+        month: '234',
+        year: '234',
+        errorMessage: 'The date of review must be a real date',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'R'
+      },
+      {
+        description: 'use real date',
+        day: '234',
+        month: '234',
+        year: '234',
+        errorMessage: 'The date of follow-up must be a real date',
+        errorHighlights: allErrorHighlights,
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day',
         day: '',
         month: '05',
         year: '2023',
-        errorMessage: 'Date of visit must include a day',
+        errorMessage: 'The date of follow-up must include a day',
         errorHighlights: [labels.day],
         applicationCreationDate: '2023-01-01'
       },
@@ -232,7 +277,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '',
         year: '2023',
-        errorMessage: 'Date of visit must include a month',
+        errorMessage: 'The date of follow-up must include a month',
         errorHighlights: [labels.month],
         applicationCreationDate: '2023-01-01'
       },
@@ -241,7 +286,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '05',
         year: '',
-        errorMessage: 'Date of visit must include a year',
+        errorMessage: 'The date of follow-up must include a year',
         errorHighlights: [labels.year],
         applicationCreationDate: '2023-01-01'
       },
@@ -250,7 +295,7 @@ describe('Date of vet visit', () => {
         day: '',
         month: '',
         year: '2023',
-        errorMessage: 'Date of visit must include a day and a month',
+        errorMessage: 'The date of follow-up must include a day and a month',
         errorHighlights: [labels.day, labels.month],
         applicationCreationDate: '2023-01-01'
       },
@@ -259,7 +304,7 @@ describe('Date of vet visit', () => {
         day: '',
         month: '05',
         year: '',
-        errorMessage: 'Date of visit must include a day and a year',
+        errorMessage: 'The date of follow-up must include a day and a year',
         errorHighlights: [labels.day, labels.year],
         applicationCreationDate: '2023-01-01'
       },
@@ -268,7 +313,7 @@ describe('Date of vet visit', () => {
         day: '01',
         month: '',
         year: '',
-        errorMessage: 'Date of visit must include a month and a year',
+        errorMessage: 'The date of follow-up must include a month and a year',
         errorHighlights: [labels.month, labels.year],
         applicationCreationDate: '2023-01-01'
       }
@@ -279,11 +324,12 @@ describe('Date of vet visit', () => {
         month,
         year,
         errorMessage,
-        errorHighlights,
-        applicationCreationDate
+        applicationCreationDate,
+        typeOfReview
       }) => {
         getEndemicsClaimMock.mockImplementationOnce(() => {
           return {
+            ...(typeOfReview && { typeOfReview }),
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
               createdAt: applicationCreationDate
@@ -432,7 +478,7 @@ describe('Date of vet visit', () => {
       },
       {
         description: 'previous review claim is not ready to pay and user can not calim for endemics',
-        content: 'You must have claimed for your review before you claim for the follow-up that happened after it.',
+        content: 'Your review claim must have been approved before you claim for the follow-up that happened after it.',
         dateOfVetVisitException: 'claim endemics before review status is ready to pay',
         day: '01',
         month: '05',
@@ -544,6 +590,7 @@ describe('Date of vet visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+        expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
     test.each([
@@ -601,6 +648,7 @@ describe('Date of vet visit', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+        expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
   })

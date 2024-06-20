@@ -11,18 +11,25 @@ const { endemicsClaim: { dateOfTesting: dateOfTestingKey } } = require('../../se
 const { claimType } = require('../../constants/claim')
 const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { getReviewType } = require('../../lib/get-review-type')
+const { isValidDate } = require('./../../lib/check-date-validity')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
-
+const optionSameReviewOrFollowUpDateText = (typeOfReview) => {
+  const { isReview } = getReviewType(typeOfReview)
+  const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
+  return `When the vet visited the farm for the ${reviewOrFollowUpText}`
+}
 module.exports = [
   {
     method: 'GET',
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { dateOfVisit, dateOfTesting, latestEndemicsApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, dateOfTesting, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
         return h.view(endemicsDateOfTesting, {
+          optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
           dateOfAgreementAccepted: new Date(latestEndemicsApplication.createdAt).toISOString().slice(0, 10),
           dateOfVisit,
           whenTestingWasCarriedOut: dateOfTesting
@@ -62,7 +69,7 @@ module.exports = [
             .valid('whenTheVetVisitedTheFarmToCarryOutTheReview', 'onAnotherDate')
             .required()
             .messages({
-              'any.required': 'Enter the date the vet completed testing'
+              'any.required': 'Enter the date samples were taken'
             }),
 
           'on-another-date-day': Joi
@@ -70,8 +77,8 @@ module.exports = [
               switch: [
                 {
                   is: 'onAnotherDate',
-                  then: validateDateInputDay('on-another-date', 'Date of testing').messages({
-                    'dateInputDay.ifNothingIsEntered': 'Enter the date the vet completed testing'
+                  then: validateDateInputDay('on-another-date', 'Date of sampling').messages({
+                    'dateInputDay.ifNothingIsEntered': 'Enter the date samples were taken'
                   })
                 },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -82,7 +89,7 @@ module.exports = [
           'on-another-date-month': Joi
             .when('whenTestingWasCarriedOut', {
               switch: [
-                { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'Date of testing') },
+                { is: 'onAnotherDate', then: validateDateInputMonth('on-another-date', 'Date of sampling') },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
               ],
               otherwise: Joi.allow('')
@@ -93,22 +100,13 @@ module.exports = [
               switch: [
                 {
                   is: 'onAnotherDate',
-                  then: validateDateInputYear('on-another-date', 'Date of testing', (value, helpers) => {
+                  then: validateDateInputYear('on-another-date', 'Date of sampling', (value, helpers) => {
                     if (value > 9999 || value < 1000) {
                       return value
                     }
 
                     if (value.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview') {
                       return value
-                    }
-
-                    const isValidDate = (year, month, day) => {
-                      const dateObject = new Date(year, month - 1, day)
-                      return (
-                        dateObject.getFullYear() === year &&
-                        dateObject.getMonth() === month - 1 &&
-                        dateObject.getDate() === day
-                      )
                     }
 
                     if (!isValidDate(
@@ -140,8 +138,8 @@ module.exports = [
 
                     return value
                   }, {
-                    'dateOfTesting.future': 'Date of sampling must be a real date',
-                    'dateOfTesting.beforeAgreementDate': 'Date of testing cannot be before the review visit date'
+                    'dateOfTesting.future': 'The date samples were taken must be in the past',
+                    'dateOfTesting.beforeAgreementDate': 'The date samples were taken cannot be before the date your agreement began'
                   })
                 },
                 { is: 'whenTheVetVisitedTheFarmToCarryOutTheReview', then: Joi.allow('') }
@@ -150,7 +148,7 @@ module.exports = [
             })
         }),
         failAction: async (request, h, error) => {
-          const { dateOfVisit } = session.getEndemicsClaim(request)
+          const { dateOfVisit, typeOfReview } = session.getEndemicsClaim(request)
           const errorSummary = []
           if (error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')) {
             errorSummary.push({
@@ -167,6 +165,7 @@ module.exports = [
               ...request.payload,
               dateOfVisit,
               errorSummary,
+              optionSameReviewOrFollowUpDateText: optionSameReviewOrFollowUpDateText(typeOfReview),
               whenTestingWasCarriedOut: {
                 value: request.payload.whenTestingWasCarriedOut,
                 errorMessage: error.details.find(e => e.context.label === 'whenTestingWasCarriedOut')
@@ -220,9 +219,10 @@ module.exports = [
 
         const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
         if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
-          const errorMessage = 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.'
+          const errorMessage = 'You must do a review, including sampling, before you do the resulting follow-up.'
+          const errorLink = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
           raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
-          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage }).code(400).takeover()
+          return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage, errorLink }).code(400).takeover()
         }
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)

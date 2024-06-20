@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Number of samples tested - {{ serviceName }}{% endblock %}
+{% block pageTitle %}How many samples were tested - {{ serviceName }}{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -21,16 +21,11 @@
             errorList: [errorMessage]
           }) }}
         {% endif %}
-
+     <h1 class="govuk-heading-l">How many samples were tested?</h1>
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
         {{ govukInput({
-            label: {
-              text: "How many samples were tested?",
-              classes: "govuk-label--l",
-              isPageHeading: true
-            },
             hint: {
               text: "You can find this on the summary the vet gave you."
             },
