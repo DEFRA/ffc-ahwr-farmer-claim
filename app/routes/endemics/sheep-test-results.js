@@ -4,6 +4,7 @@ const radios = require('../models/form-component/radios')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
 const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = require('../../config/routes')
+const { OtherDiseaseTypeNoResult } = require('../utils/disease-type-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTestResults}`
 const routes = (request) => {
@@ -232,16 +233,13 @@ module.exports = [
         const diseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
         const diseaseType = sheepTestResults[diseaseTypeIndex]
         const upatedSheepTestResults = [...sheepTestResults]
-
+        let pageContent = getPageContent(request, { error: true })
+        const errorList = [{ text: 'Select a result', href: '#testResult' }]
         if (diseaseType?.diseaseType !== 'other') {
-          if (!payload?.testResult) {
-            const pageContent = getPageContent(request, { error: true })
-            return h.view(endemicsSheepTestResults, {
-              ...pageContent,
-              backLink: previousePage,
-              errorList: [{ text: 'Select a result', href: '#testResult' }]
-            }).code(400).takeover()
-          }
+          const backLink = previousePage
+          const pageContent = getPageContent(request)
+
+          OtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
 
           diseaseType.result = payload.testResult
 
@@ -260,7 +258,7 @@ module.exports = [
           const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload.diseaseType}`).error?.details[0]?.message
           const testResultValidationError = fieldValidator('testResult').validate(`${payload.testResult}`).error?.details[0]?.message
 
-          const pageContent = getPageContent(request, {
+          pageContent = getPageContent(request, {
             diseaseType: { value: payload.diseaseType, text: diseaseTypeValidationError },
             testResult: { value: payload.testResult, text: testResultValidationError }
           })
@@ -317,7 +315,7 @@ module.exports = [
 
         if (payloadData?.submitButton === 'continue') return h.redirect(nextPage)
 
-        const pageContent = getPageContent(request)
+        pageContent = getPageContent(request)
 
         return h.view(endemicsSheepTestResults, {
           ...pageContent,
