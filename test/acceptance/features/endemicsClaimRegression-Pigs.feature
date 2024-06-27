@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Endemics -beef- Regression 
+Feature: Endemics -Pigs- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -24,17 +24,20 @@ When enter vet's full name
 Then user continue to claim
 When user enter the rcvs number in endemics
 Then clicked on continue button for endemics
-Then click yes for PI Hunt
+Then click on the HerdVaccination postive
+Then clicked on continue button for endemics
+Then user input the test unique reference number in endemics
+Then clicked on continue button for endemics
+Then enter the positive no of pig samples that were tested
+Then clicked on continue button for endemics
+Then click on the disease category
 Then user continue to claim
-When user input the test unique reference number in endemics
-Then clicked on continue button for endemics
-Then click on the positive test results
-Then clicked on continue button for endemics
 Then click yes on biosecurity link
+Then Enter the percentage
 Then user continue to claim
 Given user confirm to be on check answer page
 Then user clicks on endemics claim submit
 
- Examples:
-              |species|value|
-              |Beef | 57  | 
+  Examples:
+      | LiveStockName |species|value|sample|
+      | Pigs          |Pigs   | 57  |  6   |
