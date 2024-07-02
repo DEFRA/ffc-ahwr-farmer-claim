@@ -6,7 +6,7 @@ const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { getReviewType } = require('../../../../../app/lib/get-review-type')
 
-const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isWithIn4MonthsAfterDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
+const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isDateOfTestingLessThanDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
@@ -338,7 +338,7 @@ describe('Date of testing', () => {
     test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative review', async () => {
       getEndemicsClaimMock.mockImplementation(() => { return { dateOfVisit: '2024-04-23', typeOfReview: 'E' } })
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
-      isWithIn4MonthsAfterDateOfVisit.mockImplementation(() => { return false })
+      isDateOfTestingLessThanDateOfVisit.mockImplementation(() => { return true })
       getReviewWithinLast10Months.mockImplementation(() => { return { test: 'mockPreviousReview' } })
 
       const options = {
@@ -354,7 +354,7 @@ describe('Date of testing', () => {
 
       expect(res.statusCode).toBe(400)
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
-      expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
+      expect($('.govuk-body').text()).toContain(' The date of sampling for your follow-up cannot be before the date of the review that happened before it.')
     })
   })
 })
