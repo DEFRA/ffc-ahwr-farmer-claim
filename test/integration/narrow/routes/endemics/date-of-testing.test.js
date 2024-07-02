@@ -354,7 +354,7 @@ describe('Date of testing', () => {
 
       expect(res.statusCode).toBe(400)
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
-      expect($('.govuk-body').text()).toContain(' The date of sampling for your follow-up cannot be before the date of the review that happened before it.')
+      expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
   })
 })

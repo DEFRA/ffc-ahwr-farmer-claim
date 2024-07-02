@@ -219,7 +219,7 @@ module.exports = [
 
         const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
         if (typeOfReview === claimType.endemics && previousReviewClaim && isDateOfTestingLessThanDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
-          const errorMessage = 'The date of sampling for your follow-up cannot be before the date of the review that happened before it.'
+          const errorMessage = 'You must do a review, including sampling, before you do the resulting follow-up.'
           const errorLink = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
           raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
           return h.view(endemicsDateOfTestingException, { backLink: pageUrl, ruralPaymentsAgency, errorMessage, errorLink }).code(400).takeover()
