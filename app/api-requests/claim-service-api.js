@@ -79,7 +79,7 @@ const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => 
 }
 
 const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) => {
-  return new Date(dateOfTesting) < Date(dateOfVisit)
+  return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
 const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
