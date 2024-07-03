@@ -3,7 +3,7 @@ const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { addError } = require('../utils/validations')
 const { ruralPaymentsAgency } = require('../../config')
-const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isWithIn4MonthsAfterDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
+const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isDateOfTestingLessThanDateOfVisit, getReviewWithinLast10Months } = require('../../api-requests/claim-service-api')
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
@@ -218,7 +218,7 @@ module.exports = [
         }
 
         const previousReviewClaim = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
-        if (typeOfReview === claimType.endemics && previousReviewClaim && !isWithIn4MonthsAfterDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
+        if (typeOfReview === claimType.endemics && previousReviewClaim && isDateOfTestingLessThanDateOfVisit(previousReviewClaim?.data?.dateOfVisit, dateOfTesting)) {
           const errorMessage = 'You must do a review, including sampling, before you do the resulting follow-up.'
           const errorLink = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
           raiseInvalidDataEvent(request, dateOfTestingKey, `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`)
