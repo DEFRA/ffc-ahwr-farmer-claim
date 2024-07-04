@@ -7,7 +7,7 @@ ARG PARENT_VERSION
 LABEL uk.gov.defra.ffc.parent-image=defradigital/node-development:${PARENT_VERSION}
 ARG PORT_DEBUG
 EXPOSE ${PORT_DEBUG}
-COPY --chown=node:node package*.json ./
+COPY --chown=root:node --chmod=755 package*.json ./
 RUN npm install
-COPY --chown=node:node . .
+COPY --chown=root:node --chmod=755 . .
 CMD [ "npm", "run", "test" ]
