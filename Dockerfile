@@ -13,7 +13,7 @@ ENV PORT ${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
 COPY --chown=root:node --chmod=755 package*.json ./
-RUN npm install
+RUN npm ci
 COPY --chown=root:node --chmod=755 . .
 USER root
 RUN npm run build
