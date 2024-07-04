@@ -8,6 +8,6 @@ LABEL uk.gov.defra.ffc.parent-image=defradigital/node-development:${PARENT_VERSI
 ARG PORT_DEBUG
 EXPOSE ${PORT_DEBUG}
 COPY --chown=root:node --chmod=755 package*.json ./
-RUN npm install
+RUN npm ci
 COPY --chown=root:node --chmod=755 . .
 CMD [ "npm", "run", "test" ]
