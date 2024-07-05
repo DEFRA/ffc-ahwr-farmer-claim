@@ -78,15 +78,8 @@ const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => 
   return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
 }
 
-const isWithIn4MonthsAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
-  const startDate = new Date(dateOfVisit)
-  const endDate = new Date(dateOfVisit)
-
-  // +4 months from dateOfVisit
-  endDate.setMonth(endDate.getMonth() + 4)
-  endDate.setHours(23, 59, 59, 999)
-
-  return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
+const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) => {
+  return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
 const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
@@ -180,7 +173,7 @@ module.exports = {
   isValidDateOfVisit,
   getReviewWithinLast10Months,
   getClaimsByApplicationReference,
-  isWithIn4MonthsAfterDateOfVisit,
+  isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
   isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
