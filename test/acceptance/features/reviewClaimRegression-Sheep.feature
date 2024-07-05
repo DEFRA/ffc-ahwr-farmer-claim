@@ -28,6 +28,10 @@ When user input the test unique reference number in endemics
 Then clicked on continue button for endemics
 Given user confirm to be on check answer page
 Then user clicks on endemics claim submit
+# code for connecting database
+Then fetch the claim number
+# Move the incheck to Ready to pay Status
+Then pass the claim number to ReadyToPay
  
   
     Examples:
