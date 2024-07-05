@@ -398,7 +398,7 @@ When(/^click to oral samples continue the claim$/, async function () {
  Then(/^validate the pig testing link in exception screen$/, async function(){
   await claimJourney.pigTestingLink()
  })
-Then (/^clicks back$/, async function(){
+Then(/^clicks back$/, async function(){
   await claimJourney.clickBrowserback()
 })
  Then(/^validate the enter the no of animals tested link in exception screen$/, async function(){
@@ -453,7 +453,7 @@ Then(/^user continue to next page$/, async function () {
 When(/^user choose (.*) cattle for review$/, async function (LiveStockName) {
   await claimJourney.liveStockReview(LiveStockName)
 })
-Then (/^user clicks on Manage your claim$/, async function (){
+Then(/^user clicks on Manage your claim$/, async function (){
   await claimJourney.clickManageclaim()
 })
 When(/^user confirm to meet the requirement$/, async function () {
@@ -504,19 +504,19 @@ await claimJourney.clickManageYourClaim
 When(/^check what is that you think of this service$/, async function () {
   await claimJourney.clickWhatYOuLikeAboutThisIsService()
 })
-Then (/^click on gov.uk in the left pane$/,async function (){ 
+Then(/^click on gov.uk in the left pane$/,async function (){ 
   await claimJourney.clickGovUKPane()
 })
-Then (/^validate if the user redirected to gov.uk$/,async function (){ 
+Then(/^validate if the user redirected to gov.uk$/,async function (){ 
   await claimJourney.urlValidation()
 })
-Then (/^user is able to see the Annual health and welfare review of livestock link on the middle top of the header$/,async function  (){ 
+Then(/^user is able to see the Annual health and welfare review of livestock link on the middle top of the header$/,async function  (){ 
   await claimJourney.getHeaderText()
 })
-Then (/^user clicks on the service name link$/,async function (){ 
+Then(/^user clicks on the service name link$/,async function (){ 
   await claimJourney.clickAHWR()
 })
-Then (/^user must be redirected to service guidance start pages$/,async function (){ 
+Then(/^user must be redirected to service guidance start pages$/,async function (){ 
   await claimJourney.urlValidationAHWR()
 })
 
@@ -633,4 +633,13 @@ Then(/^validate disease status category not selected$/, async function () {
   await endemicsJourney.validateBlankDiseaseStatus()
 })
 
+
+//Connect to database to change status to Ready to Pay
+When(/^fetch the claim number$/, async function () {
+  await claimJourney.getClaimNumber()
+})
+
+When(/^pass the claim number to (.*)$/, async function (type) {
+  await claimJourney.connectTODatabase(type)
+})
 

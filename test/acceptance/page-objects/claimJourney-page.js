@@ -1,20 +1,20 @@
 const CommonActions = require('./common-actions')
 const pgp = require('pg-promise')();
 // const { submitClaim } = require('../../../app/messaging/application')
-const databaseConfig = {
-  user: 'adminuser@sndffcdbssq1002',
-  host: 'sndffcdbssq1002.postgres.database.azure.com',
-  port: 5432,
-  database: 'ffc_ahwr_application',
-  sslMode: 'true',
-};
 // const databaseConfig = {
-//   user: 'adminuser@devffcdbssq1001',
-//   host: 'devffcdbssq1001.postgres.database.azure.com',
+//   user: 'adminuser@sndffcdbssq1002',
+//   host: 'sndffcdbssq1002.postgres.database.azure.com',
 //   port: 5432,
-//   database: 'ffc-ahwr-application-dev',
-//   sslMode:'true',
+//   database: 'ffc_ahwr_application',
+//   sslMode: 'true',
 // };
+const databaseConfig = {
+  user: 'adminuser@devffcdbssq1001',
+  host: 'devffcdbssq1001.postgres.database.azure.com',
+  port: 5432,
+  database: 'ffc-ahwr-application-test',
+  sslMode:'true',
+};
 
 //const db = pgp('postgres://adminuser@devffcdbssq1001:ufj2Wm3CQpXj@devffcdbssq1001.postgres.database.azure.com:5432/ffc-ahwr-application-dev');
 // Dynamically set the password based on your requirements
@@ -260,6 +260,12 @@ const AHWR_LINK='#typeOfReview'
 const TENMONTH_GUIDANCE_LINK='//*[@id="main-content"]/div/div/p[1]/a'
 const DATE_OF_VISIT_LINK='//*[@id="main-content"]/div/div/p[3]/a'
 
+//database connection to change status of claim to proceed to follow-up
+
+const CLAIM_NUMBER = '.govuk-panel__body>strong'
+let CLAIM_NUMBER_VALUE;
+const actualStatus = 1;
+let fetchedValue;
 
 class StartPageActions extends CommonActions {
 
@@ -1300,7 +1306,137 @@ async ten_month_guidance_link(){
 async date_of_visit_link(){
   await this.elementToContainText(DATE_OF_VISIT_LINK)
 }
+
+
+//connect to database
+
+
+async getClaimNumber() {
+  console.log(browser.getCookies()) 
+   CLAIM_NUMBER_VALUE = await this.elementGetText(CLAIM_NUMBER)
+   return CLAIM_NUMBER_VALUE;
+
+ }
+ 
+ 
+ async connectTODatabase(type) {
+   const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs))
+   await sleep(5000)
+   try {
+     // Step 1: Define the Azure SQL Database connection configuration
+     const conn = await db.connect();
+
+     let query = '';
+    
+         if (type === 'updateStatus') {
+       // Step 3: Update status in the database
+       const updateStatusQuery = `
+       UPDATE public.claim
+       SET "statusId" = 2
+       WHERE reference = $1;
+     `;
+     
+     const value =CLAIM_NUMBER_VALUE;  // The reference value
+     ;
+     
+     db.none(updateStatusQuery, CLAIM_NUMBER_VALUEE)
+       .then(() => {
+         console.log('Status updated successfully.');
+       })
+       .catch(error => {
+         console.error('Error updating status:', error);
+       })
+       .finally(() => {
+         // Close the database connection (optional)
+        
+       });
+     
+     } else if (type === 'checkStatus') {
+
+       // Define a SQL query to fetch the value from the database
+       const query = `
+ SELECT "statusId" FROM public.claim WHERE reference = $1;
+`;
+      
+       // Execute the SQL query to fetch the value
+       fetchedValue= await db.one(query,CLAIM_NUMBER_VALUE)
+         .then(result => {
+           // 'result' contains the value fetched from the database
+           //fetchedValue = result.statusId; // Corrected to access 'statusId' property
+           console.log('Fetched Value:', result.statusId);
+           return result.statusId
+           
+
+           // You can now use 'fetchedValue' as needed in your code
+         })
+         .catch(error => {
+           console.error('Error:', error);
+         });
+       // Release the connection
+       conn.done();
+
+     }else if (type === 'Incheck') {
+       // Step 3: Update status in the database
+       const updateStatusQuery = `
+       UPDATE public.claim
+       SET "statusId" = 5
+       WHERE reference = $1;
+     `;
+     
+     const value =CLAIM_NUMBER_VALUE;  // The reference value
+     ;
+     
+     db.none(updateStatusQuery, [value])
+       .then(() => {
+         console.log('Status updated successfully.');
+       })
+       .catch(error => {
+         console.error('Error updating status:', error);
+       })
+       .finally(() => {
+         // Close the database connection (optional)
+         
+       });
+     
+     }else if (type === 'ReadyToPay') {
+       // Step 3: Update status in the database
+       const updateStatusQuery = `
+       UPDATE public.claim
+       SET "statusId" = 9
+       WHERE reference = $1;
+     `;
+     
+     const value =CLAIM_NUMBER_VALUE;  // The reference value
+     ;
+     
+     db.none(updateStatusQuery, [value])
+       .then(() => {
+         console.log('Status updated successfully.');
+       })
+       .catch(error => {
+         console.error('Error updating status:', error);
+       })
+       .finally(() => {
+         // Close the database connection (optional)
+         
+       });
+     
+     }
+   } catch (err) {
+     console.error('Error:', err);
+   }
+
+   // Close the WebDriverIO browser session when done
+   await browser.deleteSession();
+
 }
+
+
+
+
+}
+
+
 
 
 
