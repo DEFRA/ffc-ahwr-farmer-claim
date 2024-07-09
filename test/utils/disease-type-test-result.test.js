@@ -1,46 +1,101 @@
-const { OtherDiseaseTypeNoResult } = require('../../app/routes/utils/disease-type-test-result')
+const { getErrorResultString } = require('../../app/routes/utils/disease-type-test-result')
 
-describe('OtherDiseaseTypeNoResult', () => {
-  test('should return an HTTP 400 response if testResult is falsy', () => {
-    const testResult = false
-    const pageContent = {}
-    const h = {
-      view: jest.fn().mockReturnThis(),
-      code: jest.fn().mockReturnThis(),
-      takeover: jest.fn().mockReturnThis()
+describe('getErrorResultString', () => {
+  it('should return the validation message object', () => {
+    const payload = {
+      diseaseType: 'someDiseaseType',
+      testResult: 'positive'
     }
-    const errorList = []
-    const backLink = 'some-back-link'
-    const viewPage = 'some-view-page'
 
-    const response = OtherDiseaseTypeNoResult(testResult, pageContent, h, errorList, backLink, viewPage)
+    const validatorFn = (field) => {
+      // Mock validator function
+      return {
+        validate: (value) => {
+          // Mock validation logic
+          if (field === 'diseaseType') {
+            return {
+              error: null
+            }
+          } else if (field === 'testResult') {
+            return {
+              error: null
+            }
+          }
+        }
+      }
+    }
 
-    expect(h.view).toHaveBeenCalledWith(viewPage, {
-      ...pageContent,
-      backLink,
-      errorList
-    })
-    expect(h.code).toHaveBeenCalledWith(400)
-    expect(h.takeover).toHaveBeenCalled()
-    expect(response).toBe(h)
+    const result = getErrorResultString(payload, validatorFn)
+
+    expect(result).toEqual(expect.objectContaining({
+      diseaseType: { value: 'someDiseaseType', text: undefined },
+      testResult: { value: 'positive', text: undefined }
+    }))
   })
-  test('should not return an HTTP 400 response if testResult is truthy', () => {
-    const testResult = true
-    const pageContent = {}
-    const h = {
-      view: jest.fn().mockReturnThis(),
-      code: jest.fn().mockReturnThis(),
-      takeover: jest.fn().mockReturnThis()
+}); describe('getErrorResultString', () => {
+  it('should return the validation message object', () => {
+    const payload = {
+      diseaseType: 'someDiseaseType',
+      testResult: 'positive'
     }
-    const errorList = []
-    const backLink = 'some-back-link'
-    const viewPage = 'some-view-page'
+    const validatorFn = (field) => {
+      // Mock validator function
+      return {
+        validate: (value) => {
+          // Mock validation logic
+          if (field === 'diseaseType') {
+            return {
+              error: null
+            }
+          } else if (field === 'testResult') {
+            return {
+              error: null
+            }
+          }
+        }
+      }
+    }
+    const result = getErrorResultString(payload, validatorFn)
+    expect(result).toEqual(expect.objectContaining({
+      diseaseType: { value: 'someDiseaseType', text: undefined },
+      testResult: { value: 'positive', text: undefined }
+    }))
+  })
 
-    const response = OtherDiseaseTypeNoResult(testResult, pageContent, h, errorList, backLink, viewPage)
-
-    expect(h.view).not.toHaveBeenCalled()
-    expect(h.code).not.toHaveBeenCalled()
-    expect(h.takeover).not.toHaveBeenCalled()
-    expect(response).toBeUndefined()
+  it('should return the validation message object with error messages', () => {
+    const payload = {
+      diseaseType: 'someInvalidDiseaseType',
+      testResult: 'negative'
+    }
+    const validatorFn = (field) => {
+      // Mock validator function
+      return {
+        validate: (value) => {
+          // Mock validation logic
+          if (field === 'diseaseType') {
+            return {
+              error: {
+                details: [
+                  { message: 'Invalid disease type' }
+                ]
+              }
+            }
+          } else if (field === 'testResult') {
+            return {
+              error: {
+                details: [
+                  { message: 'Invalid test result' }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+    const result = getErrorResultString(payload, validatorFn)
+    expect(result).toEqual(expect.objectContaining({
+      diseaseType: { value: 'someInvalidDiseaseType', text: 'Invalid disease type' },
+      testResult: { value: 'negative', text: 'Invalid test result' }
+    }))
   })
 })
