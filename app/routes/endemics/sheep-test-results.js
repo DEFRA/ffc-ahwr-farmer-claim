@@ -4,7 +4,6 @@ const radios = require('../models/form-component/radios')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
 const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = require('../../config/routes')
-// const { notOtherDiseaseTypeNoResult, getErrorResultObject  } = require('../utils/disease-type-test-result')
 const { notOtherDiseaseTypeNoResult, getErrorResultString, getErrorResultObject } = require('../utils/disease-type-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTestResults}`
