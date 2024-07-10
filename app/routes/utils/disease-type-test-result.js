@@ -5,8 +5,6 @@ const notOtherDiseaseTypeNoResult = (testResult, pageContent, h, errorList, back
   return h.view(viewPage, { ...pageContent, backLink, errorList }).code(400).takeover()
 }
 
-
-
 const getErrorResultString = (payload, validatorFn) => {
   let diseaseTypeValidationError
   let testResultValidationError
@@ -26,16 +24,16 @@ const getErrorResultObject = (payload, newDiseaseValidationFn) => {
   const payloadDataError = {}
   if (typeof payload.diseaseType === 'object' && payload.diseaseType.length > 1) {
     const { newPayloadData, newDiseaseTypeErrorMessage: newErrorMessage } = newDiseaseValidationFn(payload)
-    
+
     payloadDataError.newPayloadData = newPayloadData
     payloadDataError.newErrorMessage = newErrorMessage
   }
-  
+
   return payloadDataError
 }
 
 module.exports = {
   notOtherDiseaseTypeNoResult,
   getErrorResultString,
-  getErrorResultObject,
+  getErrorResultObject
 }

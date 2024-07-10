@@ -88,7 +88,6 @@ describe('Sheep test result tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      console.log('get the text ', $('h1').text())
       expect($('h1').text()).toMatch('What was the Flystrike result?')
       expect($('#testResult-error').text()).toMatch('Select a result')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/sheep-tests')

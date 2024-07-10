@@ -8,10 +8,8 @@ describe('getErrorResultString', () => {
     }
 
     const validatorFn = (field) => {
-      // Mock validator function
       return {
         validate: (value) => {
-          // Mock validation logic
           if (field === 'diseaseType') {
             return {
               error: null
@@ -39,10 +37,8 @@ describe('getErrorResultString', () => {
       testResult: 'positive'
     }
     const validatorFn = (field) => {
-      // Mock validator function
       return {
         validate: (value) => {
-          // Mock validation logic
           if (field === 'diseaseType') {
             return {
               error: null
@@ -68,10 +64,8 @@ describe('getErrorResultString', () => {
       testResult: 'negative'
     }
     const validatorFn = (field) => {
-      // Mock validator function
       return {
         validate: (value) => {
-          // Mock validation logic
           if (field === 'diseaseType') {
             return {
               error: {
