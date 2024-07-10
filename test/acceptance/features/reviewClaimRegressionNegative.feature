@@ -1,4 +1,4 @@
-@smokereg1
+@smoke-reg2
 
 Feature: Review Claim- Regression 
 Scenario Outline:To check that all the functionality is working fine
