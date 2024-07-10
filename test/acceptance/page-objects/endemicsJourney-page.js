@@ -76,11 +76,11 @@ const SELECT_A_PACKAGE_ERROR_ACTUAL = 'a[href="#sheepEndemicsPackage"]'
 
 //select a disease error 
 
-const VET_TEST_ERROR='You must select a disease'
+const VET_TEST_ERROR='Select a disease or condition'
 const VET_TEST_ERROR_ACTUAL = 'a[href="#sheepTests"]'
 
 //select a test result error
-const VET_TEST_RESULT_ERROR='Select a test result'
+const VET_TEST_RESULT_ERROR='Select a result'
 const VET_TEST_RESULT_ERROR_ACTUAL='a[href="#testResult"]'
 
 //Beef
