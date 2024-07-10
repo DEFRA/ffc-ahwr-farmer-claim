@@ -4,6 +4,7 @@ const radios = require('../models/form-component/radios')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
 const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = require('../../config/routes')
+const { notOtherDiseaseTypeNoResult, getErrorResultString, getErrorResultObject } = require('../utils/disease-type-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTestResults}`
 const routes = (request) => {
@@ -234,13 +235,12 @@ module.exports = [
         const upatedSheepTestResults = [...sheepTestResults]
 
         if (diseaseType?.diseaseType !== 'other') {
+          const pageContent = getPageContent(request, { error: true })
+          const backLink = previousePage
+          const errorList = [{ text: 'Select a result', href: '#testResult' }]
+
           if (!payload?.testResult) {
-            const pageContent = getPageContent(request, { error: true })
-            return h.view(endemicsSheepTestResults, {
-              ...pageContent,
-              backLink: previousePage,
-              errorList: [{ text: 'Select a result', href: '#testResult' }]
-            }).code(400).takeover()
+            return notOtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
           }
 
           diseaseType.result = payload.testResult
@@ -256,34 +256,30 @@ module.exports = [
           payload.diseaseType = payload.diseaseType.filter((_, index) => index !== Number(payload.delete))
           payload.testResult = payload.testResult.filter((_, index) => index !== Number(payload.delete))
         }
-        if (typeof payload === 'object' && (typeof payload.diseaseType === 'string' || typeof payload.testResult === 'string')) {
-          const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload.diseaseType}`).error?.details[0]?.message
-          const testResultValidationError = fieldValidator('testResult').validate(`${payload.testResult}`).error?.details[0]?.message
 
-          const pageContent = getPageContent(request, {
-            diseaseType: { value: payload.diseaseType, text: diseaseTypeValidationError },
-            testResult: { value: payload.testResult, text: testResultValidationError }
-          })
+        const results = getErrorResultString(payload, fieldValidator)
+        const diseaseTypeValidationError = results?.diseaseType?.text
+        const testResultValidationError = results?.testResult?.text
 
-          if (diseaseTypeValidationError || testResultValidationError) {
-            return h.view(endemicsSheepTestResults, {
-              ...pageContent,
-              backLink: previousePage,
-              errorList: [
-                diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' },
-                testResultValidationError && { text: testResultValidationError, href: '#testResult' }
-              ]
-            }).code(400).takeover()
-          }
+        if (diseaseTypeValidationError || testResultValidationError) {
+          const pageContent = getPageContent(request, results)
+
+          return h.view(endemicsSheepTestResults, {
+            ...pageContent,
+            backLink: previousePage,
+            errorList: [
+              diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' },
+              testResultValidationError && { text: testResultValidationError, href: '#testResult' }
+            ]
+          }).code(400).takeover()
         }
 
         let payloadData = payload
-        let newDiseaseTypeErrorMessage
-        if (typeof payload.diseaseType === 'object' && payload.diseaseType.length > 1) {
-          const { newPayloadData, newDiseaseTypeErrorMessage: newErrorMessage } = newDiseaseInTheListValidation(payload)
-          payloadData = newPayloadData
-          newDiseaseTypeErrorMessage = newErrorMessage
-        }
+
+        const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
+
+        newPayloadData && (payloadData = newPayloadData)
+        const newDiseaseTypeErrorMessage = newErrorMessage
 
         const diseaseTypeEmptyItems = typeof payloadData.diseaseType === 'object' ? getInvalidItemIndexes(payloadData.diseaseType, 'diseaseType') : []
         const testResultEmptyItems = typeof payloadData.testResult === 'object' ? getInvalidItemIndexes(payloadData.testResult, 'testResult') : []
