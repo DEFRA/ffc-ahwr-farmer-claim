@@ -1,4 +1,4 @@
-@smokereg1
+@smoke-reg
 Feature: Endemics -sheep- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
@@ -10,13 +10,12 @@ And user confirm the org-review page
 And user agreed the business details is correct
 Then user continue to next page
 Then user clicks on click for endemics follow-up
-Then user clicks on Manage your claim
 Then click on Endemics disease follow up review
 Then clicked on continue button for endemics
 Then user input the date in correct order
 Then clicked on continue button for endemics
 Then click on the option when vet visited the farm to carry out the review
-Then clicked on continue button for endemics
+Then clicked on continue button for endemics s
 Then user confirm to meet the requirement
 Then user continue to claim
 When user enters the <species> name and <value>
@@ -31,7 +30,9 @@ Then choose What did the vet test or sample for
 Then clicked on continue button for endemics
 Then choose What was the Sheep scab test result
 Then clicked on continue button for endemics
+Given user confirm to be on check answer page
+Then user clicks on endemics claim submit
 
   Examples:
       | LiveStockName |species|value|value|
-      | Pigs          |Pigs   | 57  | 5   |
+      | Sheep         |Sheep  | 57  | 5   |

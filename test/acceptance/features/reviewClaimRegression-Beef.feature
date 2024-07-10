@@ -1,4 +1,4 @@
-@smokereg1
+@smoke-reg
 Feature: Review Claim- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim/endemics landing page
@@ -6,17 +6,13 @@ When user clicks on Start now
 Then redirected to Defra ID page
 And user login with Single business crn and password(for DefraId)
 Then user click on sign in button
-#When user check the business details
 And user confirm the org-review page
-And user agreed the business details is correct
-Then user continue to next page
+And user agreed the business details is corrects
+Then user continue to next pages
 Then user clicks on Manage your claim
 And user choose <LiveStockName> cattle for review
 Then user continue to next page
-# Given user is on vet visit date page
-#  When asked about the date the review was completed
 When user input the date in correct order
-#  And click on the option when vet visited the farm to carry out the review
 Then clicked on continue button for endemics
 And click on the option when vet visited the farm to carry out the review
 Then clicked on continue button for endemics
@@ -30,17 +26,16 @@ When user enter the rcvs number in endemics
 Then clicked on continue button for endemics
 When user input the test unique reference number in endemics
 Then clicked on continue button for endemics
-And user validate the header of the page of OralSamples
-When user enters the no of samples <value>
-Then click to oral samples continue the claim
-Then clicked on continue button for endemics
-Then validate the test results error message
 Then click on the positive test results
 Then clicked on continue button for endemics
 Given user confirm to be on check answer page
 Then user clicks on endemics claim submit
+# code for connecting database
+Then fetch the claim number
+# Move the incheck to Ready to pay Status
+Then pass the claim number to ReadyToPay
  
   
     Examples:
-      | LiveStockName |species|value|value|
-      | Pigs          |Pigs   | 57  | 5   |
+      | LiveStockName |species|value|
+      | Beef          |Beef   | 12  | 

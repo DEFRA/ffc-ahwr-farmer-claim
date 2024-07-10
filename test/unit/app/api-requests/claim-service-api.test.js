@@ -118,13 +118,14 @@ describe('Claim Service API', () => {
     expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2023-12-22'))).toBe(false)
     expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-10-23'))).toBe(false)
   })
-  test('Check if the date is with in 4 months after date of visit', async () => {
-    const { isWithIn4MonthsAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
+  test('Check if the date of testing is less than date of visit', async () => {
+    const { isDateOfTestingLessThanDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
-    expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-06-23'))).toBe(true)
-    expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-08-23'))).toBe(true)
-    expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-08-24'))).toBe(false)
-    expect(isWithIn4MonthsAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-10-23'))).toBe(false)
+    expect(isDateOfTestingLessThanDateOfVisit('2024-04-23', '2024-06-23')).toBe(false)
+    expect(isDateOfTestingLessThanDateOfVisit('2024-05-10', '2024-08-23')).toBe(false)
+    expect(isDateOfTestingLessThanDateOfVisit('2024-07-23', '2024-08-24')).toBe(false)
+    expect(isDateOfTestingLessThanDateOfVisit('2024-09-23', '2024-06-23')).toBe(true)
+    expect(isDateOfTestingLessThanDateOfVisit('2024-10-04', '2023-10-23')).toBe(true)
   })
   test('Check if date of visit is valid for when type of review is not review or endemics', async () => {
     const { isValidDateOfVisit } = require('../../../../app/api-requests/claim-service-api')

@@ -7,13 +7,16 @@ const {
   endemicsNumberOfSpeciesTested,
   endemicsNumberOfSpeciesException,
   endemicsVetName,
-  endemicsNumberOfSpeciesSheepException
+  endemicsNumberOfSpeciesSheepException,
+  endemicsNumberOfSpeciesPigsException
 } = require('../../config/routes')
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
 } = require('../../session/keys')
 const { thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } } = require('../../constants/amounts')
 const { livestockTypes } = require('../../constants/claim')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getReviewType } = require('../../lib/get-review-type')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
@@ -62,18 +65,21 @@ module.exports = [
       handler: async (request, h) => {
         const { numberAnimalsTested } = request.payload
         const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
-
+        const { isPigs } = getLivestockTypes(typeOfLivestock)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
         const threshold = numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
-        const isEligible = numberAnimalsTested >= threshold
+        const isEligible = isPigs && isEndemicsFollowUp ? Number(numberAnimalsTested) === threshold : Number(numberAnimalsTested) >= threshold
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
         if (isEligible) return h.redirect(nextPageURL)
-
         if (numberAnimalsTested === '0') {
           return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'The number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
-
+        if (isPigs && isEndemicsFollowUp) {
+          raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is not equal to required value ${threshold} for ${typeOfLivestock}`)
+          return h.view(endemicsNumberOfSpeciesPigsException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
+        }
         if (typeOfLivestock === livestockTypes.sheep) {
           raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`)
           return h.view(endemicsNumberOfSpeciesSheepException, { ruralPaymentsAgency: config.ruralPaymentsAgency, continueClaimLink: nextPageURL, backLink: pageUrl }).code(400).takeover()
