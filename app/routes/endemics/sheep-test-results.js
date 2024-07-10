@@ -241,7 +241,6 @@ module.exports = [
           const errorList = [{ text: 'Select a result', href: '#testResult' }]
 
           if (!payload?.testResult) {
-            console.log(`values for fn: payload.test ${payload.testResult} & pageContent: ${JSON.stringify(pageContent)} & ${JSON.stringify(errorList)} & ${backLink} & ${endemicsSheepTestResults}`)
             return notOtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
           }
 
@@ -277,22 +276,11 @@ module.exports = [
         }
 
         let payloadData = payload
-        // let newDiseaseTypeErrorMessage
-        // if (typeof payload.diseaseType === 'object' && payload.diseaseType.length > 1) {
-        //   const { newPayloadData, newDiseaseTypeErrorMessage: newErrorMessage } = newDiseaseInTheListValidation(payload)
-        //   payloadData = newPayloadData
-        //   newDiseaseTypeErrorMessage = newErrorMessage
-        // }
-
-        console.log(`result from my function  ${getErrorResultObject(payload, newDiseaseInTheListValidation)}`)
 
         const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
 
-        console.log(`newPayloadData  ${newPayloadData} and newErrorMessage ${newErrorMessage}`)
         newPayloadData && (payloadData = newPayloadData)
         const newDiseaseTypeErrorMessage = newErrorMessage
-
-        console.log(`payloadData: ${payloadData} and newDiseaseTypeErrorMessage: ${newDiseaseTypeErrorMessage}`)
 
         const diseaseTypeEmptyItems = typeof payloadData.diseaseType === 'object' ? getInvalidItemIndexes(payloadData.diseaseType, 'diseaseType') : []
         const testResultEmptyItems = typeof payloadData.testResult === 'object' ? getInvalidItemIndexes(payloadData.testResult, 'testResult') : []
