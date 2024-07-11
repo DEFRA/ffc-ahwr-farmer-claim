@@ -1,18 +1,10 @@
 const CommonActions = require('./common-actions')
 const pgp = require('pg-promise')();
-// const { submitClaim } = require('../../../app/messaging/application')
-// const databaseConfig = {
-//   user: 'adminuser@sndffcdbssq1002',
-//   host: 'sndffcdbssq1002.postgres.database.azure.com',
-//   port: 5432,
-//   database: 'ffc_ahwr_application',
-//   sslMode: 'true',
-// };
 const databaseConfig = {
-  user: 'adminuser@devffcdbssq1001',
-  host: 'devffcdbssq1001.postgres.database.azure.com',
-  port: 5432,
-  database: 'ffc-ahwr-application-test',
+  user: process.env.DB.USERNAME,
+  host: process.env.DB.HOST,
+  port: process.env.DB.PORT,
+  database: process.env.DB.DATABASE,
   sslMode:'true',
 };
 
