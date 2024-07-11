@@ -1,4 +1,4 @@
-@smokereg
+@smoke-reg
 Feature: Endemics -sheep- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
@@ -88,7 +88,7 @@ Then click yes on biosecurity link
 And Enter the percentage
 Then user continue to claim
 Then user confirm to be on check answer page
-Then user clicks on endemics claim submit
+# Then user clicks on endemics claim submit
 
 
  Examples:

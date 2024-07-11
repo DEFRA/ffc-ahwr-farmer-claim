@@ -34,6 +34,12 @@ Then user continue to next page
 #Feature:How many animals did the vet test
 Then clicked on continue button
 Then validate the enter the no of animals tested link in exception screen
+When user enters the <species> name and <wrongvalue>
+Then clicked on continue button
+Then user validates the existence of Cattle link
+Then user validates the existence of Beef link
+Then user validates the existence of Pigs link
+Then click on the back button
 When user enters the <species> name and <value>
 Then clicked on continue button
 # Feature:vet name validation 
@@ -85,6 +91,6 @@ Then user clicks on endemics claim submit
  
   
     Examples:
-      | LiveStockName |species|value|incorrectvalue|value|
-      | Pigs          |Pigs   | 57  |       2      |  5  |
+      | LiveStockName |species|wrongvalue|value|incorrectvalue|value|
+      | Pigs          |Pigs   | 4         |57  |       2      |  5  |
       

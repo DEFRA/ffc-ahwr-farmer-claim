@@ -632,14 +632,21 @@ Then(/^validate the error if PI is not selected$/, async function () {
 Then(/^validate disease status category not selected$/, async function () {
   await endemicsJourney.validateBlankDiseaseStatus()
 })
-
-
 //Connect to database to change status to Ready to Pay
 When(/^fetch the claim number$/, async function () {
   await claimJourney.getClaimNumber()
 })
-
 When(/^pass the claim number to (.*)$/, async function (type) {
   await claimJourney.connectTODatabase(type)
 })
+When(/^user validates the existence of Cattle link$/, async function () {
+  await endemicsJourney.validateCattleLinksInExceptionPage()
+ });
+ When(/^user validates the existence of Beef link$/, async function () {
+  await endemicsJourney.validateBeefLinksInExceptionPage()
+ });
+ When(/^user validates the existence of Pigs link$/, async function () {
+  await endemicsJourney.validatePigsLinksInExceptionPage()
+ });
+
 
