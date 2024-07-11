@@ -234,7 +234,15 @@ async validateIncorrectNoOfSamplesError(){
   async validateBlankDiseaseStatus(){
     await this.elementToContainErrorText(DISEASE_CATEGORY_PAGE_ERROR_ACTUAL,DISEASE_CATEGORY_PAGE_ERROR)
   } 
-
+  async validateCattleLinksInExceptionPage(){
+    await this.elementToContainErrorText(CATTLE_LINK_SAMPLE_EXCEPTION_ACTUAL,CATTLE_LINK_SAMPLE_EXCEPTION_EXPECTED)
+  } 
+  async validateBeefLinksInExceptionPage(){
+    await this.elementToContainErrorText(BEEF_LINK_SAMPLE_EXCEPTION_ACTUAL,BEEF_LINK_SAMPLE_EXCEPTION_EXPECTED)
+  } 
+  async validatePigsLinksInExceptionPage(){
+    await this.elementToContainErrorText(PIGS_LINK_SAMPLE_EXCEPTION_ACTUAL,PIGS_LINK_SAMPLE_EXCEPTION_EXPECTED)
+  } 
   }
 
 
