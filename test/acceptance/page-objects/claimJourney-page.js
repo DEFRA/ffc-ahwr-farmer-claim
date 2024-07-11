@@ -8,7 +8,7 @@ const databaseConfig = {
   sslMode:'true',
 };
 
-//const db = pgp('postgres://adminuser@devffcdbssq1001:ufj2Wm3CQpXj@devffcdbssq1001.postgres.database.azure.com:5432/ffc-ahwr-application-dev');
+
 // Dynamically set the password based on your requirements
 const password = process.env.DB_PASSWORD;
 
