@@ -2,11 +2,15 @@ const CommonActions = require('./common-actions')
 const pgp = require('pg-promise')();
 // const { submitClaim } = require('../../../app/messaging/application')
 
+const DB_USER=process.env.DB_USERNAME;
+const DB_HOST=process.env.DB_HOST;
+const DB_PORT=process.env.DB_PORT;
+const DB_DATABASE=process.env.DB_DATABASE;
 const databaseConfig = {
-  user: process.env.DB.USERNAME,
-  host: process.env.DB.HOST,
-  port: process.env.DB.PORT,
-  database: process.env.DB.DATABASE,
+  user: DB_USER,
+  host: DB_HOST,
+  port: DB_PORT,
+  database: DB_DATABASE,
   sslMode:'true',
 };
 
@@ -82,6 +86,18 @@ const PI_HUNT_YES='#piHunt'
 const PI_HUNT_NO='#piHunt-2'
 const SELECT_PI_ERROR='Select yes or no'
 const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
+
+//link validations for sample exception page
+
+const CATTLE_LINK_SAMPLE_EXCEPTION_ACTUAL='//*[@id="main-content"]/div/div/ul/li[1]/a'
+const CATTLE_LINK_SAMPLE_EXCEPTION_EXPECTED='Testing cattle for animal health and welfare review'
+const BEEF_LINK_SAMPLE_EXCEPTION_ACTUAL='//*[@id="main-content"]/div/div/ul/li[2]/a'
+const BEEF_LINK_SAMPLE_EXCEPTION_EXPECTED='Testing beef cattle for endemic disease follow-up'
+const PIGS_LINK_SAMPLE_EXCEPTION_ACTUAL='//*[@id="main-content"]/div/div/ul/li[3]/a'
+const PIGS_LINK_SAMPLE_EXCEPTION_EXPECTED='Testing pigs for animal health and welfare review'
+
+
+
 
 
 class EndemicsPageActions extends CommonActions {

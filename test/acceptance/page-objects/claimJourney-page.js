@@ -1,10 +1,15 @@
 const CommonActions = require('./common-actions')
 const pgp = require('pg-promise')();
+
+const DB_USER=process.env.DB_USERNAME;
+const DB_HOST=process.env.DB_HOST;
+const DB_PORT=process.env.DB_PORT;
+const DB_DATABASE=process.env.DB_DATABASE;
 const databaseConfig = {
-  user: process.env.DB.USERNAME,
-  host: process.env.DB.HOST,
-  port: process.env.DB.PORT,
-  database: process.env.DB.DATABASE,
+  user: DB_USER,
+  host: DB_HOST,
+  port: DB_PORT,
+  database: DB_DATABASE,
   sslMode:'true',
 };
 
