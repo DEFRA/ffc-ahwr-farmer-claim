@@ -556,12 +556,18 @@ Then(/^click on Endemics disease follow up review$/, async function (){
       await endemicsJourney.enterNoOfSamplesTested(sampleValue)
     })
 
+  Then(/^validate the sample error message for pig$/, async function(){
+    await endemicsJourney.validateNoOfSamplesErrorForPig()
+  })
   Then(/^validate the sample error message$/, async function(){
     await endemicsJourney.validateNoOfSamplesError()
   })
   Then(/^validate incorrect number of samples error message$/, async function(){
     await endemicsJourney.validateIncorrectNoOfSamplesError()
   })  
+  Then(/^click on the link enter no of samples tested$/,async function(){
+    await endemicsJourney.click_EntenNoOfSamplesLink()
+  })
   Then(/^validate the disease status category$/, async function(){
     await endemicsJourney.validateDiseaseStatusCategory()
   })  
