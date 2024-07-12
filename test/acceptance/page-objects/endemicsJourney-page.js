@@ -1,22 +1,21 @@
 const CommonActions = require('./common-actions')
 const pgp = require('pg-promise')();
 // const { submitClaim } = require('../../../app/messaging/application')
-// const databaseConfig = {
-//   user: 'adminuser@sndffcdbssq1002',
-//   host: 'sndffcdbssq1002.postgres.database.azure.com',
-//   port: 5432,
-//   database: 'ffc_ahwr_application',
-//   sslMode: 'true',
-// };
+
+
+const DB_USER=process.env.DB_USERNAME;
+const DB_HOST=process.env.DB_HOST;
+const DB_PORT=process.env.DB_PORT;
+const DB_DATABASE=process.env.DB_DATABASE;
 const databaseConfig = {
-  user: 'adminuser@devffcdbssq1001',
-  host: 'devffcdbssq1001.postgres.database.azure.com',
-  port: 5432,
-  database: 'ffc-ahwr-application-test',
+  user: DB_USER,
+  host: DB_HOST,
+  port: DB_PORT,
+  database: DB_DATABASE,
   sslMode:'true',
 };
 
-//const db = pgp('postgres://adminuser@devffcdbssq1001:ufj2Wm3CQpXj@devffcdbssq1001.postgres.database.azure.com:5432/ffc-ahwr-application-dev');
+
 const password = process.env.DB_PASSWORD;
 
 
@@ -44,8 +43,11 @@ const SELECT_THE_TYPE_OF_REVIEW_ERROR_ACTUAL='a[href="#typeOfReview"]'
 
 const NO_OF_SAMPLES_TESTED='#numberOfSamplesTested'
 const ACTUAL_NO_OF_SAMPLES_ERROR='a[href="#numberOfSamplesTested"]'
+const ACTUAL_NO_OF_SAMPLES_ERROR_FOR_PIG='#main-content > div > div > p:nth-child(8) > a'
 const EXPECTED_NO_OF_SAMPLES_ERROR='Enter the number of samples tested'
+const EXPECTED_NO_OF_SAMPLES_ERROR_FOR_PIG='Enter the number of pigs samples were taken from.'
 const ACTUAL_INCORRECT_NO_OF_SAMPLES='//*[@id="main-content"]/div/div/h1'
+const Link_Enter_No_Of_Samples_Taken='//*[@id="main-content"]/div/div/p[6]/a'
 const DISEASE_CATEGORY_PAGE_HEADER='//*[@id="main-content"]/div/div/div/div/h1'
 const EXPECTED_INCORRECT_NO_OF_SAMPLES='You cannot continue with your claim'
 const DISEASE_CATEGORY_PAGE='What is the disease status category?'
@@ -88,6 +90,18 @@ const PI_HUNT_YES='#piHunt'
 const PI_HUNT_NO='#piHunt-2'
 const SELECT_PI_ERROR='Select yes or no'
 const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
+
+//link validations for sample exception page
+
+const CATTLE_LINK_SAMPLE_EXCEPTION_ACTUAL='//*[@id="main-content"]/div/div/ul/li[1]/a'
+const CATTLE_LINK_SAMPLE_EXCEPTION_EXPECTED='Testing cattle for animal health and welfare review'
+const BEEF_LINK_SAMPLE_EXCEPTION_ACTUAL='//*[@id="main-content"]/div/div/ul/li[2]/a'
+const BEEF_LINK_SAMPLE_EXCEPTION_EXPECTED='Testing beef cattle for endemic disease follow-up'
+const PIGS_LINK_SAMPLE_EXCEPTION_ACTUAL='//*[@id="main-content"]/div/div/ul/li[3]/a'
+const PIGS_LINK_SAMPLE_EXCEPTION_EXPECTED='Testing pigs for animal health and welfare review'
+
+
+
 
 
 class EndemicsPageActions extends CommonActions {
@@ -159,7 +173,10 @@ async enterNoOfSamplesTested(sampleValue){
     }
      
   }
-async validateNoOfSamplesError(){
+async validateNoOfSamplesErrorForPig(){
+    await this.elementToContainErrorText(ACTUAL_NO_OF_SAMPLES_ERROR_FOR_PIG,EXPECTED_NO_OF_SAMPLES_ERROR_FOR_PIG)
+  } 
+  async validateNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_NO_OF_SAMPLES_ERROR,EXPECTED_NO_OF_SAMPLES_ERROR)
   } 
   async validateSelectTheTypeOfReview(){
@@ -178,6 +195,9 @@ async validateNoOfSamplesError(){
 async validateIncorrectNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_INCORRECT_NO_OF_SAMPLES,EXPECTED_INCORRECT_NO_OF_SAMPLES)
   }   
+  async click_EntenNoOfSamplesLink(){
+    await this.clickOn( Link_Enter_No_Of_Samples_Taken)
+  }
   async validateDiseaseStatusCategory(){
     await this.elementToContainErrorText(DISEASE_CATEGORY_PAGE_HEADER,DISEASE_CATEGORY_PAGE)
   }  
@@ -223,7 +243,15 @@ async validateIncorrectNoOfSamplesError(){
   async validateBlankDiseaseStatus(){
     await this.elementToContainErrorText(DISEASE_CATEGORY_PAGE_ERROR_ACTUAL,DISEASE_CATEGORY_PAGE_ERROR)
   } 
-
+  async validateCattleLinksInExceptionPage(){
+    await this.elementToContainErrorText(CATTLE_LINK_SAMPLE_EXCEPTION_ACTUAL,CATTLE_LINK_SAMPLE_EXCEPTION_EXPECTED)
+  } 
+  async validateBeefLinksInExceptionPage(){
+    await this.elementToContainErrorText(BEEF_LINK_SAMPLE_EXCEPTION_ACTUAL,BEEF_LINK_SAMPLE_EXCEPTION_EXPECTED)
+  } 
+  async validatePigsLinksInExceptionPage(){
+    await this.elementToContainErrorText(PIGS_LINK_SAMPLE_EXCEPTION_ACTUAL,PIGS_LINK_SAMPLE_EXCEPTION_EXPECTED)
+  } 
   }
 
 

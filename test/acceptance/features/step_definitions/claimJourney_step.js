@@ -556,12 +556,18 @@ Then(/^click on Endemics disease follow up review$/, async function (){
       await endemicsJourney.enterNoOfSamplesTested(sampleValue)
     })
 
+  Then(/^validate the sample error message for pig$/, async function(){
+    await endemicsJourney.validateNoOfSamplesErrorForPig()
+  })
   Then(/^validate the sample error message$/, async function(){
     await endemicsJourney.validateNoOfSamplesError()
   })
   Then(/^validate incorrect number of samples error message$/, async function(){
     await endemicsJourney.validateIncorrectNoOfSamplesError()
   })  
+  Then(/^click on the link enter no of samples tested$/,async function(){
+    await endemicsJourney.click_EntenNoOfSamplesLink()
+  })
   Then(/^validate the disease status category$/, async function(){
     await endemicsJourney.validateDiseaseStatusCategory()
   })  
@@ -632,14 +638,21 @@ Then(/^validate the error if PI is not selected$/, async function () {
 Then(/^validate disease status category not selected$/, async function () {
   await endemicsJourney.validateBlankDiseaseStatus()
 })
-
-
 //Connect to database to change status to Ready to Pay
 When(/^fetch the claim number$/, async function () {
   await claimJourney.getClaimNumber()
 })
-
 When(/^pass the claim number to (.*)$/, async function (type) {
   await claimJourney.connectTODatabase(type)
 })
+When(/^user validates the existence of Cattle link$/, async function () {
+  await endemicsJourney.validateCattleLinksInExceptionPage()
+ });
+ When(/^user validates the existence of Beef link$/, async function () {
+  await endemicsJourney.validateBeefLinksInExceptionPage()
+ });
+ When(/^user validates the existence of Pigs link$/, async function () {
+  await endemicsJourney.validatePigsLinksInExceptionPage()
+ });
+
 
