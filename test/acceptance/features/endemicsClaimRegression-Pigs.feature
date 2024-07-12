@@ -1,4 +1,4 @@
-@smoke-reg
+@smoke-reg3
 Feature: Endemics -Pigs- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
@@ -40,4 +40,4 @@ Then user clicks on endemics claim submit
 
   Examples:
       | LiveStockName |species|value|sample|
-      | Pigs          |Pigs   | 57  |  6   |
+      | Pigs          |Pigs   | 30  |  6   |

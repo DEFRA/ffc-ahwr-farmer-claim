@@ -1,5 +1,5 @@
-@smokereg
-Feature: Endemics -sheep- Regression 
+@smoke-reg
+Feature: Endemics -Negative-Pigs- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -31,11 +31,22 @@ Then validate incorrect number of samples error message
 Then click on the back button
 Then user confirm to meet the requirement
 Then user continue to next page
+# How many animals were samples taken from screen
 Then user continue to next page
 Then validate the error for blank error message
+When user enters the <species> name and <wrongValue1>
+Then user continue to claim
+Then validate incorrect number of samples error message
+Then validate the sample error message for pig 
+Then click on the link enter no of samples tested
+When user enters the <species> name and <wrongValue2>
+Then user continue to claim
+Then validate incorrect number of samples error message
+Then validate the sample error message for pig
+Then click on the link enter no of samples tested
 When user enters the <species> name and <value>
-Then clicked on continue button
-Then click to continue the claim
+Then user continue to claim
+Then user continue to claim
 Then validate the error message for blank input vet name screen
 When enter vet's full name
 Then click to continue the claim
@@ -88,9 +99,9 @@ Then click yes on biosecurity link
 And Enter the percentage
 Then user continue to claim
 Then user confirm to be on check answer page
-Then user clicks on endemics claim submit
+# Then user clicks on endemics claim submit
 
 
  Examples:
-              |species|value|
-              |Pigs | 57  | 
+              |species|wrongValue1|wrongValue2|value|
+              |Pigs   | 25        |35         |30   |

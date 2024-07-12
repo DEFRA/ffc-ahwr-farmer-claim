@@ -1,22 +1,20 @@
 const CommonActions = require('./common-actions')
 const pgp = require('pg-promise')();
-// const { submitClaim } = require('../../../app/messaging/application')
-// const databaseConfig = {
-//   user: 'adminuser@sndffcdbssq1002',
-//   host: 'sndffcdbssq1002.postgres.database.azure.com',
-//   port: 5432,
-//   database: 'ffc_ahwr_application',
-//   sslMode: 'true',
-// };
+
+
+const DB_USER=process.env.DB_USERNAME;
+const DB_HOST=process.env.DB_HOST;
+const DB_PORT=process.env.DB_PORT;
+const DB_DATABASE=process.env.DB_DATABASE;
 const databaseConfig = {
-  user: 'adminuser@devffcdbssq1001',
-  host: 'devffcdbssq1001.postgres.database.azure.com',
-  port: 5432,
-  database: 'ffc-ahwr-application-test',
+  user: DB_USER,
+  host: DB_HOST,
+  port: DB_PORT,
+  database: DB_DATABASE,
   sslMode:'true',
 };
 
-//const db = pgp('postgres://adminuser@devffcdbssq1001:ufj2Wm3CQpXj@devffcdbssq1001.postgres.database.azure.com:5432/ffc-ahwr-application-dev');
+
 // Dynamically set the password based on your requirements
 const password = process.env.DB_PASSWORD;
 
