@@ -43,8 +43,11 @@ const SELECT_THE_TYPE_OF_REVIEW_ERROR_ACTUAL='a[href="#typeOfReview"]'
 
 const NO_OF_SAMPLES_TESTED='#numberOfSamplesTested'
 const ACTUAL_NO_OF_SAMPLES_ERROR='a[href="#numberOfSamplesTested"]'
+const ACTUAL_NO_OF_SAMPLES_ERROR_FOR_PIG='#main-content > div > div > p:nth-child(8) > a'
 const EXPECTED_NO_OF_SAMPLES_ERROR='Enter the number of samples tested'
+const EXPECTED_NO_OF_SAMPLES_ERROR_FOR_PIG='Enter the number of pigs samples were taken from.'
 const ACTUAL_INCORRECT_NO_OF_SAMPLES='//*[@id="main-content"]/div/div/h1'
+const Link_Enter_No_Of_Samples_Taken='//*[@id="main-content"]/div/div/p[6]/a'
 const DISEASE_CATEGORY_PAGE_HEADER='//*[@id="main-content"]/div/div/div/div/h1'
 const EXPECTED_INCORRECT_NO_OF_SAMPLES='You cannot continue with your claim'
 const DISEASE_CATEGORY_PAGE='What is the disease status category?'
@@ -170,7 +173,10 @@ async enterNoOfSamplesTested(sampleValue){
     }
      
   }
-async validateNoOfSamplesError(){
+async validateNoOfSamplesErrorForPig(){
+    await this.elementToContainErrorText(ACTUAL_NO_OF_SAMPLES_ERROR_FOR_PIG,EXPECTED_NO_OF_SAMPLES_ERROR_FOR_PIG)
+  } 
+  async validateNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_NO_OF_SAMPLES_ERROR,EXPECTED_NO_OF_SAMPLES_ERROR)
   } 
   async validateSelectTheTypeOfReview(){
@@ -189,6 +195,9 @@ async validateNoOfSamplesError(){
 async validateIncorrectNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_INCORRECT_NO_OF_SAMPLES,EXPECTED_INCORRECT_NO_OF_SAMPLES)
   }   
+  async click_EntenNoOfSamplesLink(){
+    await this.clickOn( Link_Enter_No_Of_Samples_Taken)
+  }
   async validateDiseaseStatusCategory(){
     await this.elementToContainErrorText(DISEASE_CATEGORY_PAGE_HEADER,DISEASE_CATEGORY_PAGE)
   }  

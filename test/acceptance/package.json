@@ -19,7 +19,7 @@
         "test.compatibility.docker": "wdio wdio.bs.config.js  --cucumberOpts.tagExpression='@compatibility'",
         "test:smoke:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
         "test:smoke:dev": "wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
-        "test:smoke:test": "wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke-reg2'",
+        "test:smoke:test": "wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke-reg3'",
         "test:negative:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@negative'",
         "test:negative:dev": "wdio wdio.config.js  --cucumberOpts.tagExpression='@negative'",
         "generate-report:allure": "allure generate allure-results --clean",
@@ -59,7 +59,7 @@
     },
     "devDependencies": {
         "@babel/core": "^7.23.2",
-        "@wdio/allure-reporter": "^8.8.6",
+        "@wdio/allure-reporter": "^8.39.0",
         "@wdio/browser-runner": "^8.20.5",
         "@wdio/browserstack-service": "^8.23.0",
         "@wdio/cli": "^8.20.5",
