@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Review Claim- Regression 
+Feature: Review Claim-Pigs- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim/endemics landing page
 When user clicks on Start now

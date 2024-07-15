@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Endemics -sheep- Regression 
+Feature: Endemics -Sheep- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -15,7 +15,7 @@ Then clicked on continue button for endemics
 Then user input the date in correct order
 Then clicked on continue button for endemics
 Then click on the option when vet visited the farm to carry out the review
-Then clicked on continue button for endemics s
+Then clicked on continue button for endemics 
 Then user confirm to meet the requirement
 Then user continue to claim
 When user enters the <species> name and <value>
@@ -35,4 +35,4 @@ Then user clicks on endemics claim submit
 
   Examples:
       | LiveStockName |species|value|value|
-      | Sheep         |Sheep  | 57  | 5   |
+      | Sheep         |Sheep  | 20  | 5   |

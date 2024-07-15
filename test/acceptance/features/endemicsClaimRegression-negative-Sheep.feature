@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Endemics -sheep- Regression 
+Feature: Endemics - Negative -Sheep- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -65,4 +65,4 @@ Then clicked on continue button for endemics
 
     Examples:
               |species|value|
-              |Sheep | 57  | 
+              |Sheep  |20  | 

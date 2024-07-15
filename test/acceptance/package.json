@@ -19,7 +19,7 @@
         "test.compatibility.docker": "wdio wdio.bs.config.js  --cucumberOpts.tagExpression='@compatibility'",
         "test:smoke:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
         "test:smoke:dev": "wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke'",
-        "test:smoke:test": "wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke-reg3'",
+        "test:smoke:test": "wdio wdio.config.js  --cucumberOpts.tagExpression='@smoke-reg1'",
         "test:negative:snd": "ENV=snd wdio wdio.config.js  --cucumberOpts.tagExpression='@negative'",
         "test:negative:dev": "wdio wdio.config.js  --cucumberOpts.tagExpression='@negative'",
         "generate-report:allure": "allure generate allure-results --clean",
