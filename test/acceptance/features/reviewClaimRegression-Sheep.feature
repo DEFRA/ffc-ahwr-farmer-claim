@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Review Claim- Regression 
+Feature: Review Claim- Sheep-Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim/endemics landing page
 When user clicks on Start now
@@ -36,4 +36,4 @@ Then pass the claim number to ReadyToPay
   
     Examples:
       | LiveStockName |species|value|
-      | Sheep         |Sheep  | 57  | 
+      | Sheep         |Sheep  | 20  | 

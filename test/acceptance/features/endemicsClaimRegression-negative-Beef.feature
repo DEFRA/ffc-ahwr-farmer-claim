@@ -1,5 +1,5 @@
-@smokereg1
-Feature: Endemics -beef- Regression 
+@smoke-reg
+Feature: Endemics -Negative-Beef- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -14,6 +14,7 @@ Then clicked on continue button for endemics
 Then validate the error message for no review selected
 Then click on Endemics disease follow up review
 Then clicked on continue button for endemics
+# date of follow up screen
 When user input the date in invalid order
 Then clicked on continue button for endemics
 When validation of error message for invalid date format for Date errors
@@ -70,4 +71,4 @@ Then clicked on continue button for endemics
 
  Examples:
               |species|value|
-              |Beef | 57  | 
+              |Beef   |12    | 
