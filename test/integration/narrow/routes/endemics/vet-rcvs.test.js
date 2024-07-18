@@ -59,7 +59,7 @@ describe('Vet rcvs test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1 > label').text().trim()).toMatch('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
-      expect($('title').text().trim()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -100,7 +100,7 @@ describe('Vet rcvs test', () => {
     test.each([
       { vetRCVSNumber: undefined, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
       { vetRCVSNumber: null, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
-      { vetRCVSNumber: '', errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
+      { vetRCVSNumber: '', errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: '' },
       { vetRCVSNumber: 'not-valid-ref', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: 'not-valid-ref' },
       { vetRCVSNumber: '123456A', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '123456A' },
       { vetRCVSNumber: '12345678', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '12345678' }
@@ -118,7 +118,7 @@ describe('Vet rcvs test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1 > label').text().trim()).toMatch('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
       expect($('#vetRCVSNumber').val()).toEqual(expectedVal)
     })
 

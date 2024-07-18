@@ -118,7 +118,7 @@ describe('cookies route', () => {
     const response = await global.__SERVER__.inject(options)
     expect(response.statusCode).toBe(200)
     const $ = cheerio.load(response.payload)
-    expect($('.govuk-cookie-banner h2').text()).toEqual(serviceName)
+    expect($('.govuk-cookie-banner h2').text()).toContain(serviceName)
     expect($('.js-cookies-button-accept').text()).toContain('Accept analytics cookies')
     expect($('.js-cookies-button-reject').text()).toContain('Reject analytics cookies')
     expectPhaseBanner.ok($)

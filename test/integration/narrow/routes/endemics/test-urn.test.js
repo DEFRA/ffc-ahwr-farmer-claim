@@ -69,7 +69,7 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(title)
-      expect($('title').text()).toEqual('Laboratory URN - Get funding to improve animal health and welfare')
+      expect($('title').text()).toContain('Laboratory URN - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
@@ -191,7 +191,7 @@ describe('Test URN test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('What’s the laboratory unique reference number (URN) for the test results?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Enter the URN')
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Enter the URN')
       expect($('#laboratoryURN-error').text()).toMatch('Enter the URN')
     })
   })

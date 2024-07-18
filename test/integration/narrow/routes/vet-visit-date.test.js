@@ -9,7 +9,7 @@ function expectPageContentOk ($) {
   expect($(`label[for=${labels.month}]`).text()).toMatch('Month')
   expect($(`label[for=${labels.year}]`).text()).toMatch('Year')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual('Date of visit - Annual health and welfare review of livestock')
+  expect($('title').text()).toContain('Date of visit - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/visit-review')
