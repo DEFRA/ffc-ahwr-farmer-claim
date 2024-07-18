@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Review Claim- Regression 
+Feature: Review Claim-Beef- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim/endemics landing page
 When user clicks on Start now
@@ -7,8 +7,8 @@ Then redirected to Defra ID page
 And user login with Single business crn and password(for DefraId)
 Then user click on sign in button
 And user confirm the org-review page
-And user agreed the business details is corrects
-Then user continue to next pages
+And user agreed the business details is correct
+Then user continue to next page
 Then user clicks on Manage your claim
 And user choose <LiveStockName> cattle for review
 Then user continue to next page

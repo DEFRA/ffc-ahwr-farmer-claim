@@ -37,4 +37,4 @@ Then user clicks on endemics claim submit
 
  Examples:
               |species|value|
-              |Beef | 57  | 
+              |Beef   | 12  | 

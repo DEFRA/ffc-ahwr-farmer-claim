@@ -37,7 +37,7 @@ const HERD_VACCINATED_NO='#herdVaccinationStatus-2'
 
 //select a type of review error
 
-const SELECT_THE_TYPE_OF_REVIEW_ERROR='Select which type of review you are claiming for'
+const SELECT_THE_TYPE_OF_REVIEW_ERROR='Select what you are claiming for'
 const SELECT_THE_TYPE_OF_REVIEW_ERROR_ACTUAL='a[href="#typeOfReview"]'
 //How many sample Tested _pig
 
@@ -88,7 +88,7 @@ const VET_TEST_RESULT_ERROR_ACTUAL='a[href="#testResult"]'
 //Beef
 const PI_HUNT_YES='#piHunt'
 const PI_HUNT_NO='#piHunt-2'
-const SELECT_PI_ERROR='Select yes or no'
+const SELECT_PI_ERROR='Select if the vet did a PI hunt'
 const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
 
 //link validations for sample exception page

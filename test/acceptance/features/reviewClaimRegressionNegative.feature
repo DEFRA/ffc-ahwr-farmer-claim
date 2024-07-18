@@ -1,6 +1,5 @@
-@smoke-reg2
-
-Feature: Review Claim- Regression 
+@smoke-reg
+Feature: Review Claim-Negative- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
