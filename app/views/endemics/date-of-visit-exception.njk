@@ -30,13 +30,10 @@
       <p class="govuk-body">
         <a class="govuk-link" href={{ backLink }}>{{backToPageMessage}}</a>
       </p>
-      <div class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-          <span class="govuk-warning-text__assistive">Warning</span>
-           Your claim will be checked by our team.
-        </strong>
-      </div>
+      {{ govukWarningText({
+        text: "Your claim will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
       {% include './chunks/get-help-with-claim.njk' %}
     </div>
   </div>
