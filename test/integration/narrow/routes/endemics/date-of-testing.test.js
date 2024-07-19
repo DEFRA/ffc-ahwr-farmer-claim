@@ -229,8 +229,8 @@ describe('Date of testing', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('#on-another-date-error').text().trim()).toEqual(`Error: ${errorMessage}`)
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
-      expect($('#main-content > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
     })
 
     test.each([
@@ -303,8 +303,8 @@ describe('Date of testing', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('#whenTestingWasCarriedOut-error').text().trim()).toEqual(`Error: ${errorMessage}`)
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
-      expect($('#main-content > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
     })
 
     test.each([

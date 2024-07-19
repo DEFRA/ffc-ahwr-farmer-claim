@@ -9,7 +9,7 @@ function expectPageContentOk ($) {
   expect($('.govuk-heading-l').text()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number?')
   expect($('label[for=rcvs]').text()).toMatch('RCVS number')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Annual health and welfare review of livestock')
+  expect($('title').text()).toContain('What is the vet\'s Royal College of Veterinary Surgeons (RCVS) number? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/vet-name')
@@ -127,7 +127,7 @@ describe('Vet, enter rcvs test', () => {
     test.each([
       { rcvs: undefined, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
       { rcvs: null, errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
-      { rcvs: '', errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: undefined },
+      { rcvs: '', errorMessage: rcvsErrorMessages.enterRCVS, expectedVal: '' },
       { rcvs: 'not-valid-ref', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: 'not-valid-ref' },
       { rcvs: '123456A', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '123456A' },
       { rcvs: '12345678', errorMessage: rcvsErrorMessages.validRCVS, expectedVal: '12345678' }

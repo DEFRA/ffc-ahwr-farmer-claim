@@ -148,13 +148,13 @@ module.exports = [
           reviewOrFollowUpText,
           dateOfVisit: {
             day: {
-              value: new Date(dateOfVisit).getDate()
+              value: dateOfVisit ? new Date(dateOfVisit).getDate() : ''
             },
             month: {
-              value: new Date(dateOfVisit).getMonth() + 1
+              value: dateOfVisit ? new Date(dateOfVisit).getMonth() + 1 : ''
             },
             year: {
-              value: new Date(dateOfVisit).getFullYear()
+              value: dateOfVisit ? new Date(dateOfVisit).getFullYear() : ''
             }
           },
           backLink: previousPageUrl(request)
