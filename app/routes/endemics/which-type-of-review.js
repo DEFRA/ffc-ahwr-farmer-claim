@@ -74,20 +74,22 @@ module.exports = [
         const { typeOfLivestock } = getEndemicsClaim(request)
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
+        // Dairy follow up claim temporarily disabled
+        // if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
+        //   return h
+        //     .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+        //       backLink: pageUrl,
+        //       claimDashboard,
+        //       ruralPaymentsAgency
+        //     })
+        //     .code(400)
+        //     .takeover()
+        // }
+        
         // If user has an old world application within last 10 months
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
 
-        // Dairy follow up claim
-        if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-          return h
-            .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-              backLink: pageUrl,
-              claimDashboard,
-              ruralPaymentsAgency
-            })
-            .code(400)
-            .takeover()
-        }
+          
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
