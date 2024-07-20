@@ -6,13 +6,13 @@ const catbox = config.useRedis
 const cacheConfig = config.useRedis ? config.cache.options : {}
 
 const getSecurityPolicy = () => "default-src 'self';" +
-"object-src 'none';" +
-"script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes';" +
-"form-action 'self';" +
-"base-uri 'self';" +
-"connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com" +
-"style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;" +
-"img-src 'self' *.google-analytics.com *.googletagmanager.com;"
+  "object-src 'none';" +
+  "script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes';" +
+  "form-action 'self';" +
+  "base-uri 'self';" +
+  "connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.com" +
+  "style-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;" +
+  "img-src 'self' *.google-analytics.com *.googletagmanager.com;"
 
 async function createServer () {
   const server = Hapi.server({
@@ -70,7 +70,9 @@ async function createServer () {
         {
           key: 'Content-Security-Policy',
           value: getSecurityPolicy()
-        }
+        },
+        { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+        { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' }
       ]
     }
   })
