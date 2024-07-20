@@ -104,13 +104,12 @@ module.exports = [
       handler: async (request, h) => {
         const claim = session.getEndemicsClaim(request)
         const { isBeef } = getLivestockTypes(claim?.typeOfLivestock)
-        const { isNegative } = getTestResult(claim?.reviewTestResults)
 
         const answer = request.payload[speciesNumbers]
         session.setEndemicsClaim(request, speciesNumbers, answer)
 
         if (answer === 'yes') {
-          if ((isBeef && isNegative) || claim.typeOfLivestock === 'dairy') {
+          if (claim.typeOfLivestock === 'dairy' || (isBeef && (claim?.typeOfReview === claimType.endemics))) {
             return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
 
