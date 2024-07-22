@@ -205,7 +205,7 @@ module.exports = [
               break
           }
           raiseInvalidDataEvent(request, dateOfVisitKey, `Value ${dateOfVisit} is invalid. Error: ${mainMessage.text}`)
-          return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
+          if (![livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock)) return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
 
         if (typeOfReview === claimType.endemics) {
@@ -218,6 +218,7 @@ module.exports = [
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
+          if (reviewTestResultsValue === 'positive' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
           if (reviewTestResultsValue === 'negative' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
 

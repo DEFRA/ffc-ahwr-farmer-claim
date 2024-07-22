@@ -2,9 +2,11 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults } = require('../../config/routes')
+
 const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
-const { urlPrefix, ruralPaymentsAgency } = require('../../config')
+// const { urlPrefix, ruralPaymentsAgency } = require('../../config')
+const { urlPrefix } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
@@ -71,7 +73,8 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-        const { typeOfLivestock } = getEndemicsClaim(request)
+        // const { typeOfLivestock } = getEndemicsClaim(request)
+        console.log(`get the endemics claim result ====>${JSON.stringify(getEndemicsClaim(request))}`)
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         // Dairy follow up claim temporarily disabled
@@ -85,11 +88,11 @@ module.exports = [
         //     .code(400)
         //     .takeover()
         // }
-        
+
+        console.log('check the result ===>', (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)))
+
         // If user has an old world application within last 10 months
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
-
-          
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
