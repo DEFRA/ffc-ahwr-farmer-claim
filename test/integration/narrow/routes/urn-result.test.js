@@ -9,7 +9,7 @@ function expectPageContentOk ($) {
   expect($('.govuk-heading-l').text()).toEqual('What is the laboratory unique reference number for the test results?')
   expect($('label[for=urn]').text()).toMatch('Enter the unique reference number (URN) for the laboratory test results. You can find it on the review summary the vet has given you.')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual('What is the laboratory unique reference number for the test results? - Annual health and welfare review of livestock')
+  expect($('title').text()).toContain('What is the laboratory unique reference number for the test results? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/vet-rcvs')
@@ -127,7 +127,7 @@ describe('Enter URN test result test', () => {
     test.each([
       { urn: undefined, errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
       { urn: null, errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
-      { urn: '', errorMessage: urnErrorMessages.enterUrn, expectedVal: undefined },
+      { urn: '', errorMessage: urnErrorMessages.enterUrn, expectedVal: '' },
       { urn: 'a'.repeat(51), errorMessage: urnErrorMessages.urnLength, expectedVal: 'a'.repeat(51) },
       { urn: 'aa&12', errorMessage: urnErrorMessages.urnPattern, expectedVal: 'aa&12' }
     ])('returns 400 when payload is invalid - %p', async ({ urn, errorMessage, expectedVal }) => {

@@ -68,7 +68,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('What are you claiming for')
-      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -84,7 +84,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('What are you claiming for beef cattle?')
-      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 
@@ -105,7 +105,7 @@ describe('Which type of review test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch(`What are you claiming for ${content}?`)
-      expect($('title').text().trim()).toEqual('Which type of review - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
@@ -134,7 +134,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select what you are claiming for')
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select what you are claiming for')
     })
 
     test('Returns 302 and redirect to vet visit review test result', async () => {

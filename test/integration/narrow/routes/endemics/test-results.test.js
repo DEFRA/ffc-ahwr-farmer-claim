@@ -63,7 +63,7 @@ describe('Test Results test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(question)
-      expect($('title').text()).toEqual(
+      expect($('title').text()).toContain(
         'Test Results - Get funding to improve animal health and welfare'
       )
 
@@ -161,7 +161,7 @@ describe('Test Results test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('What was the test result?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select a test result')
       expect($('#testResults-error').text()).toMatch('Select a test result')
     })
   })

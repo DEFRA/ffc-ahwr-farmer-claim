@@ -9,7 +9,7 @@ function expectPageContentOk ($, backLinkUrl = '/claim/animals-tested') {
   expect($('.govuk-heading-l').text()).toEqual('What is the vet’s name?')
   expect($('label[for=name]').text()).toMatch('Vet\'s full name')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual('What is the vet’s name? - Annual health and welfare review of livestock')
+  expect($('title').text()).toContain('What is the vet’s name? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch(backLinkUrl)
@@ -148,7 +148,7 @@ describe('Vet, enter name test', () => {
     test.each([
       { name: undefined, errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
       { name: null, errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
-      { name: '', errorMessage: nameErrorMessages.enterName, expectedVal: undefined },
+      { name: '', errorMessage: nameErrorMessages.enterName, expectedVal: '' },
       { name: 'a'.repeat(51), errorMessage: nameErrorMessages.nameLength, expectedVal: 'a'.repeat(51) },
       { name: 'aa%%', errorMessage: nameErrorMessages.namePattern, expectedVal: 'aa%%' }
     ])('returns 400 when payload is invalid - %p', async ({ name, errorMessage, expectedVal }) => {

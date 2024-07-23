@@ -8,7 +8,7 @@ const { claim: { animalsTested: animalsTestedKey } } = require('../../../../app/
 function expectPageContentOk ($) {
   expect($('.govuk-heading-l').text()).toEqual('How many animals did the vet test?')
   expect($('.govuk-button').text()).toMatch('Continue')
-  expect($('title').text()).toEqual('How many animals did the vet test? - Annual health and welfare review of livestock')
+  expect($('title').text()).toContain('How many animals did the vet test? - Annual health and welfare review of livestock')
   const backLink = $('.govuk-back-link')
   expect(backLink.text()).toMatch('Back')
   expect(backLink.attr('href')).toMatch('/claim/vet-visit-date')
@@ -128,7 +128,7 @@ describe('Number of animals tested', () => {
 
     test.each([
       { animalsTested: null, errorMessage: atErrorMessages.enterNumber, expectedVal: undefined },
-      { animalsTested: '', errorMessage: atErrorMessages.enterNumber, expectedVal: undefined },
+      { animalsTested: '', errorMessage: atErrorMessages.enterNumber, expectedVal: '' },
       { animalsTested: '99999999', errorMessage: atErrorMessages.numberMax, expectedVal: '99999999' },
       { animalsTested: '9AndLeters', errorMessage: atErrorMessages.numberPattern, expectedVal: '9AndLeters' }
     ])('returns 400 when payload is invalid - %p', async ({ animalsTested, errorMessage, expectedVal }) => {

@@ -29,13 +29,11 @@
       <h3 class="govuk-heading-s">If you have entered the wrong number</h3>
       <p class="govuk-body">You’ll need to go back and enter the correct number.</p>
       <p><a href="/claim/animals-tested" class="govuk-link">Enter the number of animals tested</a></p>
-      <div class="govuk-warning-text">
-        <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
-        <strong class="govuk-warning-text__text">
-            <span class="govuk-warning-text__assistive">Warning</span>
-            Your claim will be checked by our team.
-        </strong>
-      </div>
+      {{ govukWarningText({
+        text: "Your claim will be checked by our team.",
+        iconFallbackText: "Warning"
+      }) }}
+
       <h2 class="govuk-heading-m">Get help with your claim</h2>
       <p class="govuk-body">If you need help, contact the Rural Payments Agency.</p>
       <p class="govuk-body">Email: <a href="mailto:ruralpayments@defra.gov.uk">ruralpayments@defra.gov.uk</a></p>

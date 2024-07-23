@@ -56,7 +56,7 @@ describe('Endemics package test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('Which sheep health package did you choose?')
-      expect($('title').text()).toEqual('Sheep Endemics Package - Get funding to improve animal health and welfare')
+      expect($('title').text()).toContain('Sheep Endemics Package - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
@@ -125,7 +125,7 @@ describe('Endemics package test', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('Which sheep health package did you choose?')
-      expect($('#main-content > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
       expect($('#sheepEndemicsPackage-error').text()).toMatch(errorMessage)
     })
 

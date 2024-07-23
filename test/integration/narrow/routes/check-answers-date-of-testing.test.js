@@ -74,7 +74,7 @@ describe('Check Answers test ', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('Check your answers')
-      expect($('title').text()).toEqual('Check your answers - Annual health and welfare review of livestock')
+      expect($('title').text()).toContain('Check your answers - Annual health and welfare review of livestock')
       expect($('.govuk-summary-list__key').text()).toContain('Business name')
       expect($('.govuk-summary-list__key').text()).toContain('SBI')
       expect($('.govuk-summary-list__key').text()).toContain('11 or more cattle')

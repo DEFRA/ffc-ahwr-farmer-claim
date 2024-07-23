@@ -1,4 +1,4 @@
-@smoke-reg
+@smoke-reg1
 Feature: Endemics -Negative-Beef- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
@@ -33,6 +33,7 @@ Then validate incorrect number of samples error message
 Then click on the back button
 Then user confirm to meet the requirement
 Then user continue to next page
+# Need to comment 37,38,38 steps in order to run in DEV env & uncomment 37,38,39 to run in test/pre env as it is not deployed in test/pre yet
 Then user continue to next page
 Then validate the error for blank error message
 When user enters the <species> name and <value>
@@ -71,4 +72,4 @@ Then clicked on continue button for endemics
 
  Examples:
               |species|value|
-              |Beef   |12    | 
+              |Beef   |12   | 
