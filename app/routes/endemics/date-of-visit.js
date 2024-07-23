@@ -23,6 +23,8 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
@@ -214,12 +216,15 @@ module.exports = [
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
-        if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock) && isEndemicsFollowUp) {
+        const { isBeef, isDairy, isPig } = getLivestockTypes(typeOfLivestock)
+
+        if ((isBeef || isDairy || isPig) && isEndemicsFollowUp) {
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
+          const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
-          if (reviewTestResultsValue === 'positive' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
-          if (reviewTestResultsValue === 'negative' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+          if (isPositive && (isBeef || isDairy)) return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
+          if (isNegative && (isBeef || isDairy)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)

@@ -82,7 +82,6 @@ module.exports = [
         const { vetRCVSNumber } = request.payload
         const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
         const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
-        console.log(` check for is beef and isDairy: ${JSON.stringify(getLivestockTypes(typeOfLivestock))}`)
         const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
