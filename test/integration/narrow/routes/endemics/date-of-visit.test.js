@@ -681,7 +681,7 @@ describe('Date of vet visit', () => {
         const res = await global.__SERVER__.inject(options)
 
         expect(res.statusCode).toBe(302)
-        expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+        expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
         expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
