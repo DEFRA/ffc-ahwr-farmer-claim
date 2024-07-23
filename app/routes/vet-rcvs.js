@@ -1,11 +1,7 @@
 const Joi = require('joi')
 const session = require('../session')
-const { farmerApplyData: { vetRcvs: rcvsKey }, endemicsClaim: { reviewTestResults } } = require('../session/keys')
+const { farmerApplyData: { vetRcvs: rcvsKey } } = require('../session/keys')
 const { rcvs: rcvsErrorMessages } = require('../../app/lib/error-messages')
-const { getReviewTestResultWithinLast10Months } = require('../api-requests/claim-service-api')
-const { livestockTypes } = require('../constants/claim')
-const { endemicsPIHunt, endemicsBiosecurity } = require('../config/routes')
-
 
 module.exports = [{
   method: 'GET',
@@ -37,7 +33,6 @@ module.exports = [{
     handler: async (request, h) => {
       const { rcvs } = request.payload
       session.setClaim(request, rcvsKey, rcvs)
-     
 
       return h.redirect('/claim/urn-result')
     }

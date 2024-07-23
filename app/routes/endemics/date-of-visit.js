@@ -214,11 +214,9 @@ module.exports = [
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
-      
         if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock) && isEndemicsFollowUp) {
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
-          
 
           if (reviewTestResultsValue === 'positive' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
           if (reviewTestResultsValue === 'negative' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
