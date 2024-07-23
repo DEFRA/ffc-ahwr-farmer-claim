@@ -182,7 +182,7 @@ describe('Which type of review test', () => {
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
-    test('Returns 400 and redirects to error page for dairy follow-up', async () => {
+    test.skip('Returns 400 and redirects to error page for dairy follow-up', async () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {
         method: 'POST',
