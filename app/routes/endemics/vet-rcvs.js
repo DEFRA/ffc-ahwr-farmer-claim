@@ -81,12 +81,13 @@ module.exports = [
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
         const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
-        const { isBeef } = getLivestockTypes(typeOfLivestock)
+        const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+        console.log(` check for is beef and isDairy: ${JSON.stringify(getLivestockTypes(typeOfLivestock))}`)
         const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
-        if (isBeef) {
+        if (isBeef || isDairy) {
           if (isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
           if (isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
         }

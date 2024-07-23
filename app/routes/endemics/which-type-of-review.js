@@ -74,7 +74,7 @@ module.exports = [
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
         // const { typeOfLivestock } = getEndemicsClaim(request)
-        console.log(`get the endemics claim result ====>${JSON.stringify(getEndemicsClaim(request))}`)
+      
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         // Dairy follow up claim temporarily disabled
@@ -89,7 +89,7 @@ module.exports = [
         //     .takeover()
         // }
 
-        console.log('check the result ===>', (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)))
+      
 
         // If user has an old world application within last 10 months
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
