@@ -110,9 +110,11 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
+      console.log($)
       expectPageContentOk($, '/claim/endemics/which-species')
       expectPhaseBanner.ok($)
     })
+
     test('returns 200', async () => {
       claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
       getEndemicsClaimMock.mockImplementation(() => {
@@ -138,6 +140,38 @@ describe('Date of vet visit', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
+      expectPageContentOk($, '/claim/endemics/vet-visits-review-test-results')
+      expectPhaseBanner.ok($)
+    })
+    test('returns 200 and fills input with value in session', async () => {
+      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      getEndemicsClaimMock.mockImplementation(() => {
+        return {
+          latestEndemicsApplication,
+          latestVetVisitApplication,
+          typeOfReview: 'endemics',
+          typeOfLivestock: 'beef',
+          previousClaims: [{
+            data: {
+              typeOfReview: 'R'
+            }
+          }],
+          dateOfVisit: '2024-05-01'
+        }
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('#visit-date-day')[0].attribs.value).toEqual('1')
+      expect($('#visit-date-month')[0].attribs.value).toEqual('5')
+      expect($('#visit-date-year')[0].attribs.value).toEqual('2024')
       expectPageContentOk($, '/claim/endemics/vet-visits-review-test-results')
       expectPhaseBanner.ok($)
     })
