@@ -19,17 +19,20 @@ const {
 } = require('../../session/keys')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
+const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
 
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = session.getEndemicsClaim(request)
-  if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsTestUrn}`
-  if (typeOfReview === claimType.endemics) {
+  const { isBeef, isDairy, isSheep } = getLivestockTypes(typeOfLivestock)
+  const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
+  if (isReview) return `${urlPrefix}/${endemicsTestUrn}`
+  if (isEndemicsFollowUp) {
     if (relevantReviewForEndemics.type === claimType.vetVisits && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
-    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
-    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
+    if (isSheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
+    if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestUrn}`
     if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
   }
 
@@ -81,12 +84,12 @@ module.exports = [
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
         const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
-        const { isBeef } = getLivestockTypes(typeOfLivestock)
+        const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
         const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
-        if (isBeef) {
+        if (isBeef || isDairy) {
           if (isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
           if (isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
         }

@@ -11,12 +11,13 @@ const { getTestResult } = require('../../lib/get-test-result')
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
-  const { isBeef } = getLivestockTypes(session?.typeOfLivestock)
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const { isNegative } = getTestResult(session?.reviewTestResults)
 
-  if (isBeef && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
+  if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
+  if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
 
-  return session?.typeOfLivestock === livestockTypes.pigs ? `${urlPrefix}/${endemicsDiseaseStatus}` : `${urlPrefix}/${endemicsTestResults}`
+  return `${urlPrefix}/${endemicsTestResults}`
 }
 
 const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {
