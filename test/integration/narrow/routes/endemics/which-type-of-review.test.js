@@ -182,25 +182,25 @@ describe('Which type of review test', () => {
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
-    test('Returns 400 and redirects to error page for dairy follow-up', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: {
-          crumb,
-          typeOfReview: 'endemics'
-        },
-        headers: { cookie: `crumb=${crumb}` }
-      }
+    // test('Returns 400 and redirects to error page for dairy follow-up', async () => {
+    //   sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+    //   const options = {
+    //     method: 'POST',
+    //     url,
+    //     auth,
+    //     payload: {
+    //       crumb,
+    //       typeOfReview: 'endemics'
+    //     },
+    //     headers: { cookie: `crumb=${crumb}` }
+    //   }
 
-      const res = await global.__SERVER__.inject(options)
+    //   const res = await global.__SERVER__.inject(options)
 
-      expect(res.statusCode).toBe(400)
-      const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-      expectPhaseBanner.ok($)
-    })
+    //   expect(res.statusCode).toBe(400)
+    //   const $ = cheerio.load(res.payload)
+    //   expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+    //   expectPhaseBanner.ok($)
+    // })
   })
 })

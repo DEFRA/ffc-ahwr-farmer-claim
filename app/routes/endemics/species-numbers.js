@@ -18,14 +18,13 @@ const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
-const { claimType } = require('../../constants/claim')
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
-  const { isBeef } = getLivestockTypes(typeOfLivestock)
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
 
-  if (isBeef && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
+  if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
 
   return `${urlPrefix}/${endemicsDateOfTesting}`
 }
@@ -102,14 +101,15 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const claim = session.getEndemicsClaim(request)
-        const { isBeef } = getLivestockTypes(claim?.typeOfLivestock)
+        const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+        const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+        const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
         const answer = request.payload[speciesNumbers]
         session.setEndemicsClaim(request, speciesNumbers, answer)
 
         if (answer === 'yes') {
-          if (claim.typeOfLivestock === 'dairy' || (isBeef && (claim?.typeOfReview === claimType.endemics))) {
+          if (isDairy || (isBeef && isEndemicsFollowUp)) {
             return h.redirect(`${urlPrefix}/${endemicsVetName}`)
           }
 
@@ -117,7 +117,7 @@ module.exports = [
         }
 
         raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
-        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[claim?.typeOfReview], isReview: claim?.typeOfReview === claimType.review }).code(400).takeover()
+        return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview], isReview }).code(400).takeover()
       }
     }
   }

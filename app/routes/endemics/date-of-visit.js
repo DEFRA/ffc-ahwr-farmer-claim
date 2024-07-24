@@ -5,7 +5,7 @@ const {
   getReviewTestResultWithinLast10Months,
   isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
 } = require('../../api-requests/claim-service-api')
-const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../../constants/claim')
+const { dateOfVetVisitExceptions } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const {
@@ -23,6 +23,7 @@ const validateDateInputMonth = require('../govuk-components/validate-date-input-
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
 const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
@@ -168,13 +169,14 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { typeOfReview, previousClaims, latestVetVisitApplication, typeOfLivestock, organisation, reviewTestResults } = session.getEndemicsClaim(request)
+        const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
         const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
         const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
         const { error, data } = isValidDateInput(request, reviewOrFollowUpText)
         if (error) return h.view(endemicsDateOfVisit, data).code(400).takeover()
 
-        const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
+        const formattedTypeOfLivestock = (isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`
         const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
         const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
         const mainMessage = { url: '#' }
@@ -208,17 +210,17 @@ module.exports = [
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
 
-        if (typeOfReview === claimType.endemics) {
+        if (isEndemicsFollowUp) {
           session.setEndemicsClaim(request, relevantReviewForEndemicsKey, getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication))
         }
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
-        if ([livestockTypes.beef, livestockTypes.dairy, livestockTypes.pigs].includes(typeOfLivestock) && isEndemicsFollowUp) {
+        if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
-          if (reviewTestResultsValue === 'negative' && [livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+          if (reviewTestResultsValue === 'negative' && (isBeef || isDairy)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
