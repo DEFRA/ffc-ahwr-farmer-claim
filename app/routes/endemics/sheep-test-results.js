@@ -199,6 +199,25 @@ const updateDiseaseType = (diseaseTypeErrorList, testResultEmptyItems, payloadDa
   return result
 }
 
+const hasError = (results) => {
+  return results.find((result) => result)
+}
+
+const getErrorList = (diseaseTypeValidationError, testResultValidationError) => {
+  return [
+    diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' },
+    testResultValidationError && { text: testResultValidationError, href: '#testResult' }
+  ]
+}
+
+const isOfTypeObject = (value) => {
+  return typeof value === 'object'
+}
+
+const getEmptyItems = (items, itemType) => {
+  return isOfTypeObject(items) ? getInvalidItemIndexes(items, itemType) : []
+}
+
 module.exports = [
   {
     method: 'GET',
@@ -261,29 +280,24 @@ module.exports = [
         const diseaseTypeValidationError = results?.diseaseType?.text
         const testResultValidationError = results?.testResult?.text
 
-        if (diseaseTypeValidationError || testResultValidationError) {
+        if (hasError([diseaseTypeValidationError, testResultValidationError])) {
           const pageContent = getPageContent(request, results)
 
           return h.view(endemicsSheepTestResults, {
             ...pageContent,
             backLink: previousePage,
-            errorList: [
-              diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' },
-              testResultValidationError && { text: testResultValidationError, href: '#testResult' }
-            ]
+            errorList: getErrorList(diseaseTypeValidationError, testResultValidationError)
           }).code(400).takeover()
         }
 
-        let payloadData = payload
-
         const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
 
-        newPayloadData && (payloadData = newPayloadData)
+        const payloadData = newPayloadData || payload
         const newDiseaseTypeErrorMessage = newErrorMessage
 
-        const diseaseTypeEmptyItems = typeof payloadData.diseaseType === 'object' ? getInvalidItemIndexes(payloadData.diseaseType, 'diseaseType') : []
-        const testResultEmptyItems = typeof payloadData.testResult === 'object' ? getInvalidItemIndexes(payloadData.testResult, 'testResult') : []
-        const duplicateItems = typeof payloadData.diseaseType === 'object' ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
+        const diseaseTypeEmptyItems = getEmptyItems(payloadData.diseaseType, 'diseaseType')
+        const testResultEmptyItems = getEmptyItems(payloadData.testResult, 'testResult')
+        const duplicateItems = isOfTypeObject(payloadData.diseaseType) ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
 
         const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems) || []
 
@@ -293,7 +307,7 @@ module.exports = [
 
         setEndemicsClaim(request, 'sheepTestResults', upatedSheepTestResults)
 
-        if (diseaseTypeErrorList.length || testResultEmptyItems.length || newDiseaseTypeErrorMessage) {
+        if (hasError([diseaseTypeErrorList.length, testResultEmptyItems.length, newDiseaseTypeErrorMessage])) {
           const pageContent = getPageContent(request, {
             diseaseType: newDiseaseTypeErrorMessage?.diseaseType,
             testResult: newDiseaseTypeErrorMessage?.testResult
