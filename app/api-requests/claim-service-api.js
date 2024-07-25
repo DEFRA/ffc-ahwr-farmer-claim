@@ -161,7 +161,7 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
   return (
     typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&
-    latestVetVisitApplication?.data?.whichReview === livestockTypes.beef &&
+    (latestVetVisitApplication?.data?.whichReview === livestockTypes.beef || latestVetVisitApplication?.data?.whichReview === livestockTypes.dairy) &&
     !previousClaims?.find((claim) => claim.type === claimType.endemics)
   )
 }

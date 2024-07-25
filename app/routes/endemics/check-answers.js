@@ -157,10 +157,11 @@ module.exports = [
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const dairyRows = [
+          vetVisitsReviewTestResultsRow,
           ...getCommonRowsWithChangeLinks(request, isReview),
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
-          vetVisitsReviewTestResultsRow,
+          piHuntRow,
           laboratoryUrnRow,
           testResultsRow,
           isEndemicsFollowUp && biosecurityAssessmentRow
@@ -291,6 +292,7 @@ module.exports = [
             })
           }
         })
+
         setEndemicsClaim(request, 'reference', claim.reference)
         setEndemicsClaim(request, 'amount', claim.data?.amount)
         setTempClaimReference(request, 'tempClaimReference', tempClaimReference)

@@ -51,6 +51,7 @@ module.exports = [
           raiseInvalidDataEvent(request, piHuntKey, `Value ${answer} is not equal to required value yes`)
           return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
+
         return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
       }
     }

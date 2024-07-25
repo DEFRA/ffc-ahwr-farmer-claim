@@ -11,34 +11,40 @@ const {
 } = require('../../config/routes')
 const { endemicsClaim: { testResults: testResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
-const { claimType, livestockTypes } = require('../../constants/claim')
+const { getReviewType } = require('../../lib/get-review-type')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
 
 const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { isBeef, isDairy, isSheep, isPigs } = getLivestockTypes(typeOfLivestock)
+  const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (typeOfReview === claimType.endemics) {
-    if (typeOfLivestock === livestockTypes.sheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
-    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
+  if (isEndemicsFollowUp) {
+    if (isSheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
+    if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestUrn}`
   }
 
-  if (typeOfReview === claimType.review) {
-    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
-    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestUrn}`
+  if (isReview) {
+    if (isPigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+    if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestUrn}`
   }
 }
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (typeOfReview === claimType.endemics) {
-    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsBiosecurity}`
+  if (isEndemicsFollowUp) {
+    if (isBeef || isDairy) return `${urlPrefix}/${endemicsBiosecurity}`
   }
 
   return `${urlPrefix}/${endemicsCheckAnswers}`
 }
 const pageTitle = (request) => {
   const { typeOfReview } = session.getEndemicsClaim(request)
-  return typeOfReview === claimType.endemics ? 'What was the follow-up test result?' : 'What was the test result?'
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+  return isEndemicsFollowUp ? 'What was the follow-up test result?' : 'What was the test result?'
 }
 
 const hintHtml = 'You can find this on the summary the vet gave you.'

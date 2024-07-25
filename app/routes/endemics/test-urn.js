@@ -1,7 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
-const { claimType, livestockTypes } = require('../../constants/claim')
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
@@ -26,9 +25,11 @@ const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
 const title = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (typeOfReview === claimType.endemics) {
-    if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) { return 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' }
+  if (isEndemicsFollowUp) {
+    if (isBeef || isDairy) { return 'What’s the laboratory unique reference number (URN) or certificate number of the test results?' }
   }
 
   return 'What’s the laboratory unique reference number (URN) for the test results?'
@@ -36,22 +37,25 @@ const title = (request) => {
 
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview, reviewTestResults } = session.getEndemicsClaim(request)
-  const { isBeef } = getLivestockTypes(typeOfLivestock)
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+  const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
 
-  if (typeOfReview === claimType.review) return `${urlPrefix}/${endemicsVetRCVS}`
-  if (typeOfReview === claimType.endemics && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
-  if (isBeef && isPositive) return `${urlPrefix}/${endemicsPIHunt}`
+  if (isReview) return `${urlPrefix}/${endemicsVetRCVS}`
+  if (isEndemicsFollowUp && isPigs) return `${urlPrefix}/${endemicsVaccination}`
+  if ((isBeef || isDairy) && isPositive) return `${urlPrefix}/${endemicsPIHunt}`
 
   return `${urlPrefix}/${endemicsVetRCVS}`
 }
 
 const nextPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+  const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (typeOfLivestock === livestockTypes.pigs && typeOfReview === claimType.review) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
-  if (typeOfLivestock === livestockTypes.pigs && typeOfReview === claimType.endemics) return `${urlPrefix}/${endemicsNumberOfSamplesTested}`
-  if ([livestockTypes.beef, livestockTypes.dairy].includes(typeOfLivestock)) return `${urlPrefix}/${endemicsTestResults}`
+  if (isPigs && isReview) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+  if (isPigs && isEndemicsFollowUp) return `${urlPrefix}/${endemicsNumberOfSamplesTested}`
+  if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestResults}`
 
   return `${urlPrefix}/${endemicsCheckAnswers}`
 }
@@ -121,6 +125,7 @@ module.exports = [
           raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
           return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
         }
+
         return h.redirect(nextPageUrl(request))
       }
     }

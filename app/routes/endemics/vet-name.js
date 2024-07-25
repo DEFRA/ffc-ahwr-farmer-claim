@@ -7,15 +7,15 @@ const {
   endemicsClaim: { vetsName: vetsNameKey }
 } = require('../../session/keys')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getTestResult } = require('../../lib/get-test-result')
+const { getReviewType } = require('../../lib/get-review-type')
 
 const pageUrl = `${urlPrefix}/${endemicsVetName}`
 const backLink = (request) => {
-  const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
-  const { isBeef } = getLivestockTypes(typeOfLivestock)
-  const { isNegative } = getTestResult(reviewTestResults)
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (isBeef && isNegative) return `${urlPrefix}/${endemicsSpeciesNumbers}`
+  if (isDairy || (isBeef && isEndemicsFollowUp)) return `${urlPrefix}/${endemicsSpeciesNumbers}`
 
   return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 }
