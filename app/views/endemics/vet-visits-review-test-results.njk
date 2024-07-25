@@ -25,13 +25,13 @@
 
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        {% if typeOfLivestock === 'beef' %}
+        {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
           <h1 class="govuk-heading-l">What was the test result of your last annual health and welfare review?</h1>
         {% elif typeOfLivestock === 'pigs' %}
         <h1 class="govuk-heading-l">What was the review test result?</h1>
         {% endif %}
 
-        {% if typeOfLivestock === 'beef' %}
+        {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
           <p class="govuk-body">This should have happened within the last 10 months.</p>
         {% elif typeOfLivestock === 'pigs' %}
           <p class="govuk-body">This should:</p>
