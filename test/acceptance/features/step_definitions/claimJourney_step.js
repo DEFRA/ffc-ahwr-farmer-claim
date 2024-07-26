@@ -431,6 +431,9 @@ Then(/^validate the test results error message$/,async function(){
 Then(/^click on the positive test results$/, async function(){
   await claimJourney.clickPositiveTestResults();
 })
+Then(/^click on the negative test results$/, async function(){
+  await claimJourney.clickNegativeTestResults();
+})
 Then(/^validate the results exception error message$/, async function(){
   await claimJourney.validateResultsErrorMessgae()
 })
@@ -622,6 +625,9 @@ Then(/^user clicks on click for endemics follow-up$/, async function () {
 });
 Then(/^validate no result is selected$/, async function () {
   await endemicsJourney.validateVetTestResultError()
+});
+Then(/^validate PI Hunt page$/, async function () {
+  await endemicsJourney.validatePIHuntPage()
 });
 Then(/^click yes for PI Hunt$/, async function () {
   await endemicsJourney.clickYesForPIHunt()

@@ -1,5 +1,5 @@
 @smoke-reg
-Feature: Endemics -Negative-Beef- Regression 
+Feature: Endemics -Negative -Dairy- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -33,10 +33,6 @@ Then validate incorrect number of samples error message
 Then click on the back button
 Then user confirm to meet the requirement
 Then user continue to next page
-# Need to comment 37,38,39 steps in order to run in DEV env & uncomment 37,38,39 to run in test/pre env as it is not deployed in test/pre yet
-Then user continue to next page
-Then validate the error for blank error message
-When user enters the <species> name and <value>
 Then clicked on continue button
 Then click to continue the claim
 Then validate the error message for blank input vet name screen
@@ -68,8 +64,3 @@ Then clicked on continue button for endemics
 Then Endemics validation of URN error message for empty characters 
 When user input the test unique reference number in endemics
 Then clicked on continue button for endemics
-
-
- Examples:
-              |species|value|
-              |Beef   |12   | 

@@ -1,5 +1,5 @@
-@smoke-reg1
-Feature: Endemics -beef- Regression 
+@smoke-reg
+Feature: Endemics -TestResultNegative-Dairy- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
 When user clicks on Start now
@@ -14,30 +14,13 @@ Then click on Endemics disease follow up review
 Then clicked on continue button for endemics
 Then user input the date in correct order
 Then clicked on continue button for endemics
-Then click on the option when vet visited the farm to carry out the review
-Then clicked on continue button for endemics
 Then user confirm to meet the requirement
-Then user continue to claim
-# Need to comment 22,23 steps in order to run in DEV env & uncomment 22,23 to run in test/pre env as it is not deployed in test/pre yet
-When user enters the <species> name and <value>
 Then user continue to claim
 When enter vet's full name
 Then user continue to claim
 When user enter the rcvs number in endemics
 Then clicked on continue button for endemics
-# Need to uncomment 29 step to run in dev but comment 29 step until released in Test and pre env
-# Then validate PI Hunt page
-Then click yes for PI Hunt
-Then user continue to claim
-When user input the test unique reference number in endemics
-Then clicked on continue button for endemics
-Then click on the positive test results
-Then clicked on continue button for endemics
 Then click yes on biosecurity link
 Then user continue to claim
 Given user confirm to be on check answer page
 Then user clicks on endemics claim submit
-
- Examples:
-              |species|value|
-              |Beef   | 12  | 
