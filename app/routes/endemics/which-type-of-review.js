@@ -89,7 +89,6 @@ module.exports = [
         // If user has an old world application within last 10 months
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
 
-
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
     }
