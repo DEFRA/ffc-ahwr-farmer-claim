@@ -93,6 +93,8 @@ const PI_HUNT_YES='#piHunt'
 const PI_HUNT_NO='#piHunt-2'
 const SELECT_PI_ERROR='Select if the vet did a PI hunt'
 const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
+const ACTUAL_PIHUNT_HEADER='//*[@id="main-content"]/div/div/form/div/fieldset/legend/h1'
+const EXPECTED_PIHUNT_HEADER='Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
 
 //link validations for sample exception page
 
@@ -185,7 +187,9 @@ async validateNoOfSamplesErrorForPig(){
   async validateSelectTheTypeOfReview(){
     await this.elementToContainErrorText(SELECT_THE_TYPE_OF_REVIEW_ERROR_ACTUAL,SELECT_THE_TYPE_OF_REVIEW_ERROR)
   }
-
+  async validatePIHuntPage(){
+    await this.elementToContainText(ACTUAL_PIHUNT_HEADER,EXPECTED_PIHUNT_HEADER)
+  }
   async validatePackageError(){
     await this.elementToContainErrorText(SELECT_A_PACKAGE_ERROR_ACTUAL,SELECT_A_PACKAGE_ERROR)
   } 
