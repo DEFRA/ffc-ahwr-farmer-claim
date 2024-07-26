@@ -2,9 +2,9 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults } = require('../../config/routes')
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
 const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
-const { urlPrefix } = require('../../config')
+const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
@@ -71,23 +71,23 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
-        // const { typeOfLivestock } = getEndemicsClaim(request)
+        const { typeOfLivestock } = getEndemicsClaim(request)
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
+
+        // Dairy follow up claim
+        if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
+          return h
+            .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+              backLink: pageUrl,
+              claimDashboard,
+              ruralPaymentsAgency
+            })
+            .code(400)
+            .takeover()
+        }
 
         // If user has an old world application within last 10 months
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
-
-        // Dairy follow up claim
-        // if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-        //   return h
-        //     .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-        //       backLink: pageUrl,
-        //       claimDashboard,
-        //       ruralPaymentsAgency
-        //     })
-        //     .code(400)
-        //     .takeover()
-        // }
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
