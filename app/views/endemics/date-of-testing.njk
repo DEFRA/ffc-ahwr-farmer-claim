@@ -30,9 +30,7 @@
         <div id="when-was-endemic-disease-or-condition-testing-carried-out" class="govuk-form-group {% if whenTestingWasCarriedOut.errorMessage %}govuk-form-group--error{% endif %}">
           <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">
-               When were samples taken?
-              </h1>
+              <h1 class="govuk-fieldset__heading">{{questionText}}</h1>
             </legend>
           {% if whenTestingWasCarriedOut.onAnotherDate.day.error %}
             {% set onAnotherDateDay = {
@@ -91,7 +89,7 @@
           {{ govukRadios({
             name: "whenTestingWasCarriedOut",
             hint: {
-              text: "This is the date samples were taken to test for health conditions or diseases. You can find it on the summary the vet gave you."
+              text: questionHintText
             },
             errorMessage: whenTestingWasCarriedOut.errorMessage,
             items: [

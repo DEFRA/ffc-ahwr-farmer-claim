@@ -22,15 +22,35 @@ const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
 
+const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
+  const { isReview } = getReviewType(typeOfReview)
+  const { isSheep, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+
+  const questionTextOne = 'How many animals were samples taken from?'
+  const questionTextTwo = 'How many animals were samples taken from or assessed?'
+  const questionTextThree = 'How many sheep were samples taken from or assessed?'
+
+  if (isReview) {
+    if (isDairy) return questionTextTwo
+    return questionTextOne
+  }
+
+  if (isSheep) return questionTextThree
+  if (isPigs) return questionTextOne
+
+  return questionTextTwo
+}
+
 module.exports = [
   {
     method: 'GET',
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const { numberAnimalsTested } = session.getEndemicsClaim(request)
+        const { numberAnimalsTested, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
 
         return h.view(endemicsNumberOfSpeciesTested, {
+          questionText: getTheQuestionText(typeOfLivestock, typeOfReview),
           numberAnimalsTested,
           backLink
         })
@@ -52,10 +72,12 @@ module.exports = [
             })
         }),
         failAction: async (request, h, error) => {
+          const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
           return h
             .view(endemicsNumberOfSpeciesTested, {
               ...request.payload,
               backLink,
+              questionText: getTheQuestionText(typeOfLivestock, typeOfReview),
               errorMessage: { text: error.details[0].message, href: `#${numberAnimalsTestedKey}` }
             })
             .code(400)
@@ -74,7 +96,7 @@ module.exports = [
 
         if (isEligible) return h.redirect(nextPageURL)
         if (numberAnimalsTested === '0') {
-          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, errorMessage: { text: 'The number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
+          return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, questionText: getTheQuestionText(typeOfLivestock, typeOfReview), errorMessage: { text: 'The number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()
         }
         if (isPigs && isEndemicsFollowUp) {
           raiseInvalidDataEvent(request, numberAnimalsTestedKey, `Value ${numberAnimalsTested} is not equal to required value ${threshold} for ${typeOfLivestock}`)

@@ -11,8 +11,6 @@ const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isDateOfTestingLessThanDateOfVi
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
 function expectPageContentOk ($) {
-  expect($('h1').text()).toMatch('When were samples taken?')
-  expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('his is the date samples were taken to test for health conditions or diseases.')
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
@@ -90,6 +88,24 @@ describe('Date of testing', () => {
       const $ = cheerio.load(res.payload)
       expectPageContentOk($)
       expectPhaseBanner.ok($)
+      expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('This is the date samples were last taken for this review. You can find it on the summary the vet gave you.')
+    })
+    test('returns 200', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfReview: 'E', typeOfLivestock: 'sheep', dateOfVisit: yesterday, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expectPageContentOk($)
+      expectPhaseBanner.ok($)
+      expect($('h1').text()).toMatch('When were samples taken or sheep assessed?')
+      expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('This is the last date samples were taken or sheep assessed for this follow-up. You can find it on the summary the vet gave you.')
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -141,7 +157,7 @@ describe('Date of testing', () => {
       expect($('#on-another-date-day').val()).toEqual(today.getDate().toString())
       expect($('#on-another-date-month').val()).toEqual((today.getMonth() + 1).toString())
       expect($('#on-another-date-year').val()).toEqual(today.getFullYear().toString())
-      expect($('label[for=whenTestingWasCarriedOut]').text()).toContain(`When the vet visited the farm for the ${reviewOrFollowUpText}`)
+      expect($('label[for=whenTestingWasCarriedOut]').text()).toContain(`When the vet last visited the farm for the ${reviewOrFollowUpText}`)
     })
   })
 
