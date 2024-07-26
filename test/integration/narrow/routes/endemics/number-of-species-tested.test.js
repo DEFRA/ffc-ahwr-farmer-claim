@@ -60,8 +60,27 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
-      expect($('title').text().trim()).toContain('How many animals were samples taken from or assessed? - Get funding to improve animal health and welfare')
+      expect($('h1').text()).toMatch('How many animals were samples taken from?')
+      expect($('title').text().trim()).toContain('How many animals were samples taken from? - Get funding to improve animal health and welfare')
+      expectPhaseBanner.ok($)
+    })
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'R' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R' }
+    ])('returns 200 for review $typeOfLivestock journey', async ({ typeOfLivestock, typeOfReview }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch(typeOfLivestock === 'dairy' ? 'How many animals were samples taken from or assessed?' : 'How many animals were samples taken from?')
       expectPhaseBanner.ok($)
     })
 
@@ -172,6 +191,7 @@ describe('Number of species tested test', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error page when number of animals tested is 0 ', async () => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'sheep', typeOfReview: 'E' } })
       const options = {
         method: 'POST',
         url,
@@ -184,7 +204,7 @@ describe('Number of species tested test', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text()).toMatch('How many animals were samples taken from or assessed?')
+      expect($('h1').text()).toMatch('How many sheep were samples taken from or assessed?')
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('The number of animals tested cannot be 0')
       expect($('#numberAnimalsTested-error').text()).toMatch('The number of animals tested cannot be 0')
     })
