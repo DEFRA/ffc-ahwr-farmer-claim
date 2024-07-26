@@ -10,24 +10,22 @@ const {
 } = require('../../config/routes')
 const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
-const { livestockTypes } = require('../../constants/claim')
+const { getLivestockTypes } = require('../../lib/get-livestock-types')
 
 const pageUrl = `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
 
 const previousPageUrl = (typeOfLivestock) => {
-  if (typeOfLivestock === livestockTypes.beef) return `${urlPrefix}/${endemicsWhichTypeOfReview}`
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+  if (isBeef || isDairy) return `${urlPrefix}/${endemicsWhichTypeOfReview}`
   return `${urlPrefix}/${endemicsVetRCVS}`
 }
 
 const nextPageURL = (request) => {
   const { typeOfLivestock } = session.getEndemicsClaim(request)
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  switch (typeOfLivestock) {
-    case livestockTypes.pigs:
-      return `${urlPrefix}/${endemicsVaccination}`
-    case livestockTypes.beef:
-      return `${urlPrefix}/${endemicsDateOfVisit}`
-  }
+  if (isBeef || isDairy) return `${urlPrefix}/${endemicsDateOfVisit}`
+  return `${urlPrefix}/${endemicsVaccination}`
 }
 
 module.exports = [{
