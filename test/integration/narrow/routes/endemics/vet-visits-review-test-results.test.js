@@ -57,7 +57,7 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('h1').text()).toMatch('What was the test result of your last annual health and welfare review?')
+      expect($('h1').text()).toMatch('What was the test result of your last animal health and welfare review?')
       expect($('title').text()).toContain('Vet Visits Review Test Results - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
