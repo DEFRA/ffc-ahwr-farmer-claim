@@ -34,13 +34,13 @@ module.exports = [
             : undefined,
           dateOfReview: {
             day: {
-              value: new Date(dateOfReview).getDate()
+              value: dateOfTesting ? new Date(dateOfReview).getDate() : ''
             },
             month: {
-              value: new Date(dateOfReview).getMonth() + 1
+              value: dateOfTesting ? new Date(dateOfReview).getMonth() + 1 : ''
             },
             year: {
-              value: new Date(dateOfReview).getFullYear()
+              value: dateOfTesting ? new Date(dateOfReview).getFullYear() : ''
             }
           },
           whenTestingWasCarriedOut:
@@ -52,13 +52,13 @@ module.exports = [
                     : 'onAnotherDate',
                   onAnotherDate: {
                     day: {
-                      value: new Date(dateOfTesting).getDate()
+                      value: dateOfTesting ? new Date(dateOfTesting).getDate() : ''
                     },
                     month: {
-                      value: new Date(dateOfTesting).getMonth() + 1
+                      value: dateOfTesting ? new Date(dateOfTesting).getMonth() + 1 : ''
                     },
                     year: {
-                      value: new Date(dateOfTesting).getFullYear()
+                      value: dateOfTesting ? new Date(dateOfTesting).getFullYear() : ''
                     }
                   }
                 }
