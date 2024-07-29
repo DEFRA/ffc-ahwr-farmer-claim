@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}How many animals were samples taken from or assessed? - {{ serviceName }}
+{% block pageTitle %}{{questionText}} - {{ serviceName }}
 {% endblock %}
 
 {% block beforeContent %}
@@ -24,7 +24,7 @@
       {% endif %}
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <h1 class="govuk-heading-l govuk-!-margin-bottom-1">How many animals were samples taken from or assessed?</h1>
+        <h1 class="govuk-heading-l govuk-!-margin-bottom-1">{{questionText}}</h1>
         <p class="govuk-hint">You can find this on the summary the vet gave you.</p>
         {{ govukInput({
         label: {
