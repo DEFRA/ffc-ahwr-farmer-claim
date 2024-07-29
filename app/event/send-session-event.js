@@ -12,7 +12,7 @@ const renameSessionKeysForEventReporting = (key) => {
       key = 'vetName'
       break
     }
-    case 'vetsRCVSNumber': {
+    case 'vetRCVSNumber': {
       key = 'vetRcvs'
       break
     }
