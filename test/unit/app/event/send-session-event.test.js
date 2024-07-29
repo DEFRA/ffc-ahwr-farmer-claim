@@ -86,8 +86,8 @@ describe('Send event on session set', () => {
       expect(raiseEvent).toHaveBeenCalledWith(expectedEvent, 'success')
     })
 
-    test('renames vetsRCVSNumber to vetRcvs', async () => {
-      key = 'vetsRCVSNumber'
+    test('renames vetRCVSNumber to vetRcvs', async () => {
+      key = 'vetRCVSNumber'
       const newValue = 'vetRcvs'
       const expectedEvent = {
         ...event,
