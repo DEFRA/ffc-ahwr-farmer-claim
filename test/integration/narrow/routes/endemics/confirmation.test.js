@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const { endemicsConfirmation } = require('../../../../../app/config/routes')
+const { getReviewType } = require('../../../../../app/lib/get-review-type')
 jest.mock('../../../../../app/session')
 
 describe('Claim confirmation', () => {
@@ -44,7 +45,8 @@ describe('Claim confirmation', () => {
     { typeOfLivestock: 'pigs', typeOfReview: 'R' },
     { typeOfLivestock: 'dairy', typeOfReview: 'R' },
     { typeOfLivestock: 'sheep', typeOfReview: 'R' }
-  ])('GET endemicsConfirmation route', async ({ typeOfLivestock, typeOfReview }) => {
+  ])('GET endemicsConfirmation route', async ({ typeOfReview }) => {
+    const { isReview } = getReviewType(typeOfReview)
     const options = {
       method: 'GET',
       url,
@@ -54,7 +56,8 @@ describe('Claim confirmation', () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         reference,
-        amount: 55
+        amount: 55,
+        typeOfReview
       }
     })
     const res = await global.__SERVER__.inject(options)
@@ -64,5 +67,6 @@ describe('Claim confirmation', () => {
     expect(res.statusCode).toBe(200)
     expect($('#amount').text()).toContain('55')
     expect($('#reference').text().trim()).toEqual(reference)
+    expect($('#message').text().trim()).toContain(isReview ? 'animal health and welfare review' : 'endemic disease follow-up')
   })
 })
