@@ -295,7 +295,6 @@ module.exports = [
 
         setEndemicsClaim(request, 'reference', claim.reference)
         setEndemicsClaim(request, 'amount', claim.data?.amount)
-        setEndemicsClaim(request, 'typeOfReview', claim?.type)
         setTempClaimReference(request, 'tempClaimReference', tempClaimReference)
 
         return h.redirect(
