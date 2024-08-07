@@ -33,10 +33,6 @@ Then validate incorrect number of samples error message
 Then click on the back button
 Then user confirm to meet the requirement
 Then user continue to next page
-# Need to comment 37,38,39 steps in order to run in DEV env & uncomment 37,38,39 to run in test/pre env as it is not deployed in test/pre yet
-Then user continue to next page
-Then validate the error for blank error message
-When user enters the <species> name and <value>
 Then clicked on continue button
 Then click to continue the claim
 Then validate the error message for blank input vet name screen
