@@ -4,7 +4,7 @@ const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
 const { getTestResult } = require('../../lib/get-test-result')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt } = require('../../config/routes')
+const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException } = require('../../config/routes')
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('../../session/keys')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
@@ -63,6 +63,8 @@ module.exports = [{
       const { piHuntAllAnimals } = request.payload
 
       setEndemicsClaim(request, piHuntAllAnimalsKey, piHuntAllAnimals)
+
+      if (piHuntAllAnimals === 'no') return h.view(endemicsPIHuntAllAnimalsException, { backLink: pageUrl })
 
       return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
     }

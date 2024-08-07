@@ -2,7 +2,7 @@ const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
-const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsPIHuntAllAnimals } = require('../../config/routes')
+const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = require('../../config/routes')
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
@@ -43,6 +43,8 @@ module.exports = [{
       const { piHuntRecommended } = request.payload
 
       setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
+
+      if (piHuntRecommended === 'no') return h.view(endemicsPIHuntRecommendedException, { backLink: pageUrl })
 
       return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
     }
