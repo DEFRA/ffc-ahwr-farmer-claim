@@ -18,7 +18,7 @@ const { speciesNumbers } = require('../../session/keys').endemicsClaim
 const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
-const {optionalPIHunt} = require('../../config')
+const { optionalPIHunt } = require('../../config')
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
@@ -27,7 +27,7 @@ const backLink = (request) => {
   const { isNegative } = getTestResult(reviewTestResults)
 
   if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
-  if(optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy )) {
+  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsDateOfVisit}`
   }
 

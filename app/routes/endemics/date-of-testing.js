@@ -14,7 +14,7 @@ const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { isValidDate } = require('./../../lib/check-date-validity')
-const {optionalPIHunt} = require('../../config')
+const { optionalPIHunt } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {
@@ -22,7 +22,7 @@ const backLink = (request) => {
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  if(optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy )) {
+  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
   }
 
@@ -267,7 +267,7 @@ module.exports = [
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
 
-        if(optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy )) {
+        if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
           return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
         }
 

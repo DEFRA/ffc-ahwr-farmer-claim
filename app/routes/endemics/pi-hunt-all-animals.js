@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const {getEndemicsClaim, setEndemicsClaim} = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
 const { getTestResult } = require('../../lib/get-test-result')
@@ -7,18 +7,17 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt } = require('../../config/routes')
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('../../session/keys')
 
-
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
-const backLink =(request)=> {
+const backLink = (request) => {
   const { reviewTestResults } = getEndemicsClaim(request)
   const { isPositive } = getTestResult(reviewTestResults)
 
   if (isPositive) return `${urlPrefix}/${endemicsPIHunt}`
-  
+
   return `${urlPrefix}/${endemicsPIHuntRecommended}`
 }
 const questionText = (typeOfLivestock) => {
-  const {isBeef} = getLivestockTypes(typeOfLivestock)
+  const { isBeef } = getLivestockTypes(typeOfLivestock)
 
   if (isBeef) {
     return 'Was the PI hunt done on all beef cattle in the herd?'

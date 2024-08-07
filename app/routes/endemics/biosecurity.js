@@ -14,7 +14,7 @@ const previousPageUrl = (request) => {
   const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const { isNegative } = getTestResult(session?.reviewTestResults)
 
-  if(optionalPIHunt.enabled && session?.piHunt === 'no' && isNegative) return `${urlPrefix}/${endemicsPIHunt}`
+  if (optionalPIHunt.enabled && session?.piHunt === 'no' && isNegative) return `${urlPrefix}/${endemicsPIHunt}`
   if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
   if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
 

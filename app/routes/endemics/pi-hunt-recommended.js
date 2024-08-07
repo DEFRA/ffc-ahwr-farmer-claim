@@ -1,11 +1,9 @@
 const Joi = require('joi')
-const {getEndemicsClaim, setEndemicsClaim} = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsPIHuntAllAnimals } = require('../../config/routes')
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
-
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`

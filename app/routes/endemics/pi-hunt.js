@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const config = require('../../config')
 const { urlPrefix, optionalPIHunt } = require('../../config')
-const { endemicsClaim: { piHunt: piHuntKey} } = require('../../session/keys')
+const { endemicsClaim: { piHunt: piHuntKey } } = require('../../session/keys')
 const { getTestResult } = require('../../lib/get-test-result')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = require('../../config/routes')
@@ -58,8 +58,8 @@ module.exports = [
           return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
         }
 
-        if(optionalPIHunt.enabled && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
-        if(optionalPIHunt.enabled && isNegative) return h.redirect(`${urlPrefix}/${endemicsPIHuntRecommended}`)
+        if (optionalPIHunt.enabled && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
+        if (optionalPIHunt.enabled && isNegative) return h.redirect(`${urlPrefix}/${endemicsPIHuntRecommended}`)
 
         return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
       }
