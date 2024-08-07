@@ -38,4 +38,5 @@ data:
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
   DATE_OF_TESTING_ENABLED: {{ quote .Values.container.dateOfTestingEnabled }}
   ENDEMICS_ENABLED: {{ quote .Values.container.endemicsEnabled }}
+  OPTIONAL_PIHUNT_ENABLED: {{ quote .Values.container.optionalPIHuntEnabled }}
 {{- end -}}

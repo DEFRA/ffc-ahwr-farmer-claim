@@ -2,8 +2,8 @@ const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { urlPrefix, ruralPaymentsAgency } = require('../../config')
-const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS } = require('../../config/routes')
+const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
+const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS, endemicsPIHunt } = require('../../config/routes')
 const { livestockTypes } = require('../../constants/claim')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
@@ -14,6 +14,7 @@ const previousPageUrl = (request) => {
   const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const { isNegative } = getTestResult(session?.reviewTestResults)
 
+  if(optionalPIHunt.enabled && session?.piHunt === 'no' && isNegative) return `${urlPrefix}/${endemicsPIHunt}`
   if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
   if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
 
