@@ -9,14 +9,25 @@ const validateDateInputYear = require('../govuk-components/validate-date-input-y
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
 const { endemicsClaim: { dateOfTesting: dateOfTestingKey } } = require('../../session/keys')
 const { claimType } = require('../../constants/claim')
-const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException } = require('../../config/routes')
+const { endemicsDateOfVisit, endemicsDateOfTesting, endemicsSpeciesNumbers, endemicsDateOfTestingException, endemicsTestUrn, endemicsPIHuntAllAnimals } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { isValidDate } = require('./../../lib/check-date-validity')
+const { optionalPIHunt } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
-const backLink = `${urlPrefix}/${endemicsDateOfVisit}`
+const backLink = (request) => {
+  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+
+  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+    return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+  }
+
+  return `${urlPrefix}/${endemicsDateOfVisit}`
+}
 const optionSameReviewOrFollowUpDateText = (typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
   const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
@@ -74,7 +85,7 @@ module.exports = [
             : {
                 dateOfVisit
               },
-          backLink
+          backLink: backLink(request)
         })
       }
     }
@@ -215,14 +226,17 @@ module.exports = [
                     : undefined
                 }
               },
-              backLink
+              backLink: backLink(request)
             })
             .code(400)
             .takeover()
         }
       },
       handler: async (request, h) => {
-        const { dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication } = session.getEndemicsClaim(request)
+        const { dateOfVisit, typeOfReview, typeOfLivestock, previousClaims, latestVetVisitApplication } = session.getEndemicsClaim(request)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+        const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+
         const dateOfTesting = request.payload.whenTestingWasCarriedOut === 'whenTheVetVisitedTheFarmToCarryOutTheReview'
           ? dateOfVisit
           : new Date(
@@ -252,6 +266,10 @@ module.exports = [
         }
 
         session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
+
+        if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+          return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
+        }
 
         return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
       }

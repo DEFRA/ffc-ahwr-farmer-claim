@@ -43,7 +43,9 @@ if (config.endemics.enabled) {
     require('../routes/endemics/biosecurity'),
     require('../routes/endemics/vet-visits-review-test-results'),
     require('../routes/endemics/sheep-test-results'),
-    require('../routes/endemics/pi-hunt')
+    require('../routes/endemics/pi-hunt'),
+    require('../routes/endemics/pi-hunt-recommended'),
+    require('../routes/endemics/pi-hunt-all-animals')
   )
 }
 

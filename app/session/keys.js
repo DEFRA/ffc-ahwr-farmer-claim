@@ -48,6 +48,8 @@ module.exports = {
     previousClaims: 'previousClaims',
     reviewTestResults: 'reviewTestResults',
     piHunt: 'piHunt',
+    piHuntAllAnimals: 'piHuntAllAnimals',
+    piHuntRecommended: 'piHuntRecommended',
     amount: 'amount'
   },
   claim: {

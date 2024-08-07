@@ -20,6 +20,7 @@ const {
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 const { getReviewType } = require('../../lib/get-review-type')
+const { optionalPIHunt } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
@@ -83,11 +84,16 @@ module.exports = [
       },
       handler: async (request, h) => {
         const { vetRCVSNumber } = request.payload
-        const { reviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
+        const { reviewTestResults, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
         const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
         const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
         session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
+
+        if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+          return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
+        }
 
         if (isBeef || isDairy) {
           if (isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
