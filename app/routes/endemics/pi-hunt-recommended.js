@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { urlPrefix } = require('../../config')
+const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const radios = require('../models/form-component/radios')
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = require('../../config/routes')
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
@@ -48,8 +48,8 @@ module.exports = [{
       setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
 
       if (piHuntRecommended === 'no') {
-        raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} is no when it should be yes`)
-        return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
+        raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} should be yes for PI hunt vet recommendation`)
+        return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
       } else return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
     }
   }
