@@ -17,29 +17,6 @@ const getBackLink = (isReview, isSheep) => {
   }
 }
 
-const getCommonRowsWithChangeLinks = (request, isReview) => {
-  const sessionData = getEndemicsClaim(request)
-  const { dateOfVisit, dateOfTesting, speciesNumbers } = sessionData
-
-  return [
-    {
-      key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
-      value: { html: formatDate(dateOfVisit) },
-      actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}` }] }
-    },
-    {
-      key: { text: 'Date of sampling' },
-      value: { html: dateOfTesting && formatDate(dateOfTesting) },
-      actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'date of sampling' }] }
-    },
-    {
-      key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
-      value: { html: upperFirstLetter(speciesNumbers) },
-      actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'number of species' }] }
-    }
-  ]
-}
-
 module.exports = [
   {
     method: 'GET',
@@ -47,7 +24,7 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const sessionData = getEndemicsClaim(request)
-        const { organisation, typeOfLivestock, typeOfReview, vetsName, vetRCVSNumber, piHunt, laboratoryURN, numberAnimalsTested, testResults } = sessionData
+        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, numberAnimalsTested, testResults } = sessionData
 
         const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
         const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -66,6 +43,23 @@ module.exports = [
           key: { text: 'Review or follow-up' },
           value: { html: isReview ? 'Animal health and welfare review' : 'Endemic disease follow-up' }
         }]
+        const dateOfVisitRow = {
+          key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
+          value: { html: formatDate(dateOfVisit) },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}` }] }
+        }
+
+        const dateOfSamplingRow = {
+          key: { text: 'Date of sampling' },
+          value: { html: dateOfTesting && formatDate(dateOfTesting) },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'date of sampling' }] }
+        }
+
+        const speciesNumbersRow = {
+          key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
+          value: { html: upperFirstLetter(speciesNumbers) },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'number of species' }] }
+        }
         const numberOfAnimalsTestedRow = {
           key: { text: 'Number of samples taken' }, // Pigs, Beef, Sheep
           value: { html: numberAnimalsTested },
@@ -85,11 +79,21 @@ module.exports = [
         ]
         const piHuntRow = {
           key: { text: 'PI hunt' },
-          value: { html: upperFirstLetter(piHunt) },
+          value: { html: upperFirstLetter(sessionData?.piHunt) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'the pi hunt' }] }
         }
+        const piHuntRecommendedRow = {
+          key: { text: 'Vet recommended PI hunt' },
+          value: { html: upperFirstLetter(sessionData?.piHuntRecommended) },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHuntRecommended}`, text: 'Change', visuallyHiddenText: 'the pi hunt recommended' }] }
+        }
+        const piHuntAllAnimalsRow = {
+          key: { text: 'PI hunt done on all cattle in herd' },
+          value: { html: upperFirstLetter(sessionData?.piHuntAllAnimals) },
+          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHuntAllAnimals}`, text: 'Change', visuallyHiddenText: 'the pi hunt' }] }
+        }
         const laboratoryUrnRow = {
-          key: { text: 'URN' },
+          key: { text: isBeef || isDairy ? 'URN or test certificate' : 'URN' },
           value: { html: laboratoryURN },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'URN' }] }
         }
@@ -148,26 +152,38 @@ module.exports = [
 
         const beefRows = [
           vetVisitsReviewTestResultsRow,
-          ...getCommonRowsWithChangeLinks(request, isReview),
+          dateOfVisitRow,
+          isReview && dateOfSamplingRow,
+          speciesNumbersRow,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           piHuntRow,
+          piHuntRecommendedRow,
+          piHuntAllAnimalsRow,
+          isEndemicsFollowUp && dateOfSamplingRow,
           laboratoryUrnRow,
           testResultsRow,
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const dairyRows = [
           vetVisitsReviewTestResultsRow,
-          ...getCommonRowsWithChangeLinks(request, isReview),
+          dateOfVisitRow,
+          isReview && dateOfSamplingRow,
+          speciesNumbersRow,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           piHuntRow,
+          piHuntRecommendedRow,
+          piHuntAllAnimalsRow,
+          isEndemicsFollowUp && dateOfSamplingRow,
           laboratoryUrnRow,
           testResultsRow,
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const pigRows = [
-          ...getCommonRowsWithChangeLinks(request, isReview),
+          dateOfVisitRow,
+          dateOfSamplingRow,
+          speciesNumbersRow,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           vetVisitsReviewTestResultsRow,
@@ -180,7 +196,9 @@ module.exports = [
           isEndemicsFollowUp && biosecurityAssessmentRow
         ]
         const sheepRows = [
-          ...getCommonRowsWithChangeLinks(request, isReview),
+          dateOfVisitRow,
+          dateOfSamplingRow,
+          speciesNumbersRow,
           numberOfAnimalsTestedRow,
           ...vetDetailsRows,
           laboratoryUrnRow,

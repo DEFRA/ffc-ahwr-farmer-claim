@@ -69,7 +69,7 @@ module.exports = [{
       if (piHuntAllAnimals === 'no') {
         const livestockText = getLivestockText(typeOfLivestock)
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
-        return h.view(endemicsPIHuntAllAnimalsException, { claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl   })
+        return h.view(endemicsPIHuntAllAnimalsException, { claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
       } else return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
     }
   }
