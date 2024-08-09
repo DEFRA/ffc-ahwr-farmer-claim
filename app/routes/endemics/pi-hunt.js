@@ -18,8 +18,8 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const { piHunt: previousAnswer } = getEndemicsClaim(request)
-
-        return h.view(endemicsPIHunt, { backLink, previousAnswer })
+        const titleText = optionalPIHunt.enabled ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+        return h.view(endemicsPIHunt, { titleText, backLink, previousAnswer })
       }
     }
   },
@@ -32,10 +32,14 @@ module.exports = [
           piHunt: Joi.string().valid('yes', 'no').required()
         }),
         failAction: (request, h, _err) => {
+          const { piHunt: previousAnswer } = getEndemicsClaim(request)
+          const titleText = optionalPIHunt.enabled ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
           return h.view(
             endemicsPIHunt,
             {
+              titleText,
               backLink,
+              previousAnswer,
               errorMessage: { text: errorMessageText, href: '#piHunt' }
             }
           )
