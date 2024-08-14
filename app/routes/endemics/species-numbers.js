@@ -26,10 +26,10 @@ const backLink = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
 
-  if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
   if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsDateOfVisit}`
   }
+  if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
 
   return `${urlPrefix}/${endemicsDateOfTesting}`
 }

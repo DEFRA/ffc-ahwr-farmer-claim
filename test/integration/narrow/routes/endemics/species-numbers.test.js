@@ -7,44 +7,20 @@ const { getReviewType } = require('../../../../../app/lib/get-review-type')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 
-describe('Species numbers test', () => {
-  const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/species-numbers'
+const auth = { credentials: {}, strategy: 'cookie' }
+const url = '/claim/endemics/species-numbers'
+
+describe('Species numbers test when Optional PI Hunt is OFF', () => {
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
-
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -214,6 +190,37 @@ describe('Species numbers test', () => {
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('404 - Not Found')
+    })
+  })
+})
+
+describe('Species numbers test when Optional PI Hunt is ON', () => {
+  beforeAll(() => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`GET ${url} route`, () => {
+    test.each([
+      { typeOfLivestock: 'beef' },
+      { typeOfLivestock: 'dairy' }
+    ])('returns 200', async ({ typeOfLivestock }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E' } })
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(200)
+      expect($('.govuk-back-link').attr('href')).toContain('endemics/date-of-visit')
+      expectPhaseBanner.ok($)
     })
   })
 })

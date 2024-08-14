@@ -42,7 +42,7 @@ const previousPageUrl = (request) => {
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
 
-  if (optionalPIHunt.enabled) return `${urlPrefix}/${endemicsDateOfTesting}`
+  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) return `${urlPrefix}/${endemicsDateOfTesting}`
   if (isReview) return `${urlPrefix}/${endemicsVetRCVS}`
   if (isEndemicsFollowUp && isPigs) return `${urlPrefix}/${endemicsVaccination}`
   if ((isBeef || isDairy) && isPositive) return `${urlPrefix}/${endemicsPIHunt}`
