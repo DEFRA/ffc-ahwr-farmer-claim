@@ -17,7 +17,7 @@ const previousPageUrl = (request) => {
   const piHuntDone = session?.piHunt === 'yes'
   const piHuntRecommended = session?.piHuntRecommended === 'yes'
   const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
-  const piHuntValid = (isPositive && piHuntDone) || (isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals)
+  const piHuntValid = (isPositive && piHuntDone && piHuntAllAnimals) || (isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals)
   
   if ((isBeef || isDairy) && optionalPIHunt.enabled) {
     switch (true) {
