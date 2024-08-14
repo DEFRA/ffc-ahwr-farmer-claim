@@ -182,7 +182,9 @@ module.exports = [
         const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
         const mainMessage = { url: '#' }
         let backToPageMessage = 'Enter the date the vet last visited your farm for this review.'
-        if (!isValid) {
+        // THIS IS TEMPORY - JUST FOR SOAK TESTING
+        // if (!isValid) {
+        if (!isValid && reason !== dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment) {
           switch (reason) {
             case dateOfVetVisitExceptions.reviewWithin10:
               mainMessage.text = 'There must be at least 10 months between your reviews.'
