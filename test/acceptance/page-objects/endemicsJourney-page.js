@@ -63,10 +63,9 @@ const BIO_SECURITY_PERCENTAGE='#assessmentPercentage'
 
 const BIO_SECURITY_NO_OPTION_SELECTED='Select whether the vet did a biosecurity assessment' 	
 const BIO_SECURITY_NO_PERCENTAGE_ENTERED='Enter the assessment percentage'
-const BIO_SECURITY_ERROR_HEADER='//*[@id="main-content"]/div/div/div/div[1]/div/ul'
-//TO BE USED ONCE CHANGES ARE DEPLOED IN PRE, UPDATE IN 223 AND 226
-// const BIO_SECURITY_ERROR_HEADER='a[href="#biosecurity"]'
-// const BIO_SECURITY_ERROR_HEADER_ASSESSMENT='a[href="#assessmentPercentage"]'
+
+const BIO_SECURITY_ERROR_HEADER='a[href="#biosecurity"]'
+const BIO_SECURITY_ERROR_HEADER_ASSESSMENT='a[href="#assessmentPercentage"]'
 //Sheep
 const SHEEP_HEALTH_PACKAGE='#sheepEndemicsPackage'
 const SHEEP_VET_TEST='#sheepTests'
@@ -227,7 +226,7 @@ async validateIncorrectNoOfSamplesError(){
     await this.elementToContainErrorText(BIO_SECURITY_ERROR_HEADER,BIO_SECURITY_NO_OPTION_SELECTED)
   } 
   async validateNoPercentageEntered(){
-    await this.elementToContainErrorText(BIO_SECURITY_ERROR_HEADER,BIO_SECURITY_NO_PERCENTAGE_ENTERED)
+    await this.elementToContainErrorText(BIO_SECURITY_ERROR_HEADER_ASSESSMENT,BIO_SECURITY_NO_PERCENTAGE_ENTERED)
   } 
   async chooseSheepHealthPackage(){
     await this.clickOn(SHEEP_HEALTH_PACKAGE)

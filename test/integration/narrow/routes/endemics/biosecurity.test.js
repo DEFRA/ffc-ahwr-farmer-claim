@@ -4,6 +4,7 @@ const { getEndemicsClaim } = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { urlPrefix } = require('../../../../../app/config')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const {
   endemicsBiosecurity,
   endemicsCheckAnswers
@@ -12,14 +13,14 @@ const {
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('../../../../../app/session')
 
-describe('Biosecurity test', () => {
-  const url = `/claim/${endemicsBiosecurity}`
-  const auth = {
-    credentials: { reference: '1111', sbi: '111111111' },
-    strategy: 'cookie'
-  }
-  let crumb
+const url = `/claim/${endemicsBiosecurity}`
+const auth = {
+  credentials: { reference: '1111', sbi: '111111111' },
+  strategy: 'cookie'
+}
+let crumb
 
+describe('Biosecurity test when Optional PI Hunt is OFF', () => {
   beforeEach(async () => {
     crumb = await getCrumbs(global.__SERVER__)
   })
@@ -27,33 +28,7 @@ describe('Biosecurity test', () => {
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl:
-            'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
   afterAll(() => {
     jest.resetAllMocks()
@@ -271,6 +246,41 @@ describe('Biosecurity test', () => {
       expect(response.statusCode).toBe(400)
 
       expect($('li > a').text()).toContain(errorMessage)
+    })
+  })
+})
+
+describe('Biosecurity test when Optional PI Hunt is ON', () => {
+  beforeEach(async () => {
+    crumb = await getCrumbs(global.__SERVER__)
+  })
+
+  beforeAll(() => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+  describe(`GET ${url} route`, () => {
+    test.each([
+      { typeOfLivestock: 'beef', piHunt: 'no', piHuntRecommended: 'no', piHuntAllAnimals: 'no', reviewTestResults: 'negative', backLink: '/claim/endemics/pi-hunt' },
+      { typeOfLivestock: 'beef', piHunt: 'yes', piHuntRecommended: 'no', piHuntAllAnimals: 'no', reviewTestResults: 'negative', backLink: '/claim/endemics/pi-hunt-recommended' },
+      { typeOfLivestock: 'beef', piHunt: 'yes', piHuntRecommended: 'yes', piHuntAllAnimals: 'no', reviewTestResults: 'negative', backLink: '/claim/endemics/pi-hunt-all-animals' },
+      { typeOfLivestock: 'beef', piHunt: 'yes', piHuntRecommended: 'yes', piHuntAllAnimals: 'yes', reviewTestResults: 'negative', backLink: '/claim/endemics/test-results' },
+      { typeOfLivestock: 'beef', piHunt: 'yes', piHuntRecommended: 'yes', piHuntAllAnimals: 'yes', reviewTestResults: 'positive', backLink: '/claim/endemics/test-results' }
+    ])('return 200', async ({ typeOfLivestock, piHunt, piHuntRecommended, piHuntAllAnimals, reviewTestResults, backLink }) => {
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock, piHunt, piHuntRecommended, reviewTestResults, piHuntAllAnimals })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const response = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect(response.statusCode).toBe(200)
+      expect($('.govuk-back-link').attr('href')).toContain(backLink)
     })
   })
 })

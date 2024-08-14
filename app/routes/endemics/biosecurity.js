@@ -13,7 +13,7 @@ const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
   const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
-  
+
   const piHuntDone = session?.piHunt === 'yes'
   const piHuntRecommended = session?.piHuntRecommended === 'yes'
   const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
@@ -26,16 +26,16 @@ const previousPageUrl = (request) => {
       case (isNegative && piHuntDone && !piHuntRecommended):
         return `${urlPrefix}/${endemicsPIHuntRecommended}`
       case (isNegative && piHuntDone && piHuntRecommended && !piHuntAllAnimals):
-      case (isPositive && piHuntDone && !piHuntAllAnimals):  
+      case (isPositive && piHuntDone && !piHuntAllAnimals):
         return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
       case piHuntValid:
         return `${urlPrefix}/${endemicsTestResults}`
     }
   } else {
-  if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
-  if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
+    if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
+    if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
 
-  return `${urlPrefix}/${endemicsTestResults}`
+    return `${urlPrefix}/${endemicsTestResults}`
   }
 }
 

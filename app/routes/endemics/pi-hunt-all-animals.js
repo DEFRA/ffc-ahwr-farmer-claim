@@ -9,8 +9,7 @@ const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('..
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
-const backLink = (request) => {
-  const { reviewTestResults } = getEndemicsClaim(request)
+const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults)
 
   if (isPositive) return `${urlPrefix}/${endemicsPIHunt}`
@@ -30,10 +29,10 @@ module.exports = [{
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { typeOfLivestock, piHuntAllAnimals } = getEndemicsClaim(request)
+      const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
       const yesOrNoRadios = radios('', 'piHuntAllAnimals')([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
       const questionText = getQuestionText(typeOfLivestock)
-      return h.view(endemicsPIHuntAllAnimals, { questionText, backLink: backLink(request), ...yesOrNoRadios })
+      return h.view(endemicsPIHuntAllAnimals, { questionText, backLink: backLink(reviewTestResults), ...yesOrNoRadios })
     }
   }
 }, {
@@ -45,14 +44,14 @@ module.exports = [{
         piHuntAllAnimals: Joi.string().valid('yes', 'no').required()
       }),
       failAction: async (request, h, error) => {
-        const { typeOfLivestock, piHuntAllAnimals } = getEndemicsClaim(request)
+        const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
         const yesOrNoRadios = radios('', 'piHuntAllAnimals')([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
         const questionText = getQuestionText(typeOfLivestock)
 
         return h.view(endemicsPIHuntAllAnimals, {
           ...yesOrNoRadios,
           questionText,
-          backLink: backLink(request),
+          backLink: backLink(reviewTestResults),
           errorMessage: {
             text: 'Select yes or no',
             href: '#piHuntAllAnimals'
@@ -69,8 +68,10 @@ module.exports = [{
       if (piHuntAllAnimals === 'no') {
         const livestockText = getLivestockText(typeOfLivestock)
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
-        return h.view(endemicsPIHuntAllAnimalsException, { claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
-      } else return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
+        return h.view(endemicsPIHuntAllAnimalsException, { claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
+      }
+
+      return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
     }
   }
 }]

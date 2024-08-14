@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
@@ -10,40 +11,14 @@ jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 
-describe('Test URN test', () => {
-  const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/test-urn'
+const auth = { credentials: {}, strategy: 'cookie' }
+const url = '/claim/endemics/test-urn'
 
+describe('Test URN test when Optional PI Hunt is off', () => {
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaimMock.mockImplementation(() => { })
-
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -193,6 +168,44 @@ describe('Test URN test', () => {
       expect($('h1').text()).toMatch('What’s the laboratory unique reference number (URN) for the test results?')
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Enter the URN')
       expect($('#laboratoryURN-error').text()).toMatch('Enter the URN')
+    })
+  })
+})
+
+describe('Test URN test when Optional PI Hunt is on', () => {
+  beforeAll(() => {
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`GET ${url} route`, () => {
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/date-of-testing' },
+      { typeOfLivestock: 'beef', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/date-of-testing' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/date-of-testing' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'R', latestVetVisitApplication: false, backLink: '/claim/endemics/vet-rcvs' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: true, backLink: '/claim/endemics/vaccination' },
+      { typeOfLivestock: 'pigs', typeOfReview: 'E', latestVetVisitApplication: false, backLink: '/claim/endemics/vaccination' }
+    ])('backLink when species $typeOfLivestock and type of review is $typeOfReview and application from old world is $latestVetVisitApplication ', async ({ typeOfLivestock, typeOfReview, latestVetVisitApplication, backLink }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, latestVetVisitApplication } })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').attr('href')).toContain(backLink)
+      expectPhaseBanner.ok($)
     })
   })
 })

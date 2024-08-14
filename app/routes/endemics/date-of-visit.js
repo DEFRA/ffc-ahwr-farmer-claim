@@ -182,7 +182,9 @@ module.exports = [
         const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
         const mainMessage = { url: '#' }
         let backToPageMessage = 'Enter the date the vet last visited your farm for this review.'
-        if (!isValid) {
+        // THIS IS TEMPORY - JUST FOR SOAK TESTING
+        // if (!isValid) {
+        if (!isValid && reason !== dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment) {
           switch (reason) {
             case dateOfVetVisitExceptions.reviewWithin10:
               mainMessage.text = 'There must be at least 10 months between your reviews.'
@@ -217,15 +219,15 @@ module.exports = [
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
+        if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+          return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+        }
+
         if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
           if (reviewTestResultsValue === 'negative' && (isBeef || isDairy)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
-        }
-
-        if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
-          return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
