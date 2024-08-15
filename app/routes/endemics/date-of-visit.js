@@ -134,36 +134,48 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
   return { error, data }
 }
 
-const getMainMessage = (reason, dateOfVetVisitExceptions, defaultBackToPageMessage, organisation, formattedTypeOfLivestock) => {
-  const mainMessage = {}
-  let backToPageMessage = defaultBackToPageMessage
+const getMessage = (reason, dateOfVetVisitExceptions, organisation, formattedTypeOfLivestock) => {
   switch (reason) {
     case dateOfVetVisitExceptions.reviewWithin10:
-      mainMessage.text = 'There must be at least 10 months between your reviews.'
-      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-      break
+      return {
+        mainMessage: {
+          text: 'There must be at least 10 months between your reviews.',
+          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+        },
+        backToPageMessage: 'Enter the date the vet last visited your farm for this review.'
+      }
     case dateOfVetVisitExceptions.rejectedReview:
-      mainMessage.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
-      mainMessage.url = '#'
-      break
+      return {
+        mainMessage: {
+          text: `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
+        },
+        backToPageMessage: 'Enter the date the vet last visited your farm for this review.'
+      }
     case dateOfVetVisitExceptions.noReview:
-      mainMessage.text = 'There must be no more than 10 months between your reviews and follow-ups.'
-      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
-      break
+      return {
+        mainMessage: {
+          text: 'There must be no more than 10 months between your reviews and follow-ups.',
+          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+        },
+        backToPageMessage: 'Enter the date the vet last visited your farm for this follow-up.'
+      }
     case dateOfVetVisitExceptions.endemicsWithin10:
-      mainMessage.text = 'There must be at least 10 months between your follow-ups.'
-      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
-      break
+      return {
+        mainMessage: {
+          text: 'There must be at least 10 months between your follow-ups.',
+          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+        },
+        backToPageMessage: 'Enter the date the vet last visited your farm for this follow-up.'
+      }
     case dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment:
-      mainMessage.text = 'Your review claim must have been approved before you claim for the follow-up that happened after it.'
-      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
-      break
+      return {
+        mainMessage: {
+          text: 'Your review claim must have been approved before you claim for the follow-up that happened after it.',
+          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+        },
+        backToPageMessage: 'Enter the date the vet last visited your farm for this follow-up'
+      }
   }
-
-  return { mainMessage, backToPageMessage }
 }
 
 module.exports = [
@@ -211,12 +223,9 @@ module.exports = [
         const formattedTypeOfLivestock = (isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`
         const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
         const { isValid, reason } = isValidDateOfVisit(dateOfVisit, typeOfReview, previousClaims, latestVetVisitApplication)
-        let mainMessage = { url: '#' }
-        let backToPageMessage = 'Enter the date the vet last visited your farm for this review.'
+
         if (!isValid) {
-          const messagesForInvalidOption = getMainMessage(reason, dateOfVetVisitExceptions, backToPageMessage, organisation, formattedTypeOfLivestock)
-          mainMessage = messagesForInvalidOption.mainMessage
-          backToPageMessage = messagesForInvalidOption.backToPageMessage
+          const { mainMessage, backToPageMessage } = getMessage(reason, dateOfVetVisitExceptions, organisation, formattedTypeOfLivestock)
           raiseInvalidDataEvent(request, dateOfVisitKey, `Value ${dateOfVisit} is invalid. Error: ${mainMessage.text}`)
           return h.view(endemicsDateOfVisitException, { backLink: pageUrl, mainMessage, ruralPaymentsAgency: config.ruralPaymentsAgency, backToPageMessage }).code(400).takeover()
         }
