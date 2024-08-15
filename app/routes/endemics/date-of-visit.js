@@ -135,47 +135,35 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
 }
 
 const getMessage = (reason, dateOfVetVisitExceptions, organisation, formattedTypeOfLivestock) => {
+  const mainMessage = {}
+  let backToPageMessage = 'Enter the date the vet last visited your farm for this review.'
   switch (reason) {
     case dateOfVetVisitExceptions.reviewWithin10:
-      return {
-        mainMessage: {
-          text: 'There must be at least 10 months between your reviews.',
-          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-        },
-        backToPageMessage: 'Enter the date the vet last visited your farm for this review.'
-      }
+      mainMessage.text = 'There must be at least 10 months between your reviews.'
+      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+      break
     case dateOfVetVisitExceptions.rejectedReview:
-      return {
-        mainMessage: {
-          text: `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
-        },
-        backToPageMessage: 'Enter the date the vet last visited your farm for this review.'
-      }
+      mainMessage.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
+      mainMessage.url = '#'
+      break
     case dateOfVetVisitExceptions.noReview:
-      return {
-        mainMessage: {
-          text: 'There must be no more than 10 months between your reviews and follow-ups.',
-          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-        },
-        backToPageMessage: 'Enter the date the vet last visited your farm for this follow-up.'
-      }
+      mainMessage.text = 'There must be no more than 10 months between your reviews and follow-ups.'
+      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
+      break
     case dateOfVetVisitExceptions.endemicsWithin10:
-      return {
-        mainMessage: {
-          text: 'There must be at least 10 months between your follow-ups.',
-          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-        },
-        backToPageMessage: 'Enter the date the vet last visited your farm for this follow-up.'
-      }
+      mainMessage.text = 'There must be at least 10 months between your follow-ups.'
+      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
+      break
     case dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment:
-      return {
-        mainMessage: {
-          text: 'Your review claim must have been approved before you claim for the follow-up that happened after it.',
-          url: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-        },
-        backToPageMessage: 'Enter the date the vet last visited your farm for this follow-up'
-      }
+      mainMessage.text = 'Your review claim must have been approved before you claim for the follow-up that happened after it.'
+      mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
+      break
   }
+
+  return { mainMessage, backToPageMessage }
 }
 
 module.exports = [
