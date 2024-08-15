@@ -159,7 +159,7 @@ const getMessage = (reason, dateOfVetVisitExceptions, organisation, formattedTyp
     case dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment:
       mainMessage.text = 'Your review claim must have been approved before you claim for the follow-up that happened after it.'
       mainMessage.url = 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up'
+      backToPageMessage = 'Enter the date the vet last visited your farm for this follow-up.'
       break
   }
 
