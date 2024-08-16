@@ -144,7 +144,6 @@ const getMessage = (reason, dateOfVetVisitExceptions, organisation, formattedTyp
       break
     case dateOfVetVisitExceptions.rejectedReview:
       mainMessage.text = `${organisation?.name} - SBI ${organisation?.sbi} had a failed review claim for ${formattedTypeOfLivestock} in the last 10 months.`
-      mainMessage.url = '#'
       break
     case dateOfVetVisitExceptions.noReview:
       mainMessage.text = 'There must be no more than 10 months between your reviews and follow-ups.'
