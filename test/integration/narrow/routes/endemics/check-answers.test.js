@@ -61,6 +61,9 @@ describe('Check answers test', () => {
         },
         endemics: {
           enabled: true
+        },
+        optionalPIHunt: {
+          enabled: true
         }
       }
     })

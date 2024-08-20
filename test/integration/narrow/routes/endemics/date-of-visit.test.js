@@ -374,6 +374,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     test.each([
       {
         description: 'prior review claim difference is less than ten months',
+        reason: 'another review within 10 months',
         day: '01',
         month: '05',
         year: '2023',
@@ -392,6 +393,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       },
       {
         description: 'next review claim difference is less than 10 months',
+        reason: 'another review within 10 months',
         day: '01',
         month: '05',
         year: '2023',
@@ -410,7 +412,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       }
     ])(
       'Redirect to exception screen when ($description)',
-      async ({ day, month, year, applicationCreationDate, claim }) => {
+      async ({ reason, day, month, year, applicationCreationDate, claim }) => {
         getEndemicsClaimMock.mockImplementationOnce(() => {
           return {
             latestVetVisitApplication: {
@@ -435,7 +437,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           headers: { cookie: `crumb=${crumb}` }
         }
         claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
-          isValid: false
+          isValid: false,
+          reason: 'rejected review'
         }))
         const res = await global.__SERVER__.inject(options)
         const $ = cheerio.load(res.payload)
@@ -483,16 +486,16 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         month: '05',
         year: '2023',
         applicationCreationDate: '2023-01-01'
+      },
+      {
+        description: 'previous review claim is not ready to pay and user can not calim for endemics',
+        content: 'Your review claim must have been approved before you claim for the follow-up that happened after it.',
+        dateOfVetVisitException: 'claim endemics before review status is ready to pay',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01'
       }
-      // {
-      //   description: 'previous review claim is not ready to pay and user can not calim for endemics',
-      //   content: 'Your review claim must have been approved before you claim for the follow-up that happened after it.',
-      //   dateOfVetVisitException: 'claim endemics before review status is ready to pay',
-      //   day: '01',
-      //   month: '05',
-      //   year: '2023',
-      //   applicationCreationDate: '2023-01-01'
-      // }
     ])(
       'Redirect to exception screen when ($description) and match content',
       async ({ day, month, year, applicationCreationDate, content, dateOfVetVisitException }) => {

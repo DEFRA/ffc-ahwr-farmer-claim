@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const radios = require('../models/form-component/radios')
+const { getAmount } = require('../../api-requests/claim-service-api')
 const { getTestResult } = require('../../lib/get-test-result')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = require('../../config/routes')
@@ -17,7 +18,6 @@ const backLink = (reviewTestResults) => {
   return `${urlPrefix}/${endemicsPIHuntRecommended}`
 }
 const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
-const claimPaymentNoPiHunt = '[placeholder amount]'
 const getLivestockText = (typeOfLivestock) => {
   const { isBeef } = getLivestockTypes(typeOfLivestock)
   return isBeef ? 'beef' : 'dairy'
@@ -60,13 +60,14 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
+      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt } = getEndemicsClaim(request)
       const { piHuntAllAnimals } = request.payload
-      const { typeOfLivestock } = getEndemicsClaim(request)
-      console.log('typeOfLivestock', typeOfLivestock)
+
       setEndemicsClaim(request, piHuntAllAnimalsKey, piHuntAllAnimals)
 
       if (piHuntAllAnimals === 'no') {
         const livestockText = getLivestockText(typeOfLivestock)
+        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
         return h.view(endemicsPIHuntAllAnimalsException, { claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
       }

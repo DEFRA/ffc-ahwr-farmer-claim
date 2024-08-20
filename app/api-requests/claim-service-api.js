@@ -38,6 +38,25 @@ async function isURNUnique (data) {
   }
 }
 
+async function getAmount (data) {
+  try {
+    const response = await Wreck.post(`${config.applicationApiUri}/claim/get-amount`, {
+      payload: data,
+      json: true
+    })
+
+    if (response.res.statusCode !== 200) {
+      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
+    }
+
+    return response.payload
+  } catch (error) {
+    console.error(`${new Date().toISOString()} Getting amount failed`)
+    appInsights.defaultClient.trackException({ exception: error })
+    return null
+  }
+}
+
 async function submitNewClaim (data) {
   try {
     const response = await Wreck.post(`${config.applicationApiUri}/claim`, {
@@ -167,6 +186,7 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
 }
 
 module.exports = {
+  getAmount,
   isURNUnique,
   submitNewClaim,
   isWithin10Months,
