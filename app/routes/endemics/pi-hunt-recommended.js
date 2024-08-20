@@ -2,6 +2,7 @@ const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { urlPrefix, ruralPaymentsAgency } = require('../../config')
 const radios = require('../models/form-component/radios')
+const { getAmount } = require('../../api-requests/claim-service-api')
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = require('../../config/routes')
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
@@ -9,7 +10,6 @@ const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`
 const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
-const claimPaymentNoPiHunt = '[placeholder amount]'
 
 module.exports = [{
   method: 'GET',
@@ -43,11 +43,14 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
+      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt } = getEndemicsClaim(request)
       const { piHuntRecommended } = request.payload
 
       setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
+      setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
 
       if (piHuntRecommended === 'no') {
+        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
         raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} should be yes for PI hunt vet recommendation`)
         return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
       }

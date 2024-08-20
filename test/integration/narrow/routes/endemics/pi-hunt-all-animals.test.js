@@ -5,9 +5,11 @@ const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsCl
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+const { getAmount } = require('../../../../../app/api-requests/claim-service-api')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('../../../../../app/api-requests/claim-service-api')
 
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/pi-hunt-all-animals'
@@ -103,6 +105,7 @@ describe('PI Hunt recommended tests', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
+      getAmount.mockResolvedValue(215)
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(400)

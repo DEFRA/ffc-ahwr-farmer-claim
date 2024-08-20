@@ -108,6 +108,37 @@ describe('Claim Service API', () => {
 
     expect(result).toBe(null)
   })
+
+  test('Get amount for claim', async () => {
+    const payload = 837
+    const mockResponse = {
+      res: {
+        statusCode: 200,
+        statusMessage: 'OK'
+      },
+      payload
+    }
+    Wreck.post.mockResolvedValue(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const result = await claimServiceApi.getAmount({ type: 'E', testResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
+
+    expect(result).toBe(payload)
+  })
+  test('Get amount for claim with wrong data', async () => {
+    const mockResponse = {
+      res: {
+        statusCode: 400,
+        statusMessage: 'Bad Request'
+      }
+    }
+    Wreck.post.mockResolvedValue(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const result = await claimServiceApi.getAmount({ type: 'E', testResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
+
+    expect(result).toBe(null)
+  })
   test('Check if the date is with in 8 months', async () => {
     const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
