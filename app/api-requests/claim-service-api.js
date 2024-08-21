@@ -39,9 +39,10 @@ async function isURNUnique (data) {
 }
 
 async function getAmount (data) {
+  const { type, typeOfLivestock, testResults, piHunt, piHuntAllAnimals } = data
   try {
     const response = await Wreck.post(`${config.applicationApiUri}/claim/get-amount`, {
-      payload: data,
+      payload: { type, typeOfLivestock, testResults, piHunt, piHuntAllAnimals },
       json: true
     })
 
