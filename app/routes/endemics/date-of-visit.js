@@ -232,7 +232,7 @@ module.exports = [
             if (optionalPIHunt.enabled) {
               return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
             } else if (reviewTestResultsValue === 'negative') {
-            return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+              return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
             }
           }
         }

@@ -6,6 +6,7 @@ const { getAmount } = require('../../api-requests/claim-service-api')
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = require('../../config/routes')
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnChange')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`
@@ -43,18 +44,19 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt } = getEndemicsClaim(request)
+      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntRecommended: previousAnswer } = getEndemicsClaim(request)
       const { piHuntRecommended } = request.payload
-
-      setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
-      setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
 
       if (piHuntRecommended === 'no') {
         const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
         raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} should be yes for PI hunt vet recommendation`)
+        if (piHuntRecommended !== previousAnswer) {
+          clearPiHuntSessionOnChange(request, 'piHuntRecommended')
+        }
+        setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
         return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
       }
-
+      setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
       return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
     }
   }
