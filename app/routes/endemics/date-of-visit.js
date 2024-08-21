@@ -224,17 +224,18 @@ module.exports = [
 
         session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
-        if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
-          return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
-        }
-
         if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
-          if (reviewTestResultsValue === 'negative' && (isBeef || isDairy)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+          if (isBeef || isDairy) {
+            if (optionalPIHunt.enabled) {
+              return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+            } else if (reviewTestResultsValue === 'negative') {
+            return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+            }
+          }
         }
-
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
       }
     }
