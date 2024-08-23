@@ -46,6 +46,7 @@ module.exports = [{
     handler: async (request, h) => {
       const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntRecommended: previousAnswer } = getEndemicsClaim(request)
       const { piHuntRecommended } = request.payload
+      setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
 
       if (piHuntRecommended === 'no') {
         const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
@@ -53,10 +54,10 @@ module.exports = [{
         if (piHuntRecommended !== previousAnswer) {
           clearPiHuntSessionOnChange(request, 'piHuntRecommended')
         }
-        setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
+
         return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
       }
-      setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
+
       return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
     }
   }
