@@ -8,14 +8,12 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = require('../../config/routes')
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnChange')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
 const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults)
-
-  if (isPositive) return `${urlPrefix}/${endemicsPIHunt}`
-
-  return `${urlPrefix}/${endemicsPIHuntRecommended}`
+  return isPositive ? `${urlPrefix}/${endemicsPIHunt}` : `${urlPrefix}/${endemicsPIHuntRecommended}`
 }
 const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
 const getLivestockText = (typeOfLivestock) => {
@@ -60,7 +58,7 @@ module.exports = [{
       }
     },
     handler: async (request, h) => {
-      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt } = getEndemicsClaim(request)
+      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntAllAnimals: previousAnswer } = getEndemicsClaim(request)
       const { piHuntAllAnimals } = request.payload
 
       setEndemicsClaim(request, piHuntAllAnimalsKey, piHuntAllAnimals)
@@ -69,6 +67,11 @@ module.exports = [{
         const livestockText = getLivestockText(typeOfLivestock)
         const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
+
+        if (piHuntAllAnimals !== previousAnswer) {
+          clearPiHuntSessionOnChange(request, 'piHuntAllAnimals')
+        }
+
         return h.view(endemicsPIHuntAllAnimalsException, { claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
       }
 

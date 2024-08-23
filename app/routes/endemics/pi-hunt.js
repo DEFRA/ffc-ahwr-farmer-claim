@@ -6,6 +6,7 @@ const { getTestResult } = require('../../lib/get-test-result')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnChange')
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
@@ -48,7 +49,7 @@ module.exports = [
         }
       },
       handler: async (request, h) => {
-        const { reviewTestResults } = getEndemicsClaim(request)
+        const { reviewTestResults, piHunt: previousAnswer } = getEndemicsClaim(request)
         const { isNegative, isPositive } = getTestResult(reviewTestResults)
         const answer = request.payload.piHunt
 
@@ -56,6 +57,10 @@ module.exports = [
 
         if (answer === 'no') {
           raiseInvalidDataEvent(request, piHuntKey, `Value ${answer} is not equal to required value yes`)
+
+          if (answer !== previousAnswer) {
+            clearPiHuntSessionOnChange(request, 'piHunt')
+          }
 
           if (optionalPIHunt.enabled && isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
 
