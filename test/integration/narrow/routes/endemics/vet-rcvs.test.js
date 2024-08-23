@@ -1,45 +1,20 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { rcvs: rcvsErrorMessages } = require('../../../../../app/lib/error-messages')
 jest.mock('../../../../../app/session')
 
-describe('Vet rcvs test', () => {
+describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/vet-rcvs'
 
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaimMock.mockImplementation(() => { })
-
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -169,6 +144,48 @@ describe('Vet rcvs test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
+    })
+  })
+})
+
+describe('Vet rcvs test when Optional PI Hunt is ON', () => {
+  const auth = { credentials: {}, strategy: 'cookie' }
+  const url = '/claim/endemics/vet-rcvs'
+
+  beforeAll(() => {
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`POST ${url} route`, () => {
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
+    test.each([
+      { typeOfLivestock: 'beef' },
+      { typeOfLivestock: 'dairy' }
+    ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $relevantReviewForEndemics ', async ({ typeOfLivestock }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', relevantReviewForEndemics: { type: undefined } } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, vetRCVSNumber: '1234567' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/pi-hunt')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
   })

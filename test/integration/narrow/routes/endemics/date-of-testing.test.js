@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const { labels } = require('../../../../../app/config/visit-date')
@@ -27,47 +28,21 @@ const latestReviewApplication = {
   type: 'VV'
 }
 
-describe('Date of testing', () => {
-  let crumb
-  const today = new Date()
-  const yearPast = new Date(today)
-  yearPast.setDate(yearPast.getDate() - 365)
-  const yesterday = new Date(today)
-  yesterday.setDate(yesterday.getDate() - 1)
-  const tomorrow = new Date(today)
-  tomorrow.setDate(tomorrow.getDate() + 1)
-  const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/date-of-testing'
+let crumb
+const today = new Date()
+const yearPast = new Date(today)
+yearPast.setDate(yearPast.getDate() - 365)
+const yesterday = new Date(today)
+yesterday.setDate(yesterday.getDate() - 1)
+const tomorrow = new Date(today)
+tomorrow.setDate(tomorrow.getDate() + 1)
+const auth = { credentials: {}, strategy: 'cookie' }
+const url = '/claim/endemics/date-of-testing'
 
+describe('Date of testing when Optional PI Hunt is OFF', () => {
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { latestReviewApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
-
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -371,6 +346,72 @@ describe('Date of testing', () => {
       expect(res.statusCode).toBe(400)
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
       expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
+    })
+  })
+})
+
+describe('Date of testing when Optional PI Hunt is ON', () => {
+  beforeAll(() => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`GET ${url} route`, () => {
+    test.each([
+      { typeOfLivestock: 'beef' },
+      { typeOfLivestock: 'dairy' }
+    ])('returns 200', async ({ typeOfLivestock }) => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfReview: 'E', typeOfLivestock, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/pi-hunt-all-animals')
+      expectPhaseBanner.ok($)
+      expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('This is the date samples were last taken for this follow-up. You can find it on the summary the vet gave you.')
+    })
+  })
+  describe(`POST ${url} route`, () => {
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
+    test.each([
+      {
+        description: 'When vet visited the farm',
+        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+        dateOfVisit: today,
+        typeOfLivestock: 'beef'
+      },
+      {
+        description: 'When vet visited the farm',
+        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
+        dateOfVisit: today,
+        typeOfLivestock: 'dairy'
+      }
+    ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
+      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
+
+      const options = {
+        method: 'POST',
+        url,
+        payload: { crumb, whenTestingWasCarriedOut, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
   })
 })

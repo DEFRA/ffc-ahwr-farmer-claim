@@ -73,6 +73,7 @@ container:
   apimScope:
   dateOfTestingEnabled:
   endemicsEnabled:
+  optionalPIHuntEnabled:
 
 ingress:
   class: nginx

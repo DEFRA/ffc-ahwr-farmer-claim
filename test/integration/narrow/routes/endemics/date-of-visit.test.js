@@ -7,6 +7,7 @@ const getEndemicsClaimMock =
   require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
@@ -49,11 +50,10 @@ const latestEndemicsApplication = {
 }
 
 const landingPage = '/claim/endemics/which-species'
+const auth = { credentials: {}, strategy: 'cookie' }
+const url = '/claim/endemics/date-of-visit'
 
-describe('Date of vet visit', () => {
-  const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/date-of-visit'
-
+describe('Date of vet visit when Optional PI Hunt is OFF', () => {
   beforeAll(() => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
@@ -65,33 +65,7 @@ describe('Date of vet visit', () => {
       }
     })
 
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl:
-              'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -693,5 +667,97 @@ describe('Date of vet visit', () => {
     const typeOfReview = 'R'
     const reviewOrFollowUpText = typeOfReview === 'R' ? 'review' : 'follow-up'
     expect(reviewOrFollowUpText).toMatch(/review/i)
+  })
+})
+
+describe('Date of vet visit when Optional PI Hunt is ON', () => {
+  beforeAll(() => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+
+  describe(`POST ${url} route`, () => {
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
+    test.each([
+      {
+        description: 'the type 0f review is endemic and type of livestock is beef and the previous claim is review test result is negative',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01',
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2022-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2022-01-01'
+          }
+        }
+      },
+      {
+        description: 'the type 0f review is endemic and type of livestock is dairy and the previous claim is review test result is negative',
+        day: '01',
+        month: '05',
+        year: '2023',
+        applicationCreationDate: '2023-01-01',
+        claim: {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2022-03-19T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'dairy',
+            dateOfVisit: '2022-01-01'
+          }
+        }
+      }
+    ])(
+      'Redirect to next page when ($description)',
+      async ({ day, month, year, applicationCreationDate, claim }) => {
+        getEndemicsClaimMock.mockReturnValueOnce({
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfLivestock: claim.data.typeOfLivestock,
+          typeOfReview: 'E'
+        })
+        const options = {
+          method: 'POST',
+          url,
+          payload: {
+            crumb,
+            [labels.day]: day.toString(),
+            [labels.month]: month.toString(),
+            [labels.year]: year.toString(),
+            dateOfAgreementAccepted: applicationCreationDate
+          },
+          auth,
+          headers: { cookie: `crumb=${crumb}` }
+        }
+        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+          isValid: true
+        }))
+        claimServiceApiMock.getReviewTestResultWithinLast10Months.mockImplementationOnce(() => ('negative'))
+
+        const res = await global.__SERVER__.inject(options)
+
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+        expect(setEndemicsClaimMock).toHaveBeenCalled()
+      }
+    )
   })
 })

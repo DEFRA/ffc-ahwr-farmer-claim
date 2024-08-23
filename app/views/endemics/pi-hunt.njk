@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{{ typeOfLivestock }} Number - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{{ typeOfLivestock }} PI Hunt - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -34,7 +34,7 @@
             legend:{
               isPageHeading: true,
               classes: "govuk-fieldset__legend--l",
-              text: 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+              text: titleText
             }
           }, 
           hint: {

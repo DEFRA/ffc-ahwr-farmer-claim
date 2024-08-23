@@ -37,5 +37,9 @@ module.exports = {
   endemicsSheepTestResults: 'endemics/sheep-test-results',
   endemicsPIHunt: 'endemics/pi-hunt',
   endemicsPIHuntException: 'endemics/pi-hunt-exception',
-  endemicsTestUrnException: 'endemics/test-urn-exception'
+  endemicsTestUrnException: 'endemics/test-urn-exception',
+  endemicsPIHuntRecommended: 'endemics/pi-hunt-recommended',
+  endemicsPIHuntRecommendedException: 'endemics/pi-hunt-recommended-exception',
+  endemicsPIHuntAllAnimals: 'endemics/pi-hunt-all-animals',
+  endemicsPIHuntAllAnimalsException: 'endemics/pi-hunt-all-animals-exception'
 }

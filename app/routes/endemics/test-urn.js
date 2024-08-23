@@ -1,6 +1,6 @@
 const Joi = require('joi')
 const session = require('../../session')
-const { urlPrefix, ruralPaymentsAgency } = require('../../config')
+const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
@@ -10,7 +10,8 @@ const {
   endemicsNumberOfOralFluidSamples,
   endemicsNumberOfSamplesTested,
   endemicsTestResults,
-  endemicsPIHunt
+  endemicsPIHunt,
+  endemicsDateOfTesting
 } = require('../../config/routes')
 const {
   endemicsClaim: { laboratoryURN: laboratoryURNKey }
@@ -41,6 +42,7 @@ const previousPageUrl = (request) => {
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
 
+  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) return `${urlPrefix}/${endemicsDateOfTesting}`
   if (isReview) return `${urlPrefix}/${endemicsVetRCVS}`
   if (isEndemicsFollowUp && isPigs) return `${urlPrefix}/${endemicsVaccination}`
   if ((isBeef || isDairy) && isPositive) return `${urlPrefix}/${endemicsPIHunt}`

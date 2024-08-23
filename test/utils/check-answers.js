@@ -33,8 +33,7 @@ const commonEndemicsFollowUpRowKeys = [
   'Business name',
   'Livestock',
   'Review or follow-up',
-  'Date of follow-up',
-  'Date of sampling'
+  'Date of follow-up'
 ]
 
 // Review claim data
@@ -60,7 +59,7 @@ const expectedReviewBeef = {
     '11 or more beef cattle',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'URN',
+    'URN or test certificate',
     'Test results'
   ],
   rowContents: [
@@ -102,7 +101,7 @@ const expectedReviewDairy = {
     ...commonReviewRowKeys,
     '11 or more dairy cattle',
     ...commonVetRowKeys,
-    'URN',
+    'URN or test certificate',
     'Test results'
   ],
   rowContents: [
@@ -259,7 +258,8 @@ const expectedEndemicsFollowUpBeef = {
     '11 or more beef cattle',
     'Number of samples taken',
     ...commonVetRowKeys,
-    'URN',
+    'Date of sampling',
+    'URN or test certificate',
     'Follow-up test result',
     'Biosecurity assessment'
   ],
@@ -268,32 +268,32 @@ const expectedEndemicsFollowUpBeef = {
     'Beef cattle',
     'Endemic disease follow-up',
     '19 December 2023',
-    '19 December 2023',
     'Yes',
     '42',
     'George',
     '1234567',
+    '19 December 2023',
     'laboratoryURN',
     'Positive',
     'Yes'
   ],
   rowActionTexts: [
     'Change date of follow-up',
-    'Change date of sampling',
     'Change number of species',
     'Change number of samples taken',
     ...commonVetRowActionTexts,
+    'Change date of sampling',
     'Change URN',
     'Change test results',
     'Change biosecurity assessment'
   ],
   rowLinks: [
     '/claim/endemics/date-of-visit',
-    '/claim/endemics/date-of-testing',
     '/claim/endemics/species-numbers',
     '/claim/endemics/number-of-species-tested',
     '/claim/endemics/vet-name',
     '/claim/endemics/vet-rcvs',
+    '/claim/endemics/date-of-testing',
     '/claim/endemics/test-urn',
     '/claim/endemics/test-results',
     '/claim/endemics/biosecurity'
@@ -305,7 +305,8 @@ const expectedEndemicsFollowUpDairy = {
     ...commonEndemicsFollowUpRowKeys,
     '11 or more dairy cattle',
     ...commonVetRowKeys,
-    'URN',
+    'Date of sampling',
+    'URN or test certificate',
     'Follow-up test result',
     'Biosecurity assessment'
   ],
@@ -314,29 +315,29 @@ const expectedEndemicsFollowUpDairy = {
     'Dairy cattle',
     'Endemic disease follow-up',
     '19 December 2023',
-    '19 December 2023',
     'Yes',
     'George',
     '1234567',
+    '19 December 2023',
     'laboratoryURN',
     'Positive',
     'Yes'
   ],
   rowActionTexts: [
     'Change date of follow-up',
-    'Change date of sampling',
     'Change number of species',
     ...commonVetRowActionTexts,
+    'Change date of sampling',
     'Change URN',
     'Change test results',
     'Change biosecurity assessment'
   ],
   rowLinks: [
     '/claim/endemics/date-of-visit',
-    '/claim/endemics/date-of-testing',
     '/claim/endemics/species-numbers',
     '/claim/endemics/vet-name',
     '/claim/endemics/vet-rcvs',
+    '/claim/endemics/date-of-testing',
     '/claim/endemics/test-urn',
     '/claim/endemics/test-results',
     '/claim/endemics/biosecurity'
@@ -346,6 +347,7 @@ const expectedEndemicsFollowUpDairy = {
 const expectedEndemicsFollowUpPigs = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
+    'Date of sampling',
     '51 or more pigs',
     'Number of samples taken',
     ...commonVetRowKeys,
@@ -401,6 +403,7 @@ const expectedEndemicsFollowUpPigs = {
 const expectedEndemicsFollowUpSheep = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
+    'Date of sampling',
     '21 or more sheep',
     'Number of samples taken',
     ...commonVetRowKeys,

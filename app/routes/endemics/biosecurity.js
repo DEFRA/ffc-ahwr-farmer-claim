@@ -2,8 +2,8 @@ const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { biosecurity: biosecurityKey } = require('../../session/keys').endemicsClaim
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { urlPrefix, ruralPaymentsAgency } = require('../../config')
-const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS } = require('../../config/routes')
+const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
+const { endemicsTestResults, endemicsBiosecurity, endemicsCheckAnswers, endemicsDiseaseStatus, endemicsBiosecurityException, endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntRecommended, endemicsPIHuntAllAnimals } = require('../../config/routes')
 const { livestockTypes } = require('../../constants/claim')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
@@ -12,12 +12,33 @@ const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
   const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
-  const { isNegative } = getTestResult(session?.reviewTestResults)
+  const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
 
-  if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
-  if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
+  const piHuntDone = session?.piHunt === 'yes'
+  const piHuntRecommended = session?.piHuntRecommended === 'yes'
+  const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
+  const piHuntValidPositive = optionalPIHunt.enabled ? (isPositive && piHuntDone && piHuntAllAnimals) : (isPositive && piHuntDone)
+  const piHuntValidNegative = (isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals)
+  const piHuntValid = piHuntValidPositive || piHuntValidNegative
 
-  return `${urlPrefix}/${endemicsTestResults}`
+  if ((isBeef || isDairy) && optionalPIHunt.enabled) {
+    switch (true) {
+      case (isNegative && !piHuntDone):
+        return `${urlPrefix}/${endemicsPIHunt}`
+      case (isNegative && piHuntDone && !piHuntRecommended):
+        return `${urlPrefix}/${endemicsPIHuntRecommended}`
+      case (isNegative && piHuntDone && piHuntRecommended && !piHuntAllAnimals):
+      case (isPositive && piHuntDone && !piHuntAllAnimals):
+        return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+      case piHuntValid:
+        return `${urlPrefix}/${endemicsTestResults}`
+    }
+  } else {
+    if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
+    if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
+
+    return `${urlPrefix}/${endemicsTestResults}`
+  }
 }
 
 const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {

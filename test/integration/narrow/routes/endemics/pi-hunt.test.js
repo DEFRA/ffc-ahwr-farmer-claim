@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
@@ -8,41 +9,15 @@ const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-da
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 
-describe('Species numbers test', () => {
-  const auth = { credentials: {}, strategy: 'cookie' }
-  const url = '/claim/endemics/pi-hunt'
+const auth = { credentials: {}, strategy: 'cookie' }
+const url = '/claim/endemics/pi-hunt'
 
+describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
-
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -62,7 +37,7 @@ describe('Species numbers test', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual('Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?')
-      expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('PI Hunt - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })
@@ -150,6 +125,62 @@ describe('Species numbers test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?')
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select if the vet did a PI hunt')
+    })
+  })
+})
+
+describe('PI Hunt tests when Optional PI Hunt is ON', () => {
+  beforeAll(() => {
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    raiseInvalidDataEvent.mockImplementation(() => { })
+    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
+  afterAll(() => {
+    jest.resetAllMocks()
+  })
+  describe(`POST ${url} route`, () => {
+    let crumb
+
+    beforeEach(async () => {
+      crumb = await getCrumbs(global.__SERVER__)
+    })
+    test.each([
+      { reviewTestResults: 'positive', expectedURL: '/claim/endemics/pi-hunt-all-animals' },
+      { reviewTestResults: 'negative', expectedURL: '/claim/endemics/pi-hunt-recommended' }
+    ])('Continue to eligible page if user select yes', async ({ reviewTestResults, expectedURL }) => {
+      const options = {
+        method: 'POST',
+        payload: { crumb, piHunt: 'yes' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults } })
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual(expectedURL)
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
+    })
+    test('Continue to ineligible page if user select no', async () => {
+      const options = {
+        method: 'POST',
+        payload: { crumb, piHunt: 'no' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/biosecurity')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
   })
 })

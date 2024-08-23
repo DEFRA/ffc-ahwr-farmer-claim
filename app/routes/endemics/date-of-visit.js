@@ -14,6 +14,7 @@ const {
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../../app/config')
 const urlPrefix = require('../../config').urlPrefix
+const { optionalPIHunt } = require('../../config')
 const { endemicsDateOfVisit, endemicsDateOfVisitException, endemicsDateOfTesting, endemicsVetVisitsReviewTestResults, endemicsSpeciesNumbers } = require('../../config/routes')
 const {
   endemicsClaim: { dateOfVisit: dateOfVisitKey, relevantReviewForEndemics: relevantReviewForEndemicsKey }
@@ -227,9 +228,14 @@ module.exports = [
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
-          if (reviewTestResultsValue === 'negative' && (isBeef || isDairy)) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+          if (isBeef || isDairy) {
+            if (optionalPIHunt.enabled) {
+              return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+            } else if (reviewTestResultsValue === 'negative') {
+              return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+            }
+          }
         }
-
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
       }
     }
