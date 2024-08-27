@@ -121,7 +121,7 @@ describe('Claim Service API', () => {
     Wreck.post.mockResolvedValue(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.getAmount({ type: 'E', testResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
+    const result = await claimServiceApi.getAmount({ type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
 
     expect(result).toBe(payload)
   })
@@ -135,7 +135,7 @@ describe('Claim Service API', () => {
     Wreck.post.mockResolvedValue(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.getAmount({ type: 'E', testResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
+    const result = await claimServiceApi.getAmount({ type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
 
     expect(result).toBe(null)
   })

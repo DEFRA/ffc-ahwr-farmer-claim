@@ -65,7 +65,7 @@ module.exports = [{
 
       if (piHuntAllAnimals === 'no') {
         const livestockText = getLivestockText(typeOfLivestock)
-        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
+        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
 
         if (piHuntAllAnimals !== previousAnswer) {
