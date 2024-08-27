@@ -28,7 +28,7 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-      const yesOrNoRadios = radios('', 'piHuntAllAnimals')([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+      const yesOrNoRadios = radios('', 'piHuntAllAnimals', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
       const questionText = getQuestionText(typeOfLivestock)
       return h.view(endemicsPIHuntAllAnimals, { questionText, backLink: backLink(reviewTestResults), ...yesOrNoRadios })
     }
@@ -43,7 +43,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-        const yesOrNoRadios = radios('', 'piHuntAllAnimals')([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+        const yesOrNoRadios = radios('', 'piHuntAllAnimals', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
         const questionText = getQuestionText(typeOfLivestock)
 
         return h.view(endemicsPIHuntAllAnimals, {
@@ -51,7 +51,7 @@ module.exports = [{
           questionText,
           backLink: backLink(reviewTestResults),
           errorMessage: {
-            text: 'Select yes or no',
+            text: `Select if the PI was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`,
             href: '#piHuntAllAnimals'
           }
         }).code(400).takeover()
@@ -65,7 +65,7 @@ module.exports = [{
 
       if (piHuntAllAnimals === 'no') {
         const livestockText = getLivestockText(typeOfLivestock)
-        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, testResults: reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
+        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no' })
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
 
         if (piHuntAllAnimals !== previousAnswer) {
