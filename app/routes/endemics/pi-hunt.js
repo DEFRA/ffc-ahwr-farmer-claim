@@ -10,7 +10,7 @@ const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnCh
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
-const errorMessageText = 'Select if the vet did a PI hunt'
+const errorMessageText = 'Select if a PI hunt was done'
 
 module.exports = [
   {

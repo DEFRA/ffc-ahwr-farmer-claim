@@ -51,7 +51,7 @@ module.exports = [{
           questionText,
           backLink: backLink(reviewTestResults),
           errorMessage: {
-            text: 'Select yes or no',
+            text: `Select if the PI was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`,
             href: '#piHuntAllAnimals'
           }
         }).code(400).takeover()

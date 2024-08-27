@@ -37,7 +37,7 @@ module.exports = [{
           ...yesOrNoRadios,
           backLink,
           errorMessage: {
-            text: 'Select yes or no',
+            text: 'Select if the vet recommended the PI hunt',
             href: '#piHuntRecommended'
           }
         }).code(400).takeover()
