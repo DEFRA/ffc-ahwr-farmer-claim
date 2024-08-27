@@ -18,7 +18,7 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { piHuntRecommended } = getEndemicsClaim(request)
-      const yesOrNoRadios = radios('', 'piHuntRecommended')([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
+      const yesOrNoRadios = radios('', 'piHuntRecommended', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
       return h.view(endemicsPIHuntRecommended, { backLink, ...yesOrNoRadios })
     }
   }
@@ -32,7 +32,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { piHuntRecommended } = getEndemicsClaim(request)
-        const yesOrNoRadios = radios('', 'piHuntRecommended')([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
+        const yesOrNoRadios = radios('', 'piHuntRecommended', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
         return h.view(endemicsPIHuntRecommended, {
           ...yesOrNoRadios,
           backLink,

@@ -28,7 +28,7 @@ module.exports = [{
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-      const yesOrNoRadios = radios('', 'piHuntAllAnimals')([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+      const yesOrNoRadios = radios('', 'piHuntAllAnimals', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
       const questionText = getQuestionText(typeOfLivestock)
       return h.view(endemicsPIHuntAllAnimals, { questionText, backLink: backLink(reviewTestResults), ...yesOrNoRadios })
     }
@@ -43,7 +43,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-        const yesOrNoRadios = radios('', 'piHuntAllAnimals')([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+        const yesOrNoRadios = radios('', 'piHuntAllAnimals', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
         const questionText = getQuestionText(typeOfLivestock)
 
         return h.view(endemicsPIHuntAllAnimals, {
