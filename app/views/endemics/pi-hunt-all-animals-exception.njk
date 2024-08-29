@@ -20,7 +20,7 @@
 
       <h2 class="govuk-heading-m">If the PI hunt was not done on all {{ livestockText }} cattle in the herd</h2>
       {% if reviewTestResults == 'positive' %}
-        <p class="govuk-body">You need to contact your vet to do the PI hunt on all [beef/dairy] cattle in the herd.</p>
+        <p class="govuk-body">You need to contact your vet to do the PI hunt on all {{ livestockText }} cattle in the herd.</p>
       {% elif reviewTestResults == 'negative' %}
         <p class="govuk-body">You cannot claim funding for the PI hunt. You can still continue to claim funding for a biosecurity assessment. If approved, your claim payment will be £{{ claimPaymentNoPiHunt }}.</p>
         <p class="govuk-body"><a class="govuk-link" href={{ continueClaimLink }}>Continue your claim.</a></p>
