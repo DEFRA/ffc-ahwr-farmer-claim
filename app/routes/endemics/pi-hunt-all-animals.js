@@ -43,7 +43,8 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-        const yesOrNoRadios = radios('', 'piHuntAllAnimals', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+        const errorText = `Select if the PI was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
+        const yesOrNoRadios = radios('', 'piHuntAllAnimals', errorText, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
         const questionText = getQuestionText(typeOfLivestock)
 
         return h.view(endemicsPIHuntAllAnimals, {
@@ -51,7 +52,7 @@ module.exports = [{
           questionText,
           backLink: backLink(reviewTestResults),
           errorMessage: {
-            text: `Select if the PI was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`,
+            text: errorText,
             href: '#piHuntAllAnimals'
           }
         }).code(400).takeover()
