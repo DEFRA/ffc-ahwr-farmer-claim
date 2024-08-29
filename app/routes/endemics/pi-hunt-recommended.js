@@ -32,12 +32,13 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { piHuntRecommended } = getEndemicsClaim(request)
-        const yesOrNoRadios = radios('', 'piHuntRecommended', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
+        const errorText = 'Select if the vet recommended the PI hunt'
+        const yesOrNoRadios = radios('', 'piHuntRecommended', errorText, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
         return h.view(endemicsPIHuntRecommended, {
           ...yesOrNoRadios,
           backLink,
           errorMessage: {
-            text: 'Select if the vet recommended the PI hunt',
+            text: errorText,
             href: '#piHuntRecommended'
           }
         }).code(400).takeover()
