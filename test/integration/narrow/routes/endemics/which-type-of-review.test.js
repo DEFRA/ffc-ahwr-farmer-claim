@@ -6,6 +6,7 @@ const { endemicsWhichTypeOfReview } = require('../../../../../app/config/routes'
 const sessionMock = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
@@ -21,33 +22,7 @@ describe('Which type of review test', () => {
 
   beforeAll(() => {
     setEndemicsClaimMock.mockImplementation(() => { })
-
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: true
-        }
-      }
-    })
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
   afterAll(() => {
@@ -182,25 +157,46 @@ describe('Which type of review test', () => {
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
 
-    // test('Returns 400 and redirects to error page for dairy follow-up', async () => {
-    //   sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
-    //   const options = {
-    //     method: 'POST',
-    //     url,
-    //     auth,
-    //     payload: {
-    //       crumb,
-    //       typeOfReview: 'endemics'
-    //     },
-    //     headers: { cookie: `crumb=${crumb}` }
-    //   }
+    test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
 
-    //   const res = await global.__SERVER__.inject(options)
+      const res = await global.__SERVER__.inject(options)
 
-    //   expect(res.statusCode).toBe(400)
-    //   const $ = cheerio.load(res.payload)
-    //   expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-    //   expectPhaseBanner.ok($)
-    // })
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+      expectPhaseBanner.ok($)
+    })
+
+    test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
+      setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: {
+          crumb,
+          typeOfReview: 'endemics'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
+    })
   })
 })
