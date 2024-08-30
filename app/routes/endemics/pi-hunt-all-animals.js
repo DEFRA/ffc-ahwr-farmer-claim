@@ -43,7 +43,7 @@ module.exports = [{
       }),
       failAction: async (request, h, error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-        const errorText = `Select if the PI was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
+        const errorText = `Select if the PI hunt was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
         const yesOrNoRadios = radios('', 'piHuntAllAnimals', errorText, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
         const questionText = getQuestionText(typeOfLivestock)
 
