@@ -15,7 +15,12 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">There could be a problem with your claim</h1>
+      {% if reviewTestResults == 'positive' %}
+        <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
+      {% elif reviewTestResults == 'negative' %}
+        <h1 class="govuk-heading-l">There could be a problem with your claim</h1>
+      {% endif %}
+
       <p class="govuk-body">To be effective, a PI hunt must be done on all {{ livestockText }} cattle in the herd.</p>
 
       <h2 class="govuk-heading-m">If the PI hunt was not done on all {{ livestockText }} cattle in the herd</h2>
