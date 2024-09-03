@@ -1,25 +1,26 @@
 const { endemicsClaim: { piHuntRecommended, piHuntAllAnimals, dateOfTesting, laboratoryURN, testResults } } = require('../session/keys')
-const { setEndemicsClaim } = require('../session')
+const { setEndemicsClaim, getEndemicsClaim } = require('../session')
 
-const clearTestDetails = (request) => {
-  setEndemicsClaim(request, dateOfTesting, undefined)
-  setEndemicsClaim(request, laboratoryURN, undefined)
-  setEndemicsClaim(request, testResults, undefined)
+const clearTestDetails = (request, session) => {
+  session.dateOfTesting && setEndemicsClaim(request, dateOfTesting, undefined)
+  session.laboratoryURN && setEndemicsClaim(request, laboratoryURN, undefined)
+  session.testResults && setEndemicsClaim(request, testResults, undefined)
 }
 
 function clearPiHuntSessionOnChange (request, piHuntStage) {
+  const session = getEndemicsClaim(request)
   switch (piHuntStage) {
     case 'piHunt':
-      setEndemicsClaim(request, piHuntRecommended, undefined)
-      setEndemicsClaim(request, piHuntAllAnimals, undefined)
-      clearTestDetails(request)
+      session.piHuntRecommended && setEndemicsClaim(request, piHuntRecommended, undefined)
+      session.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearTestDetails(request, session)
       break
     case 'piHuntRecommended':
-      setEndemicsClaim(request, piHuntAllAnimals, undefined)
-      clearTestDetails(request)
+      session.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearTestDetails(request, session)
       break
     case 'piHuntAllAnimals':
-      clearTestDetails(request)
+      clearTestDetails(request, session)
   }
 }
 

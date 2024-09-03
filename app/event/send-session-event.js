@@ -48,6 +48,7 @@ const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, stat
       data: { reference, applicationReference, [key]: value },
       ip
     }
+    console.log('raiseEvent', event, status)
     await raiseEvent(event, status)
   }
 }
