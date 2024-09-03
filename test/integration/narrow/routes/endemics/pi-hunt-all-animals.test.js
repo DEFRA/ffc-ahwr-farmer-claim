@@ -96,7 +96,8 @@ describe('PI Hunt recommended tests', () => {
       expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
-    test('Continue to ineligible page if user select no', async () => {
+    test('Continue to ineligible page if user select no and show correct content with negative review test result', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'negative' } })
       const options = {
         method: 'POST',
         payload: { crumb, piHuntAllAnimals: 'no' },
@@ -111,6 +112,24 @@ describe('PI Hunt recommended tests', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('There could be a problem with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
+    })
+    test('Continue to ineligible page if user select no and show correct content with positive review test result', async () => {
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      const options = {
+        method: 'POST',
+        payload: { crumb, piHuntAllAnimals: 'no' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      getAmount.mockResolvedValue(215)
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-heading-l').text()).toMatch('You cannot continue with your claim')
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
