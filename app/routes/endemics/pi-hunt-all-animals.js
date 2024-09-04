@@ -8,7 +8,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = require('../../config/routes')
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnChange')
+const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
 const backLink = (reviewTestResults) => {
