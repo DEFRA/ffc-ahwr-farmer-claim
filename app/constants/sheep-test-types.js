@@ -1,11 +1,10 @@
 const sheepPackages = {
-  improvedEwePerformance: 'Improved ewe performance',
-  improvedReproductivePerformance: 'Improved reproductive performance',
-  improvedLambPerformance: 'Improved lamb performance',
-  improvedNeonatalLambSurvival: 'Improved neonatal lamb survival',
-  reducedExternalParasites: 'Reduced level of external parasites',
-  reducedLameness: 'Reduced level of lameness',
-  other: 'Other'
+  improvedEwePerformance: 'Ewe condition',
+  improvedReproductivePerformance: 'Reproductive performance',
+  improvedLambPerformance: 'Lamb performance',
+  improvedNeonatalLambSurvival: 'Neonatal lamb survival',
+  reducedExternalParasites: 'External parasites',
+  reducedLameness: 'Lameness'
 }
 
 const sheepTestTypes = {
