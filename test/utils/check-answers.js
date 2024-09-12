@@ -425,7 +425,7 @@ const expectedEndemicsFollowUpSheep = {
     'George',
     '1234567',
     'laboratoryURN',
-    'Reduced level of external parasites',
+    'External parasites',
     'Flystrike Sheep scab Other',
     'Flystrike (Clinical symptoms present)',
     'Sheep scab (Negative)',
