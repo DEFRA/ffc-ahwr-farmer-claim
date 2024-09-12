@@ -6,7 +6,7 @@ const { getAmount } = require('../../api-requests/claim-service-api')
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = require('../../config/routes')
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnChange')
+const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`

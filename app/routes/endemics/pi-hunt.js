@@ -6,7 +6,7 @@ const { getTestResult } = require('../../lib/get-test-result')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { clearPiHuntSessionOnChange } = require('../../lib/clearPiHuntSessionOnChange')
+const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
