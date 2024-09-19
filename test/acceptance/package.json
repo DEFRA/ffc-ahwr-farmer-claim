@@ -68,7 +68,7 @@
         "@wdio/spec-reporter": "^8.39.0",
         "allure-commandline": "^2.26.0",
         "babel-jest": "^29.7.0",
-        "chromedriver": "^126.0.0",
+        "chromedriver": "^128.0.0",
         "cucumber-html-reporter": "6.0.0",
         "wdio-chromedriver-service": "^8.1.1",
         "webdriverio": "7.33.0"

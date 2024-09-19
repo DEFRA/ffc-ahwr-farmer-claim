@@ -1,4 +1,4 @@
-@smoke-reg
+@smoke-reg1
 Feature: Endemics -Negative-Beef- Regression 
 Scenario Outline:To check that all the functionality is working fine
 Given user is on the /claim landing page
