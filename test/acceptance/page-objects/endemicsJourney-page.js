@@ -90,7 +90,7 @@ const VET_TEST_RESULT_ERROR_ACTUAL='a[href="#testResult"]'
 //Beef
 const PI_HUNT_YES='#piHunt'
 const PI_HUNT_NO='#piHunt-2'
-const SELECT_PI_ERROR='Select if the vet did a PI hunt'
+const SELECT_PI_ERROR='Select if a PI hunt was done'
 const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
 const ACTUAL_PIHUNT_HEADER='//*[@id="main-content"]/div/div/form/div/fieldset/legend/h1'
 const EXPECTED_PIHUNT_HEADER='Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
