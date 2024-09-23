@@ -9,38 +9,48 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
+
+// Helper function to determine previous page based on session and livestock types
+const getPiHuntValidState = (session, isPositive, isNegative) => {
+  const piHuntDone = session?.piHunt === 'yes'
+  const piHuntRecommended = session?.piHuntRecommended === 'yes'
+  const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
+
+  const piHuntValidPositive = optionalPIHunt.enabled
+    ? (isPositive && piHuntDone && piHuntAllAnimals)
+    : (isPositive && piHuntDone)
+
+  const piHuntValidNegative = (isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals)
+
+  return piHuntValidPositive || piHuntValidNegative
+}
+
+const getBeefOrDairyPage = (isNegative, piHuntDone, piHuntRecommended, piHuntAllAnimals, piHuntValid) => {
+  if (isNegative && !piHuntDone) return `${urlPrefix}/${endemicsPIHunt}`
+  if (isNegative && piHuntDone && !piHuntRecommended) return `${urlPrefix}/${endemicsPIHuntRecommended}`
+  if (isNegative && piHuntDone && piHuntRecommended && !piHuntAllAnimals) return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+  if (isPositive && piHuntDone && !piHuntAllAnimals) return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+  if (piHuntValid) return `${urlPrefix}/${endemicsTestResults}`
+  return `${urlPrefix}/${endemicsTestResults}`
+}
+
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
   const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
 
-  const piHuntDone = session?.piHunt === 'yes'
-  const piHuntRecommended = session?.piHuntRecommended === 'yes'
-  const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
-  const piHuntValidPositive = optionalPIHunt.enabled ? (isPositive && piHuntDone && piHuntAllAnimals) : (isPositive && piHuntDone)
-  const piHuntValidNegative = (isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals)
-  const piHuntValid = piHuntValidPositive || piHuntValidNegative
+  const piHuntValid = getPiHuntValidState(session, isPositive, isNegative)
 
   if ((isBeef || isDairy) && optionalPIHunt.enabled) {
-    switch (true) {
-      case (isNegative && !piHuntDone):
-        return `${urlPrefix}/${endemicsPIHunt}`
-      case (isNegative && piHuntDone && !piHuntRecommended):
-        return `${urlPrefix}/${endemicsPIHuntRecommended}`
-      case (isNegative && piHuntDone && piHuntRecommended && !piHuntAllAnimals):
-      case (isPositive && piHuntDone && !piHuntAllAnimals):
-        return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
-      case piHuntValid:
-        return `${urlPrefix}/${endemicsTestResults}`
-    }
-  } else {
-    if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
-    if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
-
-    return `${urlPrefix}/${endemicsTestResults}`
+    return getBeefOrDairyPage(isNegative, session?.piHunt, session?.piHuntRecommended, session?.piHuntAllAnimals, piHuntValid)
   }
+
+  if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
+  if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
+  return `${urlPrefix}/${endemicsTestResults}`
 }
 
+// Helper function for generating error messages
 const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) => {
   if (biosecurity === undefined) return
 
@@ -56,6 +66,7 @@ const getAssessmentPercentageErrorMessage = (biosecurity, assessmentPercentage) 
   }
 }
 
+// Export the module for route handling
 module.exports = [
   {
     method: 'GET',
@@ -93,6 +104,7 @@ module.exports = [
           const errorMessage = biosecurity
             ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' }
             : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
+
           const errors = {
             errorMessage,
             radioErrorMessage: biosecurity === undefined ? { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
