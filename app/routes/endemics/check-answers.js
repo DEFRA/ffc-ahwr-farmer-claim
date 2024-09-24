@@ -9,14 +9,78 @@ const { sheepPackages, sheepTestTypes, sheepTestResultsType } = require('../../c
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
-const getBackLink = (isReview, isSheep) => {
-  if (isReview) {
-    return isSheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`
-  } else {
-    return isSheep ? `${urlPrefix}/${routes.endemicsSheepTestResults}` : `${urlPrefix}/${routes.endemicsBiosecurity}`
+// Helper function for getting backLink
+const getBackLink = (isReview, isSheep) => isReview
+  ? (isSheep ? `${urlPrefix}/${routes.endemicsTestUrn}` : `${urlPrefix}/${routes.endemicsTestResults}`)
+  : (isSheep ? `${urlPrefix}/${routes.endemicsSheepTestResults}` : `${urlPrefix}/${routes.endemicsBiosecurity}`)
+
+// Helper function for generating individual rows
+const createRow = (keyText, valueHtml, href, visuallyHiddenText) => ({
+  key: { text: keyText },
+  value: { html: valueHtml },
+  actions: { items: [{ href, text: 'Change', visuallyHiddenText }] }
+})
+
+// Helper function for vet details rows
+const getVetDetailsRows = (vetsName, vetRCVSNumber) => [
+  createRow('Vet\'s name', upperFirstLetter(vetsName), `${urlPrefix}/${routes.endemicsVetName}`, 'vet\'s name'),
+  createRow('Vet\'s RCVS number', vetRCVSNumber, `${urlPrefix}/${routes.endemicsVetRCVS}`, 'vet\'s rcvs number')
+]
+
+// Helper function for species-specific rows
+const speciesSpecificRows = (sessionData, typeOfLivestock, typeOfReview, isEndemicsFollowUp, isBeef, isDairy, isPigs, isSheep) => {
+  const { speciesNumbers, vetsName, vetRCVSNumber, numberAnimalsTested, piHunt, piHuntRecommended, piHuntAllAnimals, laboratoryURN, testResults, diseaseStatus, herdVaccinationStatus, biosecurity, numberOfOralFluidSamples, numberOfSamplesTested, sheepEndemicsPackage, sheepTestResults } = sessionData
+
+  const livestockRows = [
+    createRow('Business name', upperFirstLetter(sessionData.organisation?.name)),
+    createRow('Livestock', upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`)),
+    createRow('Review or follow-up', getReviewType(typeOfReview).isReview ? 'Animal health and welfare review' : 'Endemic disease follow-up'),
+    createRow(isReview ? 'Date of review' : 'Date of follow-up', formatDate(sessionData.dateOfVisit), `${urlPrefix}/${routes.endemicsDateOfVisit}`, `date of ${getReviewType(typeOfReview).isReview ? 'review' : 'follow-up'}`),
+    ...(sessionData.dateOfTesting ? [createRow('Date of sampling', formatDate(sessionData.dateOfTesting), `${urlPrefix}/${routes.endemicsDateOfTesting}`, 'date of sampling')] : []),
+    createRow(getSpeciesEligibleNumberForDisplay(sessionData, true), upperFirstLetter(speciesNumbers), `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, 'number of species'),
+    createRow('Number of samples taken', numberAnimalsTested, `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, 'number of samples taken'),
+    ...getVetDetailsRows(vetsName, vetRCVSNumber)
+  ]
+
+  // Additional rows based on livestock type
+  if (isBeef || isDairy) {
+    return [
+      ...livestockRows,
+      createRow('PI hunt', upperFirstLetter(piHunt), `${urlPrefix}/${routes.endemicsPIHunt}`, 'the pi hunt'),
+      createRow('Vet recommended PI hunt', upperFirstLetter(piHuntRecommended), `${urlPrefix}/${routes.endemicsPIHuntRecommended}`, 'the pi hunt recommended'),
+      createRow('PI hunt done on all cattle in herd', upperFirstLetter(piHuntAllAnimals), `${urlPrefix}/${routes.endemicsPIHuntAllAnimals}`, 'the pi hunt'),
+      createRow(isBeef || isDairy ? 'URN or test certificate' : 'URN', laboratoryURN, `${urlPrefix}/${routes.endemicsTestUrn}`, 'URN'),
+      createRow('Test results', upperFirstLetter(testResults), `${urlPrefix}/${routes.endemicsTestResults}`, 'test results'),
+      ...(isEndemicsFollowUp ? [createRow('Biosecurity assessment', upperFirstLetter(biosecurity), `${urlPrefix}/${routes.endemicsBiosecurity}`, 'biosecurity assessment')] : [])
+    ]
+  } else if (isPigs) {
+    return [
+      ...livestockRows,
+      createRow('Herd PRRS vaccination status', getVaccinationStatusForDisplay(herdVaccinationStatus), `${urlPrefix}/${routes.endemicsVaccination}`, 'herd PRRS vaccination status'),
+      ...(numberOfOralFluidSamples ? [createRow('Number of oral fluid samples taken', numberOfOralFluidSamples, `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, 'number of oral fluid samples taken')] : []),
+      ...(numberOfSamplesTested ? [createRow('Number of samples tested', numberOfSamplesTested, `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`, 'number of samples tested')] : []),
+      ...(diseaseStatus ? [createRow('Disease status category', diseaseStatus, `${urlPrefix}/${routes.endemicsDiseaseStatus}`, 'disease status category')] : [])
+    ]
+  } else if (isSheep) {
+    const sheepRows = [
+      createRow('Sheep health package', sheepPackages[sheepEndemicsPackage], `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, 'sheep health package')
+    ]
+
+    if (sheepTestResults && sheepTestResults.length) {
+      sheepRows.push({
+        key: { text: 'Diseases or conditions tested for' },
+        value: { html: sheepTestResults.map(sheepTest => `${sheepTestTypes[sheepEndemicsPackage].find(test => test.value === sheepTest.diseaseType).text}</br>`).join(' ') },
+        actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'diseases or conditions tested for' }] }
+      })
+    }
+
+    return [...livestockRows, ...sheepRows]
   }
+
+  return livestockRows
 }
 
+// Route definition
 module.exports = [
   {
     method: 'GET',
@@ -24,223 +88,14 @@ module.exports = [
     options: {
       handler: async (request, h) => {
         const sessionData = getEndemicsClaim(request)
-        const { organisation, typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, numberAnimalsTested, testResults } = sessionData
-
+        const { typeOfLivestock, typeOfReview } = sessionData
         const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
-        const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
+        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
+        const rows = speciesSpecificRows(sessionData, typeOfLivestock, typeOfReview, isEndemicsFollowUp, isBeef, isDairy, isPigs, isSheep)
         const backLink = getBackLink(isReview, isSheep)
 
-        const noChangeRows = [{
-          key: { text: 'Business name' },
-          value: { html: upperFirstLetter(organisation?.name) }
-        },
-        {
-          key: { text: 'Livestock' },
-          value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
-        },
-        {
-          key: { text: 'Review or follow-up' },
-          value: { html: isReview ? 'Animal health and welfare review' : 'Endemic disease follow-up' }
-        }]
-        const dateOfVisitRow = {
-          key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
-          value: { html: formatDate(dateOfVisit) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}` }] }
-        }
-
-        const dateOfSamplingRow = {
-          key: { text: 'Date of sampling' },
-          value: { html: dateOfTesting && formatDate(dateOfTesting) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'date of sampling' }] }
-        }
-
-        const speciesNumbersRow = {
-          key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
-          value: { html: upperFirstLetter(speciesNumbers) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`, text: 'Change', visuallyHiddenText: 'number of species' }] }
-        }
-        const numberOfAnimalsTestedRow = {
-          key: { text: 'Number of samples taken' }, // Pigs, Beef, Sheep
-          value: { html: numberAnimalsTested },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`, text: 'Change', visuallyHiddenText: 'number of samples taken' }] }
-        }
-        const vetDetailsRows = [
-          {
-            key: { text: 'Vet\'s name' },
-            value: { html: upperFirstLetter(vetsName) },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetName}`, text: 'Change', visuallyHiddenText: 'vet\'s name' }] }
-          },
-          {
-            key: { text: 'Vet\'s RCVS number' },
-            value: { html: vetRCVSNumber },
-            actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetRCVS}`, text: 'Change', visuallyHiddenText: 'vet\'s rcvs number' }] }
-          }
-        ]
-        const piHuntRow = {
-          key: { text: 'PI hunt' },
-          value: { html: upperFirstLetter(sessionData?.piHunt) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHunt}`, text: 'Change', visuallyHiddenText: 'the pi hunt' }] }
-        }
-        const piHuntRecommendedRow = {
-          key: { text: 'Vet recommended PI hunt' },
-          value: { html: upperFirstLetter(sessionData?.piHuntRecommended) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHuntRecommended}`, text: 'Change', visuallyHiddenText: 'the pi hunt recommended' }] }
-        }
-        const piHuntAllAnimalsRow = {
-          key: { text: 'PI hunt done on all cattle in herd' },
-          value: { html: upperFirstLetter(sessionData?.piHuntAllAnimals) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsPIHuntAllAnimals}`, text: 'Change', visuallyHiddenText: 'the pi hunt' }] }
-        }
-        const laboratoryUrnRow = {
-          key: { text: isBeef || isDairy ? 'URN or test certificate' : 'URN' },
-          value: { html: laboratoryURN },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestUrn}`, text: 'Change', visuallyHiddenText: 'URN' }] }
-        }
-        const oralFluidSamplesRow = {
-          key: { text: 'Number of oral fluid samples taken' }, // Pigs
-          value: { html: sessionData?.numberOfOralFluidSamples },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`, text: 'Change', visuallyHiddenText: 'number of oral fluid samples taken' }] }
-        }
-        const testResultsRow = {
-          key: { text: isReview ? 'Test results' : 'Follow-up test result' }, // Pigs, Dairy, Beef
-          value: { html: testResults && upperFirstLetter(testResults) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsTestResults}`, text: 'Change', visuallyHiddenText: 'test results' }] }
-        }
-        const vetVisitsReviewTestResultsRow = {
-          key: { text: 'Review test result' }, // Pigs, Dairy, Beef, when coming from old world agreement
-          value: { html: upperFirstLetter(sessionData?.vetVisitsReviewTestResults) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`, text: 'Change', visuallyHiddenText: 'review test results' }] }
-        }
-        const diseaseStatusRow = {
-          key: { text: 'Disease status category' }, // Pigs
-          value: { html: sessionData?.diseaseStatus },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`, text: 'Change', visuallyHiddenText: 'disease status category' }] }
-        }
-        const samplesTestedRow = {
-          key: { text: 'Number of samples tested' }, // Pigs
-          value: { html: sessionData?.numberOfSamplesTested },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`, text: 'Change', visuallyHiddenText: 'number of samples tested' }] }
-        }
-        const herdVaccinationStatusRow = {
-          key: { text: 'Herd PRRS vaccination status' }, // Pigs
-          value: { html: getVaccinationStatusForDisplay(sessionData?.herdVaccinationStatus) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'herd PRRS vaccination status' }] }
-        }
-        const biosecurityAssessmentRow = {
-          key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
-          value: { html: isPigs && sessionData?.biosecurity ? upperFirstLetter(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : upperFirstLetter(sessionData?.biosecurity) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'biosecurity assessment' }] }
-        }
-        const sheepPackageRow = {
-          key: { text: 'Sheep health package' }, // Sheep
-          value: { html: sheepPackages[sessionData?.sheepEndemicsPackage] },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, text: 'Change', visuallyHiddenText: 'sheep health package' }] }
-        }
-        const sheepDiseasesTestedRow = () => {
-          if (isEndemicsFollowUp && sessionData?.sheepTestResults?.length) {
-            const testList = sessionData?.sheepTestResults.map(sheepTest => `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text}</br>`).join(' ')
-            return {
-              key: { text: 'Diseases or conditions tested for' }, // Sheep
-              value: { html: testList },
-              actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'diseases or conditions tested for' }] }
-            }
-          } else {
-            return {}
-          }
-        }
-
-        const beefRows = [
-          vetVisitsReviewTestResultsRow,
-          dateOfVisitRow,
-          isReview && dateOfSamplingRow,
-          speciesNumbersRow,
-          numberOfAnimalsTestedRow,
-          ...vetDetailsRows,
-          piHuntRow,
-          piHuntRecommendedRow,
-          piHuntAllAnimalsRow,
-          isEndemicsFollowUp && dateOfSamplingRow,
-          laboratoryUrnRow,
-          testResultsRow,
-          isEndemicsFollowUp && biosecurityAssessmentRow
-        ]
-        const dairyRows = [
-          vetVisitsReviewTestResultsRow,
-          dateOfVisitRow,
-          isReview && dateOfSamplingRow,
-          speciesNumbersRow,
-          numberOfAnimalsTestedRow,
-          ...vetDetailsRows,
-          piHuntRow,
-          piHuntRecommendedRow,
-          piHuntAllAnimalsRow,
-          isEndemicsFollowUp && dateOfSamplingRow,
-          laboratoryUrnRow,
-          testResultsRow,
-          isEndemicsFollowUp && biosecurityAssessmentRow
-        ]
-        const pigRows = [
-          dateOfVisitRow,
-          dateOfSamplingRow,
-          speciesNumbersRow,
-          numberOfAnimalsTestedRow,
-          ...vetDetailsRows,
-          vetVisitsReviewTestResultsRow,
-          herdVaccinationStatusRow,
-          laboratoryUrnRow,
-          oralFluidSamplesRow, // review claim
-          testResultsRow,
-          samplesTestedRow, // endemics claim
-          diseaseStatusRow,
-          isEndemicsFollowUp && biosecurityAssessmentRow
-        ]
-        const sheepRows = [
-          dateOfVisitRow,
-          dateOfSamplingRow,
-          speciesNumbersRow,
-          numberOfAnimalsTestedRow,
-          ...vetDetailsRows,
-          laboratoryUrnRow,
-          testResultsRow,
-          sheepPackageRow,
-          sheepDiseasesTestedRow(),
-          ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length)
-            ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
-                return {
-                  key: { text: index === 0 ? 'Disease or condition test result' : '' },
-                  value: {
-                    html: typeof sheepTest.result === 'object'
-                      ? sheepTest.result.map(testResult => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
-                      : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find(resultType => resultType.value === sheepTest.result).text})`
-                  },
-                  actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`, text: 'Change', visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result` }] }
-                }
-              })
-            : []
-        ]
-
-        const speciesRows = () => {
-          switch (true) {
-            case isBeef:
-              return beefRows
-            case isDairy:
-              return dairyRows
-            case isPigs:
-              return pigRows
-            case isSheep:
-              return sheepRows
-            default:
-              return []
-          }
-        }
-
-        const rows = [
-          ...noChangeRows,
-          ...speciesRows()
-        ]
-
-        const rowsWithData = rows.filter((row) => row.value?.html !== undefined)
+        const rowsWithData = rows.filter(row => row.value?.html !== undefined)
         return h.view(routes.endemicsCheckAnswers, { listData: { rows: rowsWithData }, backLink })
       }
     }
@@ -250,66 +105,19 @@ module.exports = [
     path: pageUrl,
     options: {
       handler: async (request, h) => {
-        const {
-          typeOfLivestock,
-          typeOfReview,
-          dateOfVisit,
-          dateOfTesting,
-          speciesNumbers,
-          vetsName,
-          vetRCVSNumber,
-          laboratoryURN,
-          piHunt,
-          piHuntRecommended,
-          piHuntAllAnimals,
-          numberOfOralFluidSamples,
-          numberAnimalsTested,
-          testResults,
-          latestEndemicsApplication,
-          vetVisitsReviewTestResults,
-          sheepTestResults,
-          biosecurity,
-          herdVaccinationStatus,
-          diseaseStatus,
-          sheepEndemicsPackage,
-          numberOfSamplesTested,
-          reference,
-          reviewTestResults
-        } = getEndemicsClaim(request)
-
-        const tempClaimReference = reference
-        const { isSheep } = getLivestockTypes(typeOfLivestock)
-        const { isEndemicsFollowUp } = getReviewType(typeOfReview)
-
+        const sessionData = getEndemicsClaim(request)
         const claim = await submitNewClaim({
-          applicationReference: latestEndemicsApplication?.reference,
-          type: typeOfReview,
+          applicationReference: sessionData.latestEndemicsApplication?.reference,
+          type: sessionData.typeOfReview,
           createdBy: 'admin',
           data: {
-            typeOfLivestock,
-            dateOfVisit,
-            dateOfTesting,
-            speciesNumbers,
-            vetsName,
-            vetRCVSNumber,
-            laboratoryURN,
-            piHunt,
-            piHuntRecommended,
-            piHuntAllAnimals,
-            numberOfOralFluidSamples,
-            numberAnimalsTested,
-            testResults,
-            vetVisitsReviewTestResults,
-            biosecurity,
-            herdVaccinationStatus,
-            diseaseStatus,
-            sheepEndemicsPackage,
-            numberOfSamplesTested,
-            reviewTestResults,
-            ...(isEndemicsFollowUp && isSheep && {
-              testResults: sheepTestResults?.map(sheepTest => ({
+            ...sessionData,
+            ...(getReviewType(sessionData.typeOfReview).isEndemicsFollowUp && getLivestockTypes(sessionData.typeOfLivestock).isSheep && {
+              testResults: sessionData.sheepTestResults?.map(sheepTest => ({
                 diseaseType: sheepTest.diseaseType,
-                result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
+                result: typeof sheepTest.result === 'object'
+                  ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult }))
+                  : sheepTest.result
               }))
             })
           }
@@ -317,11 +125,9 @@ module.exports = [
 
         setEndemicsClaim(request, 'reference', claim.reference)
         setEndemicsClaim(request, 'amount', claim.data?.amount)
-        setTempClaimReference(request, 'tempClaimReference', tempClaimReference)
+        setTempClaimReference(request, 'tempClaimReference', sessionData.reference)
 
-        return h.redirect(
-          `${urlPrefix}/${routes.endemicsConfirmation}`
-        )
+        return h.redirect(`${urlPrefix}/${routes.endemicsConfirmation}`)
       }
     }
   }
