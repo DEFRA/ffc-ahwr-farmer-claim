@@ -16,6 +16,51 @@ const getBackLink = (isReview, isSheep) => {
     return isSheep ? `${urlPrefix}/${routes.endemicsSheepTestResults}` : `${urlPrefix}/${routes.endemicsBiosecurity}`
   }
 }
+const getNoChangeRows = (isReview, isPigs, isSheep, typeOfLivestock, organisation) => [{
+  key: { text: 'Business name' },
+  value: { html: upperFirstLetter(organisation?.name) }
+},
+{
+  key: { text: 'Livestock' },
+  value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
+},
+{
+  key: { text: 'Review or follow-up' },
+  value: { html: isReview ? 'Animal health and welfare review' : 'Endemic disease follow-up' }
+}]
+const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
+  return {
+    key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
+    value: { html: isPigs && sessionData?.biosecurity ? upperFirstLetter(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : upperFirstLetter(sessionData?.biosecurity) },
+    actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'biosecurity assessment' }] }
+  }
+}
+const getDateOfVisitRow = (isReview, dateOfVisit) => {
+  return {
+    key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
+    value: { html: formatDate(dateOfVisit) },
+    actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}` }] }
+  }
+}
+const getDateOfSamplingRow = (dateOfTesting) => {
+  return {
+    key: { text: 'Date of sampling' },
+    value: { html: dateOfTesting && formatDate(dateOfTesting) },
+    actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'date of sampling' }] }
+  }
+}
+const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
+  if (isEndemicsFollowUp && sessionData?.sheepTestResults?.length) {
+    const testList = sessionData?.sheepTestResults.map(sheepTest => `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text}</br>`).join(' ')
+    return {
+      key: { text: 'Diseases or conditions tested for' }, // Sheep
+      value: { html: testList },
+      actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'diseases or conditions tested for' }] }
+    }
+  } else {
+    return {}
+  }
+}
 
 module.exports = [
   {
@@ -30,30 +75,9 @@ module.exports = [
         const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
         const backLink = getBackLink(isReview, isSheep)
+        const dateOfVisitRow = getDateOfVisitRow(isReview, dateOfVisit)
 
-        const noChangeRows = [{
-          key: { text: 'Business name' },
-          value: { html: upperFirstLetter(organisation?.name) }
-        },
-        {
-          key: { text: 'Livestock' },
-          value: { html: upperFirstLetter((isPigs || isSheep) ? typeOfLivestock : `${typeOfLivestock} cattle`) }
-        },
-        {
-          key: { text: 'Review or follow-up' },
-          value: { html: isReview ? 'Animal health and welfare review' : 'Endemic disease follow-up' }
-        }]
-        const dateOfVisitRow = {
-          key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
-          value: { html: formatDate(dateOfVisit) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfVisit}`, text: 'Change', visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}` }] }
-        }
-
-        const dateOfSamplingRow = {
-          key: { text: 'Date of sampling' },
-          value: { html: dateOfTesting && formatDate(dateOfTesting) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsDateOfTesting}`, text: 'Change', visuallyHiddenText: 'date of sampling' }] }
-        }
+        const dateOfSamplingRow = getDateOfSamplingRow(dateOfTesting)
 
         const speciesNumbersRow = {
           key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
@@ -127,28 +151,13 @@ module.exports = [
           value: { html: getVaccinationStatusForDisplay(sessionData?.herdVaccinationStatus) },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsVaccination}`, text: 'Change', visuallyHiddenText: 'herd PRRS vaccination status' }] }
         }
-        const biosecurityAssessmentRow = {
-          key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
-          value: { html: isPigs && sessionData?.biosecurity ? upperFirstLetter(`${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`) : upperFirstLetter(sessionData?.biosecurity) },
-          actions: { items: [{ href: `${urlPrefix}/${routes.endemicsBiosecurity}`, text: 'Change', visuallyHiddenText: 'biosecurity assessment' }] }
-        }
+        const biosecurityAssessmentRow = getBiosecurityAssessmentRow(isPigs, sessionData)
         const sheepPackageRow = {
           key: { text: 'Sheep health package' }, // Sheep
           value: { html: sheepPackages[sessionData?.sheepEndemicsPackage] },
           actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`, text: 'Change', visuallyHiddenText: 'sheep health package' }] }
         }
-        const sheepDiseasesTestedRow = () => {
-          if (isEndemicsFollowUp && sessionData?.sheepTestResults?.length) {
-            const testList = sessionData?.sheepTestResults.map(sheepTest => `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find((test) => test.value === sheepTest.diseaseType).text}</br>`).join(' ')
-            return {
-              key: { text: 'Diseases or conditions tested for' }, // Sheep
-              value: { html: testList },
-              actions: { items: [{ href: `${urlPrefix}/${routes.endemicsSheepTests}`, text: 'Change', visuallyHiddenText: 'diseases or conditions tested for' }] }
-            }
-          } else {
-            return {}
-          }
-        }
+        const sheepDiseasesTestedRow = getSheepDiseasesTestedRow(isEndemicsFollowUp, sessionData)
 
         const beefRows = [
           vetVisitsReviewTestResultsRow,
@@ -204,7 +213,7 @@ module.exports = [
           laboratoryUrnRow,
           testResultsRow,
           sheepPackageRow,
-          sheepDiseasesTestedRow(),
+          sheepDiseasesTestedRow,
           ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length)
             ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
                 return {
@@ -236,7 +245,7 @@ module.exports = [
         }
 
         const rows = [
-          ...noChangeRows,
+          ...getNoChangeRows(isReview, isPigs, isSheep, typeOfLivestock, organisation),
           ...speciesRows()
         ]
 

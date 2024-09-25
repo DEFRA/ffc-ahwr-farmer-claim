@@ -9,30 +9,34 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
+const isPIHuntPropValueYes = (value) => value === 'yes'
+const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => optionalPIHunt.enabled ? (isPositive && piHuntDone && piHuntAllAnimals) : (isPositive && piHuntDone)
+const isPIHuntValidNegative = (isNegative, piHuntDone, piHuntRecommended, piHuntAllAnimals) => isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals
+const isPIHuntValid = (isPositive, piHuntDone, piHuntAllAnimals, piHuntRecommended, isNegative) => isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals) || isPIHuntValidNegative(isNegative, piHuntDone, piHuntRecommended, piHuntAllAnimals)
+const getBeefOrDairyPage = (session, isNegative, isPositive) => {
+  const piHuntDone = isPIHuntPropValueYes(session?.piHunt)
+  const piHuntRecommended = isPIHuntPropValueYes(session?.piHuntRecommended)
+  const piHuntAllAnimals = isPIHuntPropValueYes(session?.piHuntAllAnimals)
+
+  if (isNegative) {
+    if (!piHuntDone) return `${urlPrefix}/${endemicsPIHunt}`
+    if (piHuntDone) {
+      if (!piHuntRecommended) return `${urlPrefix}/${endemicsPIHuntRecommended}`
+      if (piHuntRecommended && !piHuntAllAnimals) return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+    }
+  }
+  if (isPositive && piHuntDone && !piHuntAllAnimals) return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+  if (isPIHuntValid(isPositive, piHuntDone, piHuntAllAnimals, piHuntRecommended, isNegative)) return `${urlPrefix}/${endemicsTestResults}`
+
+  return `${urlPrefix}/${endemicsTestResults}`
+}
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
-  const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
-
-  const piHuntDone = session?.piHunt === 'yes'
-  const piHuntRecommended = session?.piHuntRecommended === 'yes'
-  const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
-  const piHuntValidPositive = optionalPIHunt.enabled ? (isPositive && piHuntDone && piHuntAllAnimals) : (isPositive && piHuntDone)
-  const piHuntValidNegative = (isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals)
-  const piHuntValid = piHuntValidPositive || piHuntValidNegative
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
 
   if ((isBeef || isDairy) && optionalPIHunt.enabled) {
-    switch (true) {
-      case (isNegative && !piHuntDone):
-        return `${urlPrefix}/${endemicsPIHunt}`
-      case (isNegative && piHuntDone && !piHuntRecommended):
-        return `${urlPrefix}/${endemicsPIHuntRecommended}`
-      case (isNegative && piHuntDone && piHuntRecommended && !piHuntAllAnimals):
-      case (isPositive && piHuntDone && !piHuntAllAnimals):
-        return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
-      case piHuntValid:
-        return `${urlPrefix}/${endemicsTestResults}`
-    }
+    return getBeefOrDairyPage(session, isNegative, isPositive)
   } else {
     if ((isBeef || isDairy) && isNegative) return `${urlPrefix}/${endemicsVetRCVS}`
     if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
