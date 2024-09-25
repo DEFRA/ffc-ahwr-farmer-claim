@@ -71,7 +71,7 @@ const schema = Joi.object({
     enabled: Joi.bool().default(false)
   },
   reviewClaimApprovedStatus: {
-    enabled: Joi.bool().default(false)
+    enabled: Joi.bool().default(true)
   }
 })
 
