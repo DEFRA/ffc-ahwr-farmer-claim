@@ -1,4 +1,5 @@
 const { isValidDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
+const { setReviewClaimApprovedStatus } = require('../../../mocks/config')
 
 const generateMockPreviousClaim = (data, type = 'R', statusId = 9) => {
   return data.map((d) => (
@@ -165,7 +166,13 @@ describe('isValidDateOfVisit test', () => {
     })
   })
 
-  describe('ENDEMICS', () => {
+  describe('Endemics when review claim approved status is ON', () => {
+    beforeAll(() => {
+      setReviewClaimApprovedStatus(true)
+    })
+    afterAll(() => {
+      jest.resetAllMocks()
+    })
     test.each([
       {
         test: 'vetVisitReview within last 10 months, no previous claims',
@@ -699,6 +706,25 @@ describe('isValidDateOfVisit test', () => {
         previousClaims: generateMockPreviousClaim(['2024-01-01'], 'R', 5),
         expected: { isValid: false, reason: 'claim endemics before review status is ready to pay' }
       }
+    ])('$test | isValidDateOfVisit', ({ dateOfVisit, previousClaims, vetVisitReview, expected }) => {
+      expect(isValidDateOfVisit(dateOfVisit, 'E', previousClaims, vetVisitReview)).toEqual(expected)
+    })
+  })
+  describe('Endemics when review claim approved status is OFF', () => {
+    beforeAll(() => {
+      setReviewClaimApprovedStatus(false)
+    })
+    afterAll(() => {
+      jest.resetAllMocks()
+    })
+
+    test.each([{
+      test: 'previous review claim status is not READY_TO_PAY or PAID and user tries to submit a new endemics claim but review claim approved status feature flag is OFF',
+      dateOfVisit: '2024-05-01',
+      vetVisitReview: undefined,
+      previousClaims: generateMockPreviousClaim(['2024-01-01'], 'R', 5),
+      expected: { isValid: true }
+    }
     ])('$test | isValidDateOfVisit', ({ dateOfVisit, previousClaims, vetVisitReview, expected }) => {
       expect(isValidDateOfVisit(dateOfVisit, 'E', previousClaims, vetVisitReview)).toEqual(expected)
     })

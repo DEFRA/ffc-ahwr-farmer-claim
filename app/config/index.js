@@ -69,6 +69,9 @@ const schema = Joi.object({
   },
   optionalPIHunt: {
     enabled: Joi.bool().default(false)
+  },
+  reviewClaimApprovedStatus: {
+    enabled: Joi.bool().default(false)
   }
 })
 
@@ -131,6 +134,9 @@ const config = {
   },
   optionalPIHunt: {
     enabled: process.env.OPTIONAL_PIHUNT_ENABLED
+  },
+  reviewClaimApprovedStatus: {
+    enabled: process.env.REVIEW_CLAIM_APPROVED_STATUS_ENABLED
   }
 }
 
