@@ -12,11 +12,11 @@ const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 const isPIHuntPropValueYes = (value) => value === 'yes'
 const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => optionalPIHunt.enabled ? (isPositive && piHuntDone && piHuntAllAnimals) : (isPositive && piHuntDone)
 const isPIHuntValidNegative = (isNegative, piHuntDone, piHuntRecommended, piHuntAllAnimals) => isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals
+const isPIHuntValid = (isPositive, piHuntDone, piHuntAllAnimals, piHuntRecommended, isNegative) => isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals) || isPIHuntValidNegative(isNegative, piHuntDone, piHuntRecommended, piHuntAllAnimals)
 const getBeefOrDairyPage = (session, isNegative, isPositive) => {
   const piHuntDone = isPIHuntPropValueYes(session?.piHunt)
   const piHuntRecommended = isPIHuntPropValueYes(session?.piHuntRecommended)
   const piHuntAllAnimals = isPIHuntPropValueYes(session?.piHuntAllAnimals)
-  const piHuntValid = isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals) || isPIHuntValidNegative(isNegative, piHuntDone, piHuntRecommended, piHuntAllAnimals)
 
   if (isNegative) {
     if (!piHuntDone) return `${urlPrefix}/${endemicsPIHunt}`
@@ -26,7 +26,7 @@ const getBeefOrDairyPage = (session, isNegative, isPositive) => {
     }
   }
   if (isPositive && piHuntDone && !piHuntAllAnimals) return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
-  if (piHuntValid) return `${urlPrefix}/${endemicsTestResults}`
+  if (isPIHuntValid(isPositive, piHuntDone, piHuntAllAnimals, piHuntRecommended, isNegative)) return `${urlPrefix}/${endemicsTestResults}`
 
   return `${urlPrefix}/${endemicsTestResults}`
 }
