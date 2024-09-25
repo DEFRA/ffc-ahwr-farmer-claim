@@ -228,13 +228,7 @@ module.exports = [
           const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
           session.setEndemicsClaim(request, reviewTestResultsKey, reviewTestResultsValue)
 
-          if (isBeef || isDairy) {
-            if (optionalPIHunt.enabled) {
-              return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
-            } else if (reviewTestResultsValue === 'negative') {
-              return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
-            }
-          }
+          if ((isBeef || isDairy) && (optionalPIHunt.enabled || reviewTestResultsValue === 'negative')) return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
         }
         return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
       }
