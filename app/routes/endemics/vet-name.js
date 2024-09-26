@@ -2,7 +2,7 @@ const Joi = require('joi')
 const session = require('../../session')
 const urlPrefix = require('../../config').urlPrefix
 const { name: nameErrorMessages } = require('../../../app/lib/error-messages')
-const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers } = require('../../config/routes')
+const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers, endemicsSheepName } = require('../../config/routes')
 const {
   endemicsClaim: { vetsName: vetsNameKey }
 } = require('../../session/keys')
@@ -12,10 +12,14 @@ const { getReviewType } = require('../../lib/get-review-type')
 const pageUrl = `${urlPrefix}/${endemicsVetName}`
 const backLink = (request) => {
   const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
-  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+  const { isBeef, isDairy, isSheep } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
   if (isDairy || (isBeef && isEndemicsFollowUp)) return `${urlPrefix}/${endemicsSpeciesNumbers}`
+
+  if (isSheep) {
+    return `${urlPrefix}/${endemicsSheepName}`
+  }
 
   return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 }

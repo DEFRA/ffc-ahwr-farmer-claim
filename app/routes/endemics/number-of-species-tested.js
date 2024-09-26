@@ -8,7 +8,8 @@ const {
   endemicsNumberOfSpeciesException,
   endemicsVetName,
   endemicsNumberOfSpeciesSheepException,
-  endemicsNumberOfSpeciesPigsException
+  endemicsNumberOfSpeciesPigsException,
+  endemicsSheepName
 } = require('../../config/routes')
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
@@ -21,6 +22,7 @@ const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
+const nextSheepPageUrl = `${urlPrefix}/${endemicsSheepName}`
 
 const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
@@ -87,13 +89,16 @@ module.exports = [
       handler: async (request, h) => {
         const { numberAnimalsTested } = request.payload
         const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
-        const { isPigs } = getLivestockTypes(typeOfLivestock)
+        const { isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
         const { isEndemicsFollowUp } = getReviewType(typeOfReview)
         const threshold = numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
         const isEligible = isPigs && isEndemicsFollowUp ? Number(numberAnimalsTested) === threshold : Number(numberAnimalsTested) >= threshold
 
         session.setEndemicsClaim(request, numberAnimalsTestedKey, numberAnimalsTested)
 
+        if (isEligible && isSheep) {
+          return h.redirect(nextSheepPageUrl)
+        }
         if (isEligible) return h.redirect(nextPageURL)
         if (numberAnimalsTested === '0') {
           return h.view(endemicsNumberOfSpeciesTested, { ...request.payload, backLink, questionText: getTheQuestionText(typeOfLivestock, typeOfReview), errorMessage: { text: 'The number of animals tested cannot be 0', href: `#${numberAnimalsTestedKey}` } }).code(400).takeover()

@@ -8,6 +8,9 @@ module.exports = {
     numberMax: 'The number of animals tested should not exceed 999999',
     numberPattern: 'Number of animals tested must only include numbers'
   },
+  sheepName: {
+    enterName: 'Enter your favourite sheep\'s name'
+  },
   name: {
     enterName: 'Enter the vet\'s name',
     nameLength: "Vet's name must be 50 characters or fewer",

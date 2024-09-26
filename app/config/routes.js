@@ -15,6 +15,7 @@ module.exports = {
   endemicsTestUrn: 'endemics/test-urn',
   endemicsNumberOfTests: 'endemics/number-of-tests',
   endemicsSpeciesNumbers: 'endemics/species-numbers',
+  endemicsSheepName: 'endemics/sheep-name',
   endemicsSpeciesNumbersException: 'endemics/species-numbers-exception',
   endemicsNumberOfSpeciesTested: 'endemics/number-of-species-tested',
   endemicsNumberOfSpeciesException: 'endemics/number-of-species-exception',

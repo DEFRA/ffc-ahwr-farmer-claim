@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}What is the vet's Royal College of Veterinary Surgeons (RCVS) number? - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}What is your favourite sheep's name? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -21,32 +21,29 @@
             errorList: [errorMessage]
           }) }}
       {% endif %}
-      <form method="POST">
+      <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         {{ govukInput({
-          label: {
-          text: "What is the vet's Royal College of Veterinary Surgeons (RCVS) number?",
+        label: {
+          text: "What is your favourite sheep's name?",
           classes: "govuk-label--l",
           isPageHeading: true
-          },
-          hint: {
-            text: "You can find this on the summary the vet gave you."
-          },
-          classes: "govuk-input--width-10",
-          id: "vetRCVSNumber",
-          name: "vetRCVSNumber",
-          value: vetRCVSNumber,
-          errorMessage: errorMessage
-        }) }}
-
+        },
+         hint: {
+         text: "It's ok to have a favourite 🐑"
+         },
+        classes: "govuk-input govuk-!-width-three-quarters",
+        id: "sheepName",
+        name: "sheepName",
+        value: sheepName,
+        errorMessage: errorMessage
+      }) }}
         {{ govukButton({
           text: "Continue",
-          attributes: {
-            id: "continue"
-          },
+          attributes: {id: "btnContinue"},
           preventDoubleClick: true
-        }) }}
-
+        })
+      }}
       </form>
     </div>
   </div>

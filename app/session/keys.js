@@ -43,6 +43,7 @@ module.exports = {
     latestEndemicsApplication: 'latestEndemicsApplication',
     latestVetVisitApplication: 'latestVetVisitApplication',
     relevantReviewForEndemics: 'relevantReviewForEndemics',
+    sheepName: 'sheepName',
     sheepTests: 'sheepTests',
     sheepTestResults: 'sheepTestResults',
     previousClaims: 'previousClaims',
