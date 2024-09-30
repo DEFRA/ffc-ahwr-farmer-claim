@@ -74,6 +74,8 @@ container:
   dateOfTestingEnabled:
   endemicsEnabled:
   optionalPIHuntEnabled:
+  reviewClaimApprovedStatusEnabled:
+
 
 ingress:
   class: nginx
