@@ -192,8 +192,6 @@ const visitDateOfLastClaimWithin10months = (vetVisitApplication, todaysDate) => 
   if (!visitDateOfClaim) {
     return false
   }
-  console.log(vetVisitApplication)
-  console.log(todaysDate)
   return isWithin10Months(visitDateOfClaim, todaysDate)
 }
 
