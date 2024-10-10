@@ -9,7 +9,8 @@ const {
 } = require('../../api-requests/application-service-api')
 const {
   isWithin10Months,
-  getClaimsByApplicationReference
+  getClaimsByApplicationReference,
+  visitDateOfLastClaimWithin10months
 } = require('../../api-requests/claim-service-api')
 const {
   endemicsWhichSpecies,
@@ -53,7 +54,7 @@ module.exports = {
         session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
         // new user
-        if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
+        if ((!Array.isArray(claims) || !claims?.length) && !visitDateOfLastClaimWithin10months(latestVetVisitApplication, new Date())) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }

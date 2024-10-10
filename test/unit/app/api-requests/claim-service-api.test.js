@@ -1,5 +1,6 @@
 const Wreck = require('@hapi/wreck')
 const sessionMock = require('../../../../app/session')
+const { visitDateOfLastClaimWithin10months } = require('../../../../app/api-requests/claim-service-api')
 
 const consoleErrorSpy = jest.spyOn(console, 'error')
 
@@ -168,5 +169,52 @@ describe('Claim Service API', () => {
     sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
 
     expect(claimServiceApi.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim()).toBe(true)
+  })
+})
+
+describe('visitDateOfLastClaimWithin10months', () => {
+  const today = new Date()
+  const todaysDate = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0, 0))
+
+  it('should return false when no claim on legacy application', () => {
+    const legacyApplication = {
+      data: {
+        visitDate: undefined
+      }
+    }
+    const result = visitDateOfLastClaimWithin10months(legacyApplication, todaysDate)
+    expect(result).toBe(false)
+  })
+
+  it('should return true when claim within 10 months on legacy application', () => {
+    const legacyApplication = {
+      data: {
+        visitDate: new Date()
+      }
+    }
+    const result = visitDateOfLastClaimWithin10months(legacyApplication, todaysDate)
+    expect(result).toBe(true)
+  })
+
+  it('should return false when claim not within 10 months on legacy application', () => {
+    const legacyApplication = {
+      data: {
+        visitDate: new Date('2022-10-10')
+      }
+    }
+    const result = visitDateOfLastClaimWithin10months(legacyApplication, todaysDate)
+    expect(result).toBe(false)
+  })
+
+  it.only('should return true when claim exactly 10 months on legacy application', () => {
+    const date1 = new Date('2024-01-10')
+    const date2 = new Date('2024-11-10')
+    const legacyApplication = {
+      data: {
+        visitDate: date1
+      }
+    }
+    const result = visitDateOfLastClaimWithin10months(legacyApplication, date2)
+    expect(result).toBe(true)
   })
 })

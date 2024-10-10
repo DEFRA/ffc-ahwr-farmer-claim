@@ -187,6 +187,16 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
   )
 }
 
+const visitDateOfLastClaimWithin10months = (vetVisitApplication, todaysDate) => {
+  const visitDateOfClaim = vetVisitApplication?.data?.visitDate
+  if (!visitDateOfClaim) {
+    return false
+  }
+  console.log(vetVisitApplication)
+  console.log(todaysDate)
+  return isWithin10Months(visitDateOfClaim, todaysDate)
+}
+
 module.exports = {
   getAmount,
   isURNUnique,
@@ -198,5 +208,6 @@ module.exports = {
   isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim,
+  visitDateOfLastClaimWithin10months
 }
