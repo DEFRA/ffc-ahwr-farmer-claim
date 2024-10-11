@@ -52,7 +52,7 @@ describe('Claim endemics home page test', () => {
     jest.clearAllMocks()
   })
 
-  test('Redirects us to endemicsWhichSpeciesURI if latest VV application is within 10 months', async () => {
+  test('Redirects us to endemicsWhichTypeOfReviewURI if latest VV application is within 10 months', async () => {
     applicationServiceApiMock.getLatestApplicationsBySbi.mockReturnValue([
       {
         reference: 'AHWR-2470-6BA9',
@@ -79,7 +79,7 @@ describe('Claim endemics home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/which-species')
+    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
   })
 
   test('Redirects us to endemicsWhichSpeciesURI if latest VV application is NOT within 10 months', async () => {

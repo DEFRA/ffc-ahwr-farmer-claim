@@ -9,8 +9,7 @@ const {
 } = require('../../api-requests/application-service-api')
 const {
   isWithin10Months,
-  getClaimsByApplicationReference,
-  visitDateOfLastClaimWithin10months
+  getClaimsByApplicationReference
 } = require('../../api-requests/claim-service-api')
 const {
   endemicsWhichSpecies,
@@ -42,6 +41,7 @@ module.exports = {
           return application.type === 'EE'
         })
         const latestVetVisitApplication = application.find((application) => {
+          // endemics application must have been created within 10 months of vetvisit application visit date
           return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
         })
         const claims = await getClaimsByApplicationReference(
@@ -54,7 +54,7 @@ module.exports = {
         session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
         // new user
-        if ((!Array.isArray(claims) || !claims?.length) && !visitDateOfLastClaimWithin10months(latestVetVisitApplication, new Date())) {
+        if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
@@ -62,6 +62,7 @@ module.exports = {
         // new claims
         if (Array.isArray(claims) && claims?.length) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
+          // TODO AHWR-15 should they be given option of new review if already have new world claims?
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
 

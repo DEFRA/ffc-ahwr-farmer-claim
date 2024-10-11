@@ -135,9 +135,9 @@ describe('Which type of review test', () => {
     })
 
     test.each([
-      { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
-      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
-    ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
+      { typeOfReview: 'review', nextPageUrl: '/claim/endemics/which-species', expectSetEndemicsCalls: 0 },
+      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit', expectSetEndemicsCalls: 1 }
+    ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl, expectSetEndemicsCalls }) => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
@@ -154,7 +154,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaimMock).toBeCalledTimes(expectSetEndemicsCalls)
     })
 
     test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
