@@ -41,7 +41,7 @@ module.exports = {
           return application.type === 'EE'
         })
         const latestVetVisitApplication = application.find((application) => {
-          // TODO AHWR-15 endemics application must have been created within 10 months of vetvisit application visit date, key learning!
+          // endemics application must have been created within 10 months of vetvisit application visit date
           return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
         })
         const claims = await getClaimsByApplicationReference(
@@ -62,7 +62,6 @@ module.exports = {
         // new claims
         if (Array.isArray(claims) && claims?.length) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
-          // TODO AHWR-15 still given option of new review when already have new world claim, ok for now?
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
 
