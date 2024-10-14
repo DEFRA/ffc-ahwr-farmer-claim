@@ -94,7 +94,6 @@ module.exports = [
         }
 
         // If user has an old world application within last 10 months
-        // TODO AHWR-15 have stopped redirect when have new-world review, correct?
         if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
 
         return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
