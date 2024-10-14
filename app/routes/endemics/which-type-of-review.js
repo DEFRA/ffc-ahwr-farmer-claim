@@ -2,7 +2,7 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
 const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
 
@@ -72,6 +72,11 @@ module.exports = [
       handler: async (request, h) => {
         const { typeOfReview } = request.payload
         const { typeOfLivestock } = getEndemicsClaim(request)
+
+        if (claimType[typeOfReview] === claimType.review) {
+          return h.redirect(`${urlPrefix}/${endemicsWhichSpecies}`)
+        }
+
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
         if (!optionalPIHunt.enabled) {

@@ -183,16 +183,8 @@ const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
     typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&
     (latestVetVisitApplication?.data?.whichReview === livestockTypes.beef || latestVetVisitApplication?.data?.whichReview === livestockTypes.dairy) &&
-    !previousClaims?.find((claim) => claim.type === claimType.endemics)
+    !previousClaims?.find((claim) => claim.type === claimType.endemics || claim.type === claimType.review)
   )
-}
-
-const visitDateOfLastClaimWithin10months = (vetVisitApplication, todaysDate) => {
-  const visitDateOfClaim = vetVisitApplication?.data?.visitDate
-  if (!visitDateOfClaim) {
-    return false
-  }
-  return isWithin10Months(visitDateOfClaim, todaysDate)
 }
 
 module.exports = {
@@ -206,6 +198,5 @@ module.exports = {
   isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim,
-  visitDateOfLastClaimWithin10months
+  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
 }
