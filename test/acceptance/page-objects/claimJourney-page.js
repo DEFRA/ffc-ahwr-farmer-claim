@@ -473,7 +473,7 @@ class StartPageActions extends CommonActions {
   async clickOnAnotherDay_WrongMonth() {
     await this.clickOn(ANOTHER_DAY_BUTTON)
     const currentDate = new Date();
-    const day = currentDate.getDate()-2;
+    const day = currentDate.getDate()-1;
     const month = currentDate.getMonth();
     const year = currentDate.getFullYear();
     await this.sendKey(DIFFERENT_DAY, day)

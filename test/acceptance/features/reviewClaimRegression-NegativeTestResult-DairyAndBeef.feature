@@ -36,4 +36,4 @@ Then pass the claim number to ReadyToPay
   
     Examples:
       | LiveStockName | species|
-      | Dairy         | Dairy  |
+      | Beef         | Beef  |

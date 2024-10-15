@@ -568,9 +568,19 @@ Then(/^click on Endemics disease follow up review$/, async function (){
   Then(/^validate incorrect number of samples error message$/, async function(){
     await endemicsJourney.validateIncorrectNoOfSamplesError()
   })  
+  Then(/^validate you cannot continue to claim$/, async function(){
+    await endemicsJourney.validateYouCannotContinueToClaimPIHunt()
+  })
   Then(/^click on the link enter no of samples tested$/,async function(){
     await endemicsJourney.click_EntenNoOfSamplesLink()
   })
+  Then(/^click on Change your answer if the vet did a PI hunt$/,async function(){
+    await endemicsJourney.ChangeYourAnswerIfTheVetDidPIHunt()
+  })
+  Then(/^click on Change your answer if the vet asked for a PI hunt$/,async function(){
+    await endemicsJourney.ChangeYourAnswerIfTheVetAskedPIHunt()
+  })
+  
   Then(/^validate the disease status category$/, async function(){
     await endemicsJourney.validateDiseaseStatusCategory()
   })  
@@ -632,6 +642,9 @@ Then(/^validate PI Hunt page$/, async function () {
 Then(/^click yes for PI Hunt$/, async function () {
   await endemicsJourney.clickYesForPIHunt()
 });
+Then(/^click no for PI Hunt$/, async function () {
+  await endemicsJourney.clickNoForPIHunt()
+});
 Then(/^click start new claim$/, async function () {
   await endemicsJourney.clickStartNewClaim()
 });
@@ -660,5 +673,31 @@ When(/^user validates the existence of Cattle link$/, async function () {
  When(/^user validates the existence of Pigs link$/, async function () {
   await endemicsJourney.validatePigsLinksInExceptionPage()
  });
-
-
+ Then(/^landed in Was the PI hunt done on all beef cattle in the herd$/, async function () {
+  await endemicsJourney.validatePIHuntPageOnAllBeefHerd()
+ }); 
+ Then(/^click no for beef catle in the herd$/, async function () {
+  await endemicsJourney.clickNoPIHuntAllAnimals()
+ });
+ Then(/^click yes for beef catle in the herd$/, async function () {
+  await endemicsJourney.clickYesPIHuntAllAnimals()
+ });
+ Then(/^click yes for dairy catle in the herd$/, async function () {
+  await endemicsJourney.clickYesPIHuntAllAnimals()
+ });
+ Then(/^validate the error message There could be a problem with your claim$/, async function () {
+  await endemicsJourney.validatePIHuntAllAnimalsErrorMessage()
+});
+Then(/^click Change your answer if the PI hunt was done on all beef cattle in the herd$/, async function () {
+  await endemicsJourney.clickChangeAnswerForPIHuntAllAnimals()
+ });
+ Then(/^click Yes for PI hunt recommended by vet$/, async function () {
+  await endemicsJourney.clickYesPIHuntRecommended()
+ });
+ Then(/^click No for PI hunt recommended by vet$/, async function () {
+  await endemicsJourney.clickNoPIHuntRecommended()
+ });
+ Then(/^click Back link on Biosecurity Page$/, async function () {
+  await endemicsJourney.clickGovBackLink()
+ });
+ 

@@ -53,6 +53,8 @@ const EXPECTED_INCORRECT_NO_OF_SAMPLES='You cannot continue with your claim'
 const DISEASE_CATEGORY_PAGE='What is the disease status category?'
 const DISEASE_CATEGORY_PAGE_ERROR='Enter the disease status category'
 const DISEASE_CATEGORY_PAGE_ERROR_ACTUAL='a[href="#diseaseStatus"]'
+const CHANGE_YOUR_ANSWER_IF_THE_VET_DID_A_PI_HUNT='a[href="/claim/endemics/pi-hunt"]'
+const CHANGE_YOUR_ANSWER_IF_THE_VET_ASKED_A_PI_HUNT='a[href="/claim/endemics/pi-hunt-recommended"]'
 
 // biosecurity 
 
@@ -63,7 +65,8 @@ const BIO_SECURITY_PERCENTAGE='#assessmentPercentage'
 
 const BIO_SECURITY_NO_OPTION_SELECTED='Select whether the vet did a biosecurity assessment' 	
 const BIO_SECURITY_NO_PERCENTAGE_ENTERED='Enter the assessment percentage'
-const BIO_SECURITY_ERROR_HEADER='//*[@id="main-content"]/div/div/div/div[1]/div/ul'
+const BIO_SECURITY_ERROR_HEADER='a[href="#biosecurity"]'
+const BIO_SECURITY_PERCENTAGE_ERROR_HEADER='a[href="#assessmentPercentage"]'
 //TO BE USED ONCE CHANGES ARE DEPLOED IN PRE, UPDATE IN 223 AND 226
 // const BIO_SECURITY_ERROR_HEADER='a[href="#biosecurity"]'
 // const BIO_SECURITY_ERROR_HEADER_ASSESSMENT='a[href="#assessmentPercentage"]'
@@ -71,6 +74,7 @@ const BIO_SECURITY_ERROR_HEADER='//*[@id="main-content"]/div/div/div/div[1]/div/
 const SHEEP_HEALTH_PACKAGE='#sheepEndemicsPackage'
 const SHEEP_VET_TEST='#sheepTests'
 const POSITIVE_TEST_RESULT_SHEEP = '#testResult'
+const GOV_BACK_LINK='.govuk-back-link'
 
 //select a package screen error
 
@@ -94,7 +98,16 @@ const PI_HUNT_NO='#piHunt-2'
 const SELECT_PI_ERROR='Select if the vet did a PI hunt'
 const SELECT_PI_ERROR_ACTUAL='a[href="#piHunt"]'
 const ACTUAL_PIHUNT_HEADER='//*[@id="main-content"]/div/div/form/div/fieldset/legend/h1'
-const EXPECTED_PIHUNT_HEADER='Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+const EXPECTED_PIHUNT_HEADER='Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?'
+const EXPECTED_PIHUNT_ON_ALL_BEEF_HEADER='Was the PI hunt done on all beef cattle in the herd?'
+const YES_PI_HUNT_ALL_ANIMALS='#piHuntAllAnimals'
+const NO_PI_HUNT_ALL_ANIMALS='#piHuntAllAnimals-2'
+const ERROR_ON_CLICKING_NO_FOR_PI_HUNT_ALLANIMALS='You cannot continue with your claim'
+const CHANGE_YOUR_ANSWER='a[href="/claim/endemics/pi-hunt-all-animals"]'
+const HEADER_ERROR_PIHUNT='.govuk-heading-l'
+const PI_HUNT_RECOMENDED_NO='#piHuntRecommended-2'
+const PI_HUNT_RECOMENDED_YES='#piHuntRecommended'
+const CHANGE_YOUR_ANSWER_VET_DID_PIHUNT='a[href="/claim/endemics/pi-hunt"]'
 
 //link validations for sample exception page
 
@@ -190,6 +203,9 @@ async validateNoOfSamplesErrorForPig(){
   async validatePIHuntPage(){
     await this.elementToContainText(ACTUAL_PIHUNT_HEADER,EXPECTED_PIHUNT_HEADER)
   }
+  async validatePIHuntPageOnAllBeefHerd(){
+    await this.elementToContainText(ACTUAL_PIHUNT_HEADER,EXPECTED_PIHUNT_ON_ALL_BEEF_HEADER)
+  }
   async validatePackageError(){
     await this.elementToContainErrorText(SELECT_A_PACKAGE_ERROR_ACTUAL,SELECT_A_PACKAGE_ERROR)
   } 
@@ -201,7 +217,10 @@ async validateNoOfSamplesErrorForPig(){
   } 
 async validateIncorrectNoOfSamplesError(){
     await this.elementToContainErrorText(ACTUAL_INCORRECT_NO_OF_SAMPLES,EXPECTED_INCORRECT_NO_OF_SAMPLES)
-  }   
+  }  
+  async validateYouCannotContinueToClaimPIHunt(){
+    await this.elementToContainErrorText(HEADER_ERROR_PIHUNT,EXPECTED_INCORRECT_NO_OF_SAMPLES)
+  }  
   async click_EntenNoOfSamplesLink(){
     await this.clickOn( Link_Enter_No_Of_Samples_Taken)
   }
@@ -217,6 +236,15 @@ async validateIncorrectNoOfSamplesError(){
   async clickYesForPIHunt(){
     await this.clickOn(PI_HUNT_YES)
   }
+  async clickNoForPIHunt(){
+    await this.clickOn(PI_HUNT_NO)
+  }
+  async ChangeYourAnswerIfTheVetDidPIHunt(){
+    await this.clickOn(CHANGE_YOUR_ANSWER_IF_THE_VET_DID_A_PI_HUNT)
+  }
+  async ChangeYourAnswerIfTheVetAskedPIHunt(){
+    await this.clickOn(CHANGE_YOUR_ANSWER_IF_THE_VET_ASKED_A_PI_HUNT)
+  }
     async clickOnDiseaseStatusCategory(){
     await this.clickOn(DISEASE_STATUS_CATEGORY)
   }   
@@ -227,7 +255,7 @@ async validateIncorrectNoOfSamplesError(){
     await this.elementToContainErrorText(BIO_SECURITY_ERROR_HEADER,BIO_SECURITY_NO_OPTION_SELECTED)
   } 
   async validateNoPercentageEntered(){
-    await this.elementToContainErrorText(BIO_SECURITY_ERROR_HEADER,BIO_SECURITY_NO_PERCENTAGE_ENTERED)
+    await this.elementToContainErrorText(BIO_SECURITY_PERCENTAGE_ERROR_HEADER,BIO_SECURITY_NO_PERCENTAGE_ENTERED)
   } 
   async chooseSheepHealthPackage(){
     await this.clickOn(SHEEP_HEALTH_PACKAGE)
@@ -259,6 +287,30 @@ async validateIncorrectNoOfSamplesError(){
   async validatePigsLinksInExceptionPage(){
     await this.elementToContainErrorText(PIGS_LINK_SAMPLE_EXCEPTION_ACTUAL,PIGS_LINK_SAMPLE_EXCEPTION_EXPECTED)
   } 
+  async clickYesPIHuntAllAnimals(){
+    await this.clickOn(YES_PI_HUNT_ALL_ANIMALS)
+  }
+  async clickNoPIHuntAllAnimals(){
+    await this.clickOn(NO_PI_HUNT_ALL_ANIMALS)
+  }
+  async validatePIHuntAllAnimalsErrorMessage(){
+    await this.elementToContainErrorText(HEADER_ERROR_PIHUNT,ERROR_ON_CLICKING_NO_FOR_PI_HUNT_ALLANIMALS)
+  } 
+  async clickChangeAnswerForPIHuntAllAnimals(){
+    await this.clickOn(CHANGE_YOUR_ANSWER)
+  }
+  async clickYesPIHuntRecommended(){
+    await this.clickOn(PI_HUNT_RECOMENDED_YES)
+  }
+  async clickNoPIHuntRecommended(){
+    await this.clickOn(PI_HUNT_RECOMENDED_NO)
+  }
+  async checkAnswerVetAskedToDo(){
+    await this.clickOn(CHECK)
+  }
+  async clickGovBackLink(){
+    await this.clickOn(GOV_BACK_LINK)
+  }
   }
 
 

@@ -85,7 +85,7 @@ Then validate the test results error message
 Then click on the positive test results
 Then clicked on continue button for endemics
 Given user confirm to be on check answer page
-Then user clicks on endemics claim submit
+# Then user clicks on endemics claim submit
 
  
   

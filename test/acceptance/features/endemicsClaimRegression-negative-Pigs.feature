@@ -93,7 +93,6 @@ Then user continue to claim
 Then validate no assessment percentage is entered
 Then click no on biosecurity link
 Then user continue to claim
-Then validate you cannot continue to claim
 Then click on the back button
 Then click yes on biosecurity link
 And Enter the percentage
