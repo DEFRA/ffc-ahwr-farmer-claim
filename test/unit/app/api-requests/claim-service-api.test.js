@@ -169,4 +169,21 @@ describe('Claim Service API', () => {
 
     expect(claimServiceApi.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim()).toBe(true)
   })
+
+  test('lockedToSpecies should return true when there are previous endemic (new-world) claims', () => {
+    const previousEndemicClaims = [{ data: { typeOfReview: 'R' } }]
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+
+    expect(claimServiceApi.lockedToSpecies(previousEndemicClaims)).toBe(true)
+  })
+
+  test.each([
+    { previousEndemicClaims: undefined },
+    { previousEndemicClaims: null },
+    { previousEndemicClaims: [] }
+  ])('lockedToSpecies should return false when there aren\'t any previous endemic (new-world) claims, value: $previousEndemicClaims', (previousEndemicClaims) => {
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+
+    expect(claimServiceApi.lockedToSpecies(previousEndemicClaims)).toBe(false)
+  })
 })

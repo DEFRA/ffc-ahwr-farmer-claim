@@ -7,4 +7,9 @@ ignore:
         reason: No fix available
         expires: 2024-09-12T12:14:35.510Z
         created: 2024-08-12T12:14:35.514Z
+  SNYK-JS-ELLIPTIC-8187303:
+    - "*":
+        reason: Fix next release
+        expires: 2024-11-21T16:00:00.000Z
+        created: 2024-10-21T16:00:00.000Z
 patch: {}
