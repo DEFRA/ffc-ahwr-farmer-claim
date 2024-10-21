@@ -1,6 +1,6 @@
 # FFC AHWR Farmer Claim
 
-> Web frontend for the farmer claim journey
+> Web frontend for the farmer claim journey 
 
 ## Prerequisites
 
