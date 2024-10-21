@@ -176,6 +176,14 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
   }
 }
 
+const lockedToSpecies = (previousEndemicClaims) => {
+  // any endemic (new-world) claims means they have missed their opportunity to switch species
+  if (previousEndemicClaims && previousEndemicClaims.length > 0) {
+    return true
+  }
+  return false
+}
+
 const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
   const { latestVetVisitApplication, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
 
@@ -198,5 +206,6 @@ module.exports = {
   isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim,
+  lockedToSpecies
 }
