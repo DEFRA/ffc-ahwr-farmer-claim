@@ -81,7 +81,6 @@ async function createServer () {
     await server.register(require('blipp'))
   }
 
-  server.log(['bigbluefrog'], 'hello there hapi')
 
   return server
 }
