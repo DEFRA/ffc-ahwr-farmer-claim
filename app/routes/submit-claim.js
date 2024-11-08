@@ -48,7 +48,8 @@ module.exports = [{
         name: 'claim-submitted',
         properties: {
           reference,
-          state
+          state,
+          scheme: 'old-world'
         }
       })
       switch (state) {

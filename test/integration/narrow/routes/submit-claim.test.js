@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const getCrumbs = require('../../../utils/get-crumbs')
 const states = require('../../../../app/constants/states')
+const appInsights = require('applicationinsights')
 
 const sessionMock = require('../../../../app/session')
 jest.mock('../../../../app/session')
@@ -89,6 +90,17 @@ describe('Farmer claim - submit claim page test', () => {
   describe(`POST requests to ${url} route`, () => {
     const method = 'POST'
 
+    function expectAppInsightsEventRaised (reference, status) {
+      expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+        name: 'claim-submitted',
+        properties: {
+          reference,
+          state: status,
+          scheme: 'old-world'
+        }
+      })
+    }
+
     test.each([
       { crumb: '' },
       { crumb: undefined }
@@ -139,7 +151,7 @@ describe('Farmer claim - submit claim page test', () => {
       { heading: 'Funding claim failed', state: states.failed },
       { heading: 'Funding already claimed', state: states.alreadyClaimed },
       { heading: 'Funding claim not found', state: states.notFound }
-    ])('returns page for $heading when claim submission returns $state state', async ({ heading, state }) => {
+    ])('returns page for $heading when claim submission returns $state state. Appropriate submit claim event raised', async ({ heading, state }) => {
       messagingMock.receiveMessage.mockResolvedValueOnce({ state })
       const crumb = await getCrumbs(global.__SERVER__)
       const options = {
@@ -157,6 +169,8 @@ describe('Farmer claim - submit claim page test', () => {
       expectPhaseBanner.ok($)
       expect($('h1').text()).toMatch(heading)
       expect($('body').text()).toContain(reference)
+
+      expectAppInsightsEventRaised('VV-1234-5678', state)
     })
   })
 })

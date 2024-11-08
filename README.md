@@ -83,15 +83,19 @@ environment. This will rebuild images before running tests via docker-compose,
 using a combination of `docker-compose.yaml` and `docker-compose.test.yaml`.
 The command given to `docker-compose run` may be customised by passing
 arguments to the test script.
+The original test script was influenced by any local .env file present, and
+the values within that could change the results of tests being run unexpectedly.
+Therefore we now have a wrapper which prevents this happening by moving the file 
+if it exists, called ```scripts/testlocal```
 
 Examples:
 
 ```sh
 # Run all tests
-scripts/test
+scripts/testlocal
 
 # Run tests with file watch
-scripts/test -w
+scripts/testlocal -w
 ```
 
 ## CI pipeline

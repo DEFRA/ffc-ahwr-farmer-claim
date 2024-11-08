@@ -1,5 +1,6 @@
 const cheerio = require('cheerio')
 const Wreck = require('@hapi/wreck')
+const appInsights = require('applicationinsights')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { livestockTypes } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
@@ -30,6 +31,8 @@ const {
 
 jest.mock('../../../../../app/session')
 jest.mock('@hapi/wreck')
+
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 describe('Check answers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -505,6 +508,17 @@ describe('Check answers test', () => {
       crumb = await getCrumbs(global.__SERVER__)
     })
 
+    function expectAppInsightsEventRaised (reference, status) {
+      expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+        name: 'claim-submitted',
+        properties: {
+          reference,
+          state: status,
+          scheme: 'new-world'
+        }
+      })
+    }
+
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
       'When post new claim, it should redirect to confirmation page',
       async ({ latestVetVisitApplication }) => {
@@ -561,6 +575,8 @@ describe('Check answers test', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
+
+        expectAppInsightsEventRaised('tempClaimReference')
       }
     )
 
@@ -621,6 +637,8 @@ describe('Check answers test', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
+
+        expectAppInsightsEventRaised('tempClaimReference')
       }
     )
 
