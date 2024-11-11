@@ -81,7 +81,6 @@ async function createServer () {
     await server.register(require('blipp'))
   }
 
-
   return server
 }
 
