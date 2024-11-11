@@ -6,6 +6,7 @@ const { getSpeciesEligibleNumberForDisplay, getVaccinationStatusForDisplay, uppe
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const { sheepPackages, sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
+const appInsights = require('applicationinsights')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -327,6 +328,14 @@ module.exports = [
         setEndemicsClaim(request, 'reference', claim.reference)
         setEndemicsClaim(request, 'amount', claim.data?.amount)
         setTempClaimReference(request, 'tempClaimReference', tempClaimReference)
+
+        appInsights.defaultClient.trackEvent({
+          name: 'claim-submitted',
+          properties: {
+            reference,
+            scheme: 'new-world'
+          }
+        })
 
         return h.redirect(
           `${urlPrefix}/${routes.endemicsConfirmation}`
