@@ -3,7 +3,7 @@ const session = require('../session')
 const { farmerApplyData: { vetName: nameKey } } = require('../session/keys')
 const { name: nameErrorMessages } = require('../../app/lib/error-messages')
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/vet-name',
   options: {
@@ -14,7 +14,9 @@ module.exports = [{
       return h.view('vet-name', { name, backToVetVisitDate })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/vet-name',
   options: {
@@ -39,4 +41,6 @@ module.exports = [{
       return h.redirect('/claim/vet-rcvs')
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

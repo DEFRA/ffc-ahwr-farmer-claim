@@ -13,7 +13,7 @@ const appInsights = require('applicationinsights')
 
 const endemicsEnabled = config.endemics.enabled
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/signin-oidc',
   options: {
@@ -151,4 +151,5 @@ module.exports = [{
     }
   }
 }
-]
+
+module.exports = { handlers: [getHandler] }

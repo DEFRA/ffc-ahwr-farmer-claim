@@ -9,7 +9,8 @@ const options = {
   hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might take samples to test for are listed with each package.'
 }
 const pageHeading = 'Which sheep health package did you choose?'
-module.exports = [{
+
+const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
@@ -69,7 +70,9 @@ module.exports = [{
       return h.view(endemicsSheepEndemicsPackage, { backLink, sheepEndemicsPackage: session?.sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
@@ -152,4 +155,6 @@ module.exports = [{
       return h.redirect(`${urlPrefix}/${endemicsSheepTests}`)
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

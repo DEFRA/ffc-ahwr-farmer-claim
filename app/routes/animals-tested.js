@@ -4,7 +4,7 @@ const { claim: { animalsTested: animalsTestedKey } } = require('../session/keys'
 const { animalsTested: atErrorMessages } = require('../../app/lib/error-messages')
 const { thresholdPerClaimType } = require('../constants/claim')
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/animals-tested',
   options: {
@@ -13,7 +13,9 @@ module.exports = [{
       return h.view('animals-tested', { animalsTested })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/animals-tested',
   options: {
@@ -54,4 +56,6 @@ module.exports = [{
       }
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

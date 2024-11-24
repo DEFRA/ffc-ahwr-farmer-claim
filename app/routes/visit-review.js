@@ -7,7 +7,7 @@ const { detailsCorrect } = require('../session/keys').claim
 
 const errorMessage = 'Select yes if these details are correct'
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/visit-review',
   options: {
@@ -21,8 +21,9 @@ module.exports = [{
       return h.view('visit-review', getClaimViewData(claim, generateBackLink(request)))
     }
   }
-},
-{
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/visit-review',
   options: {
@@ -44,8 +45,10 @@ module.exports = [{
       return h.redirect('/claim/details-incorrect')
     }
   }
-}]
+}
 
 function generateBackLink (request) {
   return auth.requestAuthorizationCodeUrl(session, request)
 }
+
+module.exports = { handlers: [getHandler, postHandler] }

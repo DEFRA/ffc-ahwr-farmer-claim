@@ -3,7 +3,7 @@ const ViewModel = require('./models/cookies-policy')
 const { updatePolicy } = require('../cookies')
 const { cookie: { cookieNameCookiePolicy } } = require('../config')
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/cookies',
   options: {
@@ -12,7 +12,9 @@ module.exports = [{
       return h.view('cookies/cookie-policy', new ViewModel(request.state[cookieNameCookiePolicy], request.query.updated))
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/cookies',
   options: {
@@ -34,4 +36,6 @@ module.exports = [{
       return h.redirect('/claim/cookies?updated=true')
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

@@ -22,7 +22,7 @@ const getLivestockText = (typeOfLivestock) => {
 }
 const getQuestionText = (typeOfLivestock) => `Was the PI hunt done on all ${getLivestockText(typeOfLivestock)} cattle in the herd?`
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
@@ -33,7 +33,9 @@ module.exports = [{
       return h.view(endemicsPIHuntAllAnimals, { questionText, backLink: backLink(reviewTestResults), ...yesOrNoRadios })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
@@ -79,4 +81,6 @@ module.exports = [{
       return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

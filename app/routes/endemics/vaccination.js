@@ -13,7 +13,7 @@ const { vaccination } = require('../../constants/claim')
 
 const pageUrl = `${urlPrefix}/${endemicsVaccination}`
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
@@ -24,7 +24,9 @@ module.exports = [{
       return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
@@ -54,4 +56,6 @@ module.exports = [{
       return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

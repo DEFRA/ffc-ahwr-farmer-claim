@@ -1,4 +1,4 @@
-module.exports = {
+const getHandler = {
   method: 'GET',
   path: '/claim/assets/{path*}',
   options: {
@@ -13,3 +13,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

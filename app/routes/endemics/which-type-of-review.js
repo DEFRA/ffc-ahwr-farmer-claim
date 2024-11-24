@@ -27,77 +27,78 @@ const getPreviousAnswer = (typeOfReview) => {
   }
 }
 
-module.exports = [
-  {
-    method: 'GET',
-    path: pageUrl,
-    options: {
-      handler: async (request, h) => {
-        const { typeOfReview, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
-        const typeOfLivestock = getTypeOfLivestockFromPastClaims(previousClaims, latestVetVisitApplication)
-        setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
+const getHandler = {
+  method: 'GET',
+  path: pageUrl,
+  options: {
+    handler: async (request, h) => {
+      const { typeOfReview, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
+      const typeOfLivestock = getTypeOfLivestockFromPastClaims(previousClaims, latestVetVisitApplication)
+      setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
 
-        const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
-        return h.view(endemicsWhichTypeOfReview, {
-          backLink,
-          typeOfLivestock: formattedTypeOfLivestock,
-          previousAnswer: getPreviousAnswer(typeOfReview)
-        })
-      }
+      const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
+      return h.view(endemicsWhichTypeOfReview, {
+        backLink,
+        typeOfLivestock: formattedTypeOfLivestock,
+        previousAnswer: getPreviousAnswer(typeOfReview)
+      })
     }
-  },
-  {
-    method: 'POST',
-    path: pageUrl,
-    options: {
-      validate: {
-        payload: Joi.object({
-          typeOfReview: Joi.string()
-            .valid('review', 'endemics')
-            .required()
-        }),
-        failAction: (request, h, _err) => {
-          const { typeOfLivestock } = getEndemicsClaim(request)
-          const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
+  }
+}
+
+const postHandler = {
+  method: 'POST',
+  path: pageUrl,
+  options: {
+    validate: {
+      payload: Joi.object({
+        typeOfReview: Joi.string()
+          .valid('review', 'endemics')
+          .required()
+      }),
+      failAction: (request, h, _err) => {
+        const { typeOfLivestock } = getEndemicsClaim(request)
+        const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
+        return h
+          .view(endemicsWhichTypeOfReview, {
+            errorMessage: { text: 'Select what you are claiming for', href: '#typeOfReview' },
+            backLink,
+            typeOfLivestock: formattedTypeOfLivestock
+          })
+          .code(400)
+          .takeover()
+      }
+    },
+    handler: async (request, h) => {
+      const { typeOfReview } = request.payload
+      const { typeOfLivestock, previousClaims } = getEndemicsClaim(request)
+
+      if (claimType[typeOfReview] === claimType.review && !lockedToSpecies(previousClaims)) {
+        return h.redirect(`${urlPrefix}/${endemicsWhichSpecies}`)
+      }
+
+      setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
+
+      if (!optionalPIHunt.enabled) {
+        // Dairy follow up claim
+        if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
           return h
-            .view(endemicsWhichTypeOfReview, {
-              errorMessage: { text: 'Select what you are claiming for', href: '#typeOfReview' },
-              backLink,
-              typeOfLivestock: formattedTypeOfLivestock
+            .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+              backLink: pageUrl,
+              claimDashboard,
+              ruralPaymentsAgency
             })
             .code(400)
             .takeover()
         }
-      },
-      handler: async (request, h) => {
-        const { typeOfReview } = request.payload
-        const { typeOfLivestock, previousClaims } = getEndemicsClaim(request)
-
-        if (claimType[typeOfReview] === claimType.review && !lockedToSpecies(previousClaims)) {
-          return h.redirect(`${urlPrefix}/${endemicsWhichSpecies}`)
-        }
-
-        setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
-
-        if (!optionalPIHunt.enabled) {
-          // Dairy follow up claim
-          if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-            return h
-              .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-                backLink: pageUrl,
-                claimDashboard,
-                ruralPaymentsAgency
-              })
-              .code(400)
-              .takeover()
-          }
-        }
-
-        // If user has an old world application within last 10 months
-        if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
-
-        return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
       }
+
+      // If user has an old world application within last 10 months
+      if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
+
+      return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
     }
   }
-]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

@@ -3,7 +3,7 @@ const session = require('../session')
 const { farmerApplyData: { vetRcvs: rcvsKey } } = require('../session/keys')
 const { rcvs: rcvsErrorMessages } = require('../../app/lib/error-messages')
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/vet-rcvs',
   options: {
@@ -12,7 +12,9 @@ module.exports = [{
       return h.view('vet-rcvs', { rcvs })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/vet-rcvs',
   options: {
@@ -36,4 +38,6 @@ module.exports = [{
       return h.redirect('/claim/urn-result')
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

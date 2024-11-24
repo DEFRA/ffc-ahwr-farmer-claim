@@ -3,7 +3,7 @@ const session = require('../session')
 const { farmerApplyData: { urnResult: urnResultKey } } = require('../session/keys')
 const { urn: urnErrorMessages } = require('../../app/lib/error-messages')
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/urn-result',
   options: {
@@ -12,7 +12,9 @@ module.exports = [{
       return h.view('urn-result', { urn })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/urn-result',
   options: {
@@ -37,4 +39,6 @@ module.exports = [{
       return h.redirect('/claim/check-answers')
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

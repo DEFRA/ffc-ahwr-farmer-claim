@@ -12,7 +12,7 @@ const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`
 const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
@@ -22,7 +22,9 @@ module.exports = [{
       return h.view(endemicsPIHuntRecommended, { backLink, ...yesOrNoRadios })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
@@ -62,4 +64,6 @@ module.exports = [{
       return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

@@ -1,6 +1,8 @@
 const config = require('../config/index')
 
-module.exports = {
+// is this file/route needed? it doesnt get added to the router
+
+const getHandler = {
   method: 'GET',
   path: '/claim/single-business-claim-expired',
   options: {
@@ -11,3 +13,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

@@ -1,4 +1,4 @@
-module.exports = {
+const getHandler = {
   method: 'GET',
   path: '/healthz',
   options: {
@@ -11,3 +11,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

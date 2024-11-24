@@ -148,8 +148,4 @@ if (result.error) {
   throw new Error(`The server config is invalid. ${result.error.message}`)
 }
 
-const value = result.value
-value.mqConfig = mqConfig
-value.authConfig = authConfig
-
-module.exports = value
+module.exports = { ...config, mqConfig, authConfig }

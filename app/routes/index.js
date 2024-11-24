@@ -3,7 +3,7 @@ const config = require('../config')
 const { requestAuthorizationCodeUrl } = require('../auth')
 const logout = require('../lib/logout')
 
-module.exports = {
+const getHandler = {
   method: 'GET',
   path: '/claim',
   options: {
@@ -18,3 +18,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

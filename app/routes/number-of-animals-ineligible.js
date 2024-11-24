@@ -1,4 +1,4 @@
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/number-of-animals-ineligible',
   options: {
@@ -6,4 +6,6 @@ module.exports = [{
       return h.view('number-of-animals-ineligible', {})
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler] }
