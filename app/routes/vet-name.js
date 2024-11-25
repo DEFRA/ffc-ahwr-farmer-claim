@@ -29,8 +29,9 @@ module.exports = [{
             'string.pattern.base': nameErrorMessages.namePattern
           })
       }),
-      failAction: async (request, h, error) => {
-        return h.view('vet-name', { ...request.payload, errorMessage: { text: error.details[0].message } }).code(400).takeover()
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
+        return h.view('vet-name', { ...request.payload, errorMessage: { text: err.details[0].message } }).code(400).takeover()
       }
     },
     handler: async (request, h) => {

@@ -25,7 +25,7 @@ const verify = (request) => {
     const savedState = JSON.parse(Buffer.from(session.getToken(request, tokens.state), 'base64').toString('ascii'))
     return decodedState.id === savedState.id
   } else {
-    console.log(`Error returned from authentication request ${request.query.error_description} for id ${request.yar.id}.`)
+    request.logger.setBindings({ stateError: request.query.error })
     return false
   }
 }

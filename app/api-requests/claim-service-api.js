@@ -1,4 +1,4 @@
-const Wreck = require('@hapi/wreck')
+const wreck = require('@hapi/wreck')
 const session = require('../session')
 const appInsights = require('applicationinsights')
 const config = require('../config')
@@ -6,74 +6,69 @@ const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../cons
 const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
 const { getReviewType } = require('../lib/get-review-type')
 
-async function getClaimsByApplicationReference (applicationReference) {
+async function getClaimsByApplicationReference (applicationReference, logger) {
+  const endpoint = `${config.applicationApiUri}/claim/get-by-application-reference/${applicationReference}`
+
   try {
-    const response = await Wreck.get(`${config.applicationApiUri}/claim/get-by-application-reference/${applicationReference}`, { json: true })
-    if (response.res.statusCode !== 200) {
-      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
+    const { payload } = await wreck.get(endpoint, { json: true })
+    return payload
+  } catch (err) {
+    if (err.output.statusCode === 404) {
+      return []
     }
-    return response.payload
-  } catch (error) {
-    console.error(`${new Date().toISOString()} Getting claims for application with reference ${applicationReference} failed`)
-    return null
+    logger.setBindings({ err, endpoint })
+    throw err
   }
 }
 
-async function isURNUnique (data) {
+async function isURNUnique (data, logger) {
+  const endpoint = `${config.applicationApiUri}/claim/is-urn-unique`
   try {
-    const response = await Wreck.post(`${config.applicationApiUri}/claim/is-urn-unique`, {
+    const { payload } = await wreck.post(endpoint, {
       payload: data,
       json: true
     })
 
-    if (response.res.statusCode !== 200) {
-      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
-    }
-
-    return response.payload
-  } catch (error) {
-    console.error(`${new Date().toISOString()} URN check failed`)
-    appInsights.defaultClient.trackException({ exception: error })
-    return null
+    return payload
+  } catch (err) {
+    logger.setBindings({ err, endpoint })
+    appInsights.defaultClient.trackException({ exception: err })
+    throw err
   }
 }
 
-async function getAmount (data) {
+async function getAmount (data, logger) {
   const { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals } = data
+  const endpoint = `${config.applicationApiUri}/claim/get-amount`
 
   try {
-    const response = await Wreck.post(`${config.applicationApiUri}/claim/get-amount`, {
+    const { payload } = await wreck.post(endpoint, {
       payload: { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals },
       json: true
     })
 
-    if (response.res.statusCode !== 200) {
-      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
-    }
-
-    return response.payload
-  } catch (error) {
-    console.error(`${new Date().toISOString()} Getting amount failed`)
-    appInsights.defaultClient.trackException({ exception: error })
-    return null
+    return payload
+  } catch (err) {
+    logger.setBindings({ err, endpoint })
+    appInsights.defaultClient.trackException({ exception: err })
+    throw err
   }
 }
 
-async function submitNewClaim (data) {
+async function submitNewClaim (data, logger) {
+  const endpoint = `${config.applicationApiUri}/claim`
+
   try {
-    const response = await Wreck.post(`${config.applicationApiUri}/claim`, {
+    const { payload } = await wreck.post(endpoint, {
       payload: data,
       json: true
     })
-    if (response.res.statusCode !== 200) {
-      appInsights.defaultClient.trackException({ exception: response.res.statusMessage })
-      throw new Error(`HTTP ${response.res.statusCode} (${response.res.statusMessage})`)
-    }
-    return response.payload
-  } catch (error) {
-    console.error(`${new Date().toISOString()} claim submission failed`)
-    appInsights.defaultClient.trackException({ exception: error })
-    return null
+
+    return payload
+  } catch (err) {
+    logger.setBindings({ err, endpoint })
+    appInsights.defaultClient.trackException({ exception: err })
+    throw err
   }
 }
 

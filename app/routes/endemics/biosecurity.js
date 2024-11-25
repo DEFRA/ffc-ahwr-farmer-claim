@@ -89,7 +89,8 @@ module.exports = [
             then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
           })
         }),
-        failAction: (request, h, error) => {
+        failAction: (request, h, err) => {
+          request.logger.setBindings({ err })
           const session = getEndemicsClaim(request)
           const { biosecurity, assessmentPercentage } = request.payload
           const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(biosecurity, assessmentPercentage)

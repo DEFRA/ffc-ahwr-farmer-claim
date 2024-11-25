@@ -67,7 +67,8 @@ module.exports = [{
       payload: Joi.object({
         testResults: Joi.string().valid('positive', 'negative').required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         const positiveNegativeRadios = radios('', 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsTestResults, {
           ...request.payload,

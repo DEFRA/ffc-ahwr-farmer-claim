@@ -46,7 +46,8 @@ module.exports = [{
       payload: Joi.object({
         vetVisitsReviewTestResults: Joi.string().valid('positive', 'negative').required()
       }),
-      failAction: async (request, h) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         const { typeOfLivestock } = session.getEndemicsClaim(request)
         const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsVetVisitsReviewTestResults, {

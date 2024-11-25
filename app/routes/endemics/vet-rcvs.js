@@ -71,12 +71,13 @@ module.exports = [
               'string.pattern.base': rcvsErrorMessages.validRCVS
             })
         }),
-        failAction: async (request, h, error) => {
+        failAction: async (request, h, err) => {
+          request.logger.setBindings({ err })
           return h
             .view(endemicsVetRCVS, {
               ...request.payload,
               backLink,
-              errorMessage: { text: error.details[0].message, href: `#${vetRCVSNumberKey}}` }
+              errorMessage: { text: err.details[0].message, href: `#${vetRCVSNumberKey}}` }
             })
             .code(400)
             .takeover()

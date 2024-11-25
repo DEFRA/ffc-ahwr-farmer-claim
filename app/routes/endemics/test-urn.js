@@ -96,12 +96,13 @@ module.exports = [
               'string.pattern.base': 'URN must only include letters a to z, numbers and a hyphen'
             })
         }),
-        failAction: async (request, h, error) => {
+        failAction: async (request, h, err) => {
+          request.logger.setBindings({ err })
           const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
           const { isEndemicsFollowUp } = getReviewType(typeOfReview)
           const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
           const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
-          const errorMessage = (error.details[0].message === 'Enter the URN' && isBeefOrDairyEndemics) ? 'Enter the URN or certificate number' : error.details[0].message
+          const errorMessage = (err.details[0].message === 'Enter the URN' && isBeefOrDairyEndemics) ? 'Enter the URN or certificate number' : err.details[0].message
           return h
             .view(endemicsTestUrn, {
               ...request.payload,
@@ -119,7 +120,7 @@ module.exports = [
         const { isEndemicsFollowUp } = getReviewType(typeOfReview)
         const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
         const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
-        const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN })
+        const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger)
 
         session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 

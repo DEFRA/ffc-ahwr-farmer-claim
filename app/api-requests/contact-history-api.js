@@ -1,29 +1,25 @@
-const Wreck = require('@hapi/wreck')
+const wreck = require('@hapi/wreck')
 const appInsights = require('applicationinsights')
 const config = require('../config')
 const { getOrganisationAddress, getPersonName } = require('./rpa-api/index')
 
-async function updateContactHistory (data) {
+async function updateContactHistory (data, logger) {
+  const endpoint = `${config.applicationApiUri}/application/contact-history`
   try {
-    const response = await Wreck.put(`${config.applicationApiUri}/application/contact-history`, {
+    const { payload } = await wreck.put(endpoint, {
       payload: data,
       json: true
     })
-    if (response.res.statusCode !== 200) {
-      appInsights.defaultClient.trackException({ exception: response.res.statusMessage })
-      throw new Error(
-        `HTTP ${response.res.statusCode} (${response.res.statusMessage})`
-      )
-    }
-    return response.payload
-  } catch (error) {
-    console.error(`${new Date().toISOString()} updating contact history`)
-    appInsights.defaultClient.trackException({ exception: error })
-    return null
+
+    return payload
+  } catch (err) {
+    logger.setBindings({ err })
+    appInsights.defaultClient.trackException({ exception: err })
+    throw err
   }
 }
 
-const changeContactHistory = async (personSummary, organisationSummary, reference) => {
+const changeContactHistory = async (personSummary, organisationSummary, logger) => {
   const currentAddress = getOrganisationAddress(organisationSummary.organisation.address)
 
   await updateContactHistory({
@@ -33,7 +29,7 @@ const changeContactHistory = async (personSummary, organisationSummary, referenc
     sbi: organisationSummary.organisation.sbi,
     address: currentAddress,
     user: 'admin'
-  })
+  }, logger)
 }
 
 module.exports = {

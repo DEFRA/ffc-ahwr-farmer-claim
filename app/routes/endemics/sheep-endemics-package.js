@@ -83,7 +83,8 @@ module.exports = [{
           'reducedExternalParasites',
           'reducedLameness').required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', 'Select a package', options)([
           {
             value: 'improvedEwePerformance',
