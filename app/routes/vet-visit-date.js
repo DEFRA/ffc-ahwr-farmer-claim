@@ -410,6 +410,7 @@ module.exports = [
             })
           }),
         failAction: async (request, h, error) => {
+          request.logger.setBindings({ err: error })
           const errorSummary = []
 
           if (

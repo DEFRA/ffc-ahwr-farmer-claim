@@ -323,7 +323,7 @@ module.exports = [
               }))
             })
           }
-        })
+        }, request.logger)
 
         setEndemicsClaim(request, 'reference', claim.reference)
         setEndemicsClaim(request, 'amount', claim.data?.amount)

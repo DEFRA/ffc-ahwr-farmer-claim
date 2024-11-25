@@ -35,17 +35,19 @@ module.exports = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      if (request.query?.from === 'dashboard' && request.query?.sbi) {
-        const application = await getLatestApplicationsBySbi(request.query?.sbi)
-        const latestEndemicsApplication = application.find((application) => {
+      request.logger.setBindings({ sbi: request.query.sbi })
+      if (request.query?.from === 'dashboard' && request.query.sbi) {
+        const applications = await getLatestApplicationsBySbi(request.query.sbi, request.logger)
+        const latestEndemicsApplication = applications.find((application) => {
           return application.type === 'EE'
         })
-        const latestVetVisitApplication = application.find((application) => {
+        const latestVetVisitApplication = applications.find((application) => {
           // endemics application must have been created within 10 months of vetvisit application visit date
           return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
         })
         const claims = await getClaimsByApplicationReference(
-          latestEndemicsApplication.reference
+          latestEndemicsApplication.reference,
+          request.logger
         )
         const tempClaimId = createClaimReference()
         session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
@@ -54,13 +56,13 @@ module.exports = {
         session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
         // new user
-        if ((!Array.isArray(claims) || !claims?.length) && latestVetVisitApplication === undefined) {
+        if ((claims.length === 0) && latestVetVisitApplication === undefined) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
 
         // new claims
-        if (Array.isArray(claims) && claims?.length) {
+        if (claims.length > 0) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }

@@ -1,8 +1,6 @@
-const Wreck = require('@hapi/wreck')
+const wreck = require('@hapi/wreck')
 const mockConfig = require('../../../../app/config')
 jest.mock('@hapi/wreck')
-const consoleLogSpy = jest.spyOn(console, 'log')
-const consoleErrorSpy = jest.spyOn(console, 'error')
 const mockApplicationApiUri = 'http://internal:3333/api'
 
 const MOCK_NOW = new Date()
@@ -122,59 +120,54 @@ describe('Application API', () => {
         json: true
       }
       const SBI = 11333333
-      Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
+      wreck.get = jest.fn().mockResolvedValue(expectedResponse)
       const response = await applicationApi.getLatestApplicationsBySbi(SBI)
       expect(response).not.toBeNull()
-      expect(Wreck.get).toHaveBeenCalledTimes(1)
-      expect(Wreck.get).toHaveBeenCalledWith(
+      expect(wreck.get).toHaveBeenCalledTimes(1)
+      expect(wreck.get).toHaveBeenCalledWith(
           `${mockApplicationApiUri}/applications/latest?sbi=${SBI}`,
           options
       )
     })
-    test('given Wreck.get returns 400 it logs the issue and returns null', async () => {
-      const statusCode = 400
-      const statusMessage = 'A valid email address must be specified.'
+
+    test('given a 404 an empty array is returned', async () => {
       const expectedResponse = {
-        payload: {
-          statusCode,
-          error: 'Bad Request',
-          message: statusMessage
-        },
-        res: {
-          statusCode,
-          statusMessage
+        output: {
+          statusCode: 404
         }
       }
       const options = {
         json: true
       }
       const SBI = 1133333
-      Wreck.get = jest.fn().mockResolvedValue(expectedResponse)
+      wreck.get = jest.fn().mockRejectedValue(expectedResponse)
       const response = await applicationApi.getLatestApplicationsBySbi(SBI)
-      expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-      expect(consoleLogSpy).toHaveBeenCalledWith(`${MOCK_NOW.toISOString()} Getting latest applications by: ${JSON.stringify({
-        sbi: SBI
-      })}`)
-      expect(response).toBeNull()
-      expect(Wreck.get).toHaveBeenCalledWith(
+
+      expect(response).toEqual([])
+      expect(wreck.get).toHaveBeenCalledWith(
         `${mockApplicationApiUri}/applications/latest?sbi=${SBI}`,
         options
       )
     })
-    test('given Wreck.get throws an error it logs the error and returns null', async () => {
-      const expectedError = new Error('msg')
+
+    test('errors are thrown', async () => {
+      const expectedResponse = {
+        output: {
+          statusCode: 500
+        }
+      }
       const options = {
         json: true
       }
       const SBI = 1133333
-      Wreck.get = jest.fn().mockRejectedValue(expectedError)
-      const response = await applicationApi.getLatestApplicationsBySbi(SBI)
-      expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
-      expect(consoleErrorSpy).toHaveBeenCalledWith(`${MOCK_NOW.toISOString()} Getting latest applications failed: ${JSON.stringify({
-        sbi: SBI
-      })}`, expectedError)
-      expect(response).toBeNull()
-      expect(Wreck.get).toHaveBeenCalledWith(
+      wreck.get = jest.fn().mockRejectedValue(expectedResponse)
+
+      const logger = { setBindings: jest.fn() }
+      expect(async () => {
+        await applicationApi.getLatestApplicationsBySbi(SBI, logger)
+      }).rejects.toEqual(expectedResponse)
+
+      expect(wreck.get).toHaveBeenCalledWith(
         `${mockApplicationApiUri}/applications/latest?sbi=${SBI}`,
         options
       )

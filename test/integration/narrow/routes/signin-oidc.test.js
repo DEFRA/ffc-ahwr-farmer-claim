@@ -15,6 +15,10 @@ jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.
 
 const { NoApplicationFoundError, InvalidStateError, ClaimHasExpiredError, ClaimHasAlreadyBeenMadeError } = require('../../../../app/exceptions')
 
+jest.mock('@hapi/wreck', () => ({
+  put: jest.fn().mockResolvedValue({ payload: {} })
+}))
+
 describe('FarmerApply defra ID redirection test', () => {
   jest.mock('../../../../app/config', () => ({
     ...jest.requireActual('../../../../app/config'),

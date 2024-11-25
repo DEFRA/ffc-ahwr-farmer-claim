@@ -42,7 +42,8 @@ module.exports = [
             .valid(...Object.values(livestockTypes))
             .required()
         }),
-        failAction: (request, h, _err) => {
+        failAction: (request, h, err) => {
+          request.logger.setBindings({ err })
           return h
             .view(endemicsWhichSpecies, {
               errorMessage,

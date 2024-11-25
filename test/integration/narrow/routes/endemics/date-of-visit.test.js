@@ -84,7 +84,6 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      console.log($)
       expectPageContentOk($, '/claim/endemics/which-species')
       expectPhaseBanner.ok($)
     })

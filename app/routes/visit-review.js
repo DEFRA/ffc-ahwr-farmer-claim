@@ -30,7 +30,8 @@ module.exports = [{
       payload: Joi.object({
         [detailsCorrect]: Joi.string().valid('yes', 'no').required()
       }),
-      failAction: (request, h, _err) => {
+      failAction: (request, h, err) => {
+        request.logger.setBindings({ err })
         const claim = session.getClaim(request)
         return h.view('visit-review', getClaimViewData(claim, generateBackLink(request), errorMessage)).code(400).takeover()
       }

@@ -84,7 +84,8 @@ module.exports = [
         payload: Joi.object({
           [speciesNumbers]: Joi.string().valid('yes', 'no').required()
         }),
-        failAction: (request, h, _err) => {
+        failAction: (request, h, err) => {
+          request.logger.setBindings({ err })
           const claim = session.getEndemicsClaim(request)
           if (!claim) {
             return boom.notFound()

@@ -32,7 +32,8 @@ module.exports = [{
       payload: Joi.object({
         herdVaccinationStatus: Joi.string().valid(vaccination.vaccinated, vaccination.notVaccinated).required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         const { vetVisitsReviewTestResults } = session.getEndemicsClaim(request)
         const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: vaccination.vaccinated, text: 'Vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated' }])
         const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`

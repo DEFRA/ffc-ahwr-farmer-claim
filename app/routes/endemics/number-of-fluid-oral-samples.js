@@ -44,11 +44,12 @@ module.exports = [
               'string.pattern.base': 'The number of oral fluid samples must only include numbers'
             })
         }),
-        failAction: async (request, h, error) => {
+        failAction: async (request, h, err) => {
+          request.logger.setBindings({ err })
           return h
             .view(endemicsNumberOfOralFluidSamples, {
               ...request.payload,
-              errorMessage: { text: error.details[0].message, href: '#numberOfOralFluidSamples' },
+              errorMessage: { text: err.details[0].message, href: '#numberOfOralFluidSamples' },
               backLink: `${urlPrefix}/${endemicsTestUrn}`
             })
             .code(400)
