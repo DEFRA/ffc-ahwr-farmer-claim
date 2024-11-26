@@ -42,7 +42,6 @@
     "jsonwebtoken": "^9.0.0",
     "jwk-to-pem": "^2.0.5",
     "lodash": "^4.17.21",
-    "notifications-node-client": "^7.0.6",
     "nunjucks": "^3.2.3",
     "uuid": "^8.3.2"
   },
