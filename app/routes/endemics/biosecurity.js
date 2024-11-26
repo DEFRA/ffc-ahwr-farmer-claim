@@ -144,39 +144,19 @@ const postHandler = {
           then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
         })
       }),
-      failAction: (request, h, error) => {
+      failAction: (request, h, err) => {
+        request.logger.setBindings({ err })
         const session = getEndemicsClaim(request)
         const { biosecurity, assessmentPercentage } = request.payload
-        const assessmentPercentageErrorMessage =
-          getAssessmentPercentageErrorMessage(
-            biosecurity,
-            assessmentPercentage
-          )
+        const assessmentPercentageErrorMessage = getAssessmentPercentageErrorMessage(biosecurity, assessmentPercentage)
 
         const errorMessage = biosecurity
-          ? {
-              text: assessmentPercentageErrorMessage,
-              href: '#assessmentPercentage'
-            }
-          : {
-              text: 'Select whether the vet did a biosecurity assessment',
-              href: '#biosecurity'
-            }
+          ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' }
+          : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
         const errors = {
           errorMessage,
-          radioErrorMessage:
-            biosecurity === undefined
-              ? {
-                  text: 'Select whether the vet did a biosecurity assessment',
-                  href: '#biosecurity'
-                }
-              : undefined,
-          inputErrorMessage: assessmentPercentageErrorMessage
-            ? {
-                text: assessmentPercentageErrorMessage,
-                href: '#assessmentPercentage'
-              }
-            : undefined
+          radioErrorMessage: biosecurity === undefined ? { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
+          inputErrorMessage: assessmentPercentageErrorMessage ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : undefined
         }
 
         return h
@@ -194,27 +174,11 @@ const postHandler = {
       const { pigs } = livestockTypes
       const { typeOfLivestock } = getEndemicsClaim(request)
       const { biosecurity, assessmentPercentage } = request.payload
-      setEndemicsClaim(
-        request,
-        biosecurityKey,
-        typeOfLivestock === pigs
-          ? { biosecurity, assessmentPercentage }
-          : biosecurity
-      )
+      setEndemicsClaim(request, biosecurityKey, typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity)
 
       if (biosecurity === 'no') {
-        raiseInvalidDataEvent(
-          request,
-          biosecurityKey,
-          `Value ${biosecurity} is not equal to required value yes`
-        )
-        return h
-          .view(endemicsBiosecurityException, {
-            backLink: pageUrl,
-            ruralPaymentsAgency
-          })
-          .code(400)
-          .takeover()
+        raiseInvalidDataEvent(request, biosecurityKey, `Value ${biosecurity} is not equal to required value yes`)
+        return h.view(endemicsBiosecurityException, { backLink: pageUrl, ruralPaymentsAgency }).code(400).takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)

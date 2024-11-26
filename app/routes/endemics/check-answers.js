@@ -575,21 +575,14 @@ const postHandler = {
           sheepEndemicsPackage,
           numberOfSamplesTested,
           reviewTestResults,
-          ...(isEndemicsFollowUp &&
-            isSheep && {
-            testResults: sheepTestResults?.map((sheepTest) => ({
+          ...(isEndemicsFollowUp && isSheep && {
+            testResults: sheepTestResults?.map(sheepTest => ({
               diseaseType: sheepTest.diseaseType,
-              result:
-                  typeof sheepTest.result === 'object'
-                    ? sheepTest.result.map((testResult) => ({
-                        diseaseType: testResult.diseaseType,
-                        result: testResult.testResult
-                      }))
-                    : sheepTest.result
+              result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
             }))
           })
         }
-      })
+      }, request.logger)
 
       setEndemicsClaim(request, 'reference', claim.reference)
       setEndemicsClaim(request, 'amount', claim.data?.amount)
@@ -603,7 +596,9 @@ const postHandler = {
         }
       })
 
-      return h.redirect(`${urlPrefix}/${routes.endemicsConfirmation}`)
+      return h.redirect(
+          `${urlPrefix}/${routes.endemicsConfirmation}`
+      )
     }
   }
 }

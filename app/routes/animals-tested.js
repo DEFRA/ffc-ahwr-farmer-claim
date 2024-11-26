@@ -29,11 +29,12 @@ const postHandler = {
             'string.pattern.base': atErrorMessages.numberPattern
           })
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         return h.view('animals-tested', {
           ...request.payload,
           errorMessage: {
-            text: error.details[0].message,
+            text: err.details[0].message,
             href: '#number-of-animals-tested'
           }
         }).code(400).takeover()

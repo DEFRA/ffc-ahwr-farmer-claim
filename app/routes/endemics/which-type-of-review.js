@@ -56,7 +56,8 @@ const postHandler = {
           .valid('review', 'endemics')
           .required()
       }),
-      failAction: (request, h, _err) => {
+      failAction: (request, h, err) => {
+        request.logger.setBindings({ err })
         const { typeOfLivestock } = getEndemicsClaim(request)
         const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
         return h

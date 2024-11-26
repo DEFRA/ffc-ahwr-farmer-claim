@@ -1,10 +1,9 @@
 const { updateContactHistory } = require('../../../../app/api-requests/contact-history-api')
-const Wreck = require('@hapi/wreck')
+const wreck = require('@hapi/wreck')
 const config = require('../../../../app/config')
 
 jest.mock('@hapi/wreck')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
-const consoleErrorSpy = jest.spyOn(console, 'error')
 
 describe('updateContactHistory', () => {
   const mockConfig = {
@@ -26,7 +25,7 @@ describe('updateContactHistory', () => {
       user: 'admin'
     }
 
-    Wreck.put.mockResolvedValueOnce({
+    wreck.put.mockResolvedValueOnce({
       res: {
         statusCode: 200
       },
@@ -35,9 +34,11 @@ describe('updateContactHistory', () => {
       }
     })
 
-    await updateContactHistory(data, mockConfig)
+    const logger = { setBindings: jest.fn() }
 
-    expect(Wreck.put).toHaveBeenCalledWith(`${mockConfig.applicationApiUri}/application/contact-history`, {
+    await updateContactHistory(data, logger)
+
+    expect(wreck.put).toHaveBeenCalledWith(`${mockConfig.applicationApiUri}/application/contact-history`, {
       payload: data,
       json: true
     })
@@ -48,15 +49,20 @@ describe('updateContactHistory', () => {
       email: 'test@example.com'
     }
 
-    Wreck.put.mockResolvedValueOnce({
+    const response = {
       res: {
         statusCode: 500,
         statusMessage: 'Internal Server Error'
       }
-    })
-    const result = await updateContactHistory(data, mockConfig)
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
-    expect(result).toBe(null)
+    }
+
+    wreck.put.mockRejectedValueOnce(response)
+
+    const logger = { setBindings: jest.fn() }
+
+    expect(async () => {
+      await updateContactHistory(data, logger)
+    }).rejects.toEqual(response)
   })
 
   test('returns the response payload on success', async () => {
@@ -68,14 +74,16 @@ describe('updateContactHistory', () => {
       success: true
     }
 
-    Wreck.put.mockResolvedValueOnce({
+    wreck.put.mockResolvedValueOnce({
       res: {
         statusCode: 200
       },
       payload: responsePayload
     })
 
-    const result = await updateContactHistory(data, mockConfig)
+    const logger = { setBindings: jest.fn() }
+
+    const result = await updateContactHistory(data, logger)
 
     expect(result).toEqual(responsePayload)
   })

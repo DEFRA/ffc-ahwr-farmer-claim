@@ -53,12 +53,13 @@ const postHandler = {
             'string.pattern.base': nameErrorMessages.namePattern
           })
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         return h
           .view(endemicsVetName, {
             ...request.payload,
             backLink: backLink(request),
-            errorMessage: { text: error.details[0].message, href: `#${vetsNameKey}}` }
+            errorMessage: { text: err.details[0].message, href: `#${vetsNameKey}}` }
           })
           .code(400)
           .takeover()

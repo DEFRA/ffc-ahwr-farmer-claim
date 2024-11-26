@@ -32,7 +32,8 @@ const postHandler = {
       payload: Joi.object({
         piHunt: Joi.string().valid('yes', 'no').required()
       }),
-      failAction: (request, h, _err) => {
+      failAction: (request, h, err) => {
+        request.logger.setBindings({ err })
         const { piHunt: previousAnswer } = getEndemicsClaim(request)
         const titleText = optionalPIHunt.enabled ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
         return h.view(

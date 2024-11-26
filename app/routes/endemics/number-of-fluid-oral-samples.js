@@ -38,27 +38,20 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        numberOfOralFluidSamples: Joi.string()
-          .pattern(/^\d+$/)
-          .max(4)
-          .required()
+        numberOfOralFluidSamples: Joi.string().pattern(/^\d+$/).max(4).required()
           .messages({
             'string.base': 'Enter the number of oral fluid samples',
             'string.empty': 'Enter the number of oral fluid samples',
-            'string.max':
-              'The number of oral fluid samples should not exceed 9999',
-            'string.pattern.base':
-              'The number of oral fluid samples must only include numbers'
+            'string.max': 'The number of oral fluid samples should not exceed 9999',
+            'string.pattern.base': 'The number of oral fluid samples must only include numbers'
           })
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, err) => {
+        request.logger.setBindings({ err })
         return h
           .view(endemicsNumberOfOralFluidSamples, {
             ...request.payload,
-            errorMessage: {
-              text: error.details[0].message,
-              href: '#numberOfOralFluidSamples'
-            },
+            errorMessage: { text: err.details[0].message, href: '#numberOfOralFluidSamples' },
             backLink: `${urlPrefix}/${endemicsTestUrn}`
           })
           .code(400)
@@ -67,26 +60,17 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { numberOfOralFluidSamples } = request.payload
-      session.setEndemicsClaim(
-        request,
-        numberOfOralFluidSamplesKey,
-        numberOfOralFluidSamples
-      )
+      session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
       if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
-        raiseInvalidDataEvent(
-          request,
-          numberOfOralFluidSamplesKey,
-          `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`
-        )
-        return h
-          .view(endemicsNumberOfOralFluidSamplesException, {
+        raiseInvalidDataEvent(request, numberOfOralFluidSamplesKey, `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`)
+        return h.view(
+          endemicsNumberOfOralFluidSamplesException,
+          {
             backLink: pageUrl,
             ruralPaymentsAgency: config.ruralPaymentsAgency,
             minimumNumberFluidOralSamples
-          })
-          .code(400)
-          .takeover()
+          }).code(400).takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsTestResults}`)

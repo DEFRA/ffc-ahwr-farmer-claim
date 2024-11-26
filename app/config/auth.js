@@ -65,7 +65,6 @@ const authResult = authSchema.validate(authConfig, {
 })
 
 if (authResult.error) {
-  console.log(authResult.error.message)
   throw new Error(`The auth config is invalid. ${authResult.error.message}`)
 }
 

@@ -1,7 +1,6 @@
-const Wreck = require('@hapi/wreck')
+const wreck = require('@hapi/wreck')
 const sessionMock = require('../../../../app/session')
-
-const consoleErrorSpy = jest.spyOn(console, 'error')
+const { isWithin10Months } = require('../../../../app/api-requests/claim-service-api')
 
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('@hapi/wreck')
@@ -14,36 +13,52 @@ describe('Claim Service API', () => {
         statusCode: 200,
         statusMessage: 'OK'
       },
-      payload: 'payload'
+      payload: [{}]
     }
-    Wreck.get.mockResolvedValue(mockResponse)
+    wreck.get.mockResolvedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const result = await claimServiceApi.getClaimsByApplicationReference(
       'applicationReference'
     )
 
-    expect(result).toBe('payload')
+    expect(result).toEqual([{}])
   })
-  test('Get claims by application reference should return null with status 404', async () => {
+
+  test('Get claims by application reference should return empty array with status 404', async () => {
     const mockResponse = {
-      res: {
-        statusCode: 404,
-        statusMessage: 'not found'
-      },
-      payload: 'payload'
+      output: {
+        statusCode: 404
+      }
     }
-    Wreck.get.mockResolvedValue(mockResponse)
+    wreck.get.mockRejectedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const result = await claimServiceApi.getClaimsByApplicationReference(
       'applicationReference'
     )
 
-    expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
-    expect(result).toBe(null)
-    expect(claimServiceApi.isWithin10Months(Date.now())).toBe(false)
+    expect(result).toEqual([])
   })
+
+  test('Get claims by application reference throws errors', async () => {
+    const mockResponse = {
+      output: {
+        statusCode: 500
+      }
+    }
+    wreck.get.mockRejectedValueOnce(mockResponse)
+
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    const logger = { setBindings: jest.fn() }
+    expect(async () => {
+      await claimServiceApi.getClaimsByApplicationReference(
+        'applicationReference',
+        logger
+      )
+    }).rejects.toEqual(mockResponse)
+  })
+
   test('Post claim should return status 200', async () => {
     const mockResponse = {
       res: {
@@ -52,7 +67,7 @@ describe('Claim Service API', () => {
       },
       payload: 'new claim'
     }
-    Wreck.post.mockResolvedValue(mockResponse)
+    wreck.post.mockResolvedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const result = await claimServiceApi.submitNewClaim(
@@ -61,6 +76,7 @@ describe('Claim Service API', () => {
 
     expect(result).toBe('new claim')
   })
+
   test('Post claim with invalid data should return status 400', async () => {
     const mockResponse = {
       res: {
@@ -68,16 +84,18 @@ describe('Claim Service API', () => {
         statusMessage: 'Bad Request'
       }
     }
-    Wreck.post.mockResolvedValue(mockResponse)
+    wreck.post.mockRejectedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.submitNewClaim(
-      'new claim with invalid data'
-    )
-
-    expect(result).toBe(null)
-    expect(claimServiceApi.isWithin10Months()).toBe(false)
+    const logger = { setBindings: jest.fn() }
+    expect(async () => {
+      await claimServiceApi.submitNewClaim(
+        'new claim with invalid data',
+        logger
+      )
+    }).rejects.toEqual(mockResponse)
   })
+
   test('Check if URN number is unique', async () => {
     const payload = { isURNUnique: true }
     const mockResponse = {
@@ -87,26 +105,34 @@ describe('Claim Service API', () => {
       },
       payload
     }
-    Wreck.post.mockResolvedValue(mockResponse)
+    wreck.post.mockResolvedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.isURNUnique({ sbi: '123456789', laboratoryURN: '1234567' })
+    const logger = { setBindings: jest.fn() }
+    const result = await claimServiceApi.isURNUnique(
+      { sbi: '123456789', laboratoryURN: '1234567' },
+      logger
+    )
 
     expect(result).toBe(payload)
   })
-  test('Check if URN number is unique with wrong data', async () => {
+  test('Check if URN number throws errors', async () => {
     const mockResponse = {
       res: {
         statusCode: 400,
         statusMessage: 'Bad Request'
       }
     }
-    Wreck.post.mockResolvedValue(mockResponse)
+    wreck.post.mockRejectedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.isURNUnique('new claim with invalid data')
-
-    expect(result).toBe(null)
+    const logger = { setBindings: jest.fn() }
+    expect(async () => {
+      await claimServiceApi.isURNUnique(
+        'new claim with invalid data',
+        logger
+      )
+    }).rejects.toEqual(mockResponse)
   })
 
   test('Get amount for claim', async () => {
@@ -118,27 +144,40 @@ describe('Claim Service API', () => {
       },
       payload
     }
-    Wreck.post.mockResolvedValue(mockResponse)
+    wreck.post.mockResolvedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const result = await claimServiceApi.getAmount({ type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
 
     expect(result).toBe(payload)
   })
-  test('Get amount for claim with wrong data', async () => {
+
+  test('Get amount for claim throws errors', async () => {
     const mockResponse = {
       res: {
         statusCode: 400,
         statusMessage: 'Bad Request'
       }
     }
-    Wreck.post.mockResolvedValue(mockResponse)
+    wreck.post.mockRejectedValueOnce(mockResponse)
 
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.getAmount({ type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
-
-    expect(result).toBe(null)
+    const logger = { setBindings: jest.fn() }
+    expect(async () => {
+      await claimServiceApi.getAmount(
+        { type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' },
+        logger
+      )
+    }).rejects.toEqual(mockResponse)
   })
+
+  test('isWithin10Months', () => {
+    expect(isWithin10Months('2024-01-01', '2024-11-01')).toBe(true)
+    expect(isWithin10Months('2024-11-01', '2024-01-01')).toBe(true)
+    expect(isWithin10Months('2024-01-01', '2024-11-02')).toBe(false)
+    expect(isWithin10Months('2024-11-02', '2024-01-01')).toBe(false)
+  })
+
   test('Check if the date is with in 8 months', async () => {
     const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
@@ -149,6 +188,7 @@ describe('Claim Service API', () => {
     expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2023-12-22'))).toBe(false)
     expect(isWithIn4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2024-10-23'))).toBe(false)
   })
+
   test('Check if the date of testing is less than date of visit', async () => {
     const { isDateOfTestingLessThanDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
@@ -158,11 +198,13 @@ describe('Claim Service API', () => {
     expect(isDateOfTestingLessThanDateOfVisit('2024-09-23', '2024-06-23')).toBe(true)
     expect(isDateOfTestingLessThanDateOfVisit('2024-10-04', '2023-10-23')).toBe(true)
   })
+
   test('Check if date of visit is valid for when type of review is not review or endemics', async () => {
     const { isValidDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
     expect(isValidDateOfVisit('T')).toMatchObject({ isValid: false })
   })
+
   test('Check if is first time endemic claim for active old world review claim', () => {
     const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })

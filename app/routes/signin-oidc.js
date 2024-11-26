@@ -26,7 +26,7 @@ const getHandler = {
         stripUnknown: true
       }),
       failAction (request, h, err) {
-        console.log(`Validation error caught during DEFRA ID redirect - ${err.message}.`)
+        request.logger.setBindings({ err })
         appInsights.defaultClient.trackException({ exception: err })
         return h.view('verify-login-failed', {
           backLink: auth.requestAuthorizationCodeUrl(session, request),
@@ -36,12 +36,13 @@ const getHandler = {
     },
     handler: async (request, h) => {
       try {
-        await auth.authenticate(request, session)
+        await auth.authenticate(request)
 
-        const apimAccessToken = await auth.retrieveApimAccessToken()
+        const apimAccessToken = await auth.retrieveApimAccessToken(request)
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
-        changeContactHistory(personSummary, organisationSummary)
+        request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
+        await changeContactHistory(personSummary, organisationSummary, request.logger)
         const entryValue = request.yar?.get('claim') || {}
         entryValue.organisation = {}
         entryValue.reference = undefined
@@ -87,9 +88,7 @@ const getHandler = {
           organisationSummary.organisation.sbi?.toString(),
           organisationSummary.organisation.name
         )
-        console.log(`${new Date().toISOString()} Claimable application found: ${JSON.stringify({
-          sbi: latestApplication.data.organisation.sbi
-        })}`)
+
         Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
         session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
         auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
@@ -104,7 +103,8 @@ const getHandler = {
         })
         return h.redirect('/claim/visit-review')
       } catch (error) {
-        console.error(`Received error with name ${error.name} and message ${error.message}.`)
+        request.logger.setBindings({ err: error })
+
         const crn = session.getCustomer(request, sessionKeys.customer.crn)
         const attachedToMultipleBusinesses = session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses)
         const organisation = session.getClaim(request, sessionKeys.farmerApplyData.organisation)
