@@ -131,23 +131,6 @@ const postHandler = {
 
       return h.redirect(nextPageUrl(request))
     }
-  },
-  handler: async (request, h) => {
-    const { laboratoryURN } = request.payload
-    const { organisation, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
-    const { isEndemicsFollowUp } = getReviewType(typeOfReview)
-    const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
-    const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
-    const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN })
-
-    session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
-
-    if (!response?.isURNUnique) {
-      raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
-      return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
-    }
-
-    return h.redirect(nextPageUrl(request))
   }
 }
 
