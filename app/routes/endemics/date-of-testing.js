@@ -1,8 +1,7 @@
 const Joi = require('joi')
 const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
 const { addError } = require('../utils/validations')
-const { ruralPaymentsAgency } = require('../../config')
+const { ruralPaymentsAgency, optionalPIHunt, urlPrefix } = require('../../config')
 const {
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
   isDateOfTestingLessThanDateOfVisit,
@@ -27,7 +26,6 @@ const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { isValidDate } = require('./../../lib/check-date-validity')
-const { optionalPIHunt } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {

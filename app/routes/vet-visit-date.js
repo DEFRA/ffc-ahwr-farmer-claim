@@ -339,14 +339,6 @@ const postHandler = {
                       return value
                     }
 
-                    const isValidDate = (year, month, day) => {
-                      const dateObject = new Date(year, month - 1, day)
-                      return (
-                        dateObject.getFullYear() === year &&
-                        dateObject.getMonth() === month - 1 &&
-                        dateObject.getDate() === day
-                      )
-                    }
                     if (
                       !isValidDate(
                         +helpers.state.ancestors[0][labels.year],
