@@ -40,7 +40,7 @@ const schema = Joi.object({
   googleTagManagerKey: Joi.string().allow(null, ''),
   isDev: Joi.boolean().default(false),
   port: Joi.number().default(3000),
-  serviceName: Joi.string().default('Annual health and welfare review of livestock'),
+  serviceName: Joi.string().required(),
   serviceUri: Joi.string().uri(),
   applyServiceUri: Joi.string().uri(),
   urlPrefix: Joi.string(),
@@ -137,7 +137,8 @@ const config = {
   },
   reviewClaimApprovedStatus: {
     enabled: process.env.REVIEW_CLAIM_APPROVED_STATUS_ENABLED
-  }
+  },
+  serviceName: 'Annual health and welfare review of livestock'
 }
 
 const result = schema.validate(config, {

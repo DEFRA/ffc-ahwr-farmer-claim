@@ -86,7 +86,7 @@ describe('Farmer claim home page test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expectedHeaders.forEach((header) => {
-      expect(res.headers[header.key]).toEqual(header.value)
+      expect(res.headers[header.key.toLowerCase()]).toEqual(header.value)
     })
   })
 })
