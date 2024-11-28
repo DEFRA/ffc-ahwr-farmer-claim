@@ -11,14 +11,24 @@ cd "${projectRoot}"
 # run acceptance tests
 cd test/acceptance
 
+# Determine which docker compose command is available
+if command -v docker compose &> /dev/null; then
+  compose_cmd="docker compose"
+elif command -v docker-compose &> /dev/null; then
+  compose_cmd="docker-compose"
+else
+  echo "Neither 'docker compose' nor 'docker-compose' is installed." >&2
+  exit 1
+fi
+
 if [ "$1" = "debug" ];
 then
   echo "=============================="
   echo "| Running Test in Debug mode |"
   echo "=============================="
 
-  docker-compose down -v
-  docker-compose -f docker-compose.yaml -f docker-compose.override.yaml -f docker-compose.debug.yaml up --build --abort-on-container-exit
+  $compose_cmd down -v
+  $compose_cmd -f docker-compose.yaml -f docker-compose.override.yaml -f docker-compose.debug.yaml up --build --abort-on-container-exit
 elif [ "$1" = "local" ];
 then
   echo "================================"
@@ -30,6 +40,6 @@ else
   echo "| Running Test using Docker Image |"
   echo "==================================="
 
-  docker-compose down -v
-  docker-compose up --build --abort-on-container-exit
+  $compose_cmd down -v
+  $compose_cmd up --build --abort-on-container-exit
 fi

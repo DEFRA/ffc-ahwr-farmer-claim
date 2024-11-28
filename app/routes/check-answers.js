@@ -4,7 +4,7 @@ const backLink = '/claim/urn-result'
 const { getEligibleNumberRowForDisplay, getTypeOfReviewRowForDisplay } = require('../lib/display-helpers')
 const dateOfTestingEnabled = require('../config').dateOfTesting.enabled
 
-module.exports = {
+const getHandler = {
   method: 'GET',
   path: '/claim/check-answers',
   options: {
@@ -73,3 +73,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

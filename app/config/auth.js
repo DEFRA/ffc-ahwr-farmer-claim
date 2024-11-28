@@ -68,4 +68,4 @@ if (authResult.error) {
   throw new Error(`The auth config is invalid. ${authResult.error.message}`)
 }
 
-module.exports = authResult.value
+module.exports = authConfig

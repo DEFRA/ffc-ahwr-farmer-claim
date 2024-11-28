@@ -4,14 +4,24 @@ if [ -z "$(docker network ls --filter name=^ffc-ahwr$ --format={{.Name}})" ]; th
   docker network create ffc-ahwr
 fi
 
+# Determine which docker compose command is available
+if command -v docker compose &> /dev/null; then
+  compose_cmd="docker compose"
+elif command -v docker-compose &> /dev/null; then
+  compose_cmd="docker-compose"
+else
+  echo "Neither 'docker compose' nor 'docker-compose' is installed." >&2
+  exit 1
+fi
+
 set -e
 projectRoot="$(a="/$0"; a=${a%/*}; a=${a:-.}; a=${a#/}/; cd "$a/.." || return; pwd)"
 
 cd "${projectRoot}"
 
-docker-compose down
+$compose_cmd down
 
-docker-compose \
+$compose_cmd \
   -f docker-compose.yaml \
   -f docker-compose.override.yaml \
   up "$@"

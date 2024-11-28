@@ -45,10 +45,48 @@ describe('Farmer claim home page test', () => {
     )
 
     const button = $('.govuk-main-wrapper .govuk-button')
-    expect($('.govuk-list').text()).toContain('the number of beef cattle, sheep and pigs the vet tested - you do not need to provide the number of dairy cattle tested')
-    expect(button.attr('href')).toContain('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize')
+    expect($('.govuk-list').text()).toContain(
+      'the number of beef cattle, sheep and pigs the vet tested - you do not need to provide the number of dairy cattle tested'
+    )
+    expect(button.attr('href')).toContain(
+      'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
+    )
     expect(button.text()).toMatch('Start now')
-    expect($('title').text()).toContain('Claim funding - Annual health and welfare review of livestock')
+    expect($('title').text()).toContain(
+      'Claim funding - Annual health and welfare review of livestock'
+    )
     expectPhaseBanner.ok($)
+  })
+
+  test('headers are being set appropriately', async () => {
+    const expectedHeaders = [
+      { key: 'X-Frame-Options', value: 'deny' },
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'Cross-Origin-Opener-Policy', value: 'same-origin' },
+      { key: 'Cross-Origin-Embedder-Policy', value: 'require-corp' },
+      { key: 'X-Robots-Tag', value: 'noindex, nofollow' },
+      { key: 'X-XSS-Protection', value: '1; mode=block' },
+      { key: 'Strict-Transport-Security', value: 'max-age=31536000;' },
+      { key: 'Cache-Control', value: 'no-cache' },
+      { key: 'Referrer-Policy', value: 'no-referrer' },
+      {
+        key: 'Content-Security-Policy',
+        value:
+          "default-src 'self';object-src 'none';script-src 'self' www.google-analytics.com *.googletagmanager.com ajax.googleapis.com *.googletagmanager.com/gtm.js 'unsafe-inline' 'unsafe-eval' 'unsafe-hashes';form-action 'self';base-uri 'self';connect-src 'self' *.google-analytics.com *.analytics.google.com *.googletagmanager.comstyle-src 'self' 'unsafe-inline' tagmanager.google.com *.googleapis.com;img-src 'self' *.google-analytics.com *.googletagmanager.com;"
+      },
+      { key: 'Cross-Origin-Resource-Policy', value: 'same-origin' },
+      { key: 'X-Permitted-Cross-Domain-Policies', value: 'none' }
+    ]
+
+    const options = {
+      method: 'GET',
+      url: '/claim'
+    }
+
+    const res = await global.__SERVER__.inject(options)
+
+    expectedHeaders.forEach((header) => {
+      expect(res.headers[header.key.toLowerCase()]).toEqual(header.value)
+    })
   })
 })

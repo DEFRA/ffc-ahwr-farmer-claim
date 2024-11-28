@@ -13,7 +13,7 @@ function updateSession (request, claimed, claimStatus) {
   logout()
 }
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: '/claim/submit-claim',
   options: {
@@ -22,8 +22,9 @@ module.exports = [{
       return h.view('submit-claim', { animalsTested: !!animalsTested })
     }
   }
-},
-{
+}
+
+const postHandler = {
   method: 'POST',
   path: '/claim/submit-claim',
   options: {
@@ -68,4 +69,6 @@ module.exports = [{
       }
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

@@ -28,7 +28,7 @@ const nextPageURL = (request) => {
   return `${urlPrefix}/${endemicsVaccination}`
 }
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
@@ -38,7 +38,9 @@ module.exports = [{
       return h.view(endemicsVetVisitsReviewTestResults, { typeOfLivestock, backLink: previousPageUrl(typeOfLivestock), ...positiveNegativeRadios })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
@@ -71,4 +73,6 @@ module.exports = [{
       return h.redirect(nextPageURL(request))
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

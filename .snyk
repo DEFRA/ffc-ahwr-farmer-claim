@@ -2,11 +2,6 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  SNYK-JS-AXIOS-7361793:
-    - "*":
-        reason: No fix available
-        expires: 2024-09-12T12:14:35.510Z
-        created: 2024-08-12T12:14:35.514Z
   SNYK-JS-ELLIPTIC-8187303:
     - "*":
         reason: Fix next release
