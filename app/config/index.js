@@ -133,16 +133,16 @@ const config = {
   claimExpiryTimeMonths: 6,
   endemicsClaimExpiryTimeMonths: 10,
   dateOfTesting: {
-    enabled: process.env.DATE_OF_TESTING_ENABLED || false
+    enabled: process.env.DATE_OF_TESTING_ENABLED === 'true'
   },
   endemics: {
-    enabled: process.env.ENDEMICS_ENABLED || false
+    enabled: process.env.ENDEMICS_ENABLED === 'true'
   },
   optionalPIHunt: {
-    enabled: process.env.OPTIONAL_PIHUNT_ENABLED || false
+    enabled: process.env.OPTIONAL_PIHUNT_ENABLED === 'true'
   },
   reviewClaimApprovedStatus: {
-    enabled: process.env.REVIEW_CLAIM_APPROVED_STATUS_ENABLED || false
+    enabled: process.env.REVIEW_CLAIM_APPROVED_STATUS_ENABLED === 'true'
   }
 }
 
