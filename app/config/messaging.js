@@ -7,7 +7,7 @@ const mqSchema = Joi.object({
     host: Joi.string().required(),
     username: Joi.string(),
     password: Joi.string(),
-    useCredentialChain: Joi.bool().default(false),
+    useCredentialChain: Joi.bool().required(),
     appInsights: Joi.object()
   },
   applicationRequestQueue: {
@@ -33,7 +33,7 @@ const mqConfig = {
     host: process.env.MESSAGE_QUEUE_HOST,
     username: process.env.MESSAGE_QUEUE_USER,
     password: process.env.MESSAGE_QUEUE_PASSWORD,
-    useCredentialChain: process.env.NODE_ENV === 'production',
+    useCredentialChain: process.env.NODE_ENV === 'production' || false,
     appInsights: require('applicationinsights')
   },
   applicationRequestQueue: {
