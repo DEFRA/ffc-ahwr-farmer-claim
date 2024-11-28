@@ -101,4 +101,20 @@ describe('routes plugin test', () => {
       '/claim/endemics/which-type-of-review'
     ])
   })
+
+  test('when isDev is true, dev-sign-in included in routes', async () => {
+    jest.mock('../../../../app/config', () => ({
+      ...jest.requireActual('../../../../app/config'),
+      isDev: true
+    }))
+
+    const createServer = require('../../../../app/server')
+    const server = await createServer()
+    const routePaths = []
+    server.table().forEach((element) => {
+      routePaths.push(element.path)
+    })
+
+    expect(routePaths).toContain('/claim/endemics/dev-sign-in')
+  })
 })

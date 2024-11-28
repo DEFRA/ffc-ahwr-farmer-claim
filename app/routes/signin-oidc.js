@@ -13,42 +13,6 @@ const appInsights = require('applicationinsights')
 
 const endemicsEnabled = config.endemics.enabled
 
-const doDevLogin = async (request) => {
-  const organisationSummary = {
-    organisationPermission: {},
-    organisation: {
-      sbi: request.query.code,
-      name: 'madeUpCo',
-      email: 'org@company.com',
-      frn: 'frn123456',
-      address: {
-        address1: 'Somewhere'
-      }
-    }
-  }
-  const personSummary = {
-    email: 'farmer@farm.com',
-    customerReferenceNumber: 'abc123',
-    firstName: 'John',
-    lastName: 'Smith'
-  }
-  request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
-
-  return [personSummary, organisationSummary]
-}
-
-const realLogin = async (request) => {
-  await auth.authenticate(request)
-
-  const apimAccessToken = await auth.retrieveApimAccessToken(request)
-  const personSummary = await getPersonSummary(request, apimAccessToken)
-  const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
-  request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
-  await changeContactHistory(personSummary, organisationSummary, request.logger)
-
-  return [personSummary, organisationSummary]
-}
-
 const getHandler = {
   method: 'GET',
   path: '/claim/signin-oidc',
@@ -57,8 +21,7 @@ const getHandler = {
     validate: {
       query: Joi.object({
         code: Joi.string().required(),
-        state: Joi.string().required(),
-        devLogin: Joi.string()
+        state: Joi.string().required()
       }).options({
         stripUnknown: true
       }),
@@ -73,8 +36,13 @@ const getHandler = {
     },
     handler: async (request, h) => {
       try {
-        const { devLogin } = config.isDev && request.query
-        const [personSummary, organisationSummary] = devLogin ? await doDevLogin(request) : await realLogin(request)
+        await auth.authenticate(request)
+
+        const apimAccessToken = await auth.retrieveApimAccessToken(request)
+        const personSummary = await getPersonSummary(request, apimAccessToken)
+        const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
+        request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
+        await changeContactHistory(personSummary, organisationSummary, request.logger)
         const entryValue = request.yar?.get('claim') || {}
         entryValue.organisation = {}
         entryValue.reference = undefined
@@ -133,10 +101,10 @@ const getHandler = {
             email: personSummary.email
           }
         })
+
         // Even though this sign-in page was for Old World, no old world claimant can ever get to this
         // line now, as the 6 month threshold will have kicked them to the ineligible to claim route
-        // therefore we can safely just redirect this on to new world entrypoint and use for our own
-        // local usage etc
+        // therefore we can safely just redirect this on to new world entrypoint
         return h.redirect(`/claim/endemics?from=dashboard&sbi=${organisationSummary.organisation.sbi}`)
       } catch (error) {
         request.logger.setBindings({ err: error })
