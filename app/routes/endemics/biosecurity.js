@@ -24,7 +24,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
-const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) =>
+const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
   optionalPIHunt.enabled
     ? isPositive && piHuntDone && piHuntAllAnimals
     : isPositive && piHuntDone
