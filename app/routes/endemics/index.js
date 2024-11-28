@@ -29,7 +29,7 @@ const createClaimReference = require('../../lib/create-temp-claim-reference')
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
 
-module.exports = {
+const getHandler = {
   method: 'GET',
   path: `${config.urlPrefix}/${endemicsIndex}`,
   options: {
@@ -43,33 +43,51 @@ module.exports = {
         })
         const latestVetVisitApplication = applications.find((application) => {
           // endemics application must have been created within 10 months of vetvisit application visit date
-          return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
+          return (
+            application.type === 'VV' &&
+            isWithin10Months(
+              application.data?.visitDate,
+              latestEndemicsApplication.createdAt
+            )
+          )
         })
         const claims = await getClaimsByApplicationReference(
           latestEndemicsApplication.reference,
           request.logger
         )
         const tempClaimId = createClaimReference()
-        session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
-        session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+        session.setEndemicsClaim(
+          request,
+          latestVetVisitApplicationKey,
+          latestVetVisitApplication
+        )
+        session.setEndemicsClaim(
+          request,
+          latestEndemicsApplicationKey,
+          latestEndemicsApplication
+        )
         session.setEndemicsClaim(request, previousClaimsKey, claims)
         session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
         // new user
-        if ((claims.length === 0) && latestVetVisitApplication === undefined) {
+        if (claims && (claims.length === 0) && latestVetVisitApplication === undefined) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
 
         // new claims
-        if (claims.length > 0) {
+        if (claims && claims.length > 0) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
 
         // old claims NO new claims
         if (latestVetVisitApplication) {
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
+          session.setEndemicsClaim(
+            request,
+            landingPageKey,
+            endemicsWhichTypeOfReviewURI
+          )
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
       }
@@ -83,3 +101,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

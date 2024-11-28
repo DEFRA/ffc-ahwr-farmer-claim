@@ -7,11 +7,7 @@ jest.mock('../../../../../app/auth/token-verify/jwt-decode')
 jest.mock('../../../../../app/api-requests/rpa-api/base')
 
 describe('Organisation', () => {
-  const env = process.env
-
   beforeEach(async () => {
-    process.env = { ...env }
-
     jest.mock('../../../../../app/config', () => ({
       ...jest.requireActual('../../../../../app/config'),
       authConfig: {
@@ -35,8 +31,6 @@ describe('Organisation', () => {
   afterEach(() => {
     jest.resetAllMocks()
     jest.resetModules()
-
-    process.env = env
   })
 
   test('when organisationIsEligible called and has valid permissions - returns valid organisation', async () => {

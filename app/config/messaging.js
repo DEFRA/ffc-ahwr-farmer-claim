@@ -7,7 +7,7 @@ const mqSchema = Joi.object({
     host: Joi.string().required(),
     username: Joi.string(),
     password: Joi.string(),
-    useCredentialChain: Joi.bool().default(false),
+    useCredentialChain: Joi.bool().required(),
     appInsights: Joi.object()
   },
   applicationRequestQueue: {
@@ -62,21 +62,19 @@ if (mqResult.error) {
   throw new Error(`The message queue config is invalid. ${mqResult.error.message}`)
 }
 
-const applicationRequestQueue = { ...mqResult.value.messageQueue, ...mqResult.value.applicationRequestQueue }
-const applicationResponseQueue = { ...mqResult.value.messageQueue, ...mqResult.value.applicationResponseQueue }
-const eventQueue = { ...mqResult.value.messageQueue, ...mqResult.value.eventQueue }
-const fetchApplicationRequestQueue = { ...mqResult.value.messageQueue, ...mqResult.value.fetchApplicationRequestQueue }
-const applicationRequestMsgType = mqResult.value.applicationRequestMsgType
-const fetchApplicationRequestMsgType = mqResult.value.fetchApplicationRequestMsgType
-const fetchClaimRequestMsgType = mqResult.value.fetchClaimRequestMsgType
-const submitClaimRequestMsgType = mqResult.value.submitClaimRequestMsgType
+const applicationRequestQueue = { ...mqConfig.messageQueue, ...mqConfig.applicationRequestQueue }
+const applicationResponseQueue = { ...mqConfig.messageQueue, ...mqConfig.applicationResponseQueue }
+const eventQueue = { ...mqConfig.messageQueue, ...mqConfig.eventQueue }
+const applicationRequestMsgType = mqConfig.applicationRequestMsgType
+const fetchApplicationRequestMsgType = mqConfig.fetchApplicationRequestMsgType
+const fetchClaimRequestMsgType = mqConfig.fetchClaimRequestMsgType
+const submitClaimRequestMsgType = mqConfig.submitClaimRequestMsgType
 
 module.exports = {
   applicationRequestQueue,
   applicationResponseQueue,
   applicationRequestMsgType,
   eventQueue,
-  fetchApplicationRequestQueue,
   fetchApplicationRequestMsgType,
   fetchClaimRequestMsgType,
   submitClaimRequestMsgType

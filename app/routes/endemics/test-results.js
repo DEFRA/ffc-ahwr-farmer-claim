@@ -49,7 +49,7 @@ const pageTitle = (request) => {
 
 const hintHtml = 'You can find this on the summary the vet gave you.'
 
-module.exports = [{
+const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
@@ -59,7 +59,9 @@ module.exports = [{
       return h.view(endemicsTestResults, { title: pageTitle(request), backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
   }
-}, {
+}
+
+const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
@@ -89,4 +91,6 @@ module.exports = [{
       return h.redirect(nextPageURL(request))
     }
   }
-}]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }

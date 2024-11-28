@@ -1,6 +1,6 @@
 const ruralPaymentsAgency = require('../config').ruralPaymentsAgency
 
-module.exports = {
+const getHandler = {
   method: 'GET',
   path: '/claim/details-incorrect',
   options: {
@@ -9,3 +9,5 @@ module.exports = {
     }
   }
 }
+
+module.exports = { handlers: [getHandler] }

@@ -218,122 +218,123 @@ const getEmptyItems = (items, itemType) => {
   return isOfTypeObject(items) ? getInvalidItemIndexes(items, itemType) : []
 }
 
-module.exports = [
-  {
-    method: 'GET',
-    path: pageUrl,
-    options: {
-      handler: async (request, h) => {
-        const endemicsClaim = getEndemicsClaim(request)
-        if (request.query?.diseaseType && endemicsClaim?.sheepTestResults) {
-          const updatedSheepTestResults = endemicsClaim?.sheepTestResults.map((test) => test.diseaseType === request?.query?.diseaseType ? { ...test, isCurrentPage: true } : { ...test, isCurrentPage: false })
+const getHandler = {
+  method: 'GET',
+  path: pageUrl,
+  options: {
+    handler: async (request, h) => {
+      const endemicsClaim = getEndemicsClaim(request)
+      if (request.query?.diseaseType && endemicsClaim?.sheepTestResults) {
+        const updatedSheepTestResults = endemicsClaim?.sheepTestResults.map((test) => test.diseaseType === request?.query?.diseaseType ? { ...test, isCurrentPage: true } : { ...test, isCurrentPage: false })
 
-          setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
-        }
-
-        const pageContent = getPageContent(request)
-        const { previousePage } = routes(request)
-
-        return h.view(endemicsSheepTestResults, {
-          ...pageContent,
-          backLink: previousePage
-        })
+        setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
       }
+
+      const pageContent = getPageContent(request)
+      const { previousePage } = routes(request)
+
+      return h.view(endemicsSheepTestResults, {
+        ...pageContent,
+        backLink: previousePage
+      })
     }
-  },
-  {
-    method: 'POST',
-    path: pageUrl,
-    options: {
-      handler: async (request, h) => {
-        const { payload } = request
-        const { nextPage, previousePage } = routes(request)
-        const { sheepTestResults } = getEndemicsClaim(request)
-        const diseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
-        const diseaseType = sheepTestResults[diseaseTypeIndex]
-        const upatedSheepTestResults = [...sheepTestResults]
+  }
+}
 
-        if (diseaseType?.diseaseType !== 'other') {
-          const pageContent = getPageContent(request, { error: true })
-          const backLink = previousePage
-          const errorList = [{ text: 'Select a result', href: '#testResult' }]
+const postHandler = {
+  method: 'POST',
+  path: pageUrl,
+  options: {
+    handler: async (request, h) => {
+      const { payload } = request
+      const { nextPage, previousePage } = routes(request)
+      const { sheepTestResults } = getEndemicsClaim(request)
+      const diseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
+      const diseaseType = sheepTestResults[diseaseTypeIndex]
+      const upatedSheepTestResults = [...sheepTestResults]
 
-          if (!payload?.testResult) {
-            return notOtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
-          }
+      if (diseaseType?.diseaseType !== 'other') {
+        const pageContent = getPageContent(request, { error: true })
+        const backLink = previousePage
+        const errorList = [{ text: 'Select a result', href: '#testResult' }]
 
-          diseaseType.result = payload.testResult
-
-          upatedSheepTestResults[diseaseTypeIndex] = diseaseType
-
-          setEndemicsClaim(request, 'sheepTestResults', upatedSheepTestResults)
-
-          return h.redirect(nextPage)
+        if (!payload?.testResult) {
+          return notOtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
         }
 
-        if (payload?.delete) {
-          payload.diseaseType = payload.diseaseType.filter((_, index) => index !== Number(payload.delete))
-          payload.testResult = payload.testResult.filter((_, index) => index !== Number(payload.delete))
-        }
-
-        const results = getErrorResultString(payload, fieldValidator)
-        const diseaseTypeValidationError = results?.diseaseType?.text
-        const testResultValidationError = results?.testResult?.text
-
-        if (hasError([diseaseTypeValidationError, testResultValidationError])) {
-          const pageContent = getPageContent(request, results)
-
-          return h.view(endemicsSheepTestResults, {
-            ...pageContent,
-            backLink: previousePage,
-            errorList: getErrorList(diseaseTypeValidationError, testResultValidationError)
-          }).code(400).takeover()
-        }
-
-        const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
-
-        const payloadData = newPayloadData || payload
-        const newDiseaseTypeErrorMessage = newErrorMessage
-
-        const diseaseTypeEmptyItems = getEmptyItems(payloadData.diseaseType, 'diseaseType')
-        const testResultEmptyItems = getEmptyItems(payloadData.testResult, 'testResult')
-        const duplicateItems = isOfTypeObject(payloadData.diseaseType) ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
-
-        const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems) || []
-
-        diseaseType.result = updateDiseaseType(diseaseTypeErrorList, testResultEmptyItems, payloadData)
+        diseaseType.result = payload.testResult
 
         upatedSheepTestResults[diseaseTypeIndex] = diseaseType
 
         setEndemicsClaim(request, 'sheepTestResults', upatedSheepTestResults)
 
-        if (hasError([diseaseTypeErrorList.length, testResultEmptyItems.length, newDiseaseTypeErrorMessage])) {
-          const pageContent = getPageContent(request, {
-            diseaseType: newDiseaseTypeErrorMessage?.diseaseType,
-            testResult: newDiseaseTypeErrorMessage?.testResult
-          })
+        return h.redirect(nextPage)
+      }
 
-          return h.view(endemicsSheepTestResults, {
-            ...pageContent,
-            backLink: previousePage,
-            errorList: [
-              ...(diseaseTypeErrorList?.length ? diseaseTypeErrorList.map((error) => Object.values(error)[0]) : []),
-              ...(testResultEmptyItems?.length ? testResultEmptyItems.map((error) => Object.values(error)[0]) : []),
-              newDiseaseTypeErrorMessage?.diseaseType,
-              newDiseaseTypeErrorMessage?.testResult
-            ]
-          }).code(400).takeover()
-        }
+      if (payload?.delete) {
+        payload.diseaseType = payload.diseaseType.filter((_, index) => index !== Number(payload.delete))
+        payload.testResult = payload.testResult.filter((_, index) => index !== Number(payload.delete))
+      }
 
-        if (payloadData?.submitButton === 'continue') return h.redirect(nextPage)
+      const results = getErrorResultString(payload, fieldValidator)
+      const diseaseTypeValidationError = results?.diseaseType?.text
+      const testResultValidationError = results?.testResult?.text
 
-        const pageContent = getPageContent(request)
+      if (hasError([diseaseTypeValidationError, testResultValidationError])) {
+        const pageContent = getPageContent(request, results)
 
         return h.view(endemicsSheepTestResults, {
           ...pageContent,
-          backLink: previousePage
-        })
+          backLink: previousePage,
+          errorList: getErrorList(diseaseTypeValidationError, testResultValidationError)
+        }).code(400).takeover()
       }
+
+      const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
+
+      const payloadData = newPayloadData || payload
+      const newDiseaseTypeErrorMessage = newErrorMessage
+
+      const diseaseTypeEmptyItems = getEmptyItems(payloadData.diseaseType, 'diseaseType')
+      const testResultEmptyItems = getEmptyItems(payloadData.testResult, 'testResult')
+      const duplicateItems = isOfTypeObject(payloadData.diseaseType) ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
+
+      const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems) || []
+
+      diseaseType.result = updateDiseaseType(diseaseTypeErrorList, testResultEmptyItems, payloadData)
+
+      upatedSheepTestResults[diseaseTypeIndex] = diseaseType
+
+      setEndemicsClaim(request, 'sheepTestResults', upatedSheepTestResults)
+
+      if (hasError([diseaseTypeErrorList.length, testResultEmptyItems.length, newDiseaseTypeErrorMessage])) {
+        const pageContent = getPageContent(request, {
+          diseaseType: newDiseaseTypeErrorMessage?.diseaseType,
+          testResult: newDiseaseTypeErrorMessage?.testResult
+        })
+
+        return h.view(endemicsSheepTestResults, {
+          ...pageContent,
+          backLink: previousePage,
+          errorList: [
+            ...(diseaseTypeErrorList?.length ? diseaseTypeErrorList.map((error) => Object.values(error)[0]) : []),
+            ...(testResultEmptyItems?.length ? testResultEmptyItems.map((error) => Object.values(error)[0]) : []),
+            newDiseaseTypeErrorMessage?.diseaseType,
+            newDiseaseTypeErrorMessage?.testResult
+          ]
+        }).code(400).takeover()
+      }
+
+      if (payloadData?.submitButton === 'continue') return h.redirect(nextPage)
+
+      const pageContent = getPageContent(request)
+
+      return h.view(endemicsSheepTestResults, {
+        ...pageContent,
+        backLink: previousePage
+      })
     }
   }
-]
+}
+
+module.exports = { handlers: [getHandler, postHandler] }
