@@ -133,7 +133,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        biosecurity: Joi.string().valid('yes', 'no').required().messages({ 'any.required': 'Select whether the vet did a biosecurity assessment'}),
+        biosecurity: Joi.string().valid('yes', 'no').required().messages({ 'any.required': 'Select whether the vet did a biosecurity assessment' }),
         assessmentPercentage: Joi.when('biosecurity', {
           is: Joi.valid('yes'),
           then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
