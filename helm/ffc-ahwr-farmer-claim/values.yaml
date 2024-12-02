@@ -75,6 +75,7 @@ container:
   endemicsEnabled:
   optionalPIHuntEnabled:
   reviewClaimApprovedStatusEnabled:
+  multiSpeciesEnabled:
 
 
 ingress:
