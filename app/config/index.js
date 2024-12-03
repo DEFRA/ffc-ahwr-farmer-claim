@@ -72,6 +72,9 @@ const schema = Joi.object({
   },
   reviewClaimApprovedStatus: {
     enabled: Joi.bool().required()
+  },
+  multiSpecies: {
+    enabled: Joi.bool().required()
   }
 })
 
@@ -143,6 +146,9 @@ const config = {
   },
   reviewClaimApprovedStatus: {
     enabled: process.env.REVIEW_CLAIM_APPROVED_STATUS_ENABLED === 'true'
+  },
+  multiSpecies: {
+    enabled: process.env.MULTI_SPECIES_ENABLED === 'true'
   }
 }
 

@@ -72,9 +72,10 @@ container:
   apimClientSecret:
   apimScope:
   dateOfTestingEnabled:
-  endemicsEnabled:
-  optionalPIHuntEnabled:
-  reviewClaimApprovedStatusEnabled:
+  endemicsEnabled: 'true'
+  optionalPIHuntEnabled: 'false'
+  reviewClaimApprovedStatusEnabled: 'false'
+  multiSpeciesEnabled: 'false'
 
 
 ingress:
