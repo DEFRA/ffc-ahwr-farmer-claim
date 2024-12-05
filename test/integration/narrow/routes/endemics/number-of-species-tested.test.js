@@ -12,8 +12,8 @@ describe('Number of species tested test', () => {
   const url = '/claim/endemics/number-of-species-tested'
 
   beforeAll(() => {
-    raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    raiseInvalidDataEvent.mockImplementation(() => {})
+    setEndemicsClaimMock.mockImplementation(() => {})
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
 
     jest.mock('../../../../../app/config', () => {
@@ -38,6 +38,9 @@ describe('Number of species tested test', () => {
           }
         },
         endemics: {
+          enabled: true
+        },
+        optionalPIHunt: {
           enabled: true
         }
       }
@@ -207,6 +210,45 @@ describe('Number of species tested test', () => {
       expect($('h1').text()).toMatch('How many sheep were samples taken from or assessed?')
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('The number of animals tested cannot be 0')
       expect($('#numberAnimalsTested-error').text()).toMatch('The number of animals tested cannot be 0')
+    })
+
+    test('error page shows 2 bullet points when PI Hunt env variable is true', async () => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'R' } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberAnimalsTested: '1' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('#main-content > div > div > ul').children().length).toBe(2)
+    })
+
+    test('error page shows 3 bullet points when PI Hunt env variable is false', async () => {
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'R' } })
+
+      const config = require('../../../../../app/config')
+
+      config.optionalPIHunt.enabled = false
+
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, numberAnimalsTested: '1' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await global.__SERVER__.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('#main-content > div > div > ul').children().length).toBe(3)
     })
   })
 })
