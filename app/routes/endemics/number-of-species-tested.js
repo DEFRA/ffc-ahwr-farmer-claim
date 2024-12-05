@@ -170,7 +170,7 @@ const postHandler = {
       return h
         .view(endemicsNumberOfSpeciesException, {
           backLink: pageUrl,
-          ruralPaymentsAgency: config.ruralPaymentsAgency
+          piHuntEnabled: config.optionalPIHunt.enabled
         })
         .code(400)
         .takeover()
