@@ -20,19 +20,32 @@
       <h2 class="govuk-heading-m">What to do next</h2>
       <p class="govuk-body">If samples were not taken from the minimum required number of animals, they need to be taken again from the minimum number.</p>
       <p class="govuk-body">The number required for each species is included in the guidance:</p>
+
+      {% if piHuntEnabled == false %}
+      <ul class="govuk-list govuk-list--bullet">
+        <li>
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/government/publications/cattle-testing-required-for-an-animal-health-and-welfare-review-and-endemic-disease-follow-up/vets-testing-cattle-for-animal-health-and-welfare-review#testing-sampling-and-advice">Testing cattle for animal health and welfare review</a>
+        </li>
+        <li>
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/government/publications/cattle-testing-required-for-an-animal-health-and-welfare-review-and-endemic-disease-follow-up/vets-testing-beef-cattle-for-endemic-disease-follow-up#testing-sampling-and-advice">Testing beef cattle for endemic disease follow-up</a>
+        </li>
+        <li>
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/government/publications/pigs-testing-required-for-an-annual-health-and-welfare-review-and-endemic-disease-follow-up/vets-testing-pigs-for-animal-health-and-welfare-review#testing-sampling-and-advice">Testing pigs for animal health and welfare review</a>
+        </li>
+      </ul>
+      {% endif %}
+
+      {% if piHuntEnabled == true %}
       <ul class="govuk-list govuk-list--bullet">
         <li>
           <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-and-vets-what-happens-on-an-animal-health-and-welfare-review#during-the-review-sampling-for-disease-testing">Testing beef cattle for animal health and welfare review</a>
         </li>
-        {% if piHuntEnabled == false %}
-          <li>
-            <a class="govuk-link" rel="external" href="https://www.gov.uk/government/publications/cattle-testing-required-for-an-animal-health-and-welfare-review-and-endemic-disease-follow-up/vets-testing-beef-cattle-for-endemic-disease-follow-up#testing-sampling-and-advice">Testing beef cattle for endemic disease follow-up</a>
-          </li>
-        {% endif %}
         <li>
           <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-and-vets-what-happens-on-an-animal-health-and-welfare-review#during-the-review-sampling-for-disease-testing">Testing pigs for animal health and welfare review</a>
         </li>
       </ul>
+      {% endif %}
+      
       <p class="govuk-body">When samples have been taken from the required number, start your claim again</p>
       <p class="govuk-body">If you have entered the wrong number, you'll need to go back and enter the correct number.</p>
       <p class="govuk-body">
