@@ -16,7 +16,6 @@ const {
 const {
   thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold }
 } = require('../../constants/amounts')
-const { livestockTypes } = require('../../constants/claim')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
