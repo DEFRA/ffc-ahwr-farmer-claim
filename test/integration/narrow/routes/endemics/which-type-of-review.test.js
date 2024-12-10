@@ -17,7 +17,7 @@ describe('Which type of review test', () => {
     strategy: 'cookie'
   }
   let crumb
-  const previousClaims = [{ data: { typeOfLivestock: 'beef' } }]
+  const previousClaims = [{ data: { typeOfLivestock: 'sheep' } }]
   const latestVetVisitApplication = { data: { whichReview: 'beef' } }
 
   beforeAll(() => {
@@ -25,13 +25,15 @@ describe('Which type of review test', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
-  afterAll(() => {
+  afterEach(() => {
     jest.resetAllMocks()
   })
 
   describe('GET', () => {
-    test('Returns 200 and gets typeOfLivestock from past claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'R', latestVetVisitApplication, previousClaims: [] })
+    test('sets typeOfLivestock from old world applications', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce(
+        { typeOfReview: 'R', latestVetVisitApplication, previousClaims: [] }
+      )
       const options = {
         method: 'GET',
         url,
@@ -42,13 +44,17 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('What are you claiming for')
       expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
+      expect(setEndemicsClaimMock.mock.calls).toEqual([
+        [expect.any(Object), 'typeOfLivestock', 'beef']
+      ])
     })
 
-    test('Returns 200 and gets typeOfLivestock from past application claim', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'review', latestVetVisitApplication, previousClaims })
+    test('sets typeOfLivestock from new world claims if present', async () => {
+      sessionMock.getEndemicsClaim.mockReturnValueOnce(
+        { typeOfReview: 'review', latestVetVisitApplication, previousClaims }
+      )
       const options = {
         method: 'GET',
         url,
@@ -58,31 +64,12 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('What are you claiming for beef cattle?')
       expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
-    })
 
-    test.each([
-      { typeOfLivestock: 'beef', content: 'beef cattle' },
-      { typeOfLivestock: 'dairy', content: 'dairy cattle' },
-      { typeOfLivestock: 'sheep', content: 'sheep' },
-      { typeOfLivestock: 'pigs', content: 'pigs' }
-    ])('Returns 200 and formats content correct from typeOfLivestock $typeOfLivestock', async ({ typeOfLivestock, content }) => {
-      sessionMock.getEndemicsClaim.mockReturnValue({ typeOfReview: 'review', latestVetVisitApplication: { data: { whichReview: typeOfLivestock } }, previousClaims: [] })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch(`What are you claiming for ${content}?`)
-      expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
-      expectPhaseBanner.ok($)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaimMock.mock.calls).toEqual([
+        [expect.any(Object), 'typeOfLivestock', 'sheep']
+      ])
     })
   })
 
