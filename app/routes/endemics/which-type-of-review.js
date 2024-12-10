@@ -34,12 +34,11 @@ const getHandler = {
     handler: async (request, h) => {
       const { typeOfReview, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
       const typeOfLivestock = getTypeOfLivestockFromPastClaims(previousClaims, latestVetVisitApplication)
+
       setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
 
-      const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
       return h.view(endemicsWhichTypeOfReview, {
         backLink,
-        typeOfLivestock: formattedTypeOfLivestock,
         previousAnswer: getPreviousAnswer(typeOfReview)
       })
     }
@@ -58,13 +57,11 @@ const postHandler = {
       }),
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock } = getEndemicsClaim(request)
-        const formattedTypeOfLivestock = [livestockTypes.pigs, livestockTypes.sheep].includes(typeOfLivestock) ? typeOfLivestock : `${typeOfLivestock} cattle`
+
         return h
           .view(endemicsWhichTypeOfReview, {
             errorMessage: { text: 'Select what you are claiming for', href: '#typeOfReview' },
-            backLink,
-            typeOfLivestock: formattedTypeOfLivestock
+            backLink
           })
           .code(400)
           .takeover()
@@ -95,7 +92,9 @@ const postHandler = {
       }
 
       // If user has an old world application within last 10 months
-      if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
+      if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) {
+        return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
+      }
 
       return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
     }
