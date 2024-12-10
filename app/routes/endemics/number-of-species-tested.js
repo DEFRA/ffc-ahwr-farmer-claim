@@ -101,7 +101,7 @@ const postHandler = {
       const { numberAnimalsTested } = request.payload
       const { typeOfLivestock, typeOfReview } =
         session.getEndemicsClaim(request)
-      const { isPigs } = getLivestockTypes(typeOfLivestock)
+      const { isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const threshold =
         numberOfSpeciesTestedThreshold[typeOfLivestock][typeOfReview]
@@ -146,7 +146,7 @@ const postHandler = {
           .code(400)
           .takeover()
       }
-      if (typeOfLivestock === livestockTypes.sheep) {
+      if (isSheep) {
         raiseInvalidDataEvent(
           request,
           numberAnimalsTestedKey,
@@ -170,7 +170,8 @@ const postHandler = {
       return h
         .view(endemicsNumberOfSpeciesException, {
           backLink: pageUrl,
-          piHuntEnabled: config.optionalPIHunt.enabled
+          piHuntEnabled: config.optionalPIHunt.enabled,
+          ruralPaymentsAgency: config.ruralPaymentsAgency
         })
         .code(400)
         .takeover()
