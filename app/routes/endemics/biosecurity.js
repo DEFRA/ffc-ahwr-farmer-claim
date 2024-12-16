@@ -24,13 +24,16 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
+
 const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
+
 const isPIHuntValidNegative = (
   isNegative,
   piHuntDone,
   piHuntRecommended,
   piHuntAllAnimals
 ) => isNegative && piHuntDone && piHuntRecommended && piHuntAllAnimals
+
 const isPIHuntValid = (
   isPositive,
   piHuntDone,
@@ -45,6 +48,7 @@ const isPIHuntValid = (
     piHuntRecommended,
     piHuntAllAnimals
   )
+  
 const getBeefOrDairyPage = (session, isNegative, isPositive) => {
   const piHuntDone = session?.piHunt === 'yes'
   const piHuntRecommended = session?.piHuntRecommended === 'yes'
@@ -75,6 +79,7 @@ const getBeefOrDairyPage = (session, isNegative, isPositive) => {
 
   return `${urlPrefix}/${endemicsTestResults}`
 }
+
 const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
   const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
