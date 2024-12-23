@@ -1,5 +1,7 @@
 const { randomInt } = require('node:crypto')
-const { profanity } = require('@2toad/profanity')
+const { Profanity } = require('@2toad/profanity')
+
+const profanity = new Profanity({ wholeWord: false })
 
 const containsSwearWord = (input) => {
   return profanity.exists(input)
@@ -11,7 +13,7 @@ function generateRandomID () {
   const firstFour = id.slice(0, 4)
   const secondFour = id.slice(4)
 
-  if (containsSwearWord(firstFour) || containsSwearWord(secondFour) || containsSwearWord(`${firstFour}${secondFour}`)) {
+  if (containsSwearWord(`${firstFour}${secondFour}`)) {
     return generateRandomID()
   }
 
