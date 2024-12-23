@@ -1,11 +1,12 @@
-/**
- * Generate unique reference number
- * ex. VV22-B471-F25C
- * @returns string
- */
-const { v4: uuidv4 } = require('uuid')
-module.exports = () => {
-  const id = uuidv4()
-  const claimRef = id.split('-').shift().toLocaleUpperCase('en-GB').match(/.{1,4}/g).join('-')
-  return `TEMP-CLAIM-${claimRef}`
+const { randomInt } = require('node:crypto')
+
+function generateRandomID () {
+  const charset = 'ABCDEFGHIJKLMNPQRSTUVWXYZ123456789'
+  const id = Array.from({ length: 8 }, () => charset.charAt(randomInt(0, charset.length))).join('')
+  const firstFour = id.slice(0, 4)
+  const secondFour = id.slice(4)
+
+  return `TEMP-CLAIM-${firstFour}-${secondFour}`
 }
+
+module.exports = generateRandomID
