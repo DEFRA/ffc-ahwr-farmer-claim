@@ -3,19 +3,9 @@ const config = require('../config')
 let routes = [].concat(
   require('../routes/assets').handlers,
   require('../routes/cookies').handlers,
-  require('../routes/check-answers').handlers,
   require('../routes/healthy').handlers,
   require('../routes/healthz').handlers,
   require('../routes/index').handlers,
-  require('../routes/visit-review').handlers,
-  require('../routes/details-incorrect').handlers,
-  require('../routes/submit-claim').handlers,
-  require('../routes/urn-result').handlers,
-  require('../routes/vet-name').handlers,
-  require('../routes/animals-tested').handlers,
-  require('../routes/number-of-animals-ineligible').handlers,
-  require('../routes/vet-rcvs').handlers,
-  require('../routes/vet-visit-date').handlers,
   require('../routes/signin-oidc').handlers
 )
 
@@ -49,11 +39,25 @@ if (config.endemics.enabled) {
   )
 }
 
+if (config.isDev) {
+  routes = routes.concat(require('../routes/endemics/dev-sign-in').handlers)
+}
+
 module.exports = {
   plugin: {
     name: 'router',
     register: (server, _) => {
+      routes.filter(x => !x.path.includes('assets'))
+        .forEach(route => assignPreRouteFunction(route, server))
       server.route(routes)
     }
   }
+}
+
+const assignPreRouteFunction = (route, server) => {
+  route.options.pre
+    ? route.options.pre.push({
+        method: server.methods.loggingContext, assign: 'loggingContext'
+      })
+    : route.options.pre = [{ method: server.methods.loggingContext, assign: 'loggingContext' }]
 }

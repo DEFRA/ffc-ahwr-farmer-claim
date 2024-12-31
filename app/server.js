@@ -4,6 +4,7 @@ const catbox = config.useRedis
   ? require('@hapi/catbox-redis')
   : require('@hapi/catbox-memory')
 const cacheConfig = config.useRedis ? config.cache.options : {}
+const session = require('./session')
 
 const getSecurityPolicy = () => "default-src 'self';" +
   "object-src 'none';" +
@@ -35,11 +36,13 @@ async function createServer () {
     }
   })
 
-  const submissionCrumbCache = server.cache({
+  // 24 hours
+  server.app.submissionCrumbCache = server.cache({
     expiresIn: 1000 * 60 * 60 * 24,
     segment: 'submissionCrumbs'
-  }) // 24 hours
-  server.app.submissionCrumbCache = submissionCrumbCache
+  })
+
+  server.method('loggingContext', loggingDecorator)
 
   await server.register(require('./plugins/crumb'))
   await server.register(require('@hapi/cookie'))
@@ -82,6 +85,16 @@ async function createServer () {
   }
 
   return server
+}
+
+function loggingDecorator (request) {
+  request.logger.setBindings({
+    sbi: session.getEndemicsClaim(request)?.organisation.sbi,
+    crn: session.getEndemicsClaim(request)?.organisation.crn,
+    reference: session.getEndemicsClaim(request)?.reference,
+    applicationReference: session.getEndemicsClaim(request)?.latestEndemicsApplication?.reference
+  })
+  return ''
 }
 
 module.exports = createServer

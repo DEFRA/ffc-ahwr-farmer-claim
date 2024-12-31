@@ -24,8 +24,7 @@ const mqSchema = Joi.object({
     type: 'queue'
   },
   fetchApplicationRequestMsgType: `${msgTypePrefix}.fetch.app.request`,
-  fetchClaimRequestMsgType: `${msgTypePrefix}.fetch.claim.request`,
-  submitClaimRequestMsgType: `${msgTypePrefix}.submit.claim.request`
+  fetchClaimRequestMsgType: `${msgTypePrefix}.fetch.claim.request`
 })
 
 const mqConfig = {
@@ -50,8 +49,7 @@ const mqConfig = {
     type: 'queue'
   },
   fetchApplicationRequestMsgType: `${msgTypePrefix}.fetch.app.request`,
-  fetchClaimRequestMsgType: `${msgTypePrefix}.fetch.claim.request`,
-  submitClaimRequestMsgType: `${msgTypePrefix}.submit.claim.request`
+  fetchClaimRequestMsgType: `${msgTypePrefix}.fetch.claim.request`
 }
 
 const mqResult = mqSchema.validate(mqConfig, {
@@ -68,7 +66,6 @@ const eventQueue = { ...mqConfig.messageQueue, ...mqConfig.eventQueue }
 const applicationRequestMsgType = mqConfig.applicationRequestMsgType
 const fetchApplicationRequestMsgType = mqConfig.fetchApplicationRequestMsgType
 const fetchClaimRequestMsgType = mqConfig.fetchClaimRequestMsgType
-const submitClaimRequestMsgType = mqConfig.submitClaimRequestMsgType
 
 module.exports = {
   applicationRequestQueue,
@@ -76,6 +73,5 @@ module.exports = {
   applicationRequestMsgType,
   eventQueue,
   fetchApplicationRequestMsgType,
-  fetchClaimRequestMsgType,
-  submitClaimRequestMsgType
+  fetchClaimRequestMsgType
 }

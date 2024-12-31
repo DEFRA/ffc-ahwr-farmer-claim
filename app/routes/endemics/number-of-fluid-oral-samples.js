@@ -63,7 +63,7 @@ const postHandler = {
       session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
       if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
-        raiseInvalidDataEvent(request, numberOfOralFluidSamplesKey, `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`)
+        await raiseInvalidDataEvent(request, numberOfOralFluidSamplesKey, `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`)
         return h.view(
           endemicsNumberOfOralFluidSamplesException,
           {

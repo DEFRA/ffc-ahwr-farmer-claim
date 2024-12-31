@@ -9,6 +9,8 @@ services:
       target: development
     image: ffc-ahwr-farmer-claim-development
     container_name: ffc-ahwr-farmer-claim-development
+    environment:
+      USE_PRETTY_PRINT: ${USE_PRETTY_PRINT:-true}
     ports:
       - "3004:3000"
       - "9234:9229"

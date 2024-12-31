@@ -131,7 +131,7 @@ const postHandler = {
           .takeover()
       }
       if (isPigs && isEndemicsFollowUp) {
-        raiseInvalidDataEvent(
+        await raiseInvalidDataEvent(
           request,
           numberAnimalsTestedKey,
           `Value ${numberAnimalsTested} is not equal to required value ${threshold} for ${typeOfLivestock}`
@@ -146,7 +146,7 @@ const postHandler = {
           .takeover()
       }
       if (isSheep) {
-        raiseInvalidDataEvent(
+        await raiseInvalidDataEvent(
           request,
           numberAnimalsTestedKey,
           `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`
@@ -161,7 +161,7 @@ const postHandler = {
           .takeover()
       }
 
-      raiseInvalidDataEvent(
+      await raiseInvalidDataEvent(
         request,
         numberAnimalsTestedKey,
         `Value ${numberAnimalsTested} is less than required value ${threshold} for ${typeOfLivestock}`

@@ -94,7 +94,11 @@ const getHandler = {
 
       logout()
 
-      return h.view(`${endemicsIndex}/index`, {
+      const loginView = config.isDev ? `${endemicsIndex}/devindex` : `${endemicsIndex}/index`
+      const devLogin = config.isDev ? `${endemicsIndex}/dev-sign-in` : undefined
+
+      return h.view(loginView, {
+        devLogin,
         defraIdLogin: requestAuthorizationCodeUrl(session, request),
         ruralPaymentsAgency: config.ruralPaymentsAgency
       })
