@@ -508,11 +508,12 @@ describe('Check answers test', () => {
       crumb = await getCrumbs(global.__SERVER__)
     })
 
-    function expectAppInsightsEventRaised (reference, status) {
+    function expectAppInsightsEventRaised (tempClaimReference, claimReference, status) {
       expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
         name: 'claim-submitted',
         properties: {
-          reference,
+          tempClaimReference,
+          claimReference,
           state: status,
           scheme: 'new-world'
         }
@@ -520,7 +521,7 @@ describe('Check answers test', () => {
     }
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
-      'When post new claim, it should redirect to confirmation page',
+      'When post new claim (pigs review), it should redirect to confirmation page',
       async ({ latestVetVisitApplication }) => {
         const options = {
           method: 'POST',
@@ -533,7 +534,7 @@ describe('Check answers test', () => {
         getEndemicsClaimMock.mockImplementation(() => {
           return {
             typeOfLivestock: 'pigs',
-            typeOfReview: 'review',
+            typeOfReview: 'R',
             dateOfVisit: '2023-12-19T10:25:11.318Z',
             dateOfTesting: '2023-12-19T10:25:11.318Z',
             speciesNumbers: 'Yes',
@@ -576,12 +577,12 @@ describe('Check answers test', () => {
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
-        expectAppInsightsEventRaised('tempClaimReference')
+        expectAppInsightsEventRaised('tempClaimReference', '123')
       }
     )
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
-      'When post new claim, it should redirect to confirmation page',
+      'When post new claim (sheep endemics), it should redirect to confirmation page',
       async ({ latestVetVisitApplication }) => {
         const options = {
           method: 'POST',
@@ -638,7 +639,7 @@ describe('Check answers test', () => {
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
-        expectAppInsightsEventRaised('tempClaimReference')
+        expectAppInsightsEventRaised('tempClaimReference', '123')
       }
     )
 
