@@ -30,8 +30,6 @@ const latestReviewApplication = {
 
 let crumb
 const today = new Date()
-const yearPast = new Date(today)
-yearPast.setDate(yearPast.getDate() - 365)
 const yesterday = new Date(today)
 yesterday.setDate(yesterday.getDate() - 1)
 const tomorrow = new Date(today)
@@ -156,10 +154,10 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     })
     test.each([
       {
-        description: 'onAnotherDay - Date of sampling must include 4 numbers',
+        description: 'onAnotherDay - year of sampling must include 4 numbers',
         whenTestingWasCarriedOut: 'onAnotherDate',
         onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth(),
+        onAnotherDateMonth: today.getMonth() + 1,
         onAnotherDateYear: 202,
         errorMessage: 'Year must include 4 numbers',
         errorHighlights: ['on-another-date-day'],

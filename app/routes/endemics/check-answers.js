@@ -542,16 +542,16 @@ const postHandler = {
         diseaseStatus,
         sheepEndemicsPackage,
         numberOfSamplesTested,
-        reference,
+        reference: tempClaimReference,
         reviewTestResults
       } = getEndemicsClaim(request)
 
-      const tempClaimReference = reference
       const { isSheep } = getLivestockTypes(typeOfLivestock)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
       const claim = await submitNewClaim({
         applicationReference: latestEndemicsApplication?.reference,
+        reference: tempClaimReference,
         type: typeOfReview,
         createdBy: 'admin',
         data: {
@@ -591,7 +591,8 @@ const postHandler = {
       appInsights.defaultClient.trackEvent({
         name: 'claim-submitted',
         properties: {
-          reference,
+          tempClaimReference,
+          claimReference: claim.reference,
           scheme: 'new-world'
         }
       })
