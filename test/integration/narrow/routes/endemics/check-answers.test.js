@@ -554,22 +554,14 @@ describe('Check answers test', () => {
             statusCode: 200,
             statusMessage: 'OK'
           },
-          payload: {
-            dataValues: {
-              reference: '123'
-            }
-          }
+          payload: { reference: '123' }
         }
 
         Wreck.post.mockResolvedValue(mockResponse)
 
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
-            submitNewClaim: jest.fn().mockReturnValue({
-              dataValues: {
-                reference: '123'
-              }
-            })
+            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
           }
         })
         const res = await global.__SERVER__.inject(options)
@@ -616,22 +608,14 @@ describe('Check answers test', () => {
             statusCode: 200,
             statusMessage: 'OK'
           },
-          payload: {
-            dataValues: {
-              reference: '123'
-            }
-          }
+          payload: { reference: '123' }
         }
 
         Wreck.post.mockResolvedValue(mockResponse)
 
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
-            submitNewClaim: jest.fn().mockReturnValue({
-              dataValues: {
-                reference: '123'
-              }
-            })
+            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
           }
         })
         const res = await global.__SERVER__.inject(options)
