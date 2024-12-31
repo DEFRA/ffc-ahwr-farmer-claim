@@ -584,15 +584,15 @@ const postHandler = {
         }
       }, request.logger)
 
-      setEndemicsClaim(request, 'reference', claim.dataValues.reference)
-      setEndemicsClaim(request, 'amount', claim.dataValues.data?.amount)
+      setEndemicsClaim(request, 'reference', claim.reference)
+      setEndemicsClaim(request, 'amount', claim.data?.amount)
       setTempClaimReference(request, 'tempClaimReference', tempClaimReference)
 
       appInsights.defaultClient.trackEvent({
         name: 'claim-submitted',
         properties: {
           tempClaimReference,
-          claimReference: claim.dataValues.reference,
+          claimReference: claim.reference,
           scheme: 'new-world'
         }
       })
