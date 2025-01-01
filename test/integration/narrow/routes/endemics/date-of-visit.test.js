@@ -334,7 +334,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         applicationCreationDate,
         typeOfReview
       }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaimMock.mockImplementation(() => {
           return {
             ...(typeOfReview && { typeOfReview }),
             latestVetVisitApplication: {
@@ -412,7 +412,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description)',
       async ({ reason, day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaimMock.mockImplementation(() => {
           return {
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
@@ -498,7 +498,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description) and match content',
       async ({ day, month, year, applicationCreationDate, content, dateOfVetVisitException }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaimMock.mockImplementation(() => {
           return {
             typeOfReview: 'E'
           }
@@ -569,7 +569,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaimMock.mockImplementation(() => {
           return {
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
@@ -625,7 +625,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaimMock.mockImplementation(() => {
           return {
             latestVetVisitApplication: {
               ...latestVetVisitApplication,
@@ -724,7 +724,7 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockReturnValueOnce({
+        getEndemicsClaimMock.mockReturnValue({
           latestVetVisitApplication: {
             ...latestVetVisitApplication,
             createdAt: applicationCreationDate

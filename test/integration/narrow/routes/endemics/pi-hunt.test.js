@@ -84,7 +84,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -100,7 +100,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -158,7 +158,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults } })
+      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -174,7 +174,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults: 'negative' } })
 
       const res = await global.__SERVER__.inject(options)
 

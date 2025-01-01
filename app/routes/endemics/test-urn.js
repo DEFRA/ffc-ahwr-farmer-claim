@@ -125,7 +125,7 @@ const postHandler = {
       session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
       if (!response?.isURNUnique) {
-        raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
+        await raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
         return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
       }
 

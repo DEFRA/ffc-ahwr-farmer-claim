@@ -1,7 +1,5 @@
-const session = require('../session')
 const config = require('../config')
-const { requestAuthorizationCodeUrl } = require('../auth')
-const logout = require('../lib/logout')
+const { endemicsIndex } = require('../config/routes')
 
 const getHandler = {
   method: 'GET',
@@ -9,12 +7,8 @@ const getHandler = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      logout()
-      return h.view('index', {
-        defraIdLogin: requestAuthorizationCodeUrl(session, request),
-        ruralPaymentsAgency: config.ruralPaymentsAgency,
-        dateOfTestingEnabled: config.dateOfTesting.enabled
-      })
+      // old world disabled now, just go straight to new world
+      return h.redirect(`${config.urlPrefix}/${endemicsIndex}`)
     }
   }
 }

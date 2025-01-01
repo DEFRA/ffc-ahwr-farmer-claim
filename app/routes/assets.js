@@ -10,7 +10,8 @@ const getHandler = {
     },
     cache: {
       privacy: 'private'
-    }
+    },
+    tags: ['assets']
   }
 }
 

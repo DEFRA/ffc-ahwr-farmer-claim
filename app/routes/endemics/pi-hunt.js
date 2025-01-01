@@ -57,7 +57,7 @@ const postHandler = {
       setEndemicsClaim(request, piHuntKey, answer)
 
       if (answer === 'no') {
-        raiseInvalidDataEvent(request, piHuntKey, `Value ${answer} is not equal to required value yes`)
+        await raiseInvalidDataEvent(request, piHuntKey, `Value ${answer} is not equal to required value yes`)
 
         if (answer !== previousAnswer) {
           clearPiHuntSessionOnChange(request, 'piHunt')

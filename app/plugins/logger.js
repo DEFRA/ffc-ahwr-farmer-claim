@@ -1,7 +1,13 @@
 const pino = require('hapi-pino')
 const { name } = require('../../package.json')
 
-const transport = { target: 'pino-pretty' }
+const transport = {
+  target: 'pino-pretty',
+  options: {
+    singleLine: true,
+    colorize: true
+  }
+}
 const testLevel = { level: 'silent' }
 
 const req = (req) => ({
@@ -36,6 +42,8 @@ module.exports = {
     formatters: {
       level: (level) => ({ level })
     },
+    ignorePaths: ['/healthy', '/healthz'],
+    ignoreTags: ['assets'],
     serializers: {
       req,
       res,

@@ -379,7 +379,7 @@ describe('FarmerApply defra ID redirection test', () => {
       const res = await global.__SERVER__.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/visit-review')
+      expect(res.headers.location).toEqual('/claim/endemics?from=dashboard&sbi=101122201')
       expect(latestApplicationMock).toBeCalledTimes(1)
       expect(authMock.authenticate).toBeCalledTimes(1)
       expect(authMock.setAuthCookie).toBeCalledTimes(1)

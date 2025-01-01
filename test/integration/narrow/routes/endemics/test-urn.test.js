@@ -134,7 +134,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', message: 'This test result unique reference number (URN) or certificate number was used in a previous claim.' },
       { typeOfLivestock: 'beef', typeOfReview: 'R', message: 'This test result unique reference number (URN) was used in a previous claim.' }
     ])('redirects to exception screen when the URN number is not unique', async ({ typeOfLivestock, typeOfReview, message }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
       isURNUnique.mockImplementationOnce(() => { return { isURNUnique: false } })
       const options = {
         method: 'POST',

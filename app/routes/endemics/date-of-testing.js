@@ -359,7 +359,7 @@ const postHandler = {
       ) {
         const errorMessage =
           'Samples should have been taken no more than 4 months before or after the date of review.'
-        raiseInvalidDataEvent(
+        await raiseInvalidDataEvent(
           request,
           dateOfTestingKey,
           `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`
@@ -380,7 +380,7 @@ const postHandler = {
       ) {
         const errorMessage =
           'Samples should have been taken no more than 4 months before or after the date of follow-up.'
-        raiseInvalidDataEvent(
+        await raiseInvalidDataEvent(
           request,
           dateOfTestingKey,
           `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`
@@ -412,7 +412,7 @@ const postHandler = {
           'You must do a review, including sampling, before you do the resulting follow-up.'
         const errorLink =
           'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
-        raiseInvalidDataEvent(
+        await raiseInvalidDataEvent(
           request,
           dateOfTestingKey,
           `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`

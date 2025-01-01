@@ -322,7 +322,7 @@ const postHandler = {
           organisation,
           formattedTypeOfLivestock
         )
-        raiseInvalidDataEvent(
+        await raiseInvalidDataEvent(
           request,
           dateOfVisitKey,
           `Value ${dateOfVisit} is invalid. Error: ${mainMessage.text}`
