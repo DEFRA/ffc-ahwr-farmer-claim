@@ -133,10 +133,10 @@ const getHandler = {
             email: personSummary.email
           }
         })
-        //Even though this sign-in page was for Old World, no old world claimant can ever get to this
-        //line now, as the 6 month threshold will have kicked them to the ineligible to claim route
-        //therefore we can safely just redirect this on to new world entrypoint and use for our own
-        //local usage etc
+        // Even though this sign-in page was for Old World, no old world claimant can ever get to this
+        // line now, as the 6 month threshold will have kicked them to the ineligible to claim route
+        // therefore we can safely just redirect this on to new world entrypoint and use for our own
+        // local usage etc
         return h.redirect(`/claim/endemics?from=dashboard&sbi=${organisationSummary.organisation.sbi}`)
       } catch (error) {
         request.logger.setBindings({ err: error })
