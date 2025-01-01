@@ -47,7 +47,7 @@ module.exports = {
   plugin: {
     name: 'router',
     register: (server, _) => {
-      routes.filter(x => !x.path.includes('assets'))
+      routes.filter(x => !x.path.includes('assets') && !x.path.includes('health'))
         .forEach(route => assignPreRouteFunction(route, server))
       server.route(routes)
     }

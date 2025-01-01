@@ -89,8 +89,8 @@ async function createServer () {
 
 function loggingDecorator (request) {
   request.logger.setBindings({
-    sbi: session.getEndemicsClaim(request)?.organisation.sbi,
-    crn: session.getEndemicsClaim(request)?.organisation.crn,
+    sbi: session.getEndemicsClaim(request)?.organisation?.sbi,
+    crn: session.getEndemicsClaim(request)?.organisation?.crn,
     reference: session.getEndemicsClaim(request)?.reference,
     applicationReference: session.getEndemicsClaim(request)?.latestEndemicsApplication?.reference
   })

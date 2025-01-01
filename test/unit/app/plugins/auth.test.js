@@ -33,7 +33,7 @@ describe('Auth plugin test', () => {
   })
 
   describe('GET requests to defra id', () => {
-    const url = '/claim/visit-review'
+    const url = '/claim/endemics/date-of-visit'
 
     test('when not logged in redirects to defra id', async () => {
       const options = {

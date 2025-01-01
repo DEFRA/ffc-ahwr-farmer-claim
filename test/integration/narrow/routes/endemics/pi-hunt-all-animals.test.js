@@ -17,7 +17,7 @@ const url = '/claim/endemics/pi-hunt-all-animals'
 describe('PI Hunt recommended tests', () => {
   beforeAll(() => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
-    raiseInvalidDataEvent.mockImplementation(() => { })
+    raiseInvalidDataEvent.mockImplementation(async () => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
 
@@ -30,7 +30,7 @@ describe('PI Hunt recommended tests', () => {
       { typeOfLivestock: 'beef', reviewTestResults: 'positive', backLink: '/claim/endemics/pi-hunt', expectedQuestion: 'Was the PI hunt done on all beef cattle in the herd?' },
       { typeOfLivestock: 'dairy', reviewTestResults: 'negative', backLink: '/claim/endemics/pi-hunt-recommended', expectedQuestion: 'Was the PI hunt done on all dairy cattle in the herd?' }
     ])('returns 200', async ({ typeOfLivestock, reviewTestResults, backLink, expectedQuestion }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, reviewTestResults } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, reviewTestResults } })
 
       const options = {
         method: 'GET',
@@ -97,7 +97,7 @@ describe('PI Hunt recommended tests', () => {
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
     test('Continue to ineligible page if user select no and show correct content with negative review test result', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'negative' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'negative' } })
       const options = {
         method: 'POST',
         payload: { crumb, piHuntAllAnimals: 'no' },
@@ -115,7 +115,7 @@ describe('PI Hunt recommended tests', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('Continue to ineligible page if user select no and show correct content with positive review test result', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
         payload: { crumb, piHuntAllAnimals: 'no' },
@@ -133,7 +133,7 @@ describe('PI Hunt recommended tests', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
 
       const options = {
         method: 'POST',

@@ -25,14 +25,7 @@ describe('routes plugin test', () => {
       '/claim/cookies',
       '/claim/signin-oidc',
       '/claim/assets/{path*}',
-      '/claim/animals-tested',
-      '/claim/cookies',
-      '/claim/submit-claim',
-      '/claim/urn-result',
-      '/claim/vet-name',
-      '/claim/vet-rcvs',
-      '/claim/vet-visit-date',
-      '/claim/visit-review'
+      '/claim/cookies'
     ])
   })
 

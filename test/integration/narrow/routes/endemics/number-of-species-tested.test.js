@@ -71,7 +71,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'R' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R' }
     ])('returns 200 for review $typeOfLivestock journey', async ({ typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
 
       const options = {
         method: 'GET',
@@ -175,7 +175,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '9' }
     ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,
