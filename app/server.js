@@ -36,9 +36,8 @@ async function createServer () {
     }
   })
 
-  // 24 hours
   server.app.submissionCrumbCache = server.cache({
-    expiresIn: 1000 * 60 * 60 * 24,
+    expiresIn: /* 24h */ 1000 * 60 * 60 * 24,
     segment: 'submissionCrumbs'
   })
 
