@@ -16,7 +16,9 @@ describe(`${url} route page`, () => {
     const originalModule = jest.requireActual('../../../../../app/config')
     return {
       ...originalModule,
-      isDev: true
+      devLogin: {
+        enabled: true
+      }
     }
   })
 

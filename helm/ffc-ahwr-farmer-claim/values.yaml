@@ -76,6 +76,7 @@ container:
   optionalPIHuntEnabled: 'false'
   reviewClaimApprovedStatusEnabled: 'false'
   multiSpeciesEnabled: 'false'
+  devLoginEnabled: 'false'
 
 
 ingress:

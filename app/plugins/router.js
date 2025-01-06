@@ -39,7 +39,7 @@ if (config.endemics.enabled) {
   )
 }
 
-if (config.isDev) {
+if (config.devLogin.enabled) {
   routes = routes.concat(require('../routes/endemics/dev-sign-in').handlers)
 }
 
@@ -55,9 +55,10 @@ module.exports = {
 }
 
 const assignPreRouteFunction = (route, server) => {
+  const serverMethodDefinition = {
+    method: server.methods.loggingContext, assign: 'loggingContext'
+  }
   route.options.pre
-    ? route.options.pre.push({
-        method: server.methods.loggingContext, assign: 'loggingContext'
-      })
-    : route.options.pre = [{ method: server.methods.loggingContext, assign: 'loggingContext' }]
+    ? route.options.pre.push(serverMethodDefinition)
+    : route.options.pre = [serverMethodDefinition]
 }

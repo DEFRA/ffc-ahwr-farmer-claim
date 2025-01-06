@@ -105,7 +105,9 @@ describe('routes plugin test', () => {
   test('when isDev is true, dev-sign-in included in routes', async () => {
     jest.mock('../../../../app/config', () => ({
       ...jest.requireActual('../../../../app/config'),
-      isDev: true
+      devLogin: {
+        enabled: true
+      }
     }))
 
     const createServer = require('../../../../app/server')
