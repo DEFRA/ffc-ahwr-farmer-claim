@@ -34,6 +34,7 @@ const validateDateInputYear = require('../govuk-components/validate-date-input-y
 const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const appInsights = require('applicationinsights')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
@@ -291,7 +292,8 @@ const postHandler = {
         latestVetVisitApplication,
         typeOfLivestock,
         organisation,
-        reviewTestResults
+        reviewTestResults,
+        reference: tempClaimReference
       } = session.getEndemicsClaim(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
@@ -299,7 +301,20 @@ const postHandler = {
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
       const { error, data } = isValidDateInput(request, reviewOrFollowUpText)
-      if (error) return h.view(endemicsDateOfVisit, data).code(400).takeover()
+      if (error) {
+        console.log(data)
+        appInsights.defaultClient.trackEvent({
+          name: 'claim-invalid-date-of-visit',
+          properties: {
+            tempClaimReference,
+            dateOfAgreement: data.dateOfAgreementAccepted,
+            dateEntered: `${data['visit-date-year']}-${data['visit-date-month']}-${data['visit-date-day']}`,
+            journeyType: reviewOrFollowUpText,
+            error: error.message
+          }
+        })
+        return h.view(endemicsDateOfVisit, data).code(400).takeover()
+      }
 
       const formattedTypeOfLivestock =
         isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`

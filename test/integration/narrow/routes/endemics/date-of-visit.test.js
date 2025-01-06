@@ -8,10 +8,12 @@ const getEndemicsClaimMock =
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+const appInsights = require('applicationinsights')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
@@ -206,7 +208,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         errorMessage:
           'The date of follow-up cannot be before the date your agreement began',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2022-07-10'
+        applicationCreationDate: '2022-07-10',
+        typeOfReview: 'E'
       },
       {
         description:
@@ -277,7 +280,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '2023',
         errorMessage: 'The date of follow-up must include a day',
         errorHighlights: [labels.day],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing month',
@@ -286,7 +290,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '2023',
         errorMessage: 'The date of follow-up must include a month',
         errorHighlights: [labels.month],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing year',
@@ -295,7 +300,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '',
         errorMessage: 'The date of follow-up must include a year',
         errorHighlights: [labels.year],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day and month',
@@ -304,7 +310,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '2023',
         errorMessage: 'The date of follow-up must include a day and a month',
         errorHighlights: [labels.day, labels.month],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day and year',
@@ -313,7 +320,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '',
         errorMessage: 'The date of follow-up must include a day and a year',
         errorHighlights: [labels.day, labels.year],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing month and year',
@@ -322,7 +330,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '',
         errorMessage: 'The date of follow-up must include a month and a year',
         errorHighlights: [labels.month, labels.year],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       }
     ])(
       'returns error ($errorMessage) when partial or invalid input is given - $description',
@@ -367,6 +376,16 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         expect($('p.govuk-error-message').text().trim()).toEqual(
           `Error: ${errorMessage}`
         )
+        expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+          name: 'claim-invalid-date-of-visit',
+          properties: {
+            tempClaimReference: undefined,
+            journeyType: (typeOfReview ?? 'R') === 'R' ? 'review' : 'follow-up',
+            dateOfAgreement: applicationCreationDate,
+            dateEntered: `${year}-${month}-${day}`,
+            error: errorMessage
+          }
+        })
       }
     )
 
