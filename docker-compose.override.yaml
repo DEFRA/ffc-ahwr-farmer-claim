@@ -11,6 +11,7 @@ services:
     container_name: ffc-ahwr-farmer-claim-development
     environment:
       USE_PRETTY_PRINT: ${USE_PRETTY_PRINT:-true}
+      DEV_LOGIN_ENABLED: ${DEV_LOGIN_ENABLED:-true}
     ports:
       - "3004:3000"
       - "9234:9229"

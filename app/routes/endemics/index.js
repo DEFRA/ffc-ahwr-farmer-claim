@@ -94,8 +94,8 @@ const getHandler = {
 
       logout()
 
-      const loginView = config.isDev ? `${endemicsIndex}/devindex` : `${endemicsIndex}/index`
-      const devLogin = config.isDev ? `${endemicsIndex}/dev-sign-in` : undefined
+      const loginView = config.devLogin.enabled ? `${endemicsIndex}/devindex` : `${endemicsIndex}/index`
+      const devLogin = config.devLogin.enabled ? `dev-sign-in` : undefined
 
       return h.view(loginView, {
         devLogin,
