@@ -302,7 +302,6 @@ const postHandler = {
 
       const { error, data } = isValidDateInput(request, reviewOrFollowUpText)
       if (error) {
-        console.log(data)
         appInsights.defaultClient.trackEvent({
           name: 'claim-invalid-date-of-visit',
           properties: {
@@ -337,7 +336,7 @@ const postHandler = {
           organisation,
           formattedTypeOfLivestock
         )
-        await raiseInvalidDataEvent(
+        raiseInvalidDataEvent(
           request,
           dateOfVisitKey,
           `Value ${dateOfVisit} is invalid. Error: ${mainMessage.text}`

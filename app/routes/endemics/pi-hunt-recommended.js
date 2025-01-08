@@ -53,7 +53,7 @@ const postHandler = {
 
       if (piHuntRecommended === 'no') {
         const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no' }, request.logger)
-        await raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} should be yes for PI hunt vet recommendation`)
+        raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} should be yes for PI hunt vet recommendation`)
         if (piHuntRecommended !== previousAnswer) {
           clearPiHuntSessionOnChange(request, 'piHuntRecommended')
         }

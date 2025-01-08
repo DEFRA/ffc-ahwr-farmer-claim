@@ -122,7 +122,7 @@ const postHandler = {
         return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
       }
 
-      await raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
+      raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
       return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency, changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview], isReview }).code(400).takeover()
     }
   }
