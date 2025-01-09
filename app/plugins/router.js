@@ -47,18 +47,7 @@ module.exports = {
   plugin: {
     name: 'router',
     register: (server, _) => {
-      routes.filter(x => !x.path.includes('assets') && !x.path.includes('health'))
-        .forEach(route => assignPreRouteFunction(route, server))
       server.route(routes)
     }
   }
-}
-
-const assignPreRouteFunction = (route, server) => {
-  const serverMethodDefinition = {
-    method: server.methods.loggingContext, assign: 'loggingContext'
-  }
-  route.options.pre
-    ? route.options.pre.push(serverMethodDefinition)
-    : route.options.pre = [serverMethodDefinition]
 }

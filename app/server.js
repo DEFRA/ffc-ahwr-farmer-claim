@@ -4,7 +4,6 @@ const catbox = config.useRedis
   ? require('@hapi/catbox-redis')
   : require('@hapi/catbox-memory')
 const cacheConfig = config.useRedis ? config.cache.options : {}
-const session = require('./session')
 
 const getSecurityPolicy = () => "default-src 'self';" +
   "object-src 'none';" +
@@ -42,8 +41,6 @@ async function createServer () {
     segment: 'submissionCrumbs'
   })
 
-  server.method('loggingContext', loggingDecorator)
-
   await server.register(require('./plugins/crumb'))
   await server.register(require('@hapi/cookie'))
   await server.register(require('@hapi/inert'))
@@ -51,6 +48,7 @@ async function createServer () {
   await server.register(require('./plugins/cookies'))
   await server.register(require('./plugins/error-pages'))
   await server.register(require('./plugins/logger'))
+  await server.register(require('./plugins/logging-context'))
   await server.register(require('./plugins/router'))
   await server.register(require('./plugins/session'))
   await server.register(require('./plugins/view-context'))
@@ -85,16 +83,6 @@ async function createServer () {
   }
 
   return server
-}
-
-function loggingDecorator (request) {
-  request.logger.setBindings({
-    sbi: session.getEndemicsClaim(request)?.organisation?.sbi,
-    crn: session.getEndemicsClaim(request)?.organisation?.crn,
-    reference: session.getEndemicsClaim(request)?.reference,
-    applicationReference: session.getEndemicsClaim(request)?.latestEndemicsApplication?.reference
-  })
-  return ''
 }
 
 module.exports = createServer
