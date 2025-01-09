@@ -75,6 +75,9 @@ const schema = Joi.object({
   },
   multiSpecies: {
     enabled: Joi.bool().required()
+  },
+  devLogin: {
+    enabled: Joi.bool().required()
   }
 })
 
@@ -149,6 +152,9 @@ const config = {
   },
   multiSpecies: {
     enabled: process.env.MULTI_SPECIES_ENABLED === 'true'
+  },
+  devLogin: {
+    enabled: process.env.DEV_LOGIN_ENABLED === 'true'
   }
 }
 

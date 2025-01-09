@@ -22,27 +22,10 @@ describe('routes plugin test', () => {
       '/claim',
       '/healthy',
       '/healthz',
-      '/claim/animals-tested',
-      '/claim/check-answers',
       '/claim/cookies',
-      '/claim/details-incorrect',
-      '/claim/number-of-animals-ineligible',
       '/claim/signin-oidc',
-      '/claim/submit-claim',
-      '/claim/urn-result',
-      '/claim/vet-name',
-      '/claim/vet-rcvs',
-      '/claim/vet-visit-date',
-      '/claim/visit-review',
       '/claim/assets/{path*}',
-      '/claim/animals-tested',
-      '/claim/cookies',
-      '/claim/submit-claim',
-      '/claim/urn-result',
-      '/claim/vet-name',
-      '/claim/vet-rcvs',
-      '/claim/vet-visit-date',
-      '/claim/visit-review'
+      '/claim/cookies'
     ])
   })
 
@@ -64,19 +47,9 @@ describe('routes plugin test', () => {
       '/claim',
       '/healthy',
       '/healthz',
-      '/claim/animals-tested',
-      '/claim/check-answers',
       '/claim/cookies',
-      '/claim/details-incorrect',
       '/claim/endemics',
-      '/claim/number-of-animals-ineligible',
       '/claim/signin-oidc',
-      '/claim/submit-claim',
-      '/claim/urn-result',
-      '/claim/vet-name',
-      '/claim/vet-rcvs',
-      '/claim/vet-visit-date',
-      '/claim/visit-review',
       '/claim/assets/{path*}',
       '/claim/endemics/biosecurity',
       '/claim/endemics/check-answers',
@@ -102,14 +75,7 @@ describe('routes plugin test', () => {
       '/claim/endemics/vet-visits-review-test-results',
       '/claim/endemics/which-species',
       '/claim/endemics/which-type-of-review',
-      '/claim/animals-tested',
       '/claim/cookies',
-      '/claim/submit-claim',
-      '/claim/urn-result',
-      '/claim/vet-name',
-      '/claim/vet-rcvs',
-      '/claim/vet-visit-date',
-      '/claim/visit-review',
       '/claim/endemics/biosecurity',
       '/claim/endemics/check-answers',
       '/claim/endemics/date-of-testing',
@@ -134,5 +100,23 @@ describe('routes plugin test', () => {
       '/claim/endemics/which-species',
       '/claim/endemics/which-type-of-review'
     ])
+  })
+
+  test('when isDev is true, dev-sign-in included in routes', async () => {
+    jest.mock('../../../../app/config', () => ({
+      ...jest.requireActual('../../../../app/config'),
+      devLogin: {
+        enabled: true
+      }
+    }))
+
+    const createServer = require('../../../../app/server')
+    const server = await createServer()
+    const routePaths = []
+    server.table().forEach((element) => {
+      routePaths.push(element.path)
+    })
+
+    expect(routePaths).toContain('/claim/endemics/dev-sign-in')
   })
 })

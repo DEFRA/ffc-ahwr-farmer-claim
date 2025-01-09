@@ -3,19 +3,9 @@ const config = require('../config')
 let routes = [].concat(
   require('../routes/assets').handlers,
   require('../routes/cookies').handlers,
-  require('../routes/check-answers').handlers,
   require('../routes/healthy').handlers,
   require('../routes/healthz').handlers,
   require('../routes/index').handlers,
-  require('../routes/visit-review').handlers,
-  require('../routes/details-incorrect').handlers,
-  require('../routes/submit-claim').handlers,
-  require('../routes/urn-result').handlers,
-  require('../routes/vet-name').handlers,
-  require('../routes/animals-tested').handlers,
-  require('../routes/number-of-animals-ineligible').handlers,
-  require('../routes/vet-rcvs').handlers,
-  require('../routes/vet-visit-date').handlers,
   require('../routes/signin-oidc').handlers
 )
 
@@ -47,6 +37,10 @@ if (config.endemics.enabled) {
     require('../routes/endemics/pi-hunt-recommended').handlers,
     require('../routes/endemics/pi-hunt-all-animals').handlers
   )
+}
+
+if (config.devLogin.enabled) {
+  routes = routes.concat(require('../routes/endemics/dev-sign-in').handlers)
 }
 
 module.exports = {

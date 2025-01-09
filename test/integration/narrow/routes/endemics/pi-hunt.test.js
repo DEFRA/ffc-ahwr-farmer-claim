@@ -85,6 +85,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       }
 
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -101,6 +102,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -159,6 +161,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
       }
 
       getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults } })
+        .mockImplementationOnce(() => { return { reviewTestResults } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -175,6 +178,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
       getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
+        .mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
 
       const res = await global.__SERVER__.inject(options)
 

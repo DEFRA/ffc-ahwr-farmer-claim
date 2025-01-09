@@ -1,5 +1,5 @@
 const { sendMessage, receiveMessage } = require('../')
-const { applicationRequestQueue, fetchApplicationRequestMsgType, fetchClaimRequestMsgType, applicationResponseQueue, submitClaimRequestMsgType } = require('../../config').mqConfig
+const { applicationRequestQueue, fetchApplicationRequestMsgType, fetchClaimRequestMsgType, applicationResponseQueue } = require('../../config').mqConfig
 
 async function getApplication (applicationReference, sessionId) {
   await sendMessage({ applicationReference }, fetchApplicationRequestMsgType, applicationRequestQueue, { sessionId })
@@ -11,14 +11,7 @@ async function getClaim (email, sessionId) {
   return receiveMessage(sessionId, applicationResponseQueue)
 }
 
-async function submitClaim (submission, sessionId) {
-  await sendMessage(submission, submitClaimRequestMsgType, applicationRequestQueue, { sessionId })
-  const response = await receiveMessage(sessionId, applicationResponseQueue)
-  return response.state
-}
-
 module.exports = {
   getApplication,
-  getClaim,
-  submitClaim
+  getClaim
 }

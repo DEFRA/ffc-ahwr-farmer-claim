@@ -44,14 +44,6 @@ function clear (request) {
   request.yar.clear(entries.tempClaimReference)
 }
 
-function getApplication (request, key) {
-  return get(request, entries.application, key)
-}
-
-function setApplication (request, key, value) {
-  set(request, entries.application, key, value)
-}
-
 function setClaim (request, key, value, status) {
   set(request, entries.claim, key, value, status)
 }
@@ -105,8 +97,6 @@ function getPkcecodes (request, key) {
 }
 
 module.exports = {
-  getApplication,
-  setApplication,
   getClaim,
   setClaim,
   getEndemicsClaim,

@@ -8,10 +8,12 @@ const getEndemicsClaimMock =
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+const appInsights = require('applicationinsights')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
@@ -206,7 +208,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         errorMessage:
           'The date of follow-up cannot be before the date your agreement began',
         errorHighlights: allErrorHighlights,
-        applicationCreationDate: '2022-07-10'
+        applicationCreationDate: '2022-07-10',
+        typeOfReview: 'E'
       },
       {
         description:
@@ -277,7 +280,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '2023',
         errorMessage: 'The date of follow-up must include a day',
         errorHighlights: [labels.day],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing month',
@@ -286,7 +290,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '2023',
         errorMessage: 'The date of follow-up must include a month',
         errorHighlights: [labels.month],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing year',
@@ -295,7 +300,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '',
         errorMessage: 'The date of follow-up must include a year',
         errorHighlights: [labels.year],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day and month',
@@ -304,7 +310,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '2023',
         errorMessage: 'The date of follow-up must include a day and a month',
         errorHighlights: [labels.day, labels.month],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing day and year',
@@ -313,7 +320,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '',
         errorMessage: 'The date of follow-up must include a day and a year',
         errorHighlights: [labels.day, labels.year],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       },
       {
         description: 'missing month and year',
@@ -322,7 +330,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         year: '',
         errorMessage: 'The date of follow-up must include a month and a year',
         errorHighlights: [labels.month, labels.year],
-        applicationCreationDate: '2023-01-01'
+        applicationCreationDate: '2023-01-01',
+        typeOfReview: 'E'
       }
     ])(
       'returns error ($errorMessage) when partial or invalid input is given - $description',
@@ -334,7 +343,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         applicationCreationDate,
         typeOfReview
       }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaimMock.mockImplementation(() => {
           return {
             ...(typeOfReview && { typeOfReview }),
             latestVetVisitApplication: {
@@ -367,6 +376,16 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         expect($('p.govuk-error-message').text().trim()).toEqual(
           `Error: ${errorMessage}`
         )
+        expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+          name: 'claim-invalid-date-of-visit',
+          properties: {
+            tempClaimReference: undefined,
+            journeyType: (typeOfReview ?? 'R') === 'R' ? 'review' : 'follow-up',
+            dateOfAgreement: applicationCreationDate,
+            dateEntered: `${year}-${month}-${day}`,
+            error: errorMessage
+          }
+        })
       }
     )
 
@@ -412,16 +431,20 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description)',
       async ({ reason, day, month, year, applicationCreationDate, claim }) => {
+        const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfReview: 'R'
+        }
         getEndemicsClaimMock.mockImplementationOnce(() => {
-          return {
-            latestVetVisitApplication: {
-              ...latestVetVisitApplication,
-              createdAt: applicationCreationDate
-            },
-            previousClaims: [claim],
-            typeOfReview: 'R'
-          }
+          return mockEndemicsClaim
         })
+          .mockImplementationOnce(() => {
+            return mockEndemicsClaim
+          })
         const options = {
           method: 'POST',
           url,
@@ -498,11 +521,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description) and match content',
       async ({ day, month, year, applicationCreationDate, content, dateOfVetVisitException }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
-          return {
-            typeOfReview: 'E'
-          }
-        })
+        getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfReview: 'E' } })
+          .mockImplementationOnce(() => { return { typeOfReview: 'E' } })
         const options = {
           method: 'POST',
           url,
@@ -569,16 +589,16 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
-          return {
-            latestVetVisitApplication: {
-              ...latestVetVisitApplication,
-              createdAt: applicationCreationDate
-            },
-            previousClaims: [claim],
-            typeOfReview: 'R'
-          }
-        })
+        const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfReview: 'R'
+        }
+        getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
+          .mockImplementationOnce(() => { return mockEndemicsClaim })
         const options = {
           method: 'POST',
           url,
@@ -603,6 +623,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
+
     test.each([
       {
         description: 'the type 0f review is endemic and type of livestock is beef and the previous claim is review test result is negative',
@@ -625,17 +646,17 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => {
-          return {
-            latestVetVisitApplication: {
-              ...latestVetVisitApplication,
-              createdAt: applicationCreationDate
-            },
-            previousClaims: [claim],
-            typeOfLivestock: 'beef',
-            typeOfReview: 'E'
-          }
-        })
+        const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfLivestock: 'beef',
+          typeOfReview: 'E'
+        }
+        getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
+          .mockImplementationOnce(() => { return mockEndemicsClaim })
         const options = {
           method: 'POST',
           url,
@@ -724,7 +745,7 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockReturnValueOnce({
+        getEndemicsClaimMock.mockReturnValue({
           latestVetVisitApplication: {
             ...latestVetVisitApplication,
             createdAt: applicationCreationDate

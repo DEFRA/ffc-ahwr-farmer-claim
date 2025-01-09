@@ -101,7 +101,11 @@ const getHandler = {
             email: personSummary.email
           }
         })
-        return h.redirect('/claim/visit-review')
+
+        // Even though this sign-in page was for Old World, no old world claimant can ever get to this
+        // line now, as the 6 month threshold will have kicked them to the ineligible to claim route
+        // therefore we can safely just redirect this on to new world entrypoint
+        return h.redirect(`/claim/endemics?from=dashboard&sbi=${organisationSummary.organisation.sbi}`)
       } catch (error) {
         request.logger.setBindings({ err: error })
 
@@ -126,7 +130,7 @@ const getHandler = {
               ruralPaymentsAgency: config.ruralPaymentsAgency
             }).code(400).takeover()
         }
-        raiseIneligibilityEvent(
+        await raiseIneligibilityEvent(
           request.yar.id,
           organisation?.sbi,
           crn,

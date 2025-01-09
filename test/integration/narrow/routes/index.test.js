@@ -1,5 +1,3 @@
-const cheerio = require('cheerio')
-const expectPhaseBanner = require('../../../utils/phase-banner-expect')
 const mockConfig = require('../../../../app/config')
 jest.mock('../../../../app/lib/logout')
 
@@ -30,7 +28,7 @@ describe('Farmer claim home page test', () => {
     }))
   })
 
-  test('GET /claim route returns 200 when not logged in', async () => {
+  test('GET /claim route returns 302 when not logged in', async () => {
     const options = {
       method: 'GET',
       url: '/claim'
@@ -38,24 +36,8 @@ describe('Farmer claim home page test', () => {
 
     const res = await global.__SERVER__.inject(options)
 
-    expect(res.statusCode).toBe(200)
-    const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-l').text()).toEqual(
-      'Claim for an annual health and welfare review of your livestock'
-    )
-
-    const button = $('.govuk-main-wrapper .govuk-button')
-    expect($('.govuk-list').text()).toContain(
-      'the number of beef cattle, sheep and pigs the vet tested - you do not need to provide the number of dairy cattle tested'
-    )
-    expect(button.attr('href')).toContain(
-      'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
-    )
-    expect(button.text()).toMatch('Start now')
-    expect($('title').text()).toContain(
-      'Claim funding - Annual health and welfare review of livestock'
-    )
-    expectPhaseBanner.ok($)
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics')
   })
 
   test('headers are being set appropriately', async () => {

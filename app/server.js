@@ -35,11 +35,11 @@ async function createServer () {
     }
   })
 
-  const submissionCrumbCache = server.cache({
+  // 24 hours
+  server.app.submissionCrumbCache = server.cache({
     expiresIn: 1000 * 60 * 60 * 24,
     segment: 'submissionCrumbs'
-  }) // 24 hours
-  server.app.submissionCrumbCache = submissionCrumbCache
+  })
 
   await server.register(require('./plugins/crumb'))
   await server.register(require('@hapi/cookie'))
@@ -48,6 +48,7 @@ async function createServer () {
   await server.register(require('./plugins/cookies'))
   await server.register(require('./plugins/error-pages'))
   await server.register(require('./plugins/logger'))
+  await server.register(require('./plugins/logging-context'))
   await server.register(require('./plugins/router'))
   await server.register(require('./plugins/session'))
   await server.register(require('./plugins/view-context'))

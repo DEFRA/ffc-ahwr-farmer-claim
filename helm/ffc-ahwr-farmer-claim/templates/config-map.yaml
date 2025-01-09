@@ -41,4 +41,5 @@ data:
   OPTIONAL_PIHUNT_ENABLED: {{ quote .Values.container.optionalPIHuntEnabled }}
   REVIEW_CLAIM_APPROVED_STATUS_ENABLED: {{ quote .Values.container.reviewClaimApprovedStatusEnabled }}
   MULTI_SPECIES_ENABLED: {{ quote .Values.container.multiSpeciesEnabled }}
+  DEV_LOGIN_ENABLED: {{ quote .Values.container.devLoginEnabled }}
 {{- end -}}
