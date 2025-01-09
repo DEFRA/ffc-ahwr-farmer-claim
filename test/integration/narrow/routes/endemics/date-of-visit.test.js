@@ -431,16 +431,20 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description)',
       async ({ reason, day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementation(() => {
-          return {
-            latestVetVisitApplication: {
-              ...latestVetVisitApplication,
-              createdAt: applicationCreationDate
-            },
-            previousClaims: [claim],
-            typeOfReview: 'R'
-          }
+        const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfReview: 'R'
+        }
+        getEndemicsClaimMock.mockImplementationOnce(() => {
+          return mockEndemicsClaim
         })
+          .mockImplementationOnce(() => {
+            return mockEndemicsClaim
+          })
         const options = {
           method: 'POST',
           url,
@@ -517,11 +521,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description) and match content',
       async ({ day, month, year, applicationCreationDate, content, dateOfVetVisitException }) => {
-        getEndemicsClaimMock.mockImplementation(() => {
-          return {
-            typeOfReview: 'E'
-          }
-        })
+        getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfReview: 'E' } })
+          .mockImplementationOnce(() => { return { typeOfReview: 'E' } })
         const options = {
           method: 'POST',
           url,
@@ -588,16 +589,16 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementation(() => {
-          return {
-            latestVetVisitApplication: {
-              ...latestVetVisitApplication,
-              createdAt: applicationCreationDate
-            },
-            previousClaims: [claim],
-            typeOfReview: 'R'
-          }
-        })
+        const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfReview: 'R'
+        }
+        getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
+          .mockImplementationOnce(() => { return mockEndemicsClaim })
         const options = {
           method: 'POST',
           url,
@@ -622,6 +623,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         expect(setEndemicsClaimMock).toHaveBeenCalled()
       }
     )
+
     test.each([
       {
         description: 'the type 0f review is endemic and type of livestock is beef and the previous claim is review test result is negative',
@@ -644,17 +646,17 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockImplementation(() => {
-          return {
-            latestVetVisitApplication: {
-              ...latestVetVisitApplication,
-              createdAt: applicationCreationDate
-            },
-            previousClaims: [claim],
-            typeOfLivestock: 'beef',
-            typeOfReview: 'E'
-          }
-        })
+        const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
+          previousClaims: [claim],
+          typeOfLivestock: 'beef',
+          typeOfReview: 'E'
+        }
+        getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
+          .mockImplementationOnce(() => { return mockEndemicsClaim })
         const options = {
           method: 'POST',
           url,

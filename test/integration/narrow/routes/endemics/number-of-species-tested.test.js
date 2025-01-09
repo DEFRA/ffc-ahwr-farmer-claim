@@ -67,11 +67,13 @@ describe('Number of species tested test', () => {
       expect($('title').text().trim()).toContain('How many animals were samples taken from? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
+
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'R' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R' }
     ])('returns 200 for review $typeOfLivestock journey', async ({ typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+        .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
 
       const options = {
         method: 'GET',
@@ -167,6 +169,7 @@ describe('Number of species tested test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/vet-name')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
+
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'R', numberAnimalsTested: '4' },
       { typeOfLivestock: 'pigs', typeOfReview: 'R', numberAnimalsTested: '20' },
@@ -175,7 +178,8 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'E', numberAnimalsTested: '18' },
       { typeOfLivestock: 'beef', typeOfReview: 'E', numberAnimalsTested: '9' }
     ])('shows error page when number of $typeOfLivestock to be tested is not eligible', async ({ typeOfLivestock, typeOfReview, numberAnimalsTested }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+        .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
       const options = {
         method: 'POST',
         url,

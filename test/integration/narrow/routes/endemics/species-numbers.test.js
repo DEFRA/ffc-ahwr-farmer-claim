@@ -108,7 +108,8 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' },
       { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/vet-name', typeOfReview: 'E', reviewTestResults: 'negative' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock, typeOfReview, reviewTestResults }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
+        .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'POST',
         url,
@@ -133,7 +134,8 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
@@ -148,7 +150,8 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await global.__SERVER__.inject(options)
 
