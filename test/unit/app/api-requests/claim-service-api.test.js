@@ -1,6 +1,5 @@
 const wreck = require('@hapi/wreck')
 const sessionMock = require('../../../../app/session')
-const { isWithin10Months } = require('../../../../app/api-requests/claim-service-api')
 
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('@hapi/wreck')
@@ -171,13 +170,6 @@ describe('Claim Service API', () => {
     }).rejects.toEqual(mockResponse)
   })
 
-  test('isWithin10Months', () => {
-    expect(isWithin10Months('2024-01-01', '2024-11-01')).toBe(true)
-    expect(isWithin10Months('2024-11-01', '2024-01-01')).toBe(true)
-    expect(isWithin10Months('2024-01-01', '2024-11-02')).toBe(false)
-    expect(isWithin10Months('2024-11-02', '2024-01-01')).toBe(false)
-  })
-
   test('Check if the date is with in 8 months', async () => {
     const { isWithIn4MonthsBeforeOrAfterDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
 
@@ -210,22 +202,5 @@ describe('Claim Service API', () => {
     sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
 
     expect(claimServiceApi.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim()).toBe(true)
-  })
-
-  test('lockedToSpecies should return true when there are previous endemic (new-world) claims', () => {
-    const previousEndemicClaims = [{ data: { typeOfReview: 'R' } }]
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-
-    expect(claimServiceApi.lockedToSpecies(previousEndemicClaims)).toBe(true)
-  })
-
-  test.each([
-    { previousEndemicClaims: undefined },
-    { previousEndemicClaims: null },
-    { previousEndemicClaims: [] }
-  ])('lockedToSpecies should return false when there aren\'t any previous endemic (new-world) claims, value: $previousEndemicClaims', (previousEndemicClaims) => {
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-
-    expect(claimServiceApi.lockedToSpecies(previousEndemicClaims)).toBe(false)
   })
 })

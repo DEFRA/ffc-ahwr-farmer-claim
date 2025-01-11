@@ -30,10 +30,14 @@ describe('Which type of review test', () => {
   })
 
   describe('GET', () => {
+    beforeEach(() => {
+      // this call is made by the pre-handler for logging context
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+    })
+
     test('sets typeOfLivestock from old world applications', async () => {
-      const endemicsValue = { typeOfReview: 'R', latestVetVisitApplication, previousClaims: [] }
-      sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsValue)
-        .mockReturnValueOnce(endemicsValue)
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+        .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [], latestVetVisitApplication })
       const options = {
         method: 'GET',
         url,
@@ -77,6 +81,8 @@ describe('Which type of review test', () => {
     beforeEach(async () => {
       jest.clearAllMocks()
       crumb = await getCrumbs(global.__SERVER__)
+      // this call is made by the pre-handler for logging context
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
     })
 
     test('Returns 400 and shows error message when payload is invalid', async () => {

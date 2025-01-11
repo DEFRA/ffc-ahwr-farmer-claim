@@ -3,19 +3,12 @@ const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
-const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim, lockedToSpecies } = require('../../api-requests/claim-service-api')
+const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
+const { canChangeSpecies, getTypeOfLivestockFromLatestClaim } = require('../../lib/context-helper')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
-
-const getTypeOfLivestockFromPastClaims = (previousClaims, latestVetVisitApplication) => {
-  if (previousClaims?.length) {
-    return previousClaims[0].data?.typeOfLivestock
-  }
-
-  return latestVetVisitApplication.data?.whichReview
-}
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
@@ -32,9 +25,11 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { typeOfReview, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
-      const typeOfLivestock = getTypeOfLivestockFromPastClaims(previousClaims, latestVetVisitApplication)
+      // this ca come after the which species page, or before
+      const { typeOfReview } = getEndemicsClaim(request)
+      const typeOfLivestock = getTypeOfLivestockFromLatestClaim(request)
 
+      // Don't like this being set here but leaving it for now to not break the old routes
       setEndemicsClaim(request, typeOfLivestockKey, typeOfLivestock)
 
       return h.view(endemicsWhichTypeOfReview, {
@@ -69,9 +64,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfReview } = request.payload
-      const { typeOfLivestock, previousClaims } = getEndemicsClaim(request)
+      const { typeOfLivestock } = getEndemicsClaim(request)
 
-      if (claimType[typeOfReview] === claimType.review && !lockedToSpecies(previousClaims)) {
+      // if doing a review and currently locked (to disappear with MS introduced)
+      if (canChangeSpecies(request, typeOfReview)) {
         return h.redirect(`${urlPrefix}/${endemicsWhichSpecies}`)
       }
 

@@ -16,6 +16,7 @@ function set (request, entryKey, key, value, status, endemics = false) {
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
   const claim = endemics ? getEndemicsClaim(request) : getClaim(request)
+  console.log(`session state updated to: \n${JSON.stringify(claim, null, 2)}`)
   const xForwardedForHeader = request.headers['x-forwarded-for']
   const ip = xForwardedForHeader
     ? xForwardedForHeader.split(',')[0]
