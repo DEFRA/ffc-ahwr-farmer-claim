@@ -15,11 +15,9 @@ if (config.endemics.enabled) {
     require('../routes/endemics/test-urn').handlers,
     require('../routes/endemics/test-results').handlers,
     require('../routes/endemics/date-of-visit').handlers,
-    require('../routes/endemics/which-species').handlers,
     require('../routes/endemics/number-of-fluid-oral-samples').handlers,
     require('../routes/endemics/number-of-samples-tested').handlers,
     require('../routes/endemics/species-numbers').handlers,
-    require('../routes/endemics/which-type-of-review').handlers,
     require('../routes/endemics/number-of-species-tested').handlers,
     require('../routes/endemics/vet-name').handlers,
     require('../routes/endemics/vet-rcvs').handlers,
@@ -37,6 +35,13 @@ if (config.endemics.enabled) {
     require('../routes/endemics/pi-hunt-recommended').handlers,
     require('../routes/endemics/pi-hunt-all-animals').handlers
   )
+  if (!config.multiSpecies.enabled) {
+    routes = routes.concat(require('../routes/endemics/which-type-of-review').handlers,
+      require('../routes/endemics/which-species').handlers)
+  } else {
+    routes = routes.concat(require('../routes/endemics/which-type-of-review-ms').handlers,
+      require('../routes/endemics/which-species-ms').handlers)
+  }
 }
 
 if (config.devLogin.enabled) {

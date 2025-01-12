@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const contextHelperMock = require('../../../../../app/lib/context-helper')
+const { setMultiSpecies } = require('../../../../mocks/config')
 
 jest.mock('../../../../../app/lib/logout')
 jest.mock('../../../../../app/lib/context-helper')
@@ -12,6 +13,10 @@ describe('Claim endemics home page test', () => {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'
   }
+
+  beforeAll(() => {
+    setMultiSpecies(false)
+  })
 
   afterAll(() => {
     jest.resetAllMocks()
@@ -118,5 +123,34 @@ describe('Claim endemics home page test', () => {
     expect($('h1').text().trim()).toMatch('Claim funding to improve animal health and welfare')
     expect($('title').text().trim()).toContain('Claim funding - Get funding to improve animal health and welfare')
     expectPhaseBanner.ok($)
+  })
+
+  test('Redirects us to endemicsWhichSpeciesURI if multiple species enabled', async () => {
+    jest.mock('../../../../../app/config', () => ({
+      ...jest.requireActual('../../../../../app/config'),
+      multiSpecies: {
+        enabled: true
+      }
+    }))
+    contextHelperMock.refreshApplications.mockReturnValue({
+      latestEndemicsApplication: {
+        reference: 'AHWR-2470-6BA9',
+        createdAt: Date.now(),
+        statusId: 1,
+        type: 'EE'
+      }
+    })
+    contextHelperMock.refreshClaims.mockReturnValue([])
+
+    const options = {
+      method: 'GET',
+      url,
+      auth
+    }
+
+    const res = await global.__SERVER__.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/which-species')
   })
 })

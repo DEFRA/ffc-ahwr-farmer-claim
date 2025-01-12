@@ -36,6 +36,12 @@ const getHandler = {
         const tempClaimId = createClaimReference()
         session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
+        if (config.multiSpecies.enabled) {
+          // for MS we want to always go through same flow, so just redirect straight there
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
+          return h.redirect(endemicsWhichSpeciesURI)
+        }
+
         // new user (has no claims, and no relevant old world application)
         if (claims.length === 0 && latestVetVisitApplication === undefined) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
