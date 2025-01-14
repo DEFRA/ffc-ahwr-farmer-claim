@@ -40,7 +40,10 @@ async function refreshClaims (request, applicationRef) {
     applicationRef,
     request.logger
   )
+
   session.setEndemicsClaim(request, previousClaimsKey, claims)
+
+  return claims
 }
 
 function getLatestClaimForContext (request) {

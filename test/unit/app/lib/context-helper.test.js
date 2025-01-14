@@ -87,7 +87,7 @@ describe('context-helper', () => {
     expect(getTypeOfLivestockFromLatestClaim({})).toBe('sheep')
   })
 
-  test('refreshClaims sets claims returned by API into the session', async () => {
+  test('refreshClaims sets claims returned by API into the session and returns to caller', async () => {
     const mockClaims = [
       {
         name: 'claim1'
@@ -99,9 +99,10 @@ describe('context-helper', () => {
     const mockRequest = { logger: () => {} }
     mockClaimApi.getClaimsByApplicationReference.mockReturnValueOnce(mockClaims)
 
-    await refreshClaims(mockRequest, 'anyOldRef')
+    const returnedClaims = await refreshClaims(mockRequest, 'anyOldRef')
 
     expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'previousClaims', mockClaims)
+    expect(returnedClaims).toHaveLength(2)
   })
 
   test('refreshApplications sets latest new world application into the session and returns it', async () => {
