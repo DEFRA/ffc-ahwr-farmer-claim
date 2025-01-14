@@ -13,7 +13,6 @@ const { getEndemicsClaim } = require('../session')
 const { claimType } = require('../constants/claim')
 
 async function refreshApplications (request) {
-  // get ALL the applications
   const applications = await getAllApplicationsBySbi(request.query.sbi, request.logger)
 
   // get latest new world
