@@ -1,13 +1,13 @@
 const config = require('../config')
 
-let alwaysOnRouteHandlers = [require('../routes/assets').handlers,
+const alwaysOnRouteHandlers = [require('../routes/assets').handlers,
   require('../routes/cookies').handlers,
   require('../routes/healthy').handlers,
   require('../routes/healthz').handlers,
   require('../routes/index').handlers,
   require('../routes/signin-oidc').handlers].flat()
 
-let endemicsSpecificRouteHandlers = [
+const endemicsSpecificRouteHandlers = [
   require('../routes/endemics/index').handlers,
   require('../routes/endemics/test-urn').handlers,
   require('../routes/endemics/test-results').handlers,
@@ -40,7 +40,7 @@ const endemicsWithMsOffHandlers = [
 
 const endemicsWithMsOnHandlers = [
   require('../routes/endemics/which-type-of-review-ms').handlers,
-    require('../routes/endemics/which-species-ms').handlers
+  require('../routes/endemics/which-species-ms').handlers
 ].flat()
 
 const devLoginHandlers = require('../routes/endemics/dev-sign-in').handlers
