@@ -12,6 +12,7 @@ const urlPrefix = require('../../config').urlPrefix
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = claimDashboard
 const errorMessage = { text: 'Select which species you are claiming for' }
+const view = `${endemicsWhichSpecies}-ms`
 
 const getHandler = {
   method: 'GET',
@@ -20,7 +21,7 @@ const getHandler = {
     handler: async (request, h) => {
       const endemicsClaimData = getEndemicsClaim(request)
       // to do - customise the view for MS as it has different content
-      return h.view(endemicsWhichSpecies, {
+      return h.view(view, {
         ...(endemicsClaimData?.typeOfLivestock && {
           previousAnswer: endemicsClaimData.typeOfLivestock
         }),
@@ -44,7 +45,7 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         return h
-          .view(endemicsWhichSpecies, {
+          .view(view, {
             errorMessage,
             backLink
           })
