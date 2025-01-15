@@ -13,11 +13,11 @@ const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
     return 'review'
   }
-  
+
   if (typeOfReview === claimType.endemics) {
     return 'endemics'
   }
-  
+
   return undefined
 }
 

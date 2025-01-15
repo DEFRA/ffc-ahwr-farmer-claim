@@ -4,7 +4,6 @@ const { endemicsClaim } = require('../../session/keys')
 const { livestockTypes } = require('../../constants/claim')
 const {
   claimDashboard,
-  endemicsDateOfVisit,
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
