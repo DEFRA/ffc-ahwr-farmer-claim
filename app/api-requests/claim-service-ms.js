@@ -28,7 +28,7 @@ function isValidDateOfVisit(dateOfVisit, isReview, previousClaims, oldWorldApp, 
   // const mostRecentClaim = relevantClaims[0]
   const mostRecentClaim = previousClaims
     ? previousClaims.find((claim) => claim.data.typeOfLivestock === typeOfLivestock)
-    : getMostRecentClaim(oldWorldApp)
+    : getMostRecentClaim(oldWorldApp) // TODO handle no previous claims on old world, need to find out which field to validate there wasnt any
 
   if (!mostRecentClaim) {
     if (isReview) {
