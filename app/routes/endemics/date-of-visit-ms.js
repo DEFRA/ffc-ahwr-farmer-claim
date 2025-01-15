@@ -1,6 +1,5 @@
 const Joi = require('joi')
 const {
-  isValidDateOfVisit,
   getReviewWithinLast10Months,
   getReviewTestResultWithinLast10Months,
   isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
@@ -35,6 +34,7 @@ const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
+const { isValidDateOfVisit } = require('../../api-requests/claim-service-ms')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
@@ -287,9 +287,9 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const {
-        typeOfReview,
+        typeOfReview: typeOfClaim,
         previousClaims,
-        latestVetVisitApplication,
+        latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
         organisation,
         reviewTestResults,
@@ -297,7 +297,7 @@ const postHandler = {
       } = session.getEndemicsClaim(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
-      const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
+      const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
       const { error, data } = isValidDateInput(request, reviewOrFollowUpText)
@@ -324,12 +324,11 @@ const postHandler = {
       )
       const { isValid, reason } = isValidDateOfVisit(
         dateOfVisit,
-        typeOfReview,
+        isReview,
         previousClaims,
-        latestVetVisitApplication
+        oldWorldApplication,
+        typeOfLivestock
       )
-
-      console.log({ isValid, reason })
 
       if (!isValid) {
         const { mainMessage, backToPageMessage } = getMessage(
@@ -361,7 +360,7 @@ const postHandler = {
           getReviewWithinLast10Months(
             dateOfVisit,
             previousClaims,
-            latestVetVisitApplication
+            oldWorldApplication
           )
         )
       }

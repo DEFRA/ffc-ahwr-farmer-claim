@@ -11,7 +11,6 @@ const endemicsSpecificRouteHandlers = [
   require('../routes/endemics/index').handlers,
   require('../routes/endemics/test-urn').handlers,
   require('../routes/endemics/test-results').handlers,
-  require('../routes/endemics/date-of-visit').handlers,
   require('../routes/endemics/number-of-fluid-oral-samples').handlers,
   require('../routes/endemics/number-of-samples-tested').handlers,
   require('../routes/endemics/species-numbers').handlers,
@@ -35,12 +34,14 @@ const endemicsSpecificRouteHandlers = [
 
 const endemicsWithMsOffHandlers = [
   require('../routes/endemics/which-type-of-review').handlers,
-  require('../routes/endemics/which-species').handlers
+  require('../routes/endemics/which-species').handlers,
+  require('../routes/endemics/date-of-visit').handlers
 ].flat()
 
 const endemicsWithMsOnHandlers = [
   require('../routes/endemics/which-type-of-review-ms').handlers,
-  require('../routes/endemics/which-species-ms').handlers
+  require('../routes/endemics/which-species-ms').handlers,
+  require('../routes/endemics/date-of-visit-ms').handlers
 ].flat()
 
 const devLoginHandlers = require('../routes/endemics/dev-sign-in').handlers
