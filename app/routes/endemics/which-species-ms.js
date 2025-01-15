@@ -5,7 +5,8 @@ const { livestockTypes } = require('../../constants/claim')
 const {
   claimDashboard,
   endemicsDateOfVisit,
-  endemicsWhichSpecies
+  endemicsWhichSpecies,
+  endemicsWhichTypeOfReview
 } = require('../../config/routes')
 const urlPrefix = require('../../config').urlPrefix
 
@@ -57,7 +58,8 @@ const postHandler = {
 
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
 
-      return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
+      return h.redirect(`${urlPrefix}/${endemicsWhichTypeOfReview}`)
+      // return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
     }
   }
 }

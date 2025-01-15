@@ -12,11 +12,13 @@ const backLink = claimDashboard
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
     return 'review'
-  } else if (typeOfReview === claimType.endemics) {
-    return 'endemics'
-  } else {
-    return undefined
   }
+  
+  if (typeOfReview === claimType.endemics) {
+    return 'endemics'
+  }
+  
+  return undefined
 }
 
 const getHandler = {
@@ -24,7 +26,6 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      // this ca come after the which species page, or before
       const { typeOfReview } = getEndemicsClaim(request)
 
       return h.view(endemicsWhichTypeOfReview, {
