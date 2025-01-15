@@ -3,12 +3,34 @@ const { dateOfVetVisitExceptions, claimType } = require('../constants/claim')
 const { READY_TO_PAY, PAID } = require('../constants/status')
 const { isWithin10Months } = require('../lib/date-utils')
 
-function isValidDateOfVisit (dateOfVisit, isReview, previousClaims, latestVetVisitApplication, typeOfLivestock) {
-  const relevantClaims = previousClaims.filter((claim) => claim.data.typeOfLivestock === typeOfLivestock)
-  const mostRecentClaim = relevantClaims[0]
 
-  if (relevantClaims.length === 0) {
+/*
+  I think this is what the application looks like
+  {
+    data: { 
+      visitDate: date,
+      whichReview: 'beef'
+    },
+    statusId,
+    
+  }
+*/
+const getMostRecentClaim = (oldWorldApp) => ({
+  statusId: oldWorldApp.statusId,
+  data: {
+    claimType: oldWorldApp.data.whichReview,
+    dateOfVisit: oldWorldApp.data.visitDate,
+  }
+})
 
+function isValidDateOfVisit(dateOfVisit, isReview, previousClaims, oldWorldApp, typeOfLivestock) {
+  // const relevantClaims = previousClaims.filter((claim) => claim.data.typeOfLivestock === typeOfLivestock)
+  // const mostRecentClaim = relevantClaims[0]
+  const mostRecentClaim = previousClaims
+    ? previousClaims.find((claim) => claim.data.typeOfLivestock === typeOfLivestock)
+    : getMostRecentClaim(oldWorldApp)
+
+  if (!mostRecentClaim) {
     if (isReview) {
       return { isValid: true, reason: '' }
     }
@@ -21,7 +43,7 @@ function isValidDateOfVisit (dateOfVisit, isReview, previousClaims, latestVetVis
   if (!isReview) {
 
     if (mostRecentClaim.data.claimType === claimType.endemics) {
-        return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
+      return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
     }
 
     if (![READY_TO_PAY, PAID].includes(mostRecentClaim.statusId) && config.reviewClaimApprovedStatus.enabled) { // this env var check could go
@@ -39,7 +61,7 @@ function isValidDateOfVisit (dateOfVisit, isReview, previousClaims, latestVetVis
     const dateOfClaimVisit = mostRecentClaim.data.dateOfVisit
 
     if (isWithin10Months(dateOfVisit, dateOfClaimVisit)) {
-        return { isValid: false, reason: dateOfVetVisitExceptions.reviewWithin10}
+      return { isValid: false, reason: dateOfVetVisitExceptions.reviewWithin10 }
     }
   }
 
