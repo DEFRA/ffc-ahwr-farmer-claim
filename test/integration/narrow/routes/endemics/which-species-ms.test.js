@@ -31,7 +31,7 @@ describe('Endemics which species test', () => {
   })
 
   describe('GET claim/endemics/which-species', () => {
-    test('should render page when no previous session exists' , async () => {
+    test('should render page when no previous session exists', async () => {
       const options = {
         method: 'GET',
         auth,
@@ -46,14 +46,14 @@ describe('Endemics which species test', () => {
       expect($('h1').text().trim()).toMatch('Which species are you claiming for?')
       expect($('.govuk-radios__item').length).toEqual(4)
       expect($('.govuk-back-link').attr('href')).toContain('vet-visits')
-    });
+    })
   })
 
   test.each([
-    { typeOfLivestock: "beef", radio: 'Beef cattle' },
-    { typeOfLivestock: "dairy", radio: 'Dairy cattle' },
-    { typeOfLivestock: "pigs", radio: 'Pigs' },
-    { typeOfLivestock: "sheep", radio: 'Sheep' }
+    { typeOfLivestock: 'beef', radio: 'Beef cattle' },
+    { typeOfLivestock: 'dairy', radio: 'Dairy cattle' },
+    { typeOfLivestock: 'pigs', radio: 'Pigs' },
+    { typeOfLivestock: 'sheep', radio: 'Sheep' }
   ])('should select $radio when previous session livestock is $typeOfLivestock', async ({ typeOfLivestock, radio }) => {
     const options = {
       method: 'GET',
@@ -64,11 +64,10 @@ describe('Endemics which species test', () => {
     getEndemicsClaim.mockReturnValue({ typeOfLivestock })
 
     const res = await global.__SERVER__.inject(options)
-    
+
     const $ = cheerio.load(res.payload)
     expect($('input[name="typeOfLivestock"]:checked').next('label').text().trim()).toEqual(radio)
     expect($('.govuk-back-link').text()).toMatch('Back')
-
   })
 
   describe('POST claim/endemics/which-species', () => {
@@ -83,7 +82,7 @@ describe('Endemics which species test', () => {
       getEndemicsClaim.mockReturnValue({})
 
       const res = await global.__SERVER__.inject(options)
-      
+
       const $ = cheerio.load(res.payload)
       expect($('p.govuk-error-message').text()).toMatch('Select which species you are claiming for')
       expect(res.statusCode).toBe(400)
@@ -105,5 +104,5 @@ describe('Endemics which species test', () => {
       expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
     })
-  });
+  })
 })
