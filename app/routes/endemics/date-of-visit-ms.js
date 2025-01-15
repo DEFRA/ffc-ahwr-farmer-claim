@@ -12,7 +12,7 @@ const {
   endemicsClaim: { reviewTestResults: reviewTestResultsKey }
 } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const config = require('../../../app/config')
+const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
 const { optionalPIHunt } = require('../../config')
 const {
