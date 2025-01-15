@@ -30,56 +30,79 @@ describe('Endemics which species test', () => {
     crumb = await getCrumbs(global.__SERVER__)
   })
 
-  test('Sheep should be selected when typeOfLivestock is sheep', async () => {
+  describe('GET claim/endemics/which-species', () => {
+    test('should render page when no previous session exists', async () => {
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+
+      const res = await global.__SERVER__.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(200)
+      expect($('title').text().trim()).toContain('Which species are you claiming for? - Get funding to improve animal health and welfare - GOV.UK')
+      expect($('h1').text().trim()).toMatch('Which species are you claiming for?')
+      expect($('.govuk-radios__item').length).toEqual(4)
+      expect($('.govuk-back-link').attr('href')).toContain('vet-visits')
+    })
+  })
+
+  test.each([
+    { typeOfLivestock: 'beef', radio: 'Beef cattle' },
+    { typeOfLivestock: 'dairy', radio: 'Dairy cattle' },
+    { typeOfLivestock: 'pigs', radio: 'Pigs' },
+    { typeOfLivestock: 'sheep', radio: 'Sheep' }
+  ])('should select $radio when previous session livestock is $typeOfLivestock', async ({ typeOfLivestock, radio }) => {
     const options = {
       method: 'GET',
       auth,
       url
     }
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
+    getEndemicsClaim.mockReturnValue({ typeOfLivestock })
 
     const res = await global.__SERVER__.inject(options)
-    const $ = cheerio.load(res.payload)
-    const typeOfLivestock = 'sheep'
 
-    expect($('input[name="typeOfLivestock"]:checked').val()).toEqual(
-      typeOfLivestock
-    )
+    const $ = cheerio.load(res.payload)
+    expect($('input[name="typeOfLivestock"]:checked').next('label').text().trim()).toEqual(radio)
     expect($('.govuk-back-link').text()).toMatch('Back')
   })
-  test('Continue without selected livestock should return error', async () => {
-    const options = {
-      method: 'POST',
-      auth,
-      url,
-      headers: { cookie: `crumb=${crumb}` },
-      payload: { crumb, typeOfLivestock: '' }
-    }
 
-    getEndemicsClaim.mockReturnValue({})
+  describe('POST claim/endemics/which-species', () => {
+    test('should display error when livestock not selected', async () => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, typeOfLivestock: '' }
+      }
+      getEndemicsClaim.mockReturnValue({})
 
-    const res = await global.__SERVER__.inject(options)
-    const $ = cheerio.load(res.payload)
-    const errorMessage = 'Select which species you are claiming for'
+      const res = await global.__SERVER__.inject(options)
 
-    expect($('p.govuk-error-message').text()).toMatch(errorMessage)
-  })
-  test('Continue with Sheep seleceted as a livestock', async () => {
-    const options = {
-      method: 'POST',
-      auth,
-      url,
-      headers: { cookie: `crumb=${crumb}` },
-      payload: { crumb, typeOfLivestock: 'sheep' }
-    }
+      const $ = cheerio.load(res.payload)
+      expect($('p.govuk-error-message').text()).toMatch('Select which species you are claiming for')
+      expect(res.statusCode).toBe(400)
+    })
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
+    test('should redirect to next page when livestock selected', async () => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, typeOfLivestock: 'sheep' }
+      }
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
 
-    const res = await global.__SERVER__.inject(options)
+      const res = await global.__SERVER__.inject(options)
 
-    expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
-    expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
+    })
   })
 })
