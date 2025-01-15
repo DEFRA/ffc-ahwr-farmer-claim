@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
-const { livestockTypes, claimType } = require('../../constants/claim')
+const { livestockTypes } = require('../../constants/claim')
 const {
   claimDashboard,
   endemicsDateOfVisit,
@@ -19,17 +19,15 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const endemicsClaimData = getEndemicsClaim(request)
-
-      // TODO AHWR-15 update backLink, check for query parameter?
-      // we're wanting to go to a world where the order is the same always in MS, so we probably won;t need to mess around with back link
-
+      // to do - customise the view for MS as it has different content
       return h.view(endemicsWhichSpecies, {
         ...(endemicsClaimData?.typeOfLivestock && {
           previousAnswer: endemicsClaimData.typeOfLivestock
         }),
         backLink
       })
-    }
+    },
+    tags: ['ms']
   }
 }
 
@@ -58,8 +56,6 @@ const postHandler = {
       const { typeOfLivestock } = request.payload
 
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
-      // not sure we should be setting this here, but for now will keep it so as not to disrupt current flows
-      setEndemicsClaim(request, endemicsClaim.typeOfReview, claimType.review)
 
       return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
     }

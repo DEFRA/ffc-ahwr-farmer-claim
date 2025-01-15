@@ -29,8 +29,8 @@ describe('Application API', () => {
     jest.clearAllMocks()
   })
 
-  describe('getLatestApplicationsBySbi', () => {
-    test('given an eligible sbi it returns business and their applicaton status', async () => {
+  describe('getAllApplicationsBySbi', () => {
+    test('given an eligible sbi it returns business and their application status', async () => {
       const expectedResponse = {
         payload: [
           {
@@ -121,7 +121,7 @@ describe('Application API', () => {
       }
       const SBI = 11333333
       wreck.get = jest.fn().mockResolvedValue(expectedResponse)
-      const response = await applicationApi.getLatestApplicationsBySbi(SBI)
+      const response = await applicationApi.getAllApplicationsBySbi(SBI)
       expect(response).not.toBeNull()
       expect(wreck.get).toHaveBeenCalledTimes(1)
       expect(wreck.get).toHaveBeenCalledWith(
@@ -141,7 +141,7 @@ describe('Application API', () => {
       }
       const SBI = 1133333
       wreck.get = jest.fn().mockRejectedValue(expectedResponse)
-      const response = await applicationApi.getLatestApplicationsBySbi(SBI)
+      const response = await applicationApi.getAllApplicationsBySbi(SBI)
 
       expect(response).toEqual([])
       expect(wreck.get).toHaveBeenCalledWith(
@@ -164,7 +164,7 @@ describe('Application API', () => {
 
       const logger = { setBindings: jest.fn() }
       expect(async () => {
-        await applicationApi.getLatestApplicationsBySbi(SBI, logger)
+        await applicationApi.getAllApplicationsBySbi(SBI, logger)
       }).rejects.toEqual(expectedResponse)
 
       expect(wreck.get).toHaveBeenCalledWith(

@@ -1,7 +1,10 @@
 jest.mock('../../app/config', () => ({
   ...jest.requireActual('../../app/config')
 }))
-const { endemics, optionalPIHunt, authConfig, reviewClaimApprovedStatus } = require('../../app/config')
+const {
+  endemics, optionalPIHunt,
+  multiSpecies, authConfig, reviewClaimApprovedStatus
+} = require('../../app/config')
 
 const defraId = {
   hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
@@ -25,6 +28,9 @@ const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEnabled }
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency
 }
+const setMultiSpecies = (enabled) => {
+  multiSpecies.enabled = enabled
+}
 
 const setReviewClaimApprovedStatus = (value) => {
   reviewClaimApprovedStatus.enabled = value
@@ -32,5 +38,6 @@ const setReviewClaimApprovedStatus = (value) => {
 
 module.exports = {
   setEndemicsAndOptionalPIHunt,
+  setMultiSpecies,
   setReviewClaimApprovedStatus
 }

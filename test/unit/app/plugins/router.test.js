@@ -34,15 +34,20 @@ describe('routes plugin test', () => {
       ...jest.requireActual('../../../../app/config'),
       endemics: {
         enabled: true
+      },
+      multiSpecies: {
+        enabled: false
       }
     }))
 
     const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
-    server.table().forEach((element) => {
-      routePaths.push(element.path)
-    })
+    server.table()
+      .filter(x => !x.settings.tags?.includes('ms'))
+      .forEach((element) => {
+        routePaths.push(element.path)
+      })
     expect(routePaths).toEqual([
       '/claim',
       '/healthy',
@@ -100,6 +105,33 @@ describe('routes plugin test', () => {
       '/claim/endemics/which-species',
       '/claim/endemics/which-type-of-review'
     ])
+
+    expect(routePaths).not.toContain('/claim/endemics/which-type-of-review-ms')
+    expect(routePaths).not.toContain('/claim/endemics/which-species-ms')
+  })
+
+  test('when multi-species is enabled, include correct routes', async () => {
+    jest.mock('../../../../app/config', () => ({
+      ...jest.requireActual('../../../../app/config'),
+      endemics: {
+        enabled: true
+      },
+      multiSpecies: {
+        enabled: true
+      }
+    }))
+
+    const createServer = require('../../../../app/server')
+    const server = await createServer()
+    const routePaths = []
+    server.table()
+      .filter(x => x.settings.tags?.includes('ms'))
+      .forEach((element) => {
+        routePaths.push(element.path)
+      })
+
+    expect(routePaths).toContain('/claim/endemics/which-type-of-review')
+    expect(routePaths).toContain('/claim/endemics/which-species')
   })
 
   test('when isDev is true, dev-sign-in included in routes', async () => {

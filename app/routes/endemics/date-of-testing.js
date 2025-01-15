@@ -25,7 +25,7 @@ const {
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { isValidDate } = require('./../../lib/check-date-validity')
+const { isValidDate } = require('../../lib/date-utils')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {

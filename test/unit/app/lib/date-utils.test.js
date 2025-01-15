@@ -1,4 +1,4 @@
-const { isValidDate } = require('../../../../app/lib/check-date-validity')
+const { isValidDate, isWithin10Months } = require('../../../../app/lib/date-utils')
 
 describe('isValidDate', () => {
   test('returns true for a valid date', () => {
@@ -18,4 +18,11 @@ describe('isValidDate', () => {
     expect(isValidDate(2024, 2, 29)).toBe(true)
     expect(isValidDate(2023, 2, 29)).toBe(false)
   })
+})
+
+test('isWithin10Months', () => {
+  expect(isWithin10Months('2024-01-01', '2024-11-01')).toBe(true)
+  expect(isWithin10Months('2024-11-01', '2024-01-01')).toBe(true)
+  expect(isWithin10Months('2024-01-01', '2024-11-02')).toBe(false)
+  expect(isWithin10Months('2024-11-02', '2024-01-01')).toBe(false)
 })

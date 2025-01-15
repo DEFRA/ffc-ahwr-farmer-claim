@@ -5,26 +5,17 @@ const { endemicsIndex } = require('../../config/routes')
 const { requestAuthorizationCodeUrl } = require('../../auth')
 const logout = require('../../lib/logout')
 const {
-  getLatestApplicationsBySbi
-} = require('../../api-requests/application-service-api')
-const {
-  isWithin10Months,
-  getClaimsByApplicationReference
-} = require('../../api-requests/claim-service-api')
-const {
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
 const {
   endemicsClaim: {
     landingPage: landingPageKey,
-    latestEndemicsApplication: latestEndemicsApplicationKey,
-    latestVetVisitApplication: latestVetVisitApplicationKey,
-    previousClaims: previousClaimsKey,
     reference: referenceKey
   }
 } = require('../../session/keys')
 const createClaimReference = require('../../lib/create-temp-claim-reference')
+const { refreshApplications, refreshClaims } = require('../../lib/context-helper')
 
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -37,57 +28,35 @@ const getHandler = {
     handler: async (request, h) => {
       request.logger.setBindings({ sbi: request.query.sbi })
       if (request.query?.from === 'dashboard' && request.query.sbi) {
-        const applications = await getLatestApplicationsBySbi(request.query.sbi, request.logger)
-        const latestEndemicsApplication = applications.find((application) => {
-          return application.type === 'EE'
-        })
-        const latestVetVisitApplication = applications.find((application) => {
-          // endemics application must have been created within 10 months of vetvisit application visit date
-          return (
-            application.type === 'VV' &&
-            isWithin10Months(
-              application.data?.visitDate,
-              latestEndemicsApplication.createdAt
-            )
-          )
-        })
-        const claims = await getClaimsByApplicationReference(
-          latestEndemicsApplication.reference,
-          request.logger
-        )
+        // fetch latest new world (always) and latest old world (if relevant) application
+        const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(request)
+
+        const claims = await refreshClaims(request, latestEndemicsApplication.reference)
+
         const tempClaimId = createClaimReference()
-        session.setEndemicsClaim(
-          request,
-          latestVetVisitApplicationKey,
-          latestVetVisitApplication
-        )
-        session.setEndemicsClaim(
-          request,
-          latestEndemicsApplicationKey,
-          latestEndemicsApplication
-        )
-        session.setEndemicsClaim(request, previousClaimsKey, claims)
         session.setEndemicsClaim(request, referenceKey, tempClaimId)
 
-        // new user
-        if (claims && (claims.length === 0) && latestVetVisitApplication === undefined) {
+        if (config.multiSpecies.enabled) {
+          // for MS we want to always go through same flow, so just redirect straight there
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
 
-        // new claims
-        if (claims && claims.length > 0) {
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
-          return h.redirect(endemicsWhichTypeOfReviewURI)
+        // new user (has no claims, and no relevant old world application)
+        if (claims.length === 0 && latestVetVisitApplication === undefined) {
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
+          return h.redirect(endemicsWhichSpeciesURI)
         }
 
-        // old claims NO new claims
+        // new claims (already made at least 1 claim in new world)
+        if (claims.length > 0) {
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
+          return h.redirect(endemicsWhichTypeOfReviewURI) // this was going straight to which type of review, skipping species
+        }
+
+        // old claim, but NO new world claims
         if (latestVetVisitApplication) {
-          session.setEndemicsClaim(
-            request,
-            landingPageKey,
-            endemicsWhichTypeOfReviewURI
-          )
+          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
       }

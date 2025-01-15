@@ -22,8 +22,8 @@ describe('Which type of review test', () => {
 
   beforeAll(() => {
     setEndemicsClaimMock.mockImplementation(() => { })
-    setMultiSpecies(false)
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setMultiSpecies(true)
   })
 
   afterEach(() => {
@@ -36,7 +36,7 @@ describe('Which type of review test', () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
     })
 
-    test('sets typeOfLivestock from old world applications', async () => {
+    test('returns 200 and renders page', async () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
         .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [], latestVetVisitApplication })
       const options = {
@@ -51,30 +51,6 @@ describe('Which type of review test', () => {
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
-      expect(setEndemicsClaimMock.mock.calls).toEqual([
-        [expect.any(Object), 'typeOfLivestock', 'beef']
-      ])
-    })
-
-    test('sets typeOfLivestock from new world claims if present', async () => {
-      const endemicsValue = { typeOfReview: 'review', latestVetVisitApplication, previousClaims }
-      sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsValue)
-        .mockReturnValueOnce(endemicsValue)
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-      const res = await global.__SERVER__.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
-      expectPhaseBanner.ok($)
-
-      expect(setEndemicsClaimMock.mock.calls).toEqual([
-        [expect.any(Object), 'typeOfLivestock', 'sheep']
-      ])
     })
   })
 
@@ -132,9 +108,9 @@ describe('Which type of review test', () => {
     })
 
     test.each([
-      { typeOfReview: 'review', nextPageUrl: '/claim/endemics/which-species', expectSetEndemicsCalls: 0 },
-      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit', expectSetEndemicsCalls: 1 }
-    ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl, expectSetEndemicsCalls }) => {
+      { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
+      { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
+    ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
         .mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
@@ -152,7 +128,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
-      expect(setEndemicsClaimMock).toBeCalledTimes(expectSetEndemicsCalls)
+      expect(setEndemicsClaimMock).toBeCalledTimes(1)
     })
 
     test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {

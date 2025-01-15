@@ -5,6 +5,7 @@ const config = require('../config')
 const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../constants/claim')
 const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
 const { getReviewType } = require('../lib/get-review-type')
+const { isWithin10Months } = require('../lib/date-utils')
 
 async function getClaimsByApplicationReference (applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/claim/get-by-application-reference/${applicationReference}`
@@ -70,13 +71,6 @@ async function submitNewClaim (data, logger) {
     appInsights.defaultClient.trackException({ exception: err })
     throw err
   }
-}
-
-const isWithin10Months = (a, b) => {
-  const [dateA, dateB] = [new Date(a), new Date(b)]
-  const [firstDate, secondDate] = dateA < dateB ? [dateA, dateB] : [dateB, dateA]
-  const firstDatePlus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
-  return firstDatePlus10Months >= secondDate
 }
 
 const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
@@ -171,14 +165,6 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
   }
 }
 
-const lockedToSpecies = (previousEndemicClaims) => {
-  // any endemic (new-world) claims means they have missed their opportunity to switch species
-  if (previousEndemicClaims && previousEndemicClaims.length > 0) {
-    return true
-  }
-  return false
-}
-
 const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
   const { latestVetVisitApplication, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
 
@@ -194,13 +180,11 @@ module.exports = {
   getAmount,
   isURNUnique,
   submitNewClaim,
-  isWithin10Months,
   isValidDateOfVisit,
   getReviewWithinLast10Months,
   getClaimsByApplicationReference,
   isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim,
-  lockedToSpecies
+  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
 }

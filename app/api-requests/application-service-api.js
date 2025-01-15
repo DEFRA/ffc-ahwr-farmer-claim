@@ -1,7 +1,7 @@
 const Wreck = require('@hapi/wreck')
 const config = require('../config')
 
-async function getLatestApplicationsBySbi (sbi, logger) {
+async function getAllApplicationsBySbi (sbi, logger) {
   const endpoint = `${config.applicationApiUri}/applications/latest?sbi=${sbi}`
 
   try {
@@ -21,5 +21,5 @@ async function getLatestApplicationsBySbi (sbi, logger) {
 }
 
 module.exports = {
-  getLatestApplicationsBySbi
+  getAllApplicationsBySbi
 }

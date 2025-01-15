@@ -426,7 +426,7 @@ describe('Latest Applications Tests', () => {
     if (testCase.when.agreementExpired) {
       hasClaimExpiredMock.claimHasExpired.mockReturnValueOnce(true)
     }
-    applicationApiMock.getLatestApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
+    applicationApiMock.getAllApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
     if (testCase.expect.error) {
       await expect(
         latestApplication(testCase.given.sbi)
