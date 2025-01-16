@@ -1,8 +1,7 @@
 const Joi = require('joi')
 const {
   getReviewWithinLast10Months,
-  getReviewTestResultWithinLast10Months,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  getReviewTestResultWithinLast10Months
 } = require('../../api-requests/claim-service-api')
 const { dateOfVetVisitExceptions } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
@@ -18,8 +17,8 @@ const {
   endemicsDateOfVisit,
   endemicsDateOfVisitException,
   endemicsDateOfTesting,
-  endemicsVetVisitsReviewTestResults,
-  endemicsSpeciesNumbers
+  endemicsSpeciesNumbers,
+  endemicsWhichTypeOfReview
 } = require('../../config/routes')
 const {
   endemicsClaim: {
@@ -37,13 +36,7 @@ const appInsights = require('applicationinsights')
 const { isValidDateOfVisit } = require('../../api-requests/claim-service-ms')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const previousPageUrl = (request) => {
-  const { landingPage } = session.getEndemicsClaim(request)
-
-  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
-
-  return landingPage
-}
+const backLink = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 
 const isValidDateInput = (request, reviewOrFollowUpText) => {
   const dateModel = Joi.object({
@@ -194,7 +187,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
                 }
               : undefined
           },
-          backLink: previousPageUrl(request)
+          backLink
         }
       : {}
   }
@@ -275,7 +268,7 @@ const getHandler = {
             value: dateOfVisit ? new Date(dateOfVisit).getFullYear() : ''
           }
         },
-        backLink: previousPageUrl(request)
+        backLink
       })
     }
   }

@@ -2,12 +2,12 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException } = require('../../config/routes')
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
 const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const backLink = claimDashboard
+const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
