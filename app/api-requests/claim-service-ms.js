@@ -71,13 +71,13 @@ const isValidDateOfVisit = (dateOfVisit, isReview, previousClaims, oldWorldApp, 
     ? previousClaims.filter((claim) => claim.data.typeOfLivestock === typeOfLivestock)
     : getOldWorldClaimFromApplication(oldWorldApp) // TODO handle no previous claims on old world, need to find out which field to validate there wasnt any
 
-  if (!isReview) {
-    // user is trying to make an endemics claim
-    return canMakeEndemicsClaim(dateOfVisit, mostRecentClaim, secondMostRecentClaim)
+  if (isReview) {
+    // user is trying to make a review claim
+    return canMakeReviewClaim(dateOfVisit, mostRecentClaim, secondMostRecentClaim)
   }
 
-  // user is trying to make a review claim
-  return canMakeReviewClaim(dateOfVisit, mostRecentClaim, secondMostRecentClaim)
+  // user is trying to make an endemics claim
+  return canMakeEndemicsClaim(dateOfVisit, mostRecentClaim, secondMostRecentClaim)
 }
 
 module.exports = { isValidDateOfVisit }
