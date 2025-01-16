@@ -3,7 +3,7 @@ jest.mock('../../app/config', () => ({
 }))
 const {
   endemics, optionalPIHunt,
-  multiSpecies, authConfig, reviewClaimApprovedStatus
+  multiSpecies, authConfig
 } = require('../../app/config')
 
 const defraId = {
@@ -32,12 +32,7 @@ const setMultiSpecies = (enabled) => {
   multiSpecies.enabled = enabled
 }
 
-const setReviewClaimApprovedStatus = (value) => {
-  reviewClaimApprovedStatus.enabled = value
-}
-
 module.exports = {
   setEndemicsAndOptionalPIHunt,
-  setMultiSpecies,
-  setReviewClaimApprovedStatus
+  setMultiSpecies
 }
