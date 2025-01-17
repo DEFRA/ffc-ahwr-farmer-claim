@@ -2,32 +2,31 @@ const { dateOfVetVisitExceptions } = require('../constants/claim')
 const { READY_TO_PAY, PAID, REJECTED } = require('../constants/status')
 const { isWithin10Months } = require('../lib/date-utils')
 
-const canMakeReviewClaim = (dateOfVisit, prevReviewClaim) => {
-  if (!prevReviewClaim) {
+const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
+  if (!prevReviewClaimDateOfVisit) {
     return { isValid: true, reason: '' }
   }
 
-  if (isWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
+  if (isWithin10Months(dateOfVisit, prevReviewClaimDateOfVisit)) {
     return { isValid: false, reason: dateOfVetVisitExceptions.reviewWithin10 }
   }
 
   return { isValid: true, reason: '' }
 }
 
+// we could simplify it by just passing the 1 or 2 properties of each claim obj as separate arguments
+// but the names would be quite long
 const canMakeEndemicsClaim = (dateOfVisit, prevReviewClaim, prevEndemicsClaim) => {
   if (!prevReviewClaim || !isWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
     return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
   }
 
-  console.log({prevReviewClaim});
-  console.log({prevEndemicsClaim});
+  if (prevReviewClaim.statusId === REJECTED) {
+    return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
+  }
 
   if (![READY_TO_PAY, PAID].includes(prevReviewClaim.statusId)) {
     return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
-  }
-
-  if (prevReviewClaim.statusId === REJECTED) {
-    return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
   }
 
   if (prevEndemicsClaim && isWithin10Months(dateOfVisit, prevEndemicsClaim.data.dateOfVisit)) {

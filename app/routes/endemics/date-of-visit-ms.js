@@ -158,7 +158,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
               error: error.details.find(
                 (e) =>
                   e.context.label === 'visit-date-day' ||
-                  e.type.startsWith('dateOfVisit')
+                e.type.startsWith('dateOfVisit')
               )
             },
             month: {
@@ -166,7 +166,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
               error: error.details.find(
                 (e) =>
                   e.context.label === 'visit-date-month' ||
-                  e.type.startsWith('dateOfVisit')
+                e.type.startsWith('dateOfVisit')
               )
             },
             year: {
@@ -174,7 +174,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
               error: error.details.find(
                 (e) =>
                   e.context.label === 'visit-date-year' ||
-                  e.type.startsWith('dateOfVisit')
+                e.type.startsWith('dateOfVisit')
               )
             },
             errorMessage: error.details.find((e) =>
@@ -274,13 +274,16 @@ const getHandler = {
   }
 }
 
-const getOldWorldClaimFromApplication = (oldWorldApp) => oldWorldApp && ([{
-  statusId: oldWorldApp.statusId,
-  data: {
-    claimType: oldWorldApp.data.whichReview,
-    dateOfVisit: oldWorldApp.data.visitDate
-  }
-}])
+const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
+  oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
+    ? {
+        statusId: oldWorldApp.statusId,
+        data: {
+          claimType: oldWorldApp.data.whichReview,
+          dateOfVisit: oldWorldApp.data.visitDate
+        }
+      }
+    : undefined
 
 const postHandler = {
   method: 'POST',
@@ -324,19 +327,15 @@ const postHandler = {
         request.payload[labels.day]
       )
 
-      // const [mostRecentClaim, secondMostRecentClaim] = previousClaims.length !== 0
-      // ? previousClaims.filter((claim) => claim.data.typeOfLivestock === typeOfLivestock)
-      // : getOldWorldClaimFromApplication(oldWorldApplication) // TODO handle no previous claims on old world, need to find out which field to validate there wasnt any
-  
-      const prevReviewClaim = previousClaims.find(claim => claim.type === claimType.review && claim.data.typeOfLivestock === typeOfLivestock) || getOldWorldClaimFromApplication(oldWorldApplication)
+      const prevReviewClaim = previousClaims.find(claim => claim.type === claimType.review && claim.data.typeOfLivestock === typeOfLivestock) ||
+        getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
       const prevEndemicsClaim = previousClaims.find(claim => claim.type === claimType.endemics && claim.data.typeOfLivestock === typeOfLivestock)
 
-      console.log(prevReviewClaim);
-      console.log(prevEndemicsClaim);
+      const { isValid, reason } = isReview
+        ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
+        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim)
 
-      const { isValid, reason } = isReview ? canMakeReviewClaim(dateOfVisit, prevReviewClaim) : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim)
-
-      console.log({ isValid, reason });
+      console.log({ isValid, reason })
 
       if (!isValid) {
         const { mainMessage, backToPageMessage } = getMessage(
