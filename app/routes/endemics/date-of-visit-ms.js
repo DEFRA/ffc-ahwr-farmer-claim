@@ -3,7 +3,7 @@ const {
   getReviewWithinLast10Months,
   getReviewTestResultWithinLast10Months
 } = require('../../api-requests/claim-service-api')
-const { dateOfVetVisitExceptions } = require('../../constants/claim')
+const { dateOfVetVisitExceptions, claimType } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
 const {
@@ -33,7 +33,7 @@ const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
-const { isValidDateOfVisit } = require('../../api-requests/claim-service-ms')
+const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../api-requests/claim-service-ms')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const backLink = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -274,6 +274,14 @@ const getHandler = {
   }
 }
 
+const getOldWorldClaimFromApplication = (oldWorldApp) => oldWorldApp && ([{
+  statusId: oldWorldApp.statusId,
+  data: {
+    claimType: oldWorldApp.data.whichReview,
+    dateOfVisit: oldWorldApp.data.visitDate
+  }
+}])
+
 const postHandler = {
   method: 'POST',
   path: pageUrl,
@@ -315,13 +323,20 @@ const postHandler = {
         request.payload[labels.month] - 1,
         request.payload[labels.day]
       )
-      const { isValid, reason } = isValidDateOfVisit(
-        dateOfVisit,
-        isReview,
-        previousClaims,
-        oldWorldApplication,
-        typeOfLivestock
-      )
+
+      // const [mostRecentClaim, secondMostRecentClaim] = previousClaims.length !== 0
+      // ? previousClaims.filter((claim) => claim.data.typeOfLivestock === typeOfLivestock)
+      // : getOldWorldClaimFromApplication(oldWorldApplication) // TODO handle no previous claims on old world, need to find out which field to validate there wasnt any
+  
+      const prevReviewClaim = previousClaims.find(claim => claim.type === claimType.review && claim.data.typeOfLivestock === typeOfLivestock) || getOldWorldClaimFromApplication(oldWorldApplication)
+      const prevEndemicsClaim = previousClaims.find(claim => claim.type === claimType.endemics && claim.data.typeOfLivestock === typeOfLivestock)
+
+      console.log(prevReviewClaim);
+      console.log(prevEndemicsClaim);
+
+      const { isValid, reason } = isReview ? canMakeReviewClaim(dateOfVisit, prevReviewClaim) : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim)
+
+      console.log({ isValid, reason });
 
       if (!isValid) {
         const { mainMessage, backToPageMessage } = getMessage(
