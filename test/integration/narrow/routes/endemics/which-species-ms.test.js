@@ -3,6 +3,7 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 describe('Endemics which species test', () => {
@@ -25,9 +26,19 @@ describe('Endemics which species test', () => {
     strategy: 'cookie'
   }
   let crumb
+  let server
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
+  })
 
   beforeEach(async () => {
-    crumb = await getCrumbs(global.__SERVER__)
+    crumb = await getCrumbs(server)
   })
 
   describe('GET claim/endemics/which-species', () => {
@@ -38,7 +49,7 @@ describe('Endemics which species test', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
@@ -63,7 +74,7 @@ describe('Endemics which species test', () => {
 
     getEndemicsClaim.mockReturnValue({ typeOfLivestock })
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     const $ = cheerio.load(res.payload)
     expect($('input[name="typeOfLivestock"]:checked').next('label').text().trim()).toEqual(radio)
@@ -81,7 +92,7 @@ describe('Endemics which species test', () => {
       }
       getEndemicsClaim.mockReturnValue({})
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       const $ = cheerio.load(res.payload)
       expect($('p.govuk-error-message').text()).toMatch('Select which species you are claiming for')
@@ -98,7 +109,7 @@ describe('Endemics which species test', () => {
       }
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')

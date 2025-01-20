@@ -1,4 +1,4 @@
-const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../../../app/api-requests/claim-service-ms')
+const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../../../app/lib/can-make-claim')
 const { READY_TO_PAY, PAID, REJECTED, ACCEPTED } = require('../../../../app/constants/status')
 
 describe('claim-service-ms', () => {
@@ -34,12 +34,6 @@ describe('claim-service-ms', () => {
       }
     })
 
-    const createEndemicsClaim = (dateOfVisit) => ({
-      data: {
-        dateOfVisit
-      }
-    })
-
     describe('should be able to make endemics claim when the previous review claim is within 10 months', () => {
       test('and the previous review claim has a status of paid', () => {
         const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createReviewClaim(new Date(2024, 1, 25), PAID))
@@ -60,7 +54,7 @@ describe('claim-service-ms', () => {
       })
 
       test('and the previous endemics claim is older than 10 months', () => {
-        const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createReviewClaim(new Date(2024, 1, 25), PAID), createEndemicsClaim(new Date(2023, 1, 25)))
+        const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createReviewClaim(new Date(2024, 1, 25), PAID), new Date(2023, 1, 25))
 
         expect(result).toEqual({ isValid: true, reason: '' })
       })
@@ -92,7 +86,7 @@ describe('claim-service-ms', () => {
       })
 
       test('when the previous endemics claim is within 10 months', () => {
-        const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createReviewClaim(new Date(2024, 3, 25), PAID), createEndemicsClaim(new Date(2024, 1, 25)))
+        const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createReviewClaim(new Date(2024, 3, 25), PAID), new Date(2024, 1, 25))
 
         expect(result).toEqual({ isValid: false, reason: 'another endemics within 10 months' })
       })

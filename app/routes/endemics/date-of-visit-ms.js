@@ -33,7 +33,7 @@ const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
-const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../api-requests/claim-service-ms')
+const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const backLink = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -333,9 +333,7 @@ const postHandler = {
 
       const { isValid, reason } = isReview
         ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
-        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim)
-
-      console.log({ isValid, reason })
+        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim?.data.dateOfVisit)
 
       if (!isValid) {
         const { mainMessage, backToPageMessage } = getMessage(

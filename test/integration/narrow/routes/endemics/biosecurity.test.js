@@ -9,6 +9,7 @@ const {
   endemicsBiosecurity,
   endemicsCheckAnswers
 } = require('../../../../../app/config/routes')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('../../../../../app/session')
@@ -21,18 +22,24 @@ const auth = {
 let crumb
 
 describe('Biosecurity test when Optional PI Hunt is OFF', () => {
+  let server
+
   beforeEach(async () => {
-    crumb = await getCrumbs(global.__SERVER__)
+    crumb = await getCrumbs(server)
   })
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
+
   describe(`GET ${url} route`, () => {
     test('redirect if not logged in / authorized', async () => {
       const options = {
@@ -42,7 +49,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -56,7 +63,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(200)
     })
@@ -69,7 +76,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reviewTestResults: 'negative' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(200)
     })
@@ -80,7 +87,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
         auth
       }
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       const $ = cheerio.load(response.payload)
       expect($('title').text()).toMatch('Biosecurity - Get funding to improve animal health and welfare')
@@ -95,7 +102,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', biosecurity: 'yes' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
       const biosecurity = 'yes'
 
@@ -115,7 +122,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
       const errorMessage = 'Select whether the vet did a biosecurity assessment'
 
@@ -132,7 +139,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
       const errorMessage = 'Enter the assessment percentage'
 
@@ -150,7 +157,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
@@ -167,7 +174,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
@@ -184,7 +191,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
 
       expect(response.statusCode).toBe(400)
@@ -202,7 +209,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
 
       expect(response.statusCode).toBe(400)
@@ -219,7 +226,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
@@ -240,7 +247,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
       }
       getEndemicsClaim.mockReturnValue({ biosecurity: 'no' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
 
       expect(response.statusCode).toBe(400)
@@ -251,16 +258,23 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 })
 
 describe('Biosecurity test when Optional PI Hunt is ON', () => {
-  beforeEach(async () => {
-    crumb = await getCrumbs(global.__SERVER__)
-  })
+  let server
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
-  afterAll(() => {
+
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
+
+  beforeEach(async () => {
+    crumb = await getCrumbs(server)
+  })
+
   describe(`GET ${url} route`, () => {
     test.each([
       { typeOfLivestock: 'beef', piHunt: 'no', piHuntRecommended: 'no', piHuntAllAnimals: 'no', reviewTestResults: 'negative', backLink: '/claim/endemics/pi-hunt' },
@@ -276,7 +290,7 @@ describe('Biosecurity test when Optional PI Hunt is ON', () => {
         auth
       }
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
 
       expect(response.statusCode).toBe(200)

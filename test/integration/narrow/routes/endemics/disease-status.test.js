@@ -2,6 +2,7 @@ const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { endemicsDiseaseStatus } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 
@@ -14,10 +15,12 @@ describe('Disease status test', () => {
   let crumb
 
   beforeEach(async () => {
-    crumb = await getCrumbs(global.__SERVER__)
+    crumb = await getCrumbs(server)
   })
 
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -45,8 +48,12 @@ describe('Disease status test', () => {
         }
       }
     })
+
+    server = await createServer()
+    await server.initialize()
   })
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -57,7 +64,7 @@ describe('Disease status test', () => {
         url
       }
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -70,7 +77,7 @@ describe('Disease status test', () => {
         auth
       }
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(200)
     })
@@ -81,7 +88,7 @@ describe('Disease status test', () => {
         auth
       }
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       const $ = cheerio.load(response.payload)
       expect($('h1').text()).toMatch('What is the disease status category?')
@@ -95,7 +102,7 @@ describe('Disease status test', () => {
 
       getEndemicsClaim.mockReturnValue({ diseaseStatus: '1' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
       const diseaseStatus = '1'
 
@@ -116,7 +123,7 @@ describe('Disease status test', () => {
 
       getEndemicsClaim.mockReturnValue({})
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
       const errorMessage = 'Enter the disease status category'
 
@@ -133,7 +140,7 @@ describe('Disease status test', () => {
       }
       getEndemicsClaim.mockReturnValue({ diseaseStatus: '1' })
 
-      const response = await global.__SERVER__.inject(options)
+      const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual('/claim/endemics/biosecurity')

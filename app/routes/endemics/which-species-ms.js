@@ -59,7 +59,6 @@ const postHandler = {
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
 
       return h.redirect(`${urlPrefix}/${endemicsWhichTypeOfReview}`)
-      // return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
     }
   }
 }

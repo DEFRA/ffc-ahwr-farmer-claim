@@ -7,19 +7,30 @@ const authMock = require('../../../../../app/auth')
 jest.mock('../../../../../app/auth')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getCrumbs = require('../../../../utils/get-crumbs')
+const createServer = require('../../../../../app/server')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 const url = '/claim/endemics/dev-sign-in'
 
 describe(`${url} route page`, () => {
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
-    return {
-      ...originalModule,
-      devLogin: {
-        enabled: true
+  let server
+
+  beforeAll(async () => {
+    jest.mock('../../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../../app/config')
+      return {
+        ...originalModule,
+        devLogin: {
+          enabled: true
+        }
       }
-    }
+    })
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
   })
 
   beforeEach(async () => {
@@ -33,7 +44,7 @@ describe(`${url} route page`, () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -47,7 +58,7 @@ describe(`${url} route page`, () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('returns 302 and redirected to endemics start view when authenticate successful', async () => {
@@ -90,7 +101,7 @@ describe(`${url} route page`, () => {
         }
       )
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics?from=dashboard&sbi=12345678')

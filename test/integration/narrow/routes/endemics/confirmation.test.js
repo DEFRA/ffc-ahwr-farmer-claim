@@ -2,36 +2,48 @@ const cheerio = require('cheerio')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const { endemicsConfirmation } = require('../../../../../app/config/routes')
 const { getReviewType } = require('../../../../../app/lib/get-review-type')
+const createServer = require('../../../../../app/server')
 jest.mock('../../../../../app/session')
 
 describe('Claim confirmation', () => {
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
-    return {
-      ...originalModule,
-      authConfig: {
-        defraId: {
-          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-          policy: 'b2c_1a_signupsigninsfi',
-          redirectUri: 'http://localhost:3000/apply/signin-oidc',
-          clientId: 'dummy_client_id',
-          serviceId: 'dummy_service_id',
-          scope: 'openid dummy_client_id offline_access'
+  let server
+
+  beforeAll(async () => {
+    jest.mock('../../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../../app/config')
+      return {
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+            policy: 'b2c_1a_signupsigninsfi',
+            redirectUri: 'http://localhost:3000/apply/signin-oidc',
+            clientId: 'dummy_client_id',
+            serviceId: 'dummy_service_id',
+            scope: 'openid dummy_client_id offline_access'
+          },
+          ruralPaymentsAgency: {
+            hostname: 'dummy-host-name',
+            getPersonSummaryUrl: 'dummy-get-person-summary-url',
+            getOrganisationPermissionsUrl:
+              'dummy-get-organisation-permissions-url',
+            getOrganisationUrl: 'dummy-get-organisation-url'
+          }
         },
-        ruralPaymentsAgency: {
-          hostname: 'dummy-host-name',
-          getPersonSummaryUrl: 'dummy-get-person-summary-url',
-          getOrganisationPermissionsUrl:
-            'dummy-get-organisation-permissions-url',
-          getOrganisationUrl: 'dummy-get-organisation-url'
+        endemics: {
+          enabled: true
         }
-      },
-      endemics: {
-        enabled: true
       }
-    }
+    })
+    server = await createServer()
+    await server.initialize()
   })
+
+  afterAll(async () => {
+    await server.stop()
+  })
+
   const reference = 'TBD-F021-723B'
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = `/claim/${endemicsConfirmation}`
@@ -60,7 +72,7 @@ describe('Claim confirmation', () => {
         typeOfReview
       }
     })
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     const $ = cheerio.load(res.payload)
 

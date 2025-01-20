@@ -329,8 +329,6 @@ const postHandler = {
         latestVetVisitApplication
       )
 
-      console.log({ isValid, reason })
-
       if (!isValid) {
         const { mainMessage, backToPageMessage } = getMessage(
           reason,

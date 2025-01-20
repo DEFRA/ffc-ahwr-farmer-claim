@@ -5,13 +5,16 @@ const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsCl
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { endemicsClaim: { vetsName: vetsNameKey } } = require('../../../../../app/session/keys')
 const { name: nameErrorMessages } = require('../../../../../app/lib/error-messages')
+const createServer = require('../../../../../app/server')
+
 jest.mock('../../../../../app/session')
 
 describe('Vet name test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/vet-name'
+  let server
 
-  beforeAll(() => {
+  beforeAll(async () => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaimMock.mockImplementation(() => { })
 
@@ -41,6 +44,12 @@ describe('Vet name test', () => {
         }
       }
     })
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
   })
 
   beforeEach(() => {
@@ -56,7 +65,7 @@ describe('Vet name test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -71,7 +80,7 @@ describe('Vet name test', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -82,7 +91,7 @@ describe('Vet name test', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -93,7 +102,7 @@ describe('Vet name test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -111,7 +120,7 @@ describe('Vet name test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -132,7 +141,7 @@ describe('Vet name test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-rcvs')

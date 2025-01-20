@@ -8,6 +8,7 @@ const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-da
 const { getReviewType } = require('../../../../../app/lib/get-review-type')
 
 const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isDateOfTestingLessThanDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
@@ -38,12 +39,17 @@ const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-testing'
 
 describe('Date of testing when Optional PI Hunt is OFF', () => {
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
     getEndemicsClaimMock.mockImplementation(() => { return { latestReviewApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -55,7 +61,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -73,7 +79,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -89,7 +95,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -126,7 +132,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
       expect($('#whenTestingWasCarriedOut-2').val()).toEqual(whenTestingWasCarriedOut)
       // On other date radio button shouldn't be hidden
@@ -140,7 +146,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
 
   describe(`POST ${url} route`, () => {
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
     const errorSummaryHref = '#when-was-endemic-disease-or-condition-testing-carried-out'
     test('when not logged in redirects to defra id', async () => {
@@ -151,7 +157,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -218,7 +224,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
@@ -252,7 +258,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     })
@@ -273,7 +279,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
       expect($('#whenTestingWasCarriedOut').val()).toEqual(whenTestingWasCarriedOut)
       // On other date radio button should be hidden
@@ -296,7 +302,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('#whenTestingWasCarriedOut-error').text().trim()).toEqual(`Error: ${errorMessage}`)
@@ -325,7 +331,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23', dateOfAgreementAccepted: '2022-01-01' }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -347,7 +353,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23', dateOfAgreementAccepted: '2022-01-01' }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -358,11 +364,16 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
 })
 
 describe('Date of testing when Optional PI Hunt is ON', () => {
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -378,7 +389,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -389,7 +400,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
   })
   describe(`POST ${url} route`, () => {
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
     test.each([
       {
@@ -417,7 +428,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })

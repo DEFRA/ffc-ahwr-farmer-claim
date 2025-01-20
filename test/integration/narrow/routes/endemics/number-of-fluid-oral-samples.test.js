@@ -4,6 +4,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -12,7 +13,9 @@ describe('Number of fluid oral samples test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/number-of-fluid-oral-samples'
 
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
@@ -44,9 +47,13 @@ describe('Number of fluid oral samples test', () => {
         }
       }
     })
+
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -58,7 +65,7 @@ describe('Number of fluid oral samples test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -73,7 +80,7 @@ describe('Number of fluid oral samples test', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -84,7 +91,7 @@ describe('Number of fluid oral samples test', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -95,7 +102,7 @@ describe('Number of fluid oral samples test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -110,7 +117,7 @@ describe('Number of fluid oral samples test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -128,7 +135,7 @@ describe('Number of fluid oral samples test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -145,7 +152,7 @@ describe('Number of fluid oral samples test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual('/claim/endemics/test-results')

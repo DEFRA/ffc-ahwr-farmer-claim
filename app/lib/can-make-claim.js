@@ -1,6 +1,6 @@
 const { dateOfVetVisitExceptions } = require('../constants/claim')
 const { READY_TO_PAY, PAID, REJECTED } = require('../constants/status')
-const { isWithin10Months } = require('../lib/date-utils')
+const { isWithin10Months } = require('./date-utils')
 
 const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   if (!prevReviewClaimDateOfVisit) {
