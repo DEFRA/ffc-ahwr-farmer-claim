@@ -94,7 +94,7 @@ describe('Endemics which species test', () => {
     const res = await global.__SERVER__.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
+    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
     expect(setEndemicsClaimMock).toHaveBeenCalled()
   })
 })

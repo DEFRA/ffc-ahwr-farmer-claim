@@ -327,9 +327,9 @@ const postHandler = {
         request.payload[labels.day]
       )
 
-      const prevReviewClaim = previousClaims.find(claim => claim.type === claimType.review && claim.data.typeOfLivestock === typeOfLivestock) ||
-        getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
-      const prevEndemicsClaim = previousClaims.find(claim => claim.type === claimType.endemics && claim.data.typeOfLivestock === typeOfLivestock)
+      const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
+      const prevReviewClaim = prevLivestockClaims.find(claim => claim.type === claimType.review) || getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
+      const prevEndemicsClaim = prevLivestockClaims.find(claim => claim.type === claimType.endemics)
 
       const { isValid, reason } = isReview
         ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)

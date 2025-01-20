@@ -14,9 +14,7 @@ const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
   return { isValid: true, reason: '' }
 }
 
-// we could simplify it by just passing the 1 or 2 properties of each claim obj as separate arguments
-// but the names would be quite long
-const canMakeEndemicsClaim = (dateOfVisit, prevReviewClaim, prevEndemicsClaim) => {
+const canMakeEndemicsClaim = (dateOfVisit, prevReviewClaim, prevEndemicsClaimDateOfVisit) => {
   if (!prevReviewClaim || !isWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
     return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
   }
@@ -29,22 +27,12 @@ const canMakeEndemicsClaim = (dateOfVisit, prevReviewClaim, prevEndemicsClaim) =
     return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
   }
 
-  if (prevEndemicsClaim && isWithin10Months(dateOfVisit, prevEndemicsClaim.data.dateOfVisit)) {
+  if (prevEndemicsClaimDateOfVisit && isWithin10Months(dateOfVisit, prevEndemicsClaimDateOfVisit)) {
     return { isValid: false, reason: dateOfVetVisitExceptions.endemicsWithin10 }
   }
 
   return { isValid: true, reason: '' }
 }
-
-// const isValidDateOfVisit = (dateOfVisit, isReview, mostRecentClaim, secondMostRecentClaim) => {
-//   if (isReview) {
-//     // user is trying to make a review claim
-//     return canMakeReviewClaim(dateOfVisit, mostRecentClaim, secondMostRecentClaim)
-//   }
-
-//   // user is trying to make an endemics claim
-//   return canMakeEndemicsClaim(dateOfVisit, mostRecentClaim, secondMostRecentClaim)
-// }
 
 module.exports = {
   canMakeReviewClaim,
