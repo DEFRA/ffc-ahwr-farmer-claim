@@ -10,6 +10,7 @@ const claimServiceApiMock = require('../../../../../app/api-requests/claim-servi
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
+const config = require('../../../../../app/config')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
@@ -56,21 +57,12 @@ const landingPage = '/claim/endemics/which-species'
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-visit'
 
-jest.mock('../../../../../app/config', () => {
-  const originalModule = jest.requireActual('../../../../../app/config')
-  return {
-    ...originalModule,
-    multiSpecies: {
-      enabled: false
-    }
-  }
-})
-
 describe('Date of vet visit when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    config.multiSpecies.enabled = false
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })

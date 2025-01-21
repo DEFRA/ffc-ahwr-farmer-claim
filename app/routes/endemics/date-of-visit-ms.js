@@ -381,10 +381,9 @@ const postHandler = {
           reviewTestResultsValue
         )
 
-        if (
-          (isBeef || isDairy) &&
-          (optionalPIHunt.enabled || reviewTestResultsValue === 'negative')
-        ) { return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`) }
+        if ((isBeef || isDairy) && (optionalPIHunt.enabled || reviewTestResultsValue === 'negative')) {
+          return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+        }
       }
       return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
     }

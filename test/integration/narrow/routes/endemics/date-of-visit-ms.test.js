@@ -3,13 +3,10 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const getEndemicsClaimMock =
-  require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock =
-  require('../../../../../app/session').setEndemicsClaim
+const session = require('../../../../../app/session')
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+const config = require('../../../../../app/config')
 
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
   getReviewTestResultWithinLast10Months: jest.fn().mockReturnValue('negative'),
@@ -60,13 +57,37 @@ const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-visit'
 
 describe('GET /claim/endemics/date-of-visit handler', () => {
+  jest.mock('../../../../../app/config', () => {
+    const originalModule = jest.requireActual('../../../../../app/config')
+    return {
+      ...originalModule,
+      authConfig: {
+        defraId: {
+          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+          policy: 'b2c_1a_signupsigninsfi',
+          redirectUri: 'http://localhost:3000/apply/signin-oidc',
+          clientId: 'dummy_client_id',
+          serviceId: 'dummy_service_id',
+          scope: 'openid dummy_client_id offline_access'
+        },
+        ruralPaymentsAgency: {
+          hostname: 'dummy-host-name',
+          getPersonSummaryUrl: 'dummy-get-person-summary-url',
+          getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
+          getOrganisationUrl: 'dummy-get-organisation-url'
+        }
+      }
+    }
+  })
+
   let server
 
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    raiseInvalidDataEvent.mockImplementation(() => { })
-    getEndemicsClaimMock.mockImplementation(() => {
+    raiseInvalidDataEvent.mockResolvedValue({})
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestVetVisitApplication,
         latestEndemicsApplication,
@@ -96,7 +117,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   })
 
   test('returns 200', async () => {
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
         latestVetVisitApplication,
@@ -123,7 +144,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     expectPhaseBanner.ok($)
   })
   test('returns 200 and fills input with value in session', async () => {
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
         latestVetVisitApplication,
@@ -188,9 +209,10 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   beforeEach(async () => {
     crumb = await getCrumbs(server)
+    jest.clearAllMocks()
   })
 
-  // getEndemicsClaimMock.mockReturnValue({
+  // session.getEndemicsClaim.mockReturnValue({
   //   latestVetVisitApplication: {
   //     ...latestVetVisitApplication,
   //     createdAt: applicationCreationDate
@@ -200,8 +222,20 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   //   typeOfReview: 'E'
   // })
 
+  // {
+  //   reference: 'AHWR-C2EA-C718',
+  //   applicationReference: 'AHWR-2470-6BA9',
+  //   statusId: 1,
+  //   type: 'R',
+  //   createdAt: '2022-03-19T10:25:11.318Z',
+  //   data: {
+  //     typeOfLivestock: 'beef',
+  //     dateOfVisit: '2023-01-01'
+  //   }
+  // }
+
   test('redirect back to page with errors if the entered date is of an incorrect format', async () => { // unhappy path
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         latestVetVisitApplication: {
@@ -252,23 +286,11 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   })
 
-  test.only('user makes a review claim and has zero previous claims', async () => { // happy path
-    getEndemicsClaimMock.mockImplementation(() => {
+  test('user makes a review claim and has zero previous claims', async () => { // happy path
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
-        previousClaims: [
-          {
-            reference: 'AHWR-C2EA-C718',
-            applicationReference: 'AHWR-2470-6BA9',
-            statusId: 1,
-            type: 'R',
-            createdAt: '2022-03-19T10:25:11.318Z',
-            data: {
-              typeOfLivestock: 'beef',
-              dateOfVisit: '2023-01-01'
-            }
-          }
-        ],
+        previousClaims: [],
         typeOfLivestock: 'beef',
         organisation: {
           name: 'Farmer Johns',
@@ -286,8 +308,53 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
-        review: true
+        dateOfAgreementAccepted: '2025-01-01'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('user makes a review claim and has a previous review claim for the same species within the last 10 months', async () => { // unhappy path
+    session.getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        previousClaims: [{
+          reference: 'REBC-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2024-12-12T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2024-12-12'
+          }
+        }],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -297,14 +364,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
 
-    expect(res.statusCode).toBe(302)
-    expectPageContentOk($, '/claim/endemics/which-type-of-review')
-    expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'dateOfVisit', new Date(1, 0, 2025))
+    expect(res.statusCode).toBe(400)
+    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
+
+    expect(session.setEndemicsClaim).not.toHaveBeenCalled()
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
-  })
-
-  test('user makes a review claim and has a previous review claim for the same species within the last 10 months', () => { // unhappy path
-
   })
 
   test('user makes a review claim and has a previous review claim for the same species over 10 months ago', () => { // happy path
@@ -340,12 +405,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes an endemics claim and has no review of the same species within 10 months', async () => { // unhappy path
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
           {
-            reference: 'AHWR-C2EA-C718',
+            reference: 'REPI-C2EA-C718',
             applicationReference: 'AHWR-2470-6BA9',
             statusId: 9,
             type: 'R',
@@ -354,7 +419,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
               typeOfLivestock: 'pigs',
               dateOfVisit: '2024-09-01'
             }
-          },
+          }
         ],
         typeOfLivestock: 'beef',
         organisation: {
@@ -373,7 +438,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -387,14 +452,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('title').text()).toMatch(
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
-    const link = $('a.govuk-link[rel="external"]');
-    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
-    expect(link.text()).toBe('There must be no more than 10 months between your reviews and follow-ups.');
-    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', 'Value Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid. Error: There must be no more than 10 months between your reviews and follow-ups.')
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('There must be no more than 10 months between your reviews and follow-ups.')
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be no more than 10 months between your reviews and follow-ups.`)
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of the same species', async () => { // unhappy path
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -438,7 +503,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -452,10 +517,10 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('title').text()).toMatch(
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
-    const link = $('a.govuk-link[rel="external"]');
-    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
-    expect(link.text()).toBe('There must be at least 10 months between your follow-ups.');
-    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', 'Value Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid. Error: There must be at least 10 months between your follow-ups.')
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('There must be at least 10 months between your follow-ups.')
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be at least 10 months between your follow-ups.`)
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok', () => { // happy path
@@ -463,7 +528,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes an endemics claim and the review in question is rejected', async () => { // unhappy path
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -496,7 +561,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -510,13 +575,13 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('title').text()).toMatch(
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
-    const mainMessage = $('h1.govuk-heading-l').first().nextAll('p').first();
-    expect(mainMessage.text()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.');
-    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', 'Value Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
+    const mainMessage = $('h1.govuk-heading-l').first().nextAll('p').first()
+    expect(mainMessage.text()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.`)
   })
 
   test('user makes an endemics claim and the review is not in READY_TO_PAY status (statusId: 9)', async () => { // unhappy path
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -549,7 +614,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -563,14 +628,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('title').text()).toMatch(
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
-    const link = $('a.govuk-link[rel="external"]');
-    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
-    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.');
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.')
     // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(options.payload, 'dateOfVisit', 'Value is invalid. Error: ')
   })
 
   test('user makes an endemics claim and the review is not in PAID status (statusId: 8)', async () => { // unhappy path
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -603,7 +668,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -617,9 +682,9 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('title').text()).toMatch(
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
-    const link = $('a.govuk-link[rel="external"]');
-    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
-    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.');
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.')
     // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(options.payload, 'dateOfVisit', 'Value is invalid. Error: ')
   })
 
@@ -628,7 +693,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive', async () => {
-    getEndemicsClaimMock.mockImplementation(() => {
+    config.optionalPIHunt.enabled = false
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -661,7 +727,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -669,16 +735,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
-    const $ = cheerio.load(res.payload)
-
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-    expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
+    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative', async () => {
-    getEndemicsClaimMock.mockImplementation(() => {
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -711,7 +775,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -719,19 +783,17 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
-    const $ = cheerio.load(res.payload)
-
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    // expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
+    // expect(session.setEndemicsClaim).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
         is for beef or dairy, and the previous review test results are positive 
         BUT optional PI hunt is enabled`, async () => {
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
-    getEndemicsClaimMock.mockImplementation(() => {
+    config.optionalPIHunt.enabled = true
+    session.getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -764,7 +826,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         [labels.day]: '01',
         [labels.month]: '01',
         [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01',
+        dateOfAgreementAccepted: '2025-01-01'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -772,11 +834,9 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
-    const $ = cheerio.load(res.payload)
-
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    // expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
+    // expect(session.setEndemicsClaim).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 })
