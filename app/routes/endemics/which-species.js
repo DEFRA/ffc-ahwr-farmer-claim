@@ -57,8 +57,6 @@ const postHandler = {
     handler: async (request, h) => {
       const { typeOfLivestock } = request.payload
 
-      // clearEndemicsClaim(request)
-
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
       // not sure we should be setting this here, but for now will keep it so as not to disrupt current flows
       setEndemicsClaim(request, endemicsClaim.typeOfReview, claimType.review)

@@ -53,8 +53,6 @@ const postHandler = {
       request.logger.setBindings({ sbi })
       const [personSummary, organisationSummary] = await createDevDetails(sbi)
 
-      session.clearEndemicsClaim(request)
-
       session.setEndemicsClaim(
         request,
         sessionKeys.endemicsClaim.organisation,
