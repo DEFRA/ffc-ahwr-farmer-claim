@@ -5,8 +5,8 @@ const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const getEndemicsClaimMock =
   require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+const setEndemicsClaimMock =
+  require('../../../../../app/session').setEndemicsClaim
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
 
@@ -22,7 +22,7 @@ function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
     'Date of visit - Get funding to improve animal health and welfare'
   )
-  expect($('h1').text()).toMatch(/(Date of review | follow-up)/i)
+  expect($('h1').text().trim()).toMatch(/(Date of review | follow-up)/i)
   expect($('p').text()).toMatch(
     /(This is the date the vet last visited the farm for this review. You can find it on the summary the vet gave you.| follow-up)/i
   )
@@ -64,7 +64,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    raiseInvalidDataEvent.mockImplementation(() => {})
+    raiseInvalidDataEvent.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => {
       return {
         latestVetVisitApplication,
@@ -199,20 +199,107 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   //   typeOfReview: 'E'
   // })
 
-  test('redirect back to page with errors if the entered date is of an incorrect format', () => { // unhappy path
+  test('redirect back to page with errors if the entered date is of an incorrect format', async () => { // unhappy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        latestVetVisitApplication: {
+          ...latestVetVisitApplication
+          // createdAt: '2023-01-01'
+        }
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '123',
+        [labels.month]: '123',
+        [labels.year]: '123',
+        dateOfAgreementAccepted: '2025-01-01',
+        review: true
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+    expect(res.statusCode).toBe(400)
+    expect($('p.govuk-error-message').text().trim()).toEqual(
+      'Error: The date of review must be a real date'
+    )
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+      name: 'claim-invalid-date-of-visit',
+      properties: {
+        tempClaimReference: undefined,
+        journeyType: 'review',
+        dateOfAgreement: '2025-01-01',
+        dateEntered: '123-123-123',
+        error: 'The date of review must be a real date'
+      }
+    })
+  })
+
+  test('redirect back to page with errors if the entered date is before the agreement date', () => { // unhappy path
 
   })
 
-  test('redirect back to page with errors if the entered date is before the agreement date', () => {  // unhappy path
-    
+  test('redirect back to page with errors if the entered date is in the future', () => { // unhappy path
+
   })
 
-  test('redirect back to page with errors if the entered date is in the future', () => {  // unhappy path
-    
-  })
+  test.only('user makes a review claim and has zero previous claims', async () => { // happy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 1,
+            type: 'R',
+            createdAt: '2022-03-19T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2023-01-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+        review: true
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
-  test('user makes a review claim and has zero previous claims', () => { // happy path
+    const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(302)
+    expectPageContentOk($, '/claim/endemics/which-type-of-review')
+    expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'dateOfVisit', new Date(1, 0, 2025))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes a review claim and has a previous review claim for the same species within the last 10 months', () => { // unhappy path
@@ -280,11 +367,11 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive', () => {
-    
+
   })
 
   test('for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative', () => {
-    
+
   })
 
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
