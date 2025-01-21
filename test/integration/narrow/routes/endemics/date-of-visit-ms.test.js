@@ -9,6 +9,7 @@ const setEndemicsClaimMock =
   require('../../../../../app/session').setEndemicsClaim
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
+const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
   getReviewTestResultWithinLast10Months: jest.fn().mockReturnValue('negative'),
@@ -338,45 +339,444 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   })
 
-  test('user makes an endemics claim and has no review of the same species within 10 months', () => { // unhappy path
+  test('user makes an endemics claim and has no review of the same species within 10 months', async () => { // unhappy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'pigs',
+              dateOfVisit: '2024-09-01'
+            }
+          },
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(400)
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]');
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
+    expect(link.text()).toBe('There must be no more than 10 months between your reviews and follow-ups.');
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', 'Value Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid. Error: There must be no more than 10 months between your reviews and follow-ups.')
   })
 
-  test('user makes an endemics claim within 10 months of a previous endemics claim of the same species', () => { // unhappy path
+  test('user makes an endemics claim within 10 months of a previous endemics claim of the same species', async () => { // unhappy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          },
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'E',
+            createdAt: '2024-10-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-10-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(400)
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]');
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
+    expect(link.text()).toBe('There must be at least 10 months between your follow-ups.');
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', 'Value Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid. Error: There must be at least 10 months between your follow-ups.')
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok', () => { // happy path
 
   })
 
-  test('user makes an endemics claim and the review in question is rejected', () => { // unhappy path
+  test('user makes an endemics claim and the review in question is rejected', async () => { // unhappy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 10,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(400)
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const mainMessage = $('h1.govuk-heading-l').first().nextAll('p').first();
+    expect(mainMessage.text()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.');
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', 'Value Wed Jan 01 2025 00:00:00 GMT+0000 (Greenwich Mean Time) is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
   })
 
-  test('user makes an endemics claim and the review is not in READY_TO_PAY status (statusId: 9)', () => { // unhappy path
+  test('user makes an endemics claim and the review is not in READY_TO_PAY status (statusId: 9)', async () => { // unhappy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 1,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(400)
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]');
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
+    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.');
+    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(options.payload, 'dateOfVisit', 'Value is invalid. Error: ')
   })
 
-  test('user makes an endemics claim and the review is not in PAID status (statusId: 8)', () => { // unhappy path
+  test('user makes an endemics claim and the review is not in PAID status (statusId: 8)', async () => { // unhappy path
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 1,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(400)
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]');
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups');
+    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.');
+    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(options.payload, 'dateOfVisit', 'Value is invalid. Error: ')
   })
 
   test('user has an old world claim, and makes a new world endemics claim', () => { // happy path
 
   })
 
-  test('for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive', () => {
+  test('for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive', async () => {
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
-  test('for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative', () => {
+  test('for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative', async () => {
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'negative',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
 
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+    // expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
         is for beef or dairy, and the previous review test results are positive 
-        BUT optional PI hunt is enabled`, () => {
-    //  setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+        BUT optional PI hunt is enabled`, async () => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    getEndemicsClaimMock.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025',
+        dateOfAgreementAccepted: '2025-01-01',
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+    // expect(setEndemicsClaimMock).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 })
