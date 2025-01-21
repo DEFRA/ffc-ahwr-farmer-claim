@@ -4,18 +4,10 @@ const urlPrefix = require('../../config').urlPrefix
 const { endemicsIndex } = require('../../config/routes')
 const { requestAuthorizationCodeUrl } = require('../../auth')
 const logout = require('../../lib/logout')
-const {
-  endemicsWhichSpecies,
-  endemicsWhichTypeOfReview
-} = require('../../config/routes')
-const {
-  endemicsClaim: {
-    landingPage: landingPageKey,
-    reference: referenceKey
-  }
-} = require('../../session/keys')
-const createClaimReference = require('../../lib/create-temp-claim-reference')
+const { endemicsWhichSpecies, endemicsWhichTypeOfReview } = require('../../config/routes')
+const { endemicsClaim: { landingPage: landingPageKey, reference: referenceKey } } = require('../../session/keys')
 const { refreshApplications, refreshClaims } = require('../../lib/context-helper')
+const createClaimReference = require('../../lib/create-temp-claim-reference')
 
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -54,7 +46,7 @@ const getHandler = {
           return h.redirect(endemicsWhichTypeOfReviewURI) // this was going straight to which type of review, skipping species
         }
 
-        // old claim, but NO new world claims
+        // old claim, but NO new world claims - NOTE this is only if the old claim is less than 10 months old
         if (latestVetVisitApplication) {
           session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)

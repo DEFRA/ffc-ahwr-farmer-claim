@@ -1,14 +1,9 @@
 const Joi = require('joi')
-const {
-  getReviewWithinLast10Months,
-  getReviewTestResultWithinLast10Months
-} = require('../../api-requests/claim-service-api')
-const { dateOfVetVisitExceptions, claimType } = require('../../constants/claim')
+const { getReviewWithinLast10Months, getReviewTestResultWithinLast10Months } = require('../../api-requests/claim-service-api')
+const { dateOfVetVisitExceptions, claimType, livestockTypes } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
-const {
-  endemicsClaim: { reviewTestResults: reviewTestResultsKey }
-} = require('../../session/keys')
+const { endemicsClaim: { reviewTestResults: reviewTestResultsKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
@@ -18,7 +13,8 @@ const {
   endemicsDateOfVisitException,
   endemicsDateOfTesting,
   endemicsSpeciesNumbers,
-  endemicsWhichTypeOfReview
+  endemicsWhichTypeOfReview,
+  endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const {
   endemicsClaim: {
@@ -36,7 +32,21 @@ const appInsights = require('applicationinsights')
 const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const backLink = `${urlPrefix}/${endemicsWhichTypeOfReview}`
+
+const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
+  const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
+
+  const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview
+
+  const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim =
+    typeOfReview === claimType.endemics &&
+    [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
+    relevantClaims.length === 0
+
+  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
+
+  return `${urlPrefix}/${endemicsWhichTypeOfReview}`
+}
 
 const isValidDateInput = (request, reviewOrFollowUpText) => {
   const dateModel = Joi.object({
@@ -147,6 +157,8 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
     )
     if (Object.keys(newError).length > 0 && newError.constructor === Object) { errorSummary.push(newError) }
 
+    const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+
     data = error
       ? {
           ...request.payload,
@@ -187,7 +199,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
                 }
               : undefined
           },
-          backLink
+          backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
         }
       : {}
   }
@@ -247,7 +259,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { dateOfVisit, latestEndemicsApplication, typeOfReview } =
+      const { dateOfVisit, latestEndemicsApplication, typeOfReview, latestVetVisitApplication, previousClaims, typeOfLivestock } =
         session.getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
@@ -268,7 +280,7 @@ const getHandler = {
             value: dateOfVisit ? new Date(dateOfVisit).getFullYear() : ''
           }
         },
-        backLink
+        backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
       })
     }
   }
@@ -390,4 +402,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+module.exports = { handlers: [getHandler, postHandler], previousPageUrl }
