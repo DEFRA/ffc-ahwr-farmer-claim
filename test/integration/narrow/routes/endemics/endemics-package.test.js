@@ -1,13 +1,17 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
+const createServer = require('../../../../../app/server')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 jest.mock('../../../../../app/session')
+
 describe('Endemics package test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/sheep-endemics-package'
 
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     process.env.ENDEMICS_ENABLED = 'true'
 
@@ -37,9 +41,13 @@ describe('Endemics package test', () => {
         }
       }
     })
+
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -51,7 +59,7 @@ describe('Endemics package test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -67,7 +75,7 @@ describe('Endemics package test', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -80,7 +88,7 @@ describe('Endemics package test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/vet-rcvs')
     })
@@ -90,7 +98,7 @@ describe('Endemics package test', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -101,7 +109,7 @@ describe('Endemics package test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -120,7 +128,7 @@ describe('Endemics package test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -146,7 +154,7 @@ describe('Endemics package test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/sheep-tests')

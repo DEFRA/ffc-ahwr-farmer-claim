@@ -8,6 +8,7 @@ const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-da
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -16,15 +17,20 @@ const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/species-numbers'
 
 describe('Species numbers test when Optional PI Hunt is OFF', () => {
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
 
   describe(`GET ${url} route`, () => {
@@ -39,7 +45,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
@@ -58,7 +64,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
@@ -73,7 +79,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -84,7 +90,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -95,7 +101,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -118,7 +124,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
@@ -137,7 +143,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
         .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/number-of-species-tested')
@@ -153,7 +159,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
         .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -171,7 +177,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -188,7 +194,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       }
       getEndemicsClaimMock.mockReturnValue(undefined)
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
@@ -198,12 +204,17 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 })
 
 describe('Species numbers test when Optional PI Hunt is ON', () => {
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
 
   describe(`GET ${url} route`, () => {
@@ -218,7 +229,7 @@ describe('Species numbers test when Optional PI Hunt is ON', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)

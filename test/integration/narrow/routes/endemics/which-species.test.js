@@ -3,6 +3,7 @@ const getCrumbs = require('../../../../utils/get-crumbs')
 const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 describe('Endemics which species test', () => {
@@ -31,6 +32,9 @@ describe('Endemics which species test', () => {
       },
       endemics: {
         enabled: true
+      },
+      multiSpecies: {
+        enabled: false
       }
     }
   })
@@ -40,9 +44,19 @@ describe('Endemics which species test', () => {
     strategy: 'cookie'
   }
   let crumb
+  let server
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
+  })
 
   beforeEach(async () => {
-    crumb = await getCrumbs(global.__SERVER__)
+    crumb = await getCrumbs(server)
   })
 
   test('Sheep should be selected when typeOfLivestock is sheep', async () => {
@@ -54,7 +68,7 @@ describe('Endemics which species test', () => {
 
     getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
     const $ = cheerio.load(res.payload)
     const typeOfLivestock = 'sheep'
 
@@ -74,7 +88,7 @@ describe('Endemics which species test', () => {
 
     getEndemicsClaim.mockReturnValue({})
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
     const $ = cheerio.load(res.payload)
     const errorMessage = 'Select which species you are claiming for'
 
@@ -91,7 +105,7 @@ describe('Endemics which species test', () => {
 
     getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')

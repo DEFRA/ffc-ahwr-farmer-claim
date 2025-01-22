@@ -14,23 +14,34 @@ jest.mock('../../../../app/event/raise-ineligibility-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 const { NoApplicationFoundError, InvalidStateError, ClaimHasExpiredError, ClaimHasAlreadyBeenMadeError } = require('../../../../app/exceptions')
+const createServer = require('../../../../app/server')
 
 jest.mock('@hapi/wreck', () => ({
   put: jest.fn().mockResolvedValue({ payload: {} })
 }))
 
 describe('FarmerApply defra ID redirection test', () => {
-  jest.mock('../../../../app/config', () => ({
-    ...jest.requireActual('../../../../app/config'),
-    authConfig: {
-      defraId: {
-        enabled: true
-      },
-      ruralPaymentsAgency: {
-        hostname: 'rpaHostname'
+  let server
+
+  beforeAll(async () => {
+    jest.mock('../../../../app/config', () => ({
+      ...jest.requireActual('../../../../app/config'),
+      authConfig: {
+        defraId: {
+          enabled: true
+        },
+        ruralPaymentsAgency: {
+          hostname: 'rpaHostname'
+        }
       }
-    }
-  }))
+    }))
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
+  })
 
   const url = '/claim/signin-oidc'
 
@@ -50,7 +61,7 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
@@ -64,7 +75,7 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
@@ -78,7 +89,7 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
@@ -96,7 +107,7 @@ describe('FarmerApply defra ID redirection test', () => {
         throw new InvalidStateError('Invalid state')
       })
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(302)
       expect(authMock.authenticate).toBeCalledTimes(1)
       expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
@@ -143,7 +154,7 @@ describe('FarmerApply defra ID redirection test', () => {
       })
       latestApplicationMock.mockRejectedValueOnce(new NoApplicationFoundError('No application found for SBI - 101122201'))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       expect(authMock.authenticate).toBeCalledTimes(1)
@@ -195,7 +206,7 @@ describe('FarmerApply defra ID redirection test', () => {
       })
       latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpiredError('Claim has expired for reference - AHWR-1111-3213', {}, '1 Jan 2023', '2 Jun 2023'))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       expect(authMock.authenticate).toBeCalledTimes(1)
@@ -249,7 +260,7 @@ describe('FarmerApply defra ID redirection test', () => {
       })
       latestApplicationMock.mockRejectedValueOnce(new ClaimHasAlreadyBeenMadeError('Claim has already been made'))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       expect(authMock.authenticate).toBeCalledTimes(1)
@@ -300,7 +311,7 @@ describe('FarmerApply defra ID redirection test', () => {
         organisationPermission: false
       })
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       expect(authMock.authenticate).toBeCalledTimes(1)
@@ -376,7 +387,7 @@ describe('FarmerApply defra ID redirection test', () => {
         }
       )
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics?from=dashboard&sbi=101122201')

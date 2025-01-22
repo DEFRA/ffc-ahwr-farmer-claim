@@ -20,9 +20,7 @@ const getHandler = {
       clearEndemicsClaim(request)
 
       return h.view(endemicsConfirmation, {
-        claimTypeText: isReview
-          ? 'animal health and welfare review'
-          : 'endemic disease follow-up',
+        claimTypeText: isReview ? 'animal health and welfare review' : 'endemic disease follow-up',
         claimDashboard,
         reference,
         amount,

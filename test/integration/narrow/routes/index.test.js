@@ -1,7 +1,14 @@
 const mockConfig = require('../../../../app/config')
+const createServer = require('../../../../app/server')
 jest.mock('../../../../app/lib/logout')
 
 describe('Farmer claim home page test', () => {
+  let server
+
+  afterAll(async () => {
+    await server.stop()
+  })
+
   beforeAll(async () => {
     jest.resetModules()
     jest.mock('../../../../app/session')
@@ -26,6 +33,8 @@ describe('Farmer claim home page test', () => {
         enabled: false
       }
     }))
+    server = await createServer()
+    await server.initialize()
   })
 
   test('GET /claim route returns 302 when not logged in', async () => {
@@ -34,7 +43,7 @@ describe('Farmer claim home page test', () => {
       url: '/claim'
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics')
@@ -65,7 +74,7 @@ describe('Farmer claim home page test', () => {
       url: '/claim'
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expectedHeaders.forEach((header) => {
       expect(res.headers[header.key.toLowerCase()]).toEqual(header.value)

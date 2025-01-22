@@ -6,6 +6,7 @@ const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsCl
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { isURNUnique } = require('../../../../../app/api-requests/claim-service-api')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -15,14 +16,19 @@ const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/test-urn'
 
 describe('Test URN test when Optional PI Hunt is off', () => {
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
 
   describe(`GET ${url} route`, () => {
@@ -39,7 +45,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -66,7 +72,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-back-link').attr('href')).toContain(backLink)
@@ -79,7 +85,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -90,7 +96,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -101,7 +107,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -124,7 +130,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
@@ -146,7 +152,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -163,7 +169,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -175,14 +181,19 @@ describe('Test URN test when Optional PI Hunt is off', () => {
 })
 
 describe('Test URN test when Optional PI Hunt is on', () => {
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
 
   describe(`GET ${url} route`, () => {
@@ -203,7 +214,7 @@ describe('Test URN test when Optional PI Hunt is on', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-back-link').attr('href')).toContain(backLink)

@@ -7,6 +7,8 @@ const sessionMock = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 const { setEndemicsAndOptionalPIHunt, setMultiSpecies } = require('../../../../mocks/config')
+const createServer = require('../../../../../app/server')
+
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
@@ -19,11 +21,18 @@ describe('Which type of review test', () => {
   let crumb
   const previousClaims = [{ data: { typeOfLivestock: 'sheep' } }]
   const latestVetVisitApplication = { data: { whichReview: 'beef' } }
+  let server
 
-  beforeAll(() => {
+  beforeAll(async () => {
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     setMultiSpecies(true)
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
   })
 
   afterEach(() => {
@@ -45,11 +54,12 @@ describe('Which type of review test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/which-species')
       expectPhaseBanner.ok($)
     })
   })
@@ -57,7 +67,7 @@ describe('Which type of review test', () => {
   describe('POST', () => {
     beforeEach(async () => {
       jest.clearAllMocks()
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
       // this call is made by the pre-handler for logging context
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
     })
@@ -76,7 +86,7 @@ describe('Which type of review test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -86,7 +96,6 @@ describe('Which type of review test', () => {
     test('Returns 302 and redirect to vet visit review test result', async () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
-        .mockReturnValueOnce(endemicsMockValue)
       claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
 
       const options = {
@@ -100,7 +109,7 @@ describe('Which type of review test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-visits-review-test-results')
@@ -111,8 +120,7 @@ describe('Which type of review test', () => {
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
       { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
-        .mockReturnValueOnce({ typeOfLivestock: 'beef' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [] })
       const options = {
         method: 'POST',
         url,
@@ -124,7 +132,7 @@ describe('Which type of review test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
@@ -132,8 +140,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
-        .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy', previousClaims: [] })
       const options = {
         method: 'POST',
         url,
@@ -145,7 +152,7 @@ describe('Which type of review test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -155,7 +162,7 @@ describe('Which type of review test', () => {
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
       setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy', previousClaims: [] })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {
         method: 'POST',
@@ -168,7 +175,7 @@ describe('Which type of review test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')

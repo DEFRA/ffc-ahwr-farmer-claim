@@ -70,9 +70,6 @@ const schema = Joi.object({
   optionalPIHunt: {
     enabled: Joi.bool().required()
   },
-  reviewClaimApprovedStatus: {
-    enabled: Joi.bool().required()
-  },
   multiSpecies: {
     enabled: Joi.bool().required()
   },
@@ -146,9 +143,6 @@ const config = {
   },
   optionalPIHunt: {
     enabled: process.env.OPTIONAL_PIHUNT_ENABLED === 'true'
-  },
-  reviewClaimApprovedStatus: {
-    enabled: process.env.REVIEW_CLAIM_APPROVED_STATUS_ENABLED === 'true'
   },
   multiSpecies: {
     enabled: process.env.MULTI_SPECIES_ENABLED === 'true'

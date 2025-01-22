@@ -5,20 +5,26 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const { rcvs: rcvsErrorMessages } = require('../../../../../app/lib/error-messages')
+const createServer = require('../../../../../app/server')
+
 jest.mock('../../../../../app/session')
 
 describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/vet-rcvs'
+  let server
 
-  beforeAll(() => {
+  beforeAll(async () => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
 
   describe(`GET ${url} route`, () => {
@@ -29,7 +35,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -44,7 +50,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -55,7 +61,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -66,7 +72,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -88,7 +94,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -112,7 +118,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
@@ -140,7 +146,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
@@ -152,22 +158,26 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
 describe('Vet rcvs test when Optional PI Hunt is ON', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/vet-rcvs'
+  let server
 
-  beforeAll(() => {
+  beforeAll(async () => {
     getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
     jest.resetAllMocks()
+    await server.stop()
   })
 
   describe(`POST ${url} route`, () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
     test.each([
       { typeOfLivestock: 'beef' },
@@ -182,7 +192,7 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/pi-hunt')

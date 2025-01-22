@@ -150,7 +150,7 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
           return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
         }
         // Claim endemics before review status is READY_TO_PAY
-        if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId) && config?.reviewClaimApprovedStatus?.enabled) {
+        if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
           return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
         }
         // Cannot have another endemics dateOfVisit +- 10 months

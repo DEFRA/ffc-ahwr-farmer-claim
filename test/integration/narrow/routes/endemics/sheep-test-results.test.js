@@ -1,6 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { getEndemicsClaim } = require('../../../../../app/session')
+const createServer = require('../../../../../app/server')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 
 jest.mock('../../../../../app/session')
@@ -13,33 +14,43 @@ const sheepTestResultsMockData = [
 describe('Sheep test result tests', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/sheep-test-results'
+  setEndemicsClaimMock.mockImplementation(() => {})
 
-  setEndemicsClaimMock.mockImplementation(() => { })
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
-    return {
-      ...originalModule,
-      authConfig: {
-        defraId: {
-          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-          policy: 'b2c_1a_signupsigninsfi',
-          redirectUri: 'http://localhost:3000/apply/signin-oidc',
-          clientId: 'dummy_client_id',
-          serviceId: 'dummy_service_id',
-          scope: 'openid dummy_client_id offline_access'
+  let server
+
+  beforeAll(async () => {
+    jest.mock('../../../../../app/config', () => {
+      const originalModule = jest.requireActual('../../../../../app/config')
+      return {
+        ...originalModule,
+        authConfig: {
+          defraId: {
+            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+            policy: 'b2c_1a_signupsigninsfi',
+            redirectUri: 'http://localhost:3000/apply/signin-oidc',
+            clientId: 'dummy_client_id',
+            serviceId: 'dummy_service_id',
+            scope: 'openid dummy_client_id offline_access'
+          },
+          ruralPaymentsAgency: {
+            hostname: 'dummy-host-name',
+            getPersonSummaryUrl: 'dummy-get-person-summary-url',
+            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
+            getOrganisationUrl: 'dummy-get-organisation-url'
+          }
         },
-        ruralPaymentsAgency: {
-          hostname: 'dummy-host-name',
-          getPersonSummaryUrl: 'dummy-get-person-summary-url',
-          getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-          getOrganisationUrl: 'dummy-get-organisation-url'
+        endemics: {
+          enabled: true
         }
-      },
-      endemics: {
-        enabled: true
       }
-    }
+    })
+    server = await createServer()
+    await server.initialize()
+  })
+
+  afterAll(async () => {
+    await server.stop()
   })
 
   describe(`GET ${url} route`, () => {
@@ -55,7 +66,7 @@ describe('Sheep test result tests', () => {
         sheepEndemicsPackage: 'reducedExternalParasites',
         sheepTestResults: [...sheepTestResultsMockData, { diseaseType: 'sheepScab', result: '', isCurrentPage: true }]
       }))
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
@@ -66,7 +77,7 @@ describe('Sheep test result tests', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('Post Returns 400 when test result is  not selected', async () => {
@@ -84,7 +95,7 @@ describe('Sheep test result tests', () => {
         sheepTestResults: sheepTestResultsMockData.map((test) => ({ ...test, isCurrentPage: test.diseaseType === 'flystrike' }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -108,7 +119,7 @@ describe('Sheep test result tests', () => {
         sheepTestResults: sheepTestResultsMockData.map((test) => ({ ...test, isCurrentPage: test.diseaseType === 'sheepScab', result: 'positive' }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(setEndemicsClaimMock).toHaveBeenCalled()
@@ -129,7 +140,7 @@ describe('Sheep test result tests', () => {
         sheepTestResults: sheepTestResultsMockData.map((test) => ({ ...test, isCurrentPage: test.diseaseType === 'other' }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -168,7 +179,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -201,7 +212,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toBe('/claim/endemics/check-answers')
@@ -237,7 +248,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -274,7 +285,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -313,7 +324,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -351,7 +362,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -389,7 +400,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -427,7 +438,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -465,7 +476,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -502,7 +513,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -540,7 +551,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -579,7 +590,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
@@ -618,7 +629,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toBe('/claim/endemics/check-answers')
@@ -654,7 +665,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
@@ -692,7 +703,7 @@ describe('Sheep test result tests', () => {
         }))
       }))
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)

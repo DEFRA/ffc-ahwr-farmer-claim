@@ -6,6 +6,7 @@ const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsCl
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const { getAmount } = require('../../../../../app/api-requests/claim-service-api')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -15,14 +16,19 @@ const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/pi-hunt-recommended'
 
 describe('PI Hunt recommended tests', () => {
-  beforeAll(() => {
-    getEndemicsClaimMock.mockImplementation(() => { return { } })
+  let server
+
+  beforeAll(async () => {
+    server = await createServer()
+    await server.initialize()
+    getEndemicsClaimMock.mockImplementation(() => { return {} })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -34,7 +40,7 @@ describe('PI Hunt recommended tests', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
@@ -49,7 +55,7 @@ describe('PI Hunt recommended tests', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -60,7 +66,7 @@ describe('PI Hunt recommended tests', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -71,7 +77,7 @@ describe('PI Hunt recommended tests', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -85,7 +91,7 @@ describe('PI Hunt recommended tests', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/pi-hunt-all-animals')
@@ -101,7 +107,7 @@ describe('PI Hunt recommended tests', () => {
       }
 
       getAmount.mockResolvedValue(215)
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
@@ -117,7 +123,7 @@ describe('PI Hunt recommended tests', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)

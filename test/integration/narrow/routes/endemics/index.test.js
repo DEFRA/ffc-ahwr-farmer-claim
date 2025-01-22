@@ -3,6 +3,7 @@ const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const urlPrefix = require('../../../../../app/config').urlPrefix
 const contextHelperMock = require('../../../../../app/lib/context-helper')
 const { setMultiSpecies } = require('../../../../mocks/config')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/lib/logout')
 jest.mock('../../../../../app/lib/context-helper')
@@ -14,11 +15,16 @@ describe('Claim endemics home page test', () => {
     strategy: 'cookie'
   }
 
-  beforeAll(() => {
+  let server
+
+  beforeAll(async () => {
     setMultiSpecies(false)
+    server = await createServer()
+    await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -49,7 +55,7 @@ describe('Claim endemics home page test', () => {
       auth
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
@@ -74,7 +80,7 @@ describe('Claim endemics home page test', () => {
       auth
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/which-species')
@@ -103,7 +109,7 @@ describe('Claim endemics home page test', () => {
       auth
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
@@ -116,7 +122,7 @@ describe('Claim endemics home page test', () => {
       auth
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(200)
     const $ = cheerio.load(res.payload)
@@ -148,7 +154,7 @@ describe('Claim endemics home page test', () => {
       auth
     }
 
-    const res = await global.__SERVER__.inject(options)
+    const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/which-species')

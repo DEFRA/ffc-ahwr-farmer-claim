@@ -121,7 +121,6 @@ const postHandler = {
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
       const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger)
-
       session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
       if (!response?.isURNUnique) {

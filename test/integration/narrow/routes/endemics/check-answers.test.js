@@ -28,10 +28,10 @@ const {
   getRowActionTexts,
   getRowLinks
 } = require('../../../../utils/check-answers')
+const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/session')
 jest.mock('@hapi/wreck')
-
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 describe('Check answers test', () => {
@@ -40,7 +40,13 @@ describe('Check answers test', () => {
   const latestVetVisitApplicationWithInLastTenMonths = { createdAt: new Date().toISOString() }
   const latestVetVisitApplicationNotWithInLastTenMonths = { createdAt: '2023-01-01T00:00:01T00' }
 
-  beforeAll(() => {
+  let server
+
+  afterAll(async () => {
+    await server.stop()
+  })
+
+  beforeAll(async () => {
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
@@ -70,6 +76,9 @@ describe('Check answers test', () => {
         }
       }
     })
+
+    server = await createServer()
+    await server.initialize()
   })
 
   afterAll(() => {
@@ -83,7 +92,7 @@ describe('Check answers test', () => {
         url
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
@@ -100,7 +109,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -128,7 +137,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
         const $ = cheerio.load(res.payload)
 
         expect($('h1').text()).toMatch('Check your answers')
@@ -158,7 +167,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -186,7 +195,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -216,7 +225,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -244,7 +253,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -272,7 +281,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -300,7 +309,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -328,7 +337,7 @@ describe('Check answers test', () => {
           auth
         }
 
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(200)
         const $ = cheerio.load(res.payload)
@@ -412,7 +421,7 @@ describe('Check answers test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -447,7 +456,7 @@ describe('Check answers test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -489,7 +498,7 @@ describe('Check answers test', () => {
         auth
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
@@ -505,7 +514,7 @@ describe('Check answers test', () => {
     let crumb
 
     beforeEach(async () => {
-      crumb = await getCrumbs(global.__SERVER__)
+      crumb = await getCrumbs(server)
     })
 
     function expectAppInsightsEventRaised (tempClaimReference, claimReference, status) {
@@ -564,7 +573,7 @@ describe('Check answers test', () => {
             submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
           }
         })
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
@@ -618,7 +627,7 @@ describe('Check answers test', () => {
             submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
           }
         })
-        const res = await global.__SERVER__.inject(options)
+        const res = await server.inject(options)
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
@@ -635,7 +644,7 @@ describe('Check answers test', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      const res = await global.__SERVER__.inject(options)
+      const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
