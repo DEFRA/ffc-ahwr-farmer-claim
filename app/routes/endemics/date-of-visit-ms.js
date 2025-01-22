@@ -11,8 +11,6 @@ const {
 } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../config')
-const urlPrefix = require('../../config').urlPrefix
-const { optionalPIHunt } = require('../../config')
 const {
   endemicsDateOfVisit,
   endemicsDateOfVisitException,
@@ -30,7 +28,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
 const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
 
-const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
+const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
 const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
   const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
@@ -42,9 +40,9 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
     [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
     relevantClaims.length === 0
 
-  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
+  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) { return `${config.urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
-  return `${urlPrefix}/${endemicsWhichTypeOfReview}`
+  return `${config.urlPrefix}/${endemicsWhichTypeOfReview}`
 }
 
 const isValidDateInput = (request, reviewOrFollowUpText) => {
@@ -390,11 +388,11 @@ const postHandler = {
           reviewTestResultsValue
         )
 
-        if ((isBeef || isDairy) && (optionalPIHunt.enabled || reviewTestResultsValue === 'negative')) {
-          return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+        if ((isBeef || isDairy) && (config.optionalPIHunt.enabled || reviewTestResultsValue === 'negative')) {
+          return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
         }
       }
-      return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
+      return h.redirect(`${config.urlPrefix}/${endemicsDateOfTesting}`)
     }
   }
 }

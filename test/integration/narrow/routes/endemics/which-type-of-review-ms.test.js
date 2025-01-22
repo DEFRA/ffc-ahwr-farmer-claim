@@ -96,7 +96,6 @@ describe('Which type of review test', () => {
     test('Returns 302 and redirect to vet visit review test result', async () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
-        .mockReturnValueOnce(endemicsMockValue)
       claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
 
       const options = {
@@ -121,8 +120,7 @@ describe('Which type of review test', () => {
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/date-of-visit' },
       { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
-        .mockReturnValueOnce({ typeOfLivestock: 'beef' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [] })
       const options = {
         method: 'POST',
         url,
@@ -142,8 +140,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
-        .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy', previousClaims: [] })
       const options = {
         method: 'POST',
         url,
@@ -165,7 +162,7 @@ describe('Which type of review test', () => {
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
       setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy', previousClaims: [] })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {
         method: 'POST',
