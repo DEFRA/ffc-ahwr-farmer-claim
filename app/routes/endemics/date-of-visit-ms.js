@@ -3,7 +3,12 @@ const { getReviewWithinLast10Months, getReviewTestResultWithinLast10Months } = r
 const { dateOfVetVisitExceptions, claimType, livestockTypes } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
-const { endemicsClaim: { reviewTestResults: reviewTestResultsKey } } = require('../../session/keys')
+const {
+  endemicsClaim: {
+    reviewTestResults: reviewTestResultsKey, dateOfVisit: dateOfVisitKey,
+    relevantReviewForEndemics: relevantReviewForEndemicsKey
+  }
+} = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const config = require('../../config')
 const urlPrefix = require('../../config').urlPrefix
@@ -16,12 +21,6 @@ const {
   endemicsWhichTypeOfReview,
   endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
-const {
-  endemicsClaim: {
-    dateOfVisit: dateOfVisitKey,
-    relevantReviewForEndemics: relevantReviewForEndemicsKey
-  }
-} = require('../../session/keys')
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
 const validateDateInputYear = require('../govuk-components/validate-date-input-year')
@@ -208,7 +207,6 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
 
 const getMessage = (
   reason,
-  dateOfVetVisitExceptions,
   organisation,
   formattedTypeOfLivestock
 ) => {
@@ -350,7 +348,6 @@ const postHandler = {
       if (!isValid) {
         const { mainMessage, backToPageMessage } = getMessage(
           reason,
-          dateOfVetVisitExceptions,
           organisation,
           formattedTypeOfLivestock
         )

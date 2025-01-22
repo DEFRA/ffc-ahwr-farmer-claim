@@ -170,7 +170,6 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
 
   afterAll(async () => {
     jest.resetAllMocks()
-    jest.resetAllMocks()
     await server.stop()
   })
 
