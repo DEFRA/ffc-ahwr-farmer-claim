@@ -126,7 +126,7 @@ const getInputErrors = (request, reviewOrFollowUpText) => {
     return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} must be in the past`,
-        href: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+        href: '#visit-date-day'
       }],
       inputsInError: { day: true, month: true, year: true }
     }
@@ -136,7 +136,7 @@ const getInputErrors = (request, reviewOrFollowUpText) => {
     return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} cannot be before the date your agreement began`,
-        href: 'https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups'
+        href: '#visit-date-day'
       }],
       inputsInError: { day: true, month: true, year: true }
     }
