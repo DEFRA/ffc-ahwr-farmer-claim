@@ -2,11 +2,12 @@ const session = require('../session')
 
 function addBindings (request) {
   const endemicsClaim = session.getEndemicsClaim(request)
+  const application = session.getApplication(request)
   request.logger.setBindings({
     sbi: endemicsClaim?.organisation?.sbi,
     crn: endemicsClaim?.organisation?.crn,
     reference: endemicsClaim?.reference,
-    applicationReference: endemicsClaim?.latestEndemicsApplication?.reference
+    applicationReference: application?.latestEndemicsApplication?.reference
   })
 }
 

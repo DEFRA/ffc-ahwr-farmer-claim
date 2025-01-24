@@ -26,6 +26,7 @@ const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { isValidDate } = require('../../lib/date-utils')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {
@@ -67,14 +68,15 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const {
         dateOfVisit,
         dateOfTesting,
-        latestEndemicsApplication,
         typeOfReview,
         typeOfLivestock
       } = session.getEndemicsClaim(request)
+      const { latestEndemicsApplication } = session.getApplication(request)
       const { questionText, questionHintText } = getTheQuestionAndHintText(
         typeOfReview,
         typeOfLivestock
@@ -338,8 +340,8 @@ const postHandler = {
         typeOfReview,
         typeOfLivestock,
         previousClaims,
-        latestVetVisitApplication
       } = session.getEndemicsClaim(request)
+      const { latestVetVisitApplication } = session.getApplication(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 

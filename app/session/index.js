@@ -11,11 +11,12 @@ const entries = {
   tempClaimReference: 'tempClaimReference'
 }
 
-function set (request, entryKey, key, value, status, endemics = false) {
+function set (request, entryKey, key, value, status) {
   const entryValue = request.yar?.get(entryKey) || {}
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
-  const claim = endemics ? getEndemicsClaim(request) : getClaim(request)
+  const claim = getEndemicsClaim(request)
+  const organisation = getOrganisation(request)
   const xForwardedForHeader = request.headers['x-forwarded-for']
   const ip = xForwardedForHeader
     ? xForwardedForHeader.split(',')[0]
@@ -23,6 +24,7 @@ function set (request, entryKey, key, value, status, endemics = false) {
   claim &&
     sendSessionEvent(
       claim,
+      organisation,
       request.yar.id,
       entryKey,
       key,
@@ -53,7 +55,7 @@ function getClaim (request, key) {
 }
 
 function setEndemicsClaim (request, key, value, status) {
-  set(request, entries.endemicsClaim, key, value, status, true)
+  set(request, entries.endemicsClaim, key, value, status)
 }
 
 function getEndemicsClaim (request, key) {
@@ -61,15 +63,14 @@ function getEndemicsClaim (request, key) {
 }
 
 function clearEndemicsClaim (request) { // Remove all journey related data
-  const endemicsClaim = getEndemicsClaim(request)
+  // const endemicsClaim = getEndemicsClaim(request)
   request.yar.clear(entries.endemicsClaim)
-  setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
-  setEndemicsClaim(request, 'reference', endemicsClaim?.reference)
-  setEndemicsClaim(request, 'amount', endemicsClaim?.amount)
+  // setEndemicsClaim(request, 'reference', endemicsClaim?.reference)
+  // setEndemicsClaim(request, 'amount', endemicsClaim?.amount)
 }
 
 function setTempClaimReference (request, key, value, status) {
-  set(request, entries.tempClaimReference, key, value, status, true)
+  set(request, entries.tempClaimReference, key, value, status)
 }
 
 function setToken (request, key, value) {
@@ -96,6 +97,24 @@ function getPkcecodes (request, key) {
   return get(request, entries.pkcecodes, key)
 }
 
+function setOrganisation (request, value) {
+  // QUESTIN: Do we want to send a session event for setting organisation?
+  // The set method only allows setting a child property on a parent, but organisation will be at  the root of session now
+  request.yar.set(entries.organisation, value)
+}
+
+function getOrganisation (request) {
+  return get(request, entries.organisation)
+}
+
+function setApplication (request, key, value) {
+  set(request, entries.application, key, value)
+}
+
+function getApplication (request, key) {
+  return get(request, entries.application, key)
+}
+
 module.exports = {
   getClaim,
   setClaim,
@@ -109,5 +128,9 @@ module.exports = {
   getCustomer,
   setCustomer,
   getPkcecodes,
-  setPkcecodes
+  setPkcecodes,
+  setOrganisation,
+  getOrganisation,
+  setApplication,
+  getApplication,
 }

@@ -19,6 +19,7 @@ const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helper
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 const { optionalPIHunt } = require('../../config')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
@@ -55,6 +56,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const claim = session.getEndemicsClaim(request)
       if (!claim) {

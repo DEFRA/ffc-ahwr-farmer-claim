@@ -11,8 +11,6 @@ const { raiseIneligibilityEvent } = require('../event')
 const { changeContactHistory } = require('../api-requests/contact-history-api')
 const appInsights = require('applicationinsights')
 
-const endemicsEnabled = config.endemics.enabled
-
 const getHandler = {
   method: 'GET',
   path: '/claim/signin-oidc',
@@ -43,42 +41,17 @@ const getHandler = {
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
         request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
         await changeContactHistory(personSummary, organisationSummary, request.logger)
-        const entryValue = request.yar?.get('claim') || {}
-        entryValue.organisation = {}
-        entryValue.reference = undefined
-        request.yar.set('claim', entryValue)
 
-        session.setClaim(
-          request,
-          sessionKeys.farmerApplyData.organisation,
-          {
-            sbi: organisationSummary.organisation.sbi?.toString(),
-            farmerName: getPersonName(personSummary),
-            name: organisationSummary.organisation.name,
-            email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
-            orgEmail: organisationSummary.organisation.email,
-            address: getOrganisationAddress(organisationSummary.organisation.address),
-            crn: personSummary.customerReferenceNumber,
-            frn: organisationSummary.organisation.businessReference
-          }
-        )
-
-        if (endemicsEnabled) {
-          session.setEndemicsClaim(
-            request,
-            sessionKeys.endemicsClaim.organisation,
-            {
-              sbi: organisationSummary.organisation.sbi?.toString(),
-              farmerName: getPersonName(personSummary),
-              name: organisationSummary.organisation.name,
-              email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
-              orgEmail: organisationSummary.organisation.email,
-              address: getOrganisationAddress(organisationSummary.organisation.address),
-              crn: personSummary.customerReferenceNumber,
-              frn: organisationSummary.organisation.businessReference
-            }
-          )
-        }
+        session.setOrganisation(request, {
+          sbi: organisationSummary.organisation.sbi?.toString(),
+          farmerName: getPersonName(personSummary),
+          name: organisationSummary.organisation.name,
+          email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
+          orgEmail: organisationSummary.organisation.email,
+          address: getOrganisationAddress(organisationSummary.organisation.address),
+          crn: personSummary.customerReferenceNumber,
+          frn: organisationSummary.organisation.businessReference
+        })
 
         if (!organisationSummary.organisationPermission) {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)
@@ -89,10 +62,10 @@ const getHandler = {
           organisationSummary.organisation.name
         )
 
-        Object.entries(latestApplication).forEach(([k, v]) => session.setClaim(request, k, v))
         session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
-        auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
 
+        auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
+     
         appInsights.defaultClient.trackEvent({
           name: 'login',
           properties: {

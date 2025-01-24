@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim, clearEndemicsClaim, getApplication } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { livestockTypes } = require('../../constants/claim')
 const {
@@ -7,6 +7,8 @@ const {
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
+const { resetEndemicClaimSession } = require('../../lib/context-helper')
 const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -18,12 +20,13 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
-      const endemicsClaimData = getEndemicsClaim(request)
+      const endemicsClaim = getEndemicsClaim(request)
       // to do - customise the view for MS as it has different content
       return h.view(view, {
-        ...(endemicsClaimData?.typeOfLivestock && {
-          previousAnswer: endemicsClaimData.typeOfLivestock
+        ...(endemicsClaim?.typeOfLivestock && {
+          previousAnswer: endemicsClaim.typeOfLivestock
         }),
         backLink
       })
@@ -55,6 +58,14 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfLivestock } = request.payload
+      const { typeOfLivestock: prevTypeOfLivestock, reference, } = getEndemicsClaim(request)
+      const { latestEndemicsApplication } = getApplication(request)
+      console.log({ typeOfLivestock: prevTypeOfLivestock, reference, latestEndemicsApplication })
+
+      if (typeOfLivestock !== prevTypeOfLivestock) {
+        await resetEndemicClaimSession(request, latestEndemicsApplication.reference, reference)  
+        console.log(getEndemicsClaim(request))
+      }
 
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
 

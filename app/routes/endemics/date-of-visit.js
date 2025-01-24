@@ -35,6 +35,7 @@ const { addError } = require('../utils/validations')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
@@ -253,9 +254,11 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
-      const { dateOfVisit, latestEndemicsApplication, typeOfReview } =
+      const { dateOfVisit, typeOfReview } =
         session.getEndemicsClaim(request)
+      const { latestEndemicsApplication } = session.getApplication(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -289,12 +292,12 @@ const postHandler = {
       const {
         typeOfReview,
         previousClaims,
-        latestVetVisitApplication,
         typeOfLivestock,
-        organisation,
         reviewTestResults,
         reference: tempClaimReference
       } = session.getEndemicsClaim(request)
+      const { latestVetVisitApplication } = session.getApplication(request)
+      const organisation = session.getOrganisation(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)

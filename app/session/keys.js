@@ -73,5 +73,15 @@ module.exports = {
     organisationId: 'organisationId',
     attachedToMultipleBusinesses: 'attachedToMultipleBusinesses'
   },
-  tempClaimReference: 'tempClaimReference'
+  tempClaimReference: 'tempClaimReference',
+  organisation: {
+    sbi: 'sbi',
+    farmerName: 'farmerName',
+    name: 'name',
+    email: 'email',
+    orgEmail: 'orgEmail',
+    address: 'address',
+    crn: 'crn',
+    frn: 'frn'
+  }
 }

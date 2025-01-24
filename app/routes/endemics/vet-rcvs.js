@@ -21,6 +21,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 const { getReviewType } = require('../../lib/get-review-type')
 const { optionalPIHunt } = require('../../config')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
@@ -44,6 +45,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { vetRCVSNumber } = session.getEndemicsClaim(request)
       return h.view(endemicsVetRCVS, {

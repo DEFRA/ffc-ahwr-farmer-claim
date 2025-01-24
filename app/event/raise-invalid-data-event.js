@@ -1,9 +1,12 @@
-const { getEndemicsClaim, getCustomer } = require('../session')
+const { getEndemicsClaim, getCustomer, getOrganisation, getApplication } = require('../session')
 const raiseEvent = require('./raise-event')
 const sessionKeys = require('../session/keys')
+const { redirectReferenceMissing } = require('../lib/redirect-reference-missing')
 
 const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
-  const { reference, organisation, latestEndemicsApplication: { reference: applicationReference } = {} } = getEndemicsClaim(request)
+  const { reference } = getEndemicsClaim(request)
+  const { latestEndemicsApplication: { reference: applicationReference } = {} } = getApplication(request) 
+  const organisation = getOrganisation(request)
   const crn = getCustomer(request, sessionKeys.customer.crn)
 
   if (request?.yar?.id && exception) {

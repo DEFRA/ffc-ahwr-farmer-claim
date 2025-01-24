@@ -7,6 +7,7 @@ const {
   endemicsDateOfVisit,
   endemicsWhichSpecies
 } = require('../../config/routes')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -17,6 +18,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const endemicsClaimData = getEndemicsClaim(request)
 

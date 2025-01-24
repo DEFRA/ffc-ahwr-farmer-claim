@@ -17,13 +17,15 @@ const {
   endemicsDateOfTesting,
   endemicsSpeciesNumbers,
   endemicsWhichTypeOfReview,
-  endemicsVetVisitsReviewTestResults
+  endemicsVetVisitsReviewTestResults,
+  claimDashboard
 } = require('../../config/routes')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
 const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
 const { isValidDate } = require('../../lib/date-utils')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
@@ -45,12 +47,12 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
 const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
-        statusId: oldWorldApp.statusId,
-        data: {
-          claimType: oldWorldApp.data.whichReview,
-          dateOfVisit: oldWorldApp.data.visitDate
-        }
+      statusId: oldWorldApp.statusId,
+      data: {
+        claimType: oldWorldApp.data.whichReview,
+        dateOfVisit: oldWorldApp.data.visitDate
       }
+    }
     : undefined
 
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
@@ -133,9 +135,10 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
-      const { dateOfVisit, typeOfReview, latestVetVisitApplication: oldWorldApplication, previousClaims, typeOfLivestock } =
-        session.getEndemicsClaim(request)
+      const { dateOfVisit, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+      const { latestVetVisitApplication: oldWorldApplication } = session.getApplication(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -160,13 +163,13 @@ const postHandler = {
       const {
         typeOfReview: typeOfClaim,
         previousClaims,
-        latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
-        organisation,
         reviewTestResults,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication
       } = session.getEndemicsClaim(request)
+      const { latestVetVisitApplication: oldWorldApplication } = session.getApplication(request)
+      const organisation = session.getOrganisation(request)
 
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)

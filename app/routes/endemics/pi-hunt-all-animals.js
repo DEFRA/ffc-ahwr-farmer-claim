@@ -9,6 +9,7 @@ const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnima
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
 const backLink = (reviewTestResults) => {
@@ -26,6 +27,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
       const yesOrNoRadios = radios('', 'piHuntAllAnimals', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])

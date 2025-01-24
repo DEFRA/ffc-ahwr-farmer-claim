@@ -11,6 +11,7 @@ const {
 const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
 
@@ -32,6 +33,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults')([{ value: 'positive', text: 'Positive', checked: vetVisitsReviewTestResults === 'positive' }, { value: 'negative', text: 'Negative', checked: vetVisitsReviewTestResults === 'negative' }])

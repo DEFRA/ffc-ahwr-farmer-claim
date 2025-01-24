@@ -6,7 +6,7 @@ const { requestAuthorizationCodeUrl } = require('../../auth')
 const logout = require('../../lib/logout')
 const { endemicsWhichSpecies, endemicsWhichTypeOfReview } = require('../../config/routes')
 const { endemicsClaim: { landingPage: landingPageKey, reference: referenceKey } } = require('../../session/keys')
-const { refreshApplications, refreshClaims } = require('../../lib/context-helper')
+const { refreshApplications, refreshClaims, resetEndemicClaimSession } = require('../../lib/context-helper')
 const createClaimReference = require('../../lib/create-temp-claim-reference')
 
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -23,10 +23,7 @@ const getHandler = {
         // fetch latest new world (always) and latest old world (if relevant) application
         const { latestEndemicsApplication, latestVetVisitApplication } = await refreshApplications(request)
 
-        const claims = await refreshClaims(request, latestEndemicsApplication.reference)
-
-        const tempClaimId = createClaimReference()
-        session.setEndemicsClaim(request, referenceKey, tempClaimId)
+        const claims = await resetEndemicClaimSession(request, latestEndemicsApplication.reference)
 
         if (config.multiSpecies.enabled) {
           // for MS we want to always go through same flow, so just redirect straight there
