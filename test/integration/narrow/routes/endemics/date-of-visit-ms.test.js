@@ -1,12 +1,13 @@
+const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const session = require('../../../../../app/session')
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
 const config = require('../../../../../app/config')
 const { previousPageUrl } = require('../../../../../app/routes/endemics/date-of-visit-ms')
-const { sanitizeHTML } = require('../../../../utils/sanitize-html')
 
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
   getReviewTestResultWithinLast10Months: jest.fn().mockReturnValue('negative'),
@@ -15,6 +16,24 @@ jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+
+function expectPageContentOk ($, previousPageUrl) {
+  expect($('title').text()).toMatch(
+    'Date of visit - Get funding to improve animal health and welfare'
+  )
+  expect($('h1').text().trim()).toMatch(/(Date of review | follow-up)/i)
+  expect($('p').text()).toMatch(
+    /(This is the date the vet last visited the farm for this review. You can find it on the summary the vet gave you.| follow-up)/i
+  )
+  expect($('#visit-date-hint').text()).toMatch('For example, 27 3 2022')
+  expect($(`label[for=${labels.day}]`).text()).toMatch('Day')
+  expect($(`label[for=${labels.month}]`).text()).toMatch('Month')
+  expect($(`label[for=${labels.year}]`).text()).toMatch('Year')
+  expect($('.govuk-button').text()).toMatch('Continue')
+  const backLink = $('.govuk-back-link')
+  expect(backLink.text()).toMatch('Back')
+  expect(backLink.attr('href')).toMatch(previousPageUrl)
+}
 
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
@@ -83,7 +102,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     jest.resetAllMocks()
   })
 
-  test('returns 200', async () => {
+  test('returns 200 when you dont have any previous claims', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
@@ -102,11 +121,12 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(200)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    const $ = cheerio.load(res.payload)
+    expectPageContentOk($, '/claim/endemics/which-type-of-review')
+    expectPhaseBanner.ok($)
   })
 
-  test('returns 200', async () => {
+  test('returns 200 when you do have previous claims', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
@@ -129,8 +149,9 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(200)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    const $ = cheerio.load(res.payload)
+    expectPageContentOk($, '/claim/endemics/which-type-of-review')
+    expectPhaseBanner.ok($)
   })
   test('returns 200 and fills input with value in session', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
@@ -156,8 +177,12 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(200)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    const $ = cheerio.load(res.payload)
+    expect($('#visit-date-day')[0].attribs.value).toEqual('1')
+    expect($('#visit-date-month')[0].attribs.value).toEqual('5')
+    expect($('#visit-date-year')[0].attribs.value).toEqual('2024')
+    expectPageContentOk($, '/claim/endemics/which-type-of-review')
+    expectPhaseBanner.ok($)
   })
 
   test('when not logged in redirects to defra id', async () => {
@@ -228,9 +253,9 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Enter a date in the boxes below')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -273,9 +298,9 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Error: The date of review must be a real date')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -318,9 +343,9 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Error: The date of review cannot be before the date your agreement began')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -363,9 +388,11 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual(
+      'Error: The date of review must be in the past'
+    )
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -454,9 +481,10 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
 
     expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
@@ -666,9 +694,10 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 2).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
 
     expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 2))
@@ -809,9 +838,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('There must be no more than 10 months between your reviews and follow-ups.')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be no more than 10 months between your reviews and follow-ups.`)
   })
 
@@ -857,9 +892,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('There must be no more than 10 months between your reviews and follow-ups.')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be no more than 10 months between your reviews and follow-ups.`)
   })
 
@@ -916,9 +957,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('There must be at least 10 months between your follow-ups.')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: There must be at least 10 months between your follow-ups.`)
   })
 
@@ -1034,9 +1081,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const mainMessage = $('h1.govuk-heading-l').first().nextAll('p').first()
+    expect(mainMessage.text().trim()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.`)
   })
 
@@ -1082,9 +1134,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.')
   })
 
   test('user makes an endemics claim and the review is not in PAID status (statusId: 8)', async () => { // unhappy path
@@ -1129,9 +1187,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const res = await server.inject(options)
 
+    const $ = cheerio.load(res.payload)
+
     expect(res.statusCode).toBe(400)
-    const html = sanitizeHTML(res.payload)
-    expect(html).toMatchSnapshot()
+    expect($('title').text()).toMatch(
+      'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
+    )
+    const link = $('a.govuk-link[rel="external"]')
+    expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+    expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.')
   })
 
   test('user has an old world claim, and makes a new world endemics claim', async () => { // happy path
