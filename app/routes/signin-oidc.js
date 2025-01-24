@@ -65,7 +65,7 @@ const getHandler = {
         session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
 
         auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
-     
+
         appInsights.defaultClient.trackEvent({
           name: 'login',
           properties: {

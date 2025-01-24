@@ -17,7 +17,7 @@ const getHandler = {
     pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const session = getEndemicsClaim(request)
-      //Create copies before clearing session
+      // Create copies before clearing session
       const reference = session.reference
       const amount = session.amount
       const { isReview } = getReviewType(session.typeOfReview)

@@ -161,46 +161,46 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
 
     data = error
       ? {
-        ...request.payload,
-        reviewOrFollowUpText,
-        errorSummary,
-        dateOfVisit: {
-          day: {
-            value: request.payload['visit-date-day'],
-            error: error.details.find(
-              (e) =>
-                e.context.label === 'visit-date-day' ||
+          ...request.payload,
+          reviewOrFollowUpText,
+          errorSummary,
+          dateOfVisit: {
+            day: {
+              value: request.payload['visit-date-day'],
+              error: error.details.find(
+                (e) =>
+                  e.context.label === 'visit-date-day' ||
                 e.type.startsWith('dateOfVisit')
-            )
-          },
-          month: {
-            value: request.payload['visit-date-month'],
-            error: error.details.find(
-              (e) =>
-                e.context.label === 'visit-date-month' ||
+              )
+            },
+            month: {
+              value: request.payload['visit-date-month'],
+              error: error.details.find(
+                (e) =>
+                  e.context.label === 'visit-date-month' ||
                 e.type.startsWith('dateOfVisit')
-            )
-          },
-          year: {
-            value: request.payload['visit-date-year'],
-            error: error.details.find(
-              (e) =>
-                e.context.label === 'visit-date-year' ||
+              )
+            },
+            year: {
+              value: request.payload['visit-date-year'],
+              error: error.details.find(
+                (e) =>
+                  e.context.label === 'visit-date-year' ||
                 e.type.startsWith('dateOfVisit')
+              )
+            },
+            errorMessage: error.details.find((e) =>
+              e.context.label.startsWith('visit-date')
             )
+              ? {
+                  text: error.details.find((e) =>
+                    e.context.label.startsWith('visit-date')
+                  ).message
+                }
+              : undefined
           },
-          errorMessage: error.details.find((e) =>
-            e.context.label.startsWith('visit-date')
-          )
-            ? {
-              text: error.details.find((e) =>
-                e.context.label.startsWith('visit-date')
-              ).message
-            }
-            : undefined
-        },
-        backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
-      }
+          backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
+        }
       : {}
   }
   return { error, data }
@@ -290,12 +290,12 @@ const getHandler = {
 const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
-      statusId: oldWorldApp.statusId,
-      data: {
-        claimType: oldWorldApp.data.whichReview,
-        dateOfVisit: oldWorldApp.data.visitDate
+        statusId: oldWorldApp.statusId,
+        data: {
+          claimType: oldWorldApp.data.whichReview,
+          dateOfVisit: oldWorldApp.data.visitDate
+        }
       }
-    }
     : undefined
 
 const postHandler = {

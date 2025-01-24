@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim, clearEndemicsClaim, getApplication } = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim, getApplication } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { livestockTypes } = require('../../constants/claim')
 const {
@@ -8,7 +8,7 @@ const {
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
 const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
-const { resetEndemicClaimSession } = require('../../lib/context-helper')
+const { resetEndemicsClaimSession } = require('../../lib/context-helper')
 const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -58,11 +58,11 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfLivestock } = request.payload
-      const { typeOfLivestock: prevTypeOfLivestock, reference, } = getEndemicsClaim(request)
+      const { typeOfLivestock: prevTypeOfLivestock, reference } = getEndemicsClaim(request)
       const { latestEndemicsApplication } = getApplication(request)
 
       if (typeOfLivestock !== prevTypeOfLivestock) {
-        await resetEndemicClaimSession(request, latestEndemicsApplication.reference, reference)  
+        await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference)
       }
 
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)

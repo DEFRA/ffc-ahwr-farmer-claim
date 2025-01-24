@@ -47,14 +47,14 @@ async function refreshClaims (request, applicationRef) {
   return claims
 }
 
-const resetEndemicClaimSession = async (request, applicationRef, claimId) => {
+const resetEndemicsClaimSession = async (request, applicationRef, claimId) => {
   const tempClaimId = claimId ?? createClaimReference()
-  
+
   clearEndemicsClaim(request)
   session.setEndemicsClaim(request, referenceKey, tempClaimId)
   const claims = refreshClaims(request, applicationRef)
-  
-  return claims;
+
+  return claims
 }
 
 function getLatestClaimForContext (request) {
@@ -91,5 +91,5 @@ module.exports = {
   getTypeOfLivestockFromLatestClaim,
   refreshApplications,
   refreshClaims,
-  resetEndemicClaimSession,
+  resetEndemicsClaimSession
 }

@@ -132,5 +132,5 @@ module.exports = {
   setOrganisation,
   getOrganisation,
   setApplication,
-  getApplication,
+  getApplication
 }
