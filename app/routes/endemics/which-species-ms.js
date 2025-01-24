@@ -60,11 +60,9 @@ const postHandler = {
       const { typeOfLivestock } = request.payload
       const { typeOfLivestock: prevTypeOfLivestock, reference, } = getEndemicsClaim(request)
       const { latestEndemicsApplication } = getApplication(request)
-      console.log({ typeOfLivestock: prevTypeOfLivestock, reference, latestEndemicsApplication })
 
       if (typeOfLivestock !== prevTypeOfLivestock) {
         await resetEndemicClaimSession(request, latestEndemicsApplication.reference, reference)  
-        console.log(getEndemicsClaim(request))
       }
 
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)

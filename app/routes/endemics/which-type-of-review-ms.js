@@ -65,8 +65,6 @@ const postHandler = {
       const { typeOfLivestock, previousClaims } = getEndemicsClaim(request)
       const { latestVetVisitApplication } = getApplication(request)
 
-      console.log({ typeOfLivestock, previousClaims, latestVetVisitApplication } )
-
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
       if (!optionalPIHunt.enabled) {
