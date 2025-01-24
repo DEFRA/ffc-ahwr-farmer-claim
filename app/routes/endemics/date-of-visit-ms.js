@@ -51,7 +51,7 @@ const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
       }
     : undefined
 
-const getInputErrors = (request, reviewOrFollowUpText) => {
+const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   const inputtedValues = {
     day: request.payload[labels.day],
     month: request.payload[labels.month],
@@ -91,24 +91,23 @@ const getInputErrors = (request, reviewOrFollowUpText) => {
     }
   }
 
-  const dayInput = request.payload[labels.day].trim()
-  const dateSection = dayInput.length === 1 ? `0${dayInput}` : dayInput
-  const monthInput = request.payload[labels.month].trim()
-  const monthSection = monthInput.length === 1 ? `0${monthInput}` : monthInput
+  const dateInput = request.payload[labels.day].trim().padStart(2, '0')
+  const monthInput = request.payload[labels.month].trim().padStart(2, '0')
+  const yearInput = request.payload[labels.year].trim()
 
   // Below check is needed because entering 31st Feb gets created as 3rd March
-  const dateOfVisit = new Date(`${request.payload[labels.year]}/${monthSection}/${dateSection}`)
+  const dateOfVisit = new Date(`${yearInput}/${monthInput}/${dateInput}`)
   let [date, month, year] = [dateOfVisit.getDate().toString(), (dateOfVisit.getMonth() + 1).toString(), dateOfVisit.getFullYear().toString()]
 
-  if (`${date}`.length === 1) {
+  if (date.length === 1) {
     date = `0${date}`
   }
 
-  if (`${month}`.length === 1) {
+  if (month.length === 1) {
     month = `0${month}`
   }
 
-  const dateEnteredIsValid = date === dateSection && month === monthSection && year === request.payload[labels.year]
+  const dateEnteredIsValid = date === dateInput && month === monthInput && year === yearInput
 
   if (!dateEnteredIsValid) {
     return {
@@ -132,7 +131,7 @@ const getInputErrors = (request, reviewOrFollowUpText) => {
     }
   }
 
-  if (new Date(request.payload.dateOfAgreementAccepted) > dateOfVisit) {
+  if (new Date(newWorldApplication.createdAt) > dateOfVisit) {
     return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} cannot be before the date your agreement began`,
@@ -153,20 +152,19 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { dateOfVisit, latestVetVisitApplication: oldWorldApplication, typeOfReview, latestVetVisitApplication, previousClaims, typeOfLivestock } =
+      const { dateOfVisit, typeOfReview, latestVetVisitApplication: oldWorldApplication, previousClaims, typeOfLivestock } =
         session.getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
       return h.view(`${endemicsDateOfVisit}-ms`, {
-        dateOfAgreementAccepted: new Date(oldWorldApplication.createdAt).toISOString().slice(0, 10),
         reviewOrFollowUpText,
         dateOfVisit: {
           day: dateOfVisit ? new Date(dateOfVisit).getDate() : '',
           month: dateOfVisit ? new Date(dateOfVisit).getMonth() + 1 : '',
           year: dateOfVisit ? new Date(dateOfVisit).getFullYear() : ''
         },
-        backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
+        backLink: previousPageUrl(oldWorldApplication, typeOfReview, previousClaims, typeOfLivestock)
       })
     }
   }
@@ -184,18 +182,18 @@ const postHandler = {
         typeOfLivestock,
         organisation,
         reviewTestResults,
-        reference: tempClaimReference
+        reference: tempClaimReference,
+        latestEndemicsApplication: newWorldApplication
       } = session.getEndemicsClaim(request)
 
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
-      const { errorSummary, inputsInError } = getInputErrors(request, reviewOrFollowUpText)
+      const { errorSummary, inputsInError } = getInputErrors(request, reviewOrFollowUpText, newWorldApplication)
 
       if (errorSummary.length) {
         const data = {
-          dateOfAgreementAccepted: request.payload.dateOfAgreementAccepted,
           reviewOrFollowUpText,
           errorSummary,
           dateOfVisit: {
@@ -211,7 +209,10 @@ const postHandler = {
           name: 'claim-invalid-date-of-visit',
           properties: {
             tempClaimReference,
-            dateOfAgreement: data.dateOfAgreementAccepted,
+            dateOfAgreement: newWorldApplication.createdAt.toLocaleString('en-GB', { year: 'numeric', month: 'numeric', day: 'numeric' })
+              .split('/')
+              .reverse()
+              .join('-'),
             dateEntered: `${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}`,
             journeyType: reviewOrFollowUpText,
             error: errorSummary[0].text

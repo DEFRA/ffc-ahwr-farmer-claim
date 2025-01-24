@@ -22,7 +22,6 @@
       {% endif %}
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
 
         <div id="when-was-the-vet-visit" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
           <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
