@@ -339,7 +339,7 @@ const postHandler = {
         dateOfVisit,
         typeOfReview,
         typeOfLivestock,
-        previousClaims,
+        previousClaims
       } = session.getEndemicsClaim(request)
       const { latestVetVisitApplication } = session.getApplication(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)

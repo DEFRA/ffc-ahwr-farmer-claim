@@ -42,27 +42,27 @@ const getNoChangeRows = (
   typeOfLivestock,
   organisationName
 ) => [
-    {
-      key: { text: 'Business name' },
-      value: { html: upperFirstLetter(organisationName) }
-    },
-    {
-      key: { text: 'Livestock' },
-      value: {
-        html: upperFirstLetter(
-          isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
-        )
-      }
-    },
-    {
-      key: { text: 'Review or follow-up' },
-      value: {
-        html: isReview
-          ? 'Animal health and welfare review'
-          : 'Endemic disease follow-up'
-      }
+  {
+    key: { text: 'Business name' },
+    value: { html: upperFirstLetter(organisationName) }
+  },
+  {
+    key: { text: 'Livestock' },
+    value: {
+      html: upperFirstLetter(
+        isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
+      )
     }
-  ]
+  },
+  {
+    key: { text: 'Review or follow-up' },
+    value: {
+      html: isReview
+        ? 'Animal health and welfare review'
+        : 'Endemic disease follow-up'
+    }
+  }
+]
 const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
   return {
     key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
@@ -71,7 +71,7 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
         isPigs && sessionData?.biosecurity
           ? upperFirstLetter(
             `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
-          )
+            )
           : upperFirstLetter(sessionData?.biosecurity)
     },
     actions: {
@@ -442,19 +442,19 @@ const getHandler = {
         sheepDiseasesTestedRow,
         ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length
           ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
-            return {
-              key: {
-                text: index === 0 ? 'Disease or condition test result' : ''
-              },
-              value: {
-                html:
+              return {
+                key: {
+                  text: index === 0 ? 'Disease or condition test result' : ''
+                },
+                value: {
+                  html:
                   typeof sheepTest.result === 'object'
                     ? sheepTest.result
-                      .map(
-                        (testResult) =>
+                        .map(
+                          (testResult) =>
                           `${testResult.diseaseType} (${testResult.testResult})</br>`
-                      )
-                      .join(' ')
+                        )
+                        .join(' ')
                     : `${sheepTestTypes[
                       sessionData?.sheepEndemicsPackage
                     ].find((test) => test.value === sheepTest.diseaseType)
@@ -464,18 +464,18 @@ const getHandler = {
                         resultType.value === sheepTest.result
                     ).text
                     })`
-              },
-              actions: {
-                items: [
-                  {
-                    href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
-                    text: 'Change',
-                    visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
-                  }
-                ]
+                },
+                actions: {
+                  items: [
+                    {
+                      href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
+                      text: 'Change',
+                      visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
+                    }
+                  ]
+                }
               }
-            }
-          })
+            })
           : [])
       ]
 

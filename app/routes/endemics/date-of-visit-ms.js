@@ -47,12 +47,12 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
 const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
-      statusId: oldWorldApp.statusId,
-      data: {
-        claimType: oldWorldApp.data.whichReview,
-        dateOfVisit: oldWorldApp.data.visitDate
+        statusId: oldWorldApp.statusId,
+        data: {
+          claimType: oldWorldApp.data.whichReview,
+          dateOfVisit: oldWorldApp.data.visitDate
+        }
       }
-    }
     : undefined
 
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {

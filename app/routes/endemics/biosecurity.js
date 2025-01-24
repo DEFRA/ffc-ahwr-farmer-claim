@@ -125,7 +125,7 @@ const getHandler = {
         typeOfLivestock: session?.typeOfLivestock,
         backLink: previousPageUrl(request)
       })
-    },
+    }
   }
 }
 
