@@ -1,9 +1,10 @@
 const Joi = require('joi')
-const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
+const { setEndemicsClaim, getEndemicsClaim, getApplication } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -24,6 +25,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { typeOfReview } = getEndemicsClaim(request)
 
@@ -60,7 +62,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfReview } = request.payload
-      const { typeOfLivestock, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
+      const { typeOfLivestock, previousClaims } = getEndemicsClaim(request)
+      const { latestVetVisitApplication } = getApplication(request)
+
+      console.log({ typeOfLivestock, previousClaims, latestVetVisitApplication } )
 
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 

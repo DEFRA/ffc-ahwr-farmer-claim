@@ -21,6 +21,7 @@ const { getReviewType } = require('../../lib/get-review-type')
 const { getTestResult } = require('../../lib/get-test-result')
 const { isURNUnique } = require('../../api-requests/claim-service-api')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
@@ -66,6 +67,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { laboratoryURN } = session.getEndemicsClaim(request)
       return h.view(endemicsTestUrn, {
@@ -116,11 +118,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { laboratoryURN } = request.payload
-      const { organisation, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+      const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+      const { sbi } = session.getOrganisation(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
-      const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger)
+      const response = await isURNUnique({ sbi, laboratoryURN }, request.logger)
       session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
       if (!response?.isURNUnique) {

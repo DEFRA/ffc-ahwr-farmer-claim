@@ -17,7 +17,8 @@ const {
   endemicsDateOfTesting,
   endemicsSpeciesNumbers,
   endemicsWhichTypeOfReview,
-  endemicsVetVisitsReviewTestResults
+  endemicsVetVisitsReviewTestResults,
+  claimDashboard
 } = require('../../config/routes')
 const validateDateInputDay = require('../govuk-components/validate-date-input-day')
 const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
@@ -27,6 +28,7 @@ const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
 const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
@@ -154,50 +156,51 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
     )
     if (Object.keys(newError).length > 0 && newError.constructor === Object) { errorSummary.push(newError) }
 
-    const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+    const { typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+    const { latestVetVisitApplication } = session.getApplication(request)
 
     data = error
       ? {
-          ...request.payload,
-          reviewOrFollowUpText,
-          errorSummary,
-          dateOfVisit: {
-            day: {
-              value: request.payload['visit-date-day'],
-              error: error.details.find(
-                (e) =>
-                  e.context.label === 'visit-date-day' ||
+        ...request.payload,
+        reviewOrFollowUpText,
+        errorSummary,
+        dateOfVisit: {
+          day: {
+            value: request.payload['visit-date-day'],
+            error: error.details.find(
+              (e) =>
+                e.context.label === 'visit-date-day' ||
                 e.type.startsWith('dateOfVisit')
-              )
-            },
-            month: {
-              value: request.payload['visit-date-month'],
-              error: error.details.find(
-                (e) =>
-                  e.context.label === 'visit-date-month' ||
-                e.type.startsWith('dateOfVisit')
-              )
-            },
-            year: {
-              value: request.payload['visit-date-year'],
-              error: error.details.find(
-                (e) =>
-                  e.context.label === 'visit-date-year' ||
-                e.type.startsWith('dateOfVisit')
-              )
-            },
-            errorMessage: error.details.find((e) =>
-              e.context.label.startsWith('visit-date')
             )
-              ? {
-                  text: error.details.find((e) =>
-                    e.context.label.startsWith('visit-date')
-                  ).message
-                }
-              : undefined
           },
-          backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
-        }
+          month: {
+            value: request.payload['visit-date-month'],
+            error: error.details.find(
+              (e) =>
+                e.context.label === 'visit-date-month' ||
+                e.type.startsWith('dateOfVisit')
+            )
+          },
+          year: {
+            value: request.payload['visit-date-year'],
+            error: error.details.find(
+              (e) =>
+                e.context.label === 'visit-date-year' ||
+                e.type.startsWith('dateOfVisit')
+            )
+          },
+          errorMessage: error.details.find((e) =>
+            e.context.label.startsWith('visit-date')
+          )
+            ? {
+              text: error.details.find((e) =>
+                e.context.label.startsWith('visit-date')
+              ).message
+            }
+            : undefined
+        },
+        backLink: previousPageUrl(latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock)
+      }
       : {}
   }
   return { error, data }
@@ -254,9 +257,11 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
-      const { dateOfVisit, latestEndemicsApplication, typeOfReview, latestVetVisitApplication, previousClaims, typeOfLivestock } =
+      const { dateOfVisit, typeOfReview, previousClaims, typeOfLivestock } =
         session.getEndemicsClaim(request)
+      const { latestEndemicsApplication, latestVetVisitApplication } = session.getApplication(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -285,12 +290,12 @@ const getHandler = {
 const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
-        statusId: oldWorldApp.statusId,
-        data: {
-          claimType: oldWorldApp.data.whichReview,
-          dateOfVisit: oldWorldApp.data.visitDate
-        }
+      statusId: oldWorldApp.statusId,
+      data: {
+        claimType: oldWorldApp.data.whichReview,
+        dateOfVisit: oldWorldApp.data.visitDate
       }
+    }
     : undefined
 
 const postHandler = {
@@ -301,12 +306,17 @@ const postHandler = {
       const {
         typeOfReview: typeOfClaim,
         previousClaims,
-        latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
-        organisation,
         reviewTestResults,
         reference: tempClaimReference
       } = session.getEndemicsClaim(request)
+      const { latestVetVisitApplication: oldWorldApplication } = session.getApplication(request)
+
+      if (!tempClaimReference) {
+        return h.redirect(claimDashboard)
+      }
+
+      const organisation = session.getOrganisation(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)

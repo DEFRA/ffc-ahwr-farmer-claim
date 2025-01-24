@@ -7,6 +7,7 @@ const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemics
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = require('../../session/keys')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`
@@ -16,6 +17,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { piHuntRecommended } = getEndemicsClaim(request)
       const yesOrNoRadios = radios('', 'piHuntRecommended', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])

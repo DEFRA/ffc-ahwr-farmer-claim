@@ -10,6 +10,7 @@ const {
 const { endemicsClaim: { herdVaccinationStatus: herdVaccinationStatusKey } } = require('../../session/keys')
 const radios = require('../models/form-component/radios')
 const { vaccination } = require('../../constants/claim')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsVaccination}`
 
@@ -17,6 +18,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults, herdVaccinationStatus } = session.getEndemicsClaim(request)
       const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: vaccination.vaccinated, text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])

@@ -3,6 +3,7 @@ const { sheepTestTypes } = require('../../constants/sheep-test-types')
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { sheepTests: sheepTestsKey, sheepTestResults: sheepTestResultsKey } = require('../../session/keys').endemicsClaim
 const { endemicsSheepEndemicsPackage, endemicsSheepTests, endemicsSheepTestResults } = require('../../config/routes')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTests}`
 const backLink = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
@@ -11,6 +12,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const session = getEndemicsClaim(request)
       const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: session.sheepTests?.includes(test.value) }))

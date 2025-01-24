@@ -19,9 +19,10 @@ const {
   endemicsPIHuntRecommended,
   endemicsPIHuntAllAnimals
 } = require('../../config/routes')
-const { livestockTypes } = require('../../constants/claim')
+const { livestockTypes: { pigs } } = require('../../constants/claim')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
@@ -116,6 +117,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const session = getEndemicsClaim(request)
       return h.view(endemicsBiosecurity, {
@@ -123,7 +125,7 @@ const getHandler = {
         typeOfLivestock: session?.typeOfLivestock,
         backLink: previousPageUrl(request)
       })
-    }
+    },
   }
 }
 
@@ -166,7 +168,6 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { pigs } = livestockTypes
       const { typeOfLivestock } = getEndemicsClaim(request)
       const { biosecurity, assessmentPercentage } = request.payload
       setEndemicsClaim(request, biosecurityKey, typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity)

@@ -13,6 +13,7 @@ const {
   endemicsClaim: { numberOfSamplesTested: numberOfSamplesTestedKey }
 } = require('../../session/keys')
 const { thresholds: { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } } = require('../../constants/amounts')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
 
@@ -20,6 +21,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { numberOfSamplesTested } = session.getEndemicsClaim(request)
       return h.view(endemicsNumberOfSamplesTested, {

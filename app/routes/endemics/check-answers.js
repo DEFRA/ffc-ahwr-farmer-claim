@@ -3,7 +3,8 @@ const urlPrefix = require('../../config').urlPrefix
 const {
   setEndemicsClaim,
   getEndemicsClaim,
-  setTempClaimReference
+  setTempClaimReference,
+  getApplication
 } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const {
@@ -20,6 +21,7 @@ const {
   sheepTestResultsType
 } = require('../../constants/sheep-test-types')
 const appInsights = require('applicationinsights')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -38,29 +40,29 @@ const getNoChangeRows = (
   isPigs,
   isSheep,
   typeOfLivestock,
-  organisation
+  organisationName
 ) => [
-  {
-    key: { text: 'Business name' },
-    value: { html: upperFirstLetter(organisation?.name) }
-  },
-  {
-    key: { text: 'Livestock' },
-    value: {
-      html: upperFirstLetter(
-        isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
-      )
+    {
+      key: { text: 'Business name' },
+      value: { html: upperFirstLetter(organisationName) }
+    },
+    {
+      key: { text: 'Livestock' },
+      value: {
+        html: upperFirstLetter(
+          isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
+        )
+      }
+    },
+    {
+      key: { text: 'Review or follow-up' },
+      value: {
+        html: isReview
+          ? 'Animal health and welfare review'
+          : 'Endemic disease follow-up'
+      }
     }
-  },
-  {
-    key: { text: 'Review or follow-up' },
-    value: {
-      html: isReview
-        ? 'Animal health and welfare review'
-        : 'Endemic disease follow-up'
-    }
-  }
-]
+  ]
 const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
   return {
     key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
@@ -68,8 +70,8 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
       html:
         isPigs && sessionData?.biosecurity
           ? upperFirstLetter(
-              `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
-            )
+            `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
+          )
           : upperFirstLetter(sessionData?.biosecurity)
     },
     actions: {
@@ -118,10 +120,9 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
     const testList = sessionData?.sheepTestResults
       .map(
         (sheepTest) =>
-          `${
-            sheepTestTypes[sessionData?.sheepEndemicsPackage].find(
-              (test) => test.value === sheepTest.diseaseType
-            ).text
+          `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(
+            (test) => test.value === sheepTest.diseaseType
+          ).text
           }</br>`
       )
       .join(' ')
@@ -146,6 +147,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const sessionData = getEndemicsClaim(request)
       const {
@@ -440,42 +442,40 @@ const getHandler = {
         sheepDiseasesTestedRow,
         ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length
           ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
-              return {
-                key: {
-                  text: index === 0 ? 'Disease or condition test result' : ''
-                },
-                value: {
-                  html:
-                    typeof sheepTest.result === 'object'
-                      ? sheepTest.result
-                          .map(
-                            (testResult) =>
-                              `${testResult.diseaseType} (${testResult.testResult})</br>`
-                          )
-                          .join(' ')
-                      : `${
-                          sheepTestTypes[
-                            sessionData?.sheepEndemicsPackage
-                          ].find((test) => test.value === sheepTest.diseaseType)
-                            .text
-                        } (${
-                          sheepTestResultsType[sheepTest.diseaseType].find(
-                            (resultType) =>
-                              resultType.value === sheepTest.result
-                          ).text
-                        })`
-                },
-                actions: {
-                  items: [
-                    {
-                      href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
-                      text: 'Change',
-                      visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
-                    }
-                  ]
-                }
+            return {
+              key: {
+                text: index === 0 ? 'Disease or condition test result' : ''
+              },
+              value: {
+                html:
+                  typeof sheepTest.result === 'object'
+                    ? sheepTest.result
+                      .map(
+                        (testResult) =>
+                          `${testResult.diseaseType} (${testResult.testResult})</br>`
+                      )
+                      .join(' ')
+                    : `${sheepTestTypes[
+                      sessionData?.sheepEndemicsPackage
+                    ].find((test) => test.value === sheepTest.diseaseType)
+                      .text
+                    } (${sheepTestResultsType[sheepTest.diseaseType].find(
+                      (resultType) =>
+                        resultType.value === sheepTest.result
+                    ).text
+                    })`
+              },
+              actions: {
+                items: [
+                  {
+                    href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
+                    text: 'Change',
+                    visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
+                  }
+                ]
               }
-            })
+            }
+          })
           : [])
       ]
 
@@ -500,7 +500,7 @@ const getHandler = {
           isPigs,
           isSheep,
           typeOfLivestock,
-          organisation
+          organisation?.name
         ),
         ...speciesRows()
       ]
@@ -534,7 +534,6 @@ const postHandler = {
         numberOfOralFluidSamples,
         numberAnimalsTested,
         testResults,
-        latestEndemicsApplication,
         vetVisitsReviewTestResults,
         sheepTestResults,
         biosecurity,
@@ -545,6 +544,7 @@ const postHandler = {
         reference: tempClaimReference,
         reviewTestResults
       } = getEndemicsClaim(request)
+      const { latestEndemicsApplication } = getApplication(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -598,7 +598,7 @@ const postHandler = {
       })
 
       return h.redirect(
-          `${urlPrefix}/${routes.endemicsConfirmation}`
+        `${urlPrefix}/${routes.endemicsConfirmation}`
       )
     }
   }

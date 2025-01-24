@@ -7,6 +7,7 @@ const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = require('../../config/routes')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
@@ -16,6 +17,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { piHunt: previousAnswer } = getEndemicsClaim(request)
       const titleText = optionalPIHunt.enabled ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'

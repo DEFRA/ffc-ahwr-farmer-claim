@@ -5,12 +5,14 @@ const {
   endemicsClaim: {
     latestEndemicsApplication: latestEndemicsApplicationKey,
     latestVetVisitApplication: latestVetVisitApplicationKey,
-    previousClaims: previousClaimsKey
+    previousClaims: previousClaimsKey,
+    reference: referenceKey
   }
 } = require('../session/keys')
 const { getClaimsByApplicationReference } = require('../api-requests/claim-service-api')
-const { getEndemicsClaim } = require('../session')
+const { getEndemicsClaim, clearEndemicsClaim } = require('../session')
 const { claimType } = require('../constants/claim')
+const createClaimReference = require('../lib/create-temp-claim-reference')
 
 async function refreshApplications (request) {
   const applications = await getAllApplicationsBySbi(request.query.sbi, request.logger)
@@ -27,8 +29,8 @@ async function refreshApplications (request) {
     return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
   })
 
-  session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
-  session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+  session.setApplication(request, latestVetVisitApplicationKey, latestVetVisitApplication)
+  session.setApplication(request, latestEndemicsApplicationKey, latestEndemicsApplication)
 
   return { latestEndemicsApplication, latestVetVisitApplication }
 }
@@ -45,8 +47,17 @@ async function refreshClaims (request, applicationRef) {
   return claims
 }
 
+const resetEndemicClaimSession = async (request, applicationRef, claimId) => {
+  const tempClaimId = claimId ?? createClaimReference()
+  clearEndemicsClaim(request)
+
+  session.setEndemicsClaim(request, referenceKey, tempClaimId)
+  return refreshClaims(request, applicationRef)
+}
+
 function getLatestClaimForContext (request) {
-  const { previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
+  const { previousClaims } = getEndemicsClaim(request)
+  const { latestVetVisitApplication } = session.getApplication(request)
 
   // When we add the MS code we can layer in here filtering by species
   // const { typeOfLivestock, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
@@ -77,5 +88,6 @@ module.exports = {
   canChangeSpecies,
   getTypeOfLivestockFromLatestClaim,
   refreshApplications,
-  refreshClaims
+  refreshClaims,
+  resetEndemicClaimSession,
 }

@@ -19,6 +19,7 @@ const {
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
@@ -48,6 +49,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { numberAnimalsTested, typeOfLivestock, typeOfReview } =
         session.getEndemicsClaim(request)
