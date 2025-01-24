@@ -311,11 +311,6 @@ const postHandler = {
         reference: tempClaimReference
       } = session.getEndemicsClaim(request)
       const { latestVetVisitApplication: oldWorldApplication } = session.getApplication(request)
-
-      if (!tempClaimReference) {
-        return h.redirect(claimDashboard)
-      }
-
       const organisation = session.getOrganisation(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
