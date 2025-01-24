@@ -49,10 +49,12 @@ async function refreshClaims (request, applicationRef) {
 
 const resetEndemicClaimSession = async (request, applicationRef, claimId) => {
   const tempClaimId = claimId ?? createClaimReference()
+  
   clearEndemicsClaim(request)
-
   session.setEndemicsClaim(request, referenceKey, tempClaimId)
-  return refreshClaims(request, applicationRef)
+  const claims = refreshClaims(request, applicationRef)
+  
+  return claims;
 }
 
 function getLatestClaimForContext (request) {
