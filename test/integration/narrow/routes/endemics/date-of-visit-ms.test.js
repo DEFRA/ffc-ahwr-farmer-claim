@@ -1,8 +1,8 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
+const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const session = require('../../../../../app/session')
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
@@ -37,7 +37,7 @@ function expectPageContentOk ($, previousPageUrl) {
 
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
-  createdAt: '2023-01-01',
+  createdAt: new Date('2023/01/01'),
   data: {
     visitDate: '2023-01-01',
     whichReview: 'beef'
@@ -48,7 +48,7 @@ const latestVetVisitApplication = {
 
 const latestEndemicsApplication = {
   reference: 'AHWR-2470-6BA9',
-  createdAt: '2023-01-01',
+  createdAt: new Date('2025/01/01'),
   statusId: 1,
   type: 'EE'
 }
@@ -102,7 +102,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     jest.resetAllMocks()
   })
 
-  test('returns 200', async () => {
+  test('returns 200 when you dont have any previous claims', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
@@ -126,7 +126,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     expectPhaseBanner.ok($)
   })
 
-  test('returns 200', async () => {
+  test('returns 200 when you do have previous claims', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
@@ -234,7 +234,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -242,10 +243,9 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       url,
       payload: {
         crumb,
-        [labels.day]: '123',
-        [labels.month]: '123',
-        [labels.year]: '123',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.day]: 'second',
+        [labels.month]: 'february',
+        [labels.year]: '2000'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -255,17 +255,60 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('p.govuk-error-message').text().trim()).toEqual(
-      'Error: The date of review must be a real date'
-    )
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Enter a date in the boxes below')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
         tempClaimReference: 'TEMP-6GSE-PIR8',
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
-        dateEntered: '123-123-123',
-        error: 'The date of review must be a real date'
+        dateEntered: '2000-february-second',
+        error: 'Enter a date in the boxes below'
+      }
+    })
+  })
+
+  test('redirect back to page with errors if the entered date is of a correct format, but the date isnt real', async () => { // unhappy path
+    session.getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        previousClaims: [],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '31',
+        [labels.month]: '2',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+    expect(res.statusCode).toBe(400)
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Error: The date of review must be a real date')
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
+      name: 'claim-invalid-date-of-visit',
+      properties: {
+        tempClaimReference: 'TEMP-6GSE-PIR8',
+        journeyType: 'review',
+        dateOfAgreement: '2025-01-01',
+        dateEntered: '2025-2-31',
+        error: 'Error: The date of review must be a real date'
       }
     })
   })
@@ -281,7 +324,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -291,8 +335,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '1',
         [labels.month]: '12',
-        [labels.year]: '2024',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2024'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -302,9 +345,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('p.govuk-error-message').text().trim()).toEqual(
-      'Error: The date of review cannot be before the date your agreement began'
-    )
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Error: The date of review cannot be before the date your agreement began')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -312,7 +353,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
         dateEntered: '2024-12-1',
-        error: 'The date of review cannot be before the date your agreement began'
+        error: 'Error: The date of review cannot be before the date your agreement began'
       }
     })
   })
@@ -328,7 +369,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -338,8 +380,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '2',
         [labels.month]: '2',
-        [labels.year]: '2040',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2040'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -349,7 +390,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('p.govuk-error-message').text().trim()).toEqual(
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual(
       'Error: The date of review must be in the past'
     )
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
@@ -359,7 +400,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
         dateEntered: '2040-2-2',
-        error: 'The date of review must be in the past'
+        error: 'Error: The date of review must be in the past'
       }
     })
   })
@@ -375,7 +416,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -385,8 +427,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -421,7 +462,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -431,8 +473,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -446,7 +487,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
 
-    expect(session.setEndemicsClaim).not.toHaveBeenCalled()
+    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
@@ -471,7 +512,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -481,8 +523,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -517,7 +558,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -527,8 +569,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -554,7 +595,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestVetVisitApplication
+        latestVetVisitApplication,
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -564,8 +606,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -591,7 +632,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestVetVisitApplication
+        latestVetVisitApplication,
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -601,8 +643,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -634,7 +675,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             visitDate: '2024-12-01',
             whichReview: 'beef'
           }
-        }
+        },
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -644,8 +686,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '02',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -659,7 +700,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 2).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
 
-    expect(session.setEndemicsClaim).not.toHaveBeenCalled()
+    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 2))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
@@ -681,7 +722,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             visitDate: '2024-12-01',
             whichReview: 'pigs'
           }
-        }
+        },
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -691,8 +733,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '02',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -729,7 +770,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -739,8 +781,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -778,7 +819,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -788,8 +830,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -832,7 +873,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -842,8 +884,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -897,7 +938,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -907,8 +949,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -973,7 +1014,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -983,8 +1025,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1021,7 +1062,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1031,8 +1073,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1047,7 +1088,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       'You cannot continue with your claim - Get funding to improve animal health and welfare - GOV.UKGOV.UK'
     )
     const mainMessage = $('h1.govuk-heading-l').first().nextAll('p').first()
-    expect(mainMessage.text()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
+    expect(mainMessage.text().trim()).toBe('Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1)} is invalid. Error: Farmer Johns - SBI 12345 had a failed review claim for beef cattle in the last 10 months.`)
   })
 
@@ -1074,7 +1115,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1084,8 +1126,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1102,7 +1143,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const link = $('a.govuk-link[rel="external"]')
     expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
     expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(options.payload, 'dateOfVisit', 'Value is invalid. Error: ')
   })
 
   test('user makes an endemics claim and the review is not in PAID status (statusId: 8)', async () => { // unhappy path
@@ -1128,7 +1168,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1138,8 +1179,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1156,7 +1196,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const link = $('a.govuk-link[rel="external"]')
     expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
     expect(link.text()).toBe('Your review claim must have been approved before you claim for the follow-up that happened after it.')
-    // expect(raiseInvalidDataEvent).toHaveBeenCalledWith(options.payload, 'dateOfVisit', 'Value is invalid. Error: ')
   })
 
   test('user has an old world claim, and makes a new world endemics claim', async () => { // happy path
@@ -1178,7 +1217,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'beef'
           },
           statusId: 9
-        }
+        },
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1188,8 +1228,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1226,7 +1265,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1236,8 +1276,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1274,7 +1313,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'negative',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1284,8 +1324,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1295,7 +1334,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    // expect(session.setEndemicsClaim).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
@@ -1325,7 +1363,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
@@ -1335,8 +1374,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         crumb,
         [labels.day]: '01',
         [labels.month]: '01',
-        [labels.year]: '2025',
-        dateOfAgreementAccepted: '2025-01-01'
+        [labels.year]: '2025'
       },
       auth,
       headers: { cookie: `crumb=${crumb}` }
@@ -1346,7 +1384,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    // expect(session.setEndemicsClaim).toHaveBeenCalledWith(options.payload, 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 })
