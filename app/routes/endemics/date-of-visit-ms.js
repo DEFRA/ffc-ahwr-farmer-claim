@@ -78,7 +78,6 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
 
   if (inputKeysInError.length > 0) {
     const inputNameInError = inputKeysInError[0]
-    console.log(inputsInError)
     return {
       errorSummary: [{
         text: 'Enter a date in the boxes below',
