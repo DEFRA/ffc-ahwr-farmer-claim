@@ -1,4 +1,5 @@
 const { getReviewWithinLast10Months, getReviewTestResultWithinLast10Months } = require('../../api-requests/claim-service-api')
+const joi = require('joi')
 const { claimType, livestockTypes } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
 const session = require('../../session')
@@ -22,6 +23,7 @@ const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
 const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
+const { isValidDate } = require('../../lib/date-utils')
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
@@ -52,11 +54,13 @@ const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
     : undefined
 
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
-  const inputtedValues = {
-    day: request.payload[labels.day],
-    month: request.payload[labels.month],
-    year: request.payload[labels.year]
-  }
+  const dateSchema = joi.object({
+    'visit-date-day': joi.number().max(31),
+    'visit-date-month': joi.number().max(12),
+    'visit-date-year': joi.number()
+  })
+
+  const { error } = dateSchema.validate(request.payload)
 
   const inputsInError = {
     day: false,
@@ -64,50 +68,27 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     year: false
   }
 
-  if (inputtedValues.day === '' || Number.isNaN(Number(inputtedValues.day)) || inputtedValues.day > 31) {
-    inputsInError.day = true
-  }
+  const inputKeysInError = error?.details?.map(({ context }) => context.key) || []
 
-  if (inputtedValues.month === '' || Number.isNaN(Number(inputtedValues.month)) || inputtedValues.month > 12) {
-    inputsInError.month = true
-  }
+  Object.keys(inputsInError).forEach(input => {
+    if (inputKeysInError.includes(`visit-date-${input}`)) {
+      inputsInError[input] = true
+    }
+  })
 
-  if (inputtedValues.year === '' || Number.isNaN(Number(inputtedValues.year))) {
-    inputsInError.year = true
-  }
-
-  const inputsInErrorResults = Object.entries(inputsInError)
-
-  const firstFoundInputError = inputsInErrorResults.find(([_inputName, inputInError]) => inputInError)
-
-  if (firstFoundInputError) {
-    const inputNameInError = firstFoundInputError[0]
+  if (inputKeysInError.length > 0) {
+    const inputNameInError = inputKeysInError[0]
     return {
       errorSummary: [{
         text: 'Enter a date in the boxes below',
-        href: `#visit-date-${inputNameInError}`
+        href: `#${inputNameInError}`
       }],
       inputsInError
     }
   }
 
-  const dateInput = request.payload[labels.day].trim().padStart(2, '0')
-  const monthInput = request.payload[labels.month].trim().padStart(2, '0')
-  const yearInput = request.payload[labels.year].trim()
-
-  // Below check is needed because entering 31st Feb gets created as 3rd March
-  const dateOfVisit = new Date(`${yearInput}/${monthInput}/${dateInput}`)
-  let [date, month, year] = [dateOfVisit.getDate().toString(), (dateOfVisit.getMonth() + 1).toString(), dateOfVisit.getFullYear().toString()]
-
-  if (date.length === 1) {
-    date = `0${date}`
-  }
-
-  if (month.length === 1) {
-    month = `0${month}`
-  }
-
-  const dateEnteredIsValid = date === dateInput && month === monthInput && year === yearInput
+  const [day, month, year] = Object.values(request.payload)
+  const dateEnteredIsValid = isValidDate(Number(year), Number(month), Number(day))
 
   if (!dateEnteredIsValid) {
     return {
@@ -120,6 +101,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   }
 
   const now = new Date()
+  const dateOfVisit = new Date(year, month - 1, day)
 
   if (dateOfVisit > now) {
     return {
