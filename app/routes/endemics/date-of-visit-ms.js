@@ -58,7 +58,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     'visit-date-day': joi.number().max(31),
     'visit-date-month': joi.number().max(12),
     'visit-date-year': joi.number()
-  })
+  }).options({ abortEarly: false }) // needed otherwise it doesnt check other fields if an error is found
 
   const { error } = dateSchema.validate(request.payload)
 
@@ -78,6 +78,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
 
   if (inputKeysInError.length > 0) {
     const inputNameInError = inputKeysInError[0]
+    console.log(inputsInError)
     return {
       errorSummary: [{
         text: 'Enter a date in the boxes below',
