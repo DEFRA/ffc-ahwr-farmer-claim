@@ -1,0 +1,3 @@
+container.eventQueueAddress: queue:ffc-ahwr-event
+container.applicationRequestQueueAddress: queue:ffc-ahwr-application-request
+container.applicationResponseQueueAddress: queue:ffc-ahwr-application-response
