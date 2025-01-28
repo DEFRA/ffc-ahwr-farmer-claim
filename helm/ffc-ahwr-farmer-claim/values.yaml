@@ -6,7 +6,7 @@ image: ffc-ahwr-farmer-claim
 
 labels: {}
 
-aadPodIdentity: true
+workloadIdentity: true
 
 appInsights:
   connectionString:

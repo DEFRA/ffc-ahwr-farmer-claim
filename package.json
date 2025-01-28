@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-farmer-claim",
-  "version": "1.2.2",
+  "version": "2.0.0",
   "description": "Web frontend for farmer claim journey",
   "homepage": "https://github.com/DEFRA/ffc-ahwr-farmer-claim",
   "main": "app/index.js",
@@ -24,6 +24,7 @@
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
+    "@azure/identity": "^4.4.1",
     "@2toad/profanity": "^3.0.1",
     "@hapi/boom": "^9.1.4",
     "@hapi/catbox-redis": "^6.0.2",
@@ -36,7 +37,7 @@
     "@hapi/yar": "^10.1.1",
     "applicationinsights": "^2.9.6",
     "ffc-ahwr-event-publisher": "1.0.3",
-    "ffc-messaging": "^2.6.2",
+    "ffc-messaging": "^2.10.1",
     "form-data": "^4.0.1",
     "govuk-frontend": "5.4.0",
     "hapi-pino": "^9.1.2",
@@ -48,7 +49,7 @@
   },
   "overrides": {
     "@azure/identity": {
-      "jsonwebtoken": "9.0.0"
+      "jsonwebtoken": "9.0.2"
     },
     "semver": "7.5.2"
   },
