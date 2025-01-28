@@ -167,12 +167,13 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
 }
 
 const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
-  const { typeOfReview, previousClaims } = session.getEndemicsClaim(request)
+  const { typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
   const { latestVetVisitApplication } = session.getApplication(request)
   return (
     typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&
-    (latestVetVisitApplication?.data?.whichReview === livestockTypes.beef || latestVetVisitApplication?.data?.whichReview === livestockTypes.dairy) &&
+    (latestVetVisitApplication.data?.whichReview === livestockTypes.beef || latestVetVisitApplication.data?.whichReview === livestockTypes.dairy) &&
+    latestVetVisitApplication.data?.whichReview === typeOfLivestock &&
     !previousClaims?.find((claim) => claim.type === claimType.endemics || claim.type === claimType.review)
   )
 }

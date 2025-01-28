@@ -204,4 +204,12 @@ describe('Claim Service API', () => {
 
     expect(claimServiceApi.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim()).toBe(true)
   })
+
+  test('Check if is first time endemic claim for active old world review claim of different species', () => {
+    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
+    sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', previousClaims: [{ data: { typeOfReview: 'R' } }] })
+    sessionMock.getApplication.mockReturnValueOnce({ latestVetVisitApplication: { data: { whichReview: 'sheep' } } })
+
+    expect(claimServiceApi.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim()).toBe(false)
+  })
 })

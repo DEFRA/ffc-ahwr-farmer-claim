@@ -36,7 +36,8 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
   const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim =
     typeOfReview === claimType.endemics &&
     [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
-    relevantClaims.length === 0
+    relevantClaims.length === 0 &&
+    typeOfLivestock === oldWorldClaimTypeOfLivestock
 
   if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) { return `${config.urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
@@ -164,10 +165,9 @@ const postHandler = {
         previousClaims,
         typeOfLivestock,
         reviewTestResults,
-        reference: tempClaimReference,
-        latestEndemicsApplication: newWorldApplication
+        reference: tempClaimReference
       } = session.getEndemicsClaim(request)
-      const { latestVetVisitApplication: oldWorldApplication } = session.getApplication(request)
+      const { latestVetVisitApplication: oldWorldApplication, latestEndemicsApplication: newWorldApplication } = session.getApplication(request)
       const organisation = session.getOrganisation(request)
 
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
