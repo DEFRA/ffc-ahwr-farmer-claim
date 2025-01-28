@@ -42,12 +42,18 @@ describe('Which type of review test', () => {
   describe('GET', () => {
     beforeEach(() => {
       // this call is made by the pre-handler for logging context
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      sessionMock.getEndemicsClaim
+        .mockReturnValueOnce({ typeOfReview: 'R' })
+        .mockReturnValueOnce({ reference: '12345' })
+      sessionMock.getApplication.mockReturnValueOnce({ latestEndemicsApplication: { reference: 'APP-12345' } })
     })
 
     test('returns 200 and renders page', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
-        .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [], latestVetVisitApplication })
+      sessionMock.getEndemicsClaim
+        .mockReturnValueOnce({ typeOfReview: 'R' })
+        .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [] })
+      sessionMock.getApplication
+        .mockReturnValueOnce({ latestVetVisitApplication })
       const options = {
         method: 'GET',
         url,
@@ -70,11 +76,11 @@ describe('Which type of review test', () => {
       crumb = await getCrumbs(server)
       // this call is made by the pre-handler for logging context
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      sessionMock.getApplication.mockReturnValueOnce({ latestEndemicsApplication: { reference: 'APP-12345' } })
     })
 
     test('Returns 400 and shows error message when payload is invalid', async () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
-        .mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
         url,
@@ -96,6 +102,7 @@ describe('Which type of review test', () => {
     test('Returns 302 and redirect to vet visit review test result', async () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
+      sessionMock.getApplication.mockReturnValueOnce({ latestVetVisitApplication })
       claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
 
       const options = {
@@ -121,6 +128,7 @@ describe('Which type of review test', () => {
       { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit' }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl }) => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [] })
+      sessionMock.getApplication.mockReturnValueOnce({})
       const options = {
         method: 'POST',
         url,
@@ -141,6 +149,7 @@ describe('Which type of review test', () => {
 
     test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy', previousClaims: [] })
+      sessionMock.getApplication.mockReturnValueOnce({})
       const options = {
         method: 'POST',
         url,
@@ -164,6 +173,7 @@ describe('Which type of review test', () => {
       setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy', previousClaims: [] })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      sessionMock.getApplication.mockReturnValueOnce({})
       const options = {
         method: 'POST',
         url,

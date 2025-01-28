@@ -1,11 +1,14 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
-const { getEndemicsClaim } = require('../../../../../app/session')
+const { getEndemicsClaim, getApplication } = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const createServer = require('../../../../../app/server')
+const { resetEndemicsClaimSession } = require('../../../../../app/lib/context-helper')
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/lib/context-helper')
+
 describe('Endemics which species test', () => {
   setEndemicsClaimMock.mockImplementation(() => { })
   jest.mock('../../../../../app/config', () => {
@@ -48,6 +51,7 @@ describe('Endemics which species test', () => {
         auth,
         url
       }
+      getEndemicsClaim.mockReturnValue({ reference: '12345' })
 
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
@@ -72,7 +76,7 @@ describe('Endemics which species test', () => {
       url
     }
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock })
+    getEndemicsClaim.mockReturnValue({ typeOfLivestock, reference: '12345' })
 
     const res = await server.inject(options)
 
@@ -108,12 +112,32 @@ describe('Endemics which species test', () => {
         payload: { crumb, typeOfLivestock: 'sheep' }
       }
       getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
+      getApplication.mockReturnValue({ latestEndemicsApplication: { reference: '12345 ' } })
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
+    })
+
+    test('should redirect to next page when livestock selected has changed from previous session', async () => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, typeOfLivestock: 'sheep' }
+      }
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reference: 'CLAIM-12345' })
+      getApplication.mockReturnValue({ latestEndemicsApplication: { reference: 'APP-12345' } })
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(resetEndemicsClaimSession).toHaveBeenCalledWith(expect.any(Object), 'APP-12345', 'CLAIM-12345')
     })
   })
 })

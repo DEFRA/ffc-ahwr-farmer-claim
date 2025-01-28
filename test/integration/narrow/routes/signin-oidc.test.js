@@ -5,10 +5,10 @@ const authMock = require('../../../../app/auth')
 jest.mock('../../../../app/auth')
 const latestApplicationMock = require('../../../../app/routes/models/latest-application')
 jest.mock('../../../../app/routes/models/latest-application')
-const personMock = require('../../../../app/api-requests/rpa-api/person')
-jest.mock('../../../../app/api-requests/rpa-api/person')
-const organisationMock = require('../../../../app/api-requests/rpa-api/organisation')
-jest.mock('../../../../app/api-requests/rpa-api/organisation')
+const person = require('../../../../app/api-requests/rpa-api/person')
+const getPersonSummaryMock = jest.spyOn(person, 'getPersonSummary')
+const organisation = require('../../../../app/api-requests/rpa-api/organisation')
+const organisationIsEligibleMock = jest.spyOn(organisation, 'organisationIsEligible')
 const sendExceptionEventMock = require('../../../../app/event/raise-ineligibility-event')
 jest.mock('../../../../app/event/raise-ineligibility-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
@@ -123,7 +123,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      personMock.getPersonSummary.mockResolvedValueOnce({
+      getPersonSummaryMock.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -131,7 +131,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+      organisationIsEligibleMock.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -175,7 +175,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      personMock.getPersonSummary.mockResolvedValueOnce({
+      getPersonSummaryMock.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -183,7 +183,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+      organisationIsEligibleMock.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -229,7 +229,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      personMock.getPersonSummary.mockResolvedValueOnce({
+      getPersonSummaryMock.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -237,7 +237,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+      organisationIsEligibleMock.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -281,7 +281,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      personMock.getPersonSummary.mockResolvedValueOnce({
+      getPersonSummaryMock.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -289,7 +289,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+      organisationIsEligibleMock.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -329,7 +329,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      personMock.getPersonSummary.mockResolvedValueOnce({
+      getPersonSummaryMock.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -337,7 +337,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationMock.organisationIsEligible.mockResolvedValueOnce({
+      organisationIsEligibleMock.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -354,6 +354,7 @@ describe('FarmerApply defra ID redirection test', () => {
             country: 'United Kingdom',
             dependentLocality: 'Test Local'
           },
+          businessReference: 'BUSI-123',
           email: 'org1@testemail.com'
         },
         organisationPermission: true
@@ -394,7 +395,16 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(latestApplicationMock).toBeCalledTimes(1)
       expect(authMock.authenticate).toBeCalledTimes(1)
       expect(authMock.setAuthCookie).toBeCalledTimes(1)
-      expect(sessionMock.setClaim).toBeCalledTimes(10)
+      expect(sessionMock.setOrganisation).toHaveBeenCalledWith(expect.any(Object), {
+        sbi: '101122201',
+        farmerName: 'Bill Smith',
+        name: 'Mrs Gill Black',
+        email: 'billsmith@testemail.com',
+        orgEmail: 'org1@testemail.com',
+        address: 'The Test House,Test road,Wicklewood,11,TestHouse,Test ROAD,Test City,TS1 1TS,United Kingdom',
+        crn: '1103452436',
+        frn: 'BUSI-123'
+      })
     })
   })
 })

@@ -9,7 +9,9 @@ jest.mock('../../../../app/session', () => ({
       sbi: 'sbi123',
       crn: 'crn123'
     },
-    reference: 'ABC-123',
+    reference: 'ABC-123'
+  }),
+  getApplication: () => ({
     latestEndemicsApplication: {
       reference: 'APPLICATION1'
     }

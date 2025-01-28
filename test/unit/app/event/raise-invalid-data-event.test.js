@@ -1,6 +1,6 @@
 const raiseEvent = require('../../../../app/event/raise-event')
 const raiseInvalidDataEvent = require('../../../../app/event/raise-invalid-data-event')
-const getEndemicsClaimMock = require('../../../../app/session').getEndemicsClaim
+const { getEndemicsClaim: getEndemicsClaimMock, getApplication: getApplicationMock, getOrganisation: getOrganisationMock } = require('../../../../app/session')
 const getCustomerMock = require('../../../../app/session').getCustomer
 
 jest.mock('../../../../app/event/raise-event')
@@ -29,7 +29,8 @@ const event = {
     exception,
     raisedAt: newDate,
     journey: 'claim',
-    reference
+    reference,
+    applicationReference: '12345'
   },
   status: 'alert'
 }
@@ -38,8 +39,10 @@ describe('Send event on raise invalid data event', () => {
   beforeEach(async () => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(newDate)
-    getEndemicsClaimMock.mockImplementation(() => { return { reference, organisation: { sbi, email } } })
-    getCustomerMock.mockImplementation(() => { return crn })
+    getEndemicsClaimMock.mockImplementation(() => ({ reference }))
+    getOrganisationMock.mockImplementation(() => ({ sbi, email }))
+    getApplicationMock.mockImplementation(() => ({ latestEndemicsApplication: { reference: '12345' } }))
+    getCustomerMock.mockImplementation(() => crn)
   })
 
   afterEach(async () => {

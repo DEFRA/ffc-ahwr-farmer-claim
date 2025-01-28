@@ -76,6 +76,7 @@ describe('Disease status test', () => {
         url,
         auth
       }
+      getEndemicsClaim.mockReturnValue({ reference: '123', diseaseStatus: '1' })
 
       const response = await server.inject(options)
 
@@ -87,6 +88,7 @@ describe('Disease status test', () => {
         url,
         auth
       }
+      getEndemicsClaim.mockReturnValue({ diseaseStatus: '1', reference: '123' })
 
       const response = await server.inject(options)
 
@@ -100,7 +102,7 @@ describe('Disease status test', () => {
         url
       }
 
-      getEndemicsClaim.mockReturnValue({ diseaseStatus: '1' })
+      getEndemicsClaim.mockReturnValue({ diseaseStatus: '1', reference: '123' })
 
       const response = await server.inject(options)
       const $ = cheerio.load(response.payload)

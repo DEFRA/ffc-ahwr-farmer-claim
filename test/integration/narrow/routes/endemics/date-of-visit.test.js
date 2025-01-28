@@ -109,7 +109,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
             data: {
               typeOfReview: 'R'
             }
-          }]
+          }],
+          reference: '12345'
         }
       })
       const options = {

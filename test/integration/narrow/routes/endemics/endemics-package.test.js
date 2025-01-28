@@ -12,7 +12,7 @@ describe('Endemics package test', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: '12345' } })
     process.env.ENDEMICS_ENABLED = 'true'
 
     jest.mock('../../../../../app/config', () => {

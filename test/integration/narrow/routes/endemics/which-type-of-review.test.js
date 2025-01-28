@@ -41,13 +41,17 @@ describe('Which type of review test', () => {
 
   describe('GET', () => {
     beforeEach(() => {
-      // this call is made by the pre-handler for logging context
+      // this call is made by the pre-handler for logging context and reference
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+        .mockReturnValueOnce({ reference: '12345' })
+      sessionMock.getApplication
+        .mockReturnValueOnce({ latestEndemicsApplication: { reference: '12345' } })
     })
 
     test('sets typeOfLivestock from old world applications', async () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
-        .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [], latestVetVisitApplication })
+        .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [] })
+      sessionMock.getApplication.mockReturnValueOnce({ latestVetVisitApplication })
       const options = {
         method: 'GET',
         url,
@@ -66,9 +70,11 @@ describe('Which type of review test', () => {
     })
 
     test('sets typeOfLivestock from new world claims if present', async () => {
-      const endemicsValue = { typeOfReview: 'review', latestVetVisitApplication, previousClaims }
+      const endemicsValue = { typeOfReview: 'review', previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsValue)
         .mockReturnValueOnce(endemicsValue)
+      sessionMock.getApplication
+        .mockReturnValueOnce({ latestVetVisitApplication })
       const options = {
         method: 'GET',
         url,

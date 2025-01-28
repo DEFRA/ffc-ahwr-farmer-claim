@@ -47,7 +47,7 @@ describe('Claim endemics home page test', () => {
         type: 'VV'
       }
     })
-    contextHelperMock.refreshClaims.mockReturnValue([])
+    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([])
 
     const options = {
       method: 'GET',
@@ -72,7 +72,7 @@ describe('Claim endemics home page test', () => {
       latestVetVisitApplication: undefined
     })
 
-    contextHelperMock.refreshClaims.mockReturnValue([])
+    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([])
 
     const options = {
       method: 'GET',
@@ -97,7 +97,7 @@ describe('Claim endemics home page test', () => {
       latestVetVisitApplication: undefined
     })
 
-    contextHelperMock.refreshClaims.mockReturnValue([
+    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([
       {
         info: 'some claim'
       }
@@ -146,7 +146,7 @@ describe('Claim endemics home page test', () => {
         type: 'EE'
       }
     })
-    contextHelperMock.refreshClaims.mockReturnValue([])
+    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([])
 
     const options = {
       method: 'GET',

@@ -62,11 +62,8 @@ function getEndemicsClaim (request, key) {
   return get(request, entries.endemicsClaim, key)
 }
 
-function clearEndemicsClaim (request) { // Remove all journey related data
-  // const endemicsClaim = getEndemicsClaim(request)
+function clearEndemicsClaim (request) {
   request.yar.clear(entries.endemicsClaim)
-  // setEndemicsClaim(request, 'reference', endemicsClaim?.reference)
-  // setEndemicsClaim(request, 'amount', endemicsClaim?.amount)
 }
 
 function setTempClaimReference (request, key, value, status) {

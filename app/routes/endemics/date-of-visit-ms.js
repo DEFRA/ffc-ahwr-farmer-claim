@@ -17,8 +17,7 @@ const {
   endemicsDateOfTesting,
   endemicsSpeciesNumbers,
   endemicsWhichTypeOfReview,
-  endemicsVetVisitsReviewTestResults,
-  claimDashboard
+  endemicsVetVisitsReviewTestResults
 } = require('../../config/routes')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')

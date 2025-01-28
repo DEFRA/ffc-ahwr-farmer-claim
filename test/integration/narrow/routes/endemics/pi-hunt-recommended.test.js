@@ -21,7 +21,7 @@ describe('PI Hunt recommended tests', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    getEndemicsClaimMock.mockImplementation(() => { return {} })
+    getEndemicsClaimMock.mockImplementation(() => { return { reference: '12345' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })

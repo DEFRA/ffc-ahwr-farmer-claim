@@ -33,6 +33,7 @@ describe('context-helper', () => {
   })
 
   test('getTypeOfLivestockFromLatestClaim will return from latest endemics claim', () => {
+    mockSession.getApplication.mockReturnValueOnce({})
     mockSession.getEndemicsClaim.mockReturnValueOnce({
       previousClaims: [
         {
@@ -52,7 +53,8 @@ describe('context-helper', () => {
   })
 
   test('getTypeOfLivestockFromLatestClaim will return from latest application', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    mockSession.getEndemicsClaim.mockReturnValueOnce({})
+    mockSession.getApplication.mockReturnValueOnce({
       latestVetVisitApplication: {
         data: {
           whichReview: 'sheep'
@@ -76,7 +78,9 @@ describe('context-helper', () => {
             typeOfLivestock: 'pigs'
           }
         }
-      ],
+      ]
+    })
+    mockSession.getApplication.mockReturnValueOnce({
       latestVetVisitApplication: {
         data: {
           whichReview: 'dairy'
@@ -126,8 +130,8 @@ describe('context-helper', () => {
       type: 'EE'
     })
     expect(returnedApplication.latestVetVisitApplication).toBeUndefined()
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+    expect(mockSession.setApplication).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
+    expect(mockSession.setApplication).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
   })
 
   test('refreshApplications sets latest old world application into the session and returns it if within 10 months of latest new world one', async () => {
@@ -155,8 +159,8 @@ describe('context-helper', () => {
       name: 'app2',
       type: 'VV'
     })
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+    expect(mockSession.setApplication).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
+    expect(mockSession.setApplication).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
   })
 
   test('refreshApplications does not set latest old world application into the session or return it if not within 10 months of latest new world one', async () => {
@@ -181,7 +185,7 @@ describe('context-helper', () => {
       type: 'EE'
     })
     expect(returnedApplication.latestVetVisitApplication).toBeUndefined()
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+    expect(mockSession.setApplication).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
+    expect(mockSession.setApplication).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
   })
 })

@@ -4,7 +4,7 @@ const appInsights = require('applicationinsights')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { livestockTypes } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
+const { getEndemicsClaim: getEndemicsClaimMock, getApplication } = require('../../../../../app/session')
 const {
   beefReviewClaim,
   dairyReviewClaim,
@@ -42,10 +42,6 @@ describe('Check answers test', () => {
 
   let server
 
-  afterAll(async () => {
-    await server.stop()
-  })
-
   beforeAll(async () => {
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -81,7 +77,8 @@ describe('Check answers test', () => {
     await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -329,7 +326,7 @@ describe('Check answers test', () => {
 
       test('for unknown species', async () => {
         getEndemicsClaimMock.mockImplementation(() => {
-          return { sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
+          return { ...sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
         })
         const options = {
           method: 'GET',
@@ -412,7 +409,8 @@ describe('Check answers test', () => {
           laboratoryURN: 'laboratoryURN',
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults'
+          testResults: 'testResults',
+          reference: '12345'
         }
       })
       const options = {
@@ -447,7 +445,8 @@ describe('Check answers test', () => {
           laboratoryURN: 'laboratoryURN',
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
-          testResults: undefined
+          testResults: undefined,
+          reference: '12345'
         }
       })
       const options = {
@@ -489,7 +488,8 @@ describe('Check answers test', () => {
           vetsName: 'vetsName',
           vetRCVSNumber: 'vetRCVSNumber',
           laboratoryURN: 'laboratoryURN',
-          vetVisitsReviewTestResults: 'vetVisitsReviewTestResults'
+          vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
+          reference: '12345'
         }
       })
       const options = {
@@ -529,58 +529,55 @@ describe('Check answers test', () => {
       })
     }
 
-    test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
-      'When post new claim (pigs review), it should redirect to confirmation page',
-      async ({ latestVetVisitApplication }) => {
-        const options = {
-          method: 'POST',
-          url,
-          auth,
-          payload: { crumb },
-          headers: { cookie: `crumb=${crumb}` }
-        }
-
-        getEndemicsClaimMock.mockImplementation(() => {
-          return {
-            typeOfLivestock: 'pigs',
-            typeOfReview: 'R',
-            dateOfVisit: '2023-12-19T10:25:11.318Z',
-            dateOfTesting: '2023-12-19T10:25:11.318Z',
-            speciesNumbers: 'Yes',
-            vetsName: 'VetName',
-            vetRCVSNumber: '123456',
-            laboratoryURN: '123456',
-            latestVetVisitApplication,
-            latestEndemicsApplication: {
-              reference: '123'
-            },
-            reference: 'tempClaimReference'
-          }
-        })
-
-        const mockResponse = {
-          res: {
-            statusCode: 200,
-            statusMessage: 'OK'
-          },
-          payload: { reference: '123' }
-        }
-
-        Wreck.post.mockResolvedValue(mockResponse)
-
-        jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
-          return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
-          }
-        })
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(302)
-        expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
-
-        expectAppInsightsEventRaised('tempClaimReference', '123')
+    test('When post new claim (pigs review), it should redirect to confirmation page', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` }
       }
-    )
+      getEndemicsClaimMock.mockImplementation(() => {
+        return {
+          typeOfLivestock: 'pigs',
+          typeOfReview: 'R',
+          dateOfVisit: '2023-12-19T10:25:11.318Z',
+          dateOfTesting: '2023-12-19T10:25:11.318Z',
+          speciesNumbers: 'Yes',
+          vetsName: 'VetName',
+          vetRCVSNumber: '123456',
+          laboratoryURN: '123456',
+          reference: 'tempClaimReference'
+        }
+      })
+      getApplication.mockReturnValue(({
+        latestEndemicsApplication: {
+          reference: '123'
+        }
+      }))
+
+      const mockResponse = {
+        res: {
+          statusCode: 200,
+          statusMessage: 'OK'
+        },
+        payload: { reference: '123' }
+      }
+
+      Wreck.post.mockResolvedValue(mockResponse)
+
+      jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
+        return {
+          submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
+        }
+      })
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
+
+      expectAppInsightsEventRaised('tempClaimReference', '123')
+    })
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
       'When post new claim (sheep endemics), it should redirect to confirmation page',
@@ -603,14 +600,16 @@ describe('Check answers test', () => {
             vetsName: 'VetName',
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
-            latestVetVisitApplication,
             sheepTestResults,
-            latestEndemicsApplication: {
-              reference: '123'
-            },
             reference: 'tempClaimReference'
           }
         })
+        getApplication.mockReturnValueOnce(({
+          latestVetVisitApplication,
+          latestEndemicsApplication: {
+            reference: '123'
+          }
+        }))
 
         const mockResponse = {
           res: {
