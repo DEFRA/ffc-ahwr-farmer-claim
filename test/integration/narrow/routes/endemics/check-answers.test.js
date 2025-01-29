@@ -517,7 +517,7 @@ describe('Check answers test', () => {
       crumb = await getCrumbs(server)
     })
 
-    function expectAppInsightsEventRaised (tempClaimReference, claimReference, status) {
+    function expectAppInsightsEventRaised(tempClaimReference, claimReference, status) {
       expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
         name: 'claim-submitted',
         properties: {
@@ -529,55 +529,58 @@ describe('Check answers test', () => {
       })
     }
 
-    test('When post new claim (pigs review), it should redirect to confirmation page', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-      getEndemicsClaimMock.mockImplementation(() => {
-        return {
-          typeOfLivestock: 'pigs',
-          typeOfReview: 'R',
-          dateOfVisit: '2023-12-19T10:25:11.318Z',
-          dateOfTesting: '2023-12-19T10:25:11.318Z',
-          speciesNumbers: 'Yes',
-          vetsName: 'VetName',
-          vetRCVSNumber: '123456',
-          laboratoryURN: '123456',
-          reference: 'tempClaimReference'
+    test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
+      'When post new claim (pigs review), it should redirect to confirmation page',
+      async ({ latestVetVisitApplication }) => {
+        const options = {
+          method: 'POST',
+          url,
+          auth,
+          payload: { crumb },
+          headers: { cookie: `crumb=${crumb}` }
         }
+        getEndemicsClaimMock.mockImplementation(() => {
+          return {
+            typeOfLivestock: 'pigs',
+            typeOfReview: 'R',
+            dateOfVisit: '2023-12-19T10:25:11.318Z',
+            dateOfTesting: '2023-12-19T10:25:11.318Z',
+            speciesNumbers: 'Yes',
+            vetsName: 'VetName',
+            vetRCVSNumber: '123456',
+            laboratoryURN: '123456',
+            reference: 'tempClaimReference'
+          }
+        })
+        getApplication.mockReturnValue(({
+          latestEndemicsApplication: {
+            reference: '123'
+          },
+          latestVetVisitApplication
+        }))
+
+        const mockResponse = {
+          res: {
+            statusCode: 200,
+            statusMessage: 'OK'
+          },
+          payload: { reference: '123' }
+        }
+
+        Wreck.post.mockResolvedValue(mockResponse)
+
+        jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
+          return {
+            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
+          }
+        })
+        const res = await server.inject(options)
+
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
+
+        expectAppInsightsEventRaised('tempClaimReference', '123')
       })
-      getApplication.mockReturnValue(({
-        latestEndemicsApplication: {
-          reference: '123'
-        }
-      }))
-
-      const mockResponse = {
-        res: {
-          statusCode: 200,
-          statusMessage: 'OK'
-        },
-        payload: { reference: '123' }
-      }
-
-      Wreck.post.mockResolvedValue(mockResponse)
-
-      jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
-        return {
-          submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
-        }
-      })
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
-
-      expectAppInsightsEventRaised('tempClaimReference', '123')
-    })
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
       'When post new claim (sheep endemics), it should redirect to confirmation page',
