@@ -1,6 +1,6 @@
 const raiseEvent = require('../../../../app/event/raise-event')
 const raiseInvalidDataEvent = require('../../../../app/event/raise-invalid-data-event')
-const { getEndemicsClaim: getEndemicsClaimMock } = require('../../../../app/session')
+const getEndemicsClaimMock = require('../../../../app/session').getEndemicsClaim
 const getCustomerMock = require('../../../../app/session').getCustomer
 
 jest.mock('../../../../app/event/raise-event')
@@ -29,7 +29,7 @@ const event = {
     exception,
     raisedAt: newDate,
     journey: 'claim',
-    reference,
+    reference
   },
   status: 'alert'
 }

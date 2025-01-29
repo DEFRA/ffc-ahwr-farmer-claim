@@ -157,46 +157,46 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
 
     data = error
       ? {
-          ...request.payload,
-          reviewOrFollowUpText,
-          errorSummary,
-          dateOfVisit: {
-            day: {
-              value: request.payload['visit-date-day'],
-              error: error.details.find(
-                (e) =>
-                  e.context.label === 'visit-date-day' ||
-                  e.type.startsWith('dateOfVisit')
-              )
-            },
-            month: {
-              value: request.payload['visit-date-month'],
-              error: error.details.find(
-                (e) =>
-                  e.context.label === 'visit-date-month' ||
-                  e.type.startsWith('dateOfVisit')
-              )
-            },
-            year: {
-              value: request.payload['visit-date-year'],
-              error: error.details.find(
-                (e) =>
-                  e.context.label === 'visit-date-year' ||
-                  e.type.startsWith('dateOfVisit')
-              )
-            },
-            errorMessage: error.details.find((e) =>
-              e.context.label.startsWith('visit-date')
+        ...request.payload,
+        reviewOrFollowUpText,
+        errorSummary,
+        dateOfVisit: {
+          day: {
+            value: request.payload['visit-date-day'],
+            error: error.details.find(
+              (e) =>
+                e.context.label === 'visit-date-day' ||
+                e.type.startsWith('dateOfVisit')
             )
-              ? {
-                  text: error.details.find((e) =>
-                    e.context.label.startsWith('visit-date')
-                  ).message
-                }
-              : undefined
           },
-          backLink: previousPageUrl(request)
-        }
+          month: {
+            value: request.payload['visit-date-month'],
+            error: error.details.find(
+              (e) =>
+                e.context.label === 'visit-date-month' ||
+                e.type.startsWith('dateOfVisit')
+            )
+          },
+          year: {
+            value: request.payload['visit-date-year'],
+            error: error.details.find(
+              (e) =>
+                e.context.label === 'visit-date-year' ||
+                e.type.startsWith('dateOfVisit')
+            )
+          },
+          errorMessage: error.details.find((e) =>
+            e.context.label.startsWith('visit-date')
+          )
+            ? {
+              text: error.details.find((e) =>
+                e.context.label.startsWith('visit-date')
+              ).message
+            }
+            : undefined
+        },
+        backLink: previousPageUrl(request)
+      }
       : {}
   }
   return { error, data }
@@ -256,7 +256,8 @@ const getHandler = {
   options: {
     pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
-      const { dateOfVisit, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
+      const { dateOfVisit, latestEndemicsApplication, typeOfReview } =
+        session.getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 

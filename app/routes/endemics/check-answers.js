@@ -533,6 +533,7 @@ const postHandler = {
         numberOfOralFluidSamples,
         numberAnimalsTested,
         testResults,
+        latestEndemicsApplication,
         vetVisitsReviewTestResults,
         sheepTestResults,
         biosecurity,
@@ -541,8 +542,7 @@ const postHandler = {
         sheepEndemicsPackage,
         numberOfSamplesTested,
         reference: tempClaimReference,
-        reviewTestResults,
-        latestEndemicsApplication
+        reviewTestResults
       } = getEndemicsClaim(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)

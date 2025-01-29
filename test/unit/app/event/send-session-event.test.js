@@ -18,7 +18,7 @@ describe('Send event on session set', () => {
       email: 'email@email.com',
       cph: '123/456/789'
     }
-  
+
     event = {
       name: 'send-session-event',
       type: `${entryKey}-${key}`,

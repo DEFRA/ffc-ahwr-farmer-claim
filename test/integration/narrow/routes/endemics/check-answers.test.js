@@ -4,7 +4,7 @@ const appInsights = require('applicationinsights')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { livestockTypes } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const { getEndemicsClaim: getEndemicsClaimMock, getApplication } = require('../../../../../app/session')
+const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
 const {
   beefReviewClaim,
   dairyReviewClaim,
@@ -549,11 +549,11 @@ describe('Check answers test', () => {
             vetsName: 'VetName',
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
-            reference: 'tempClaimReference',
+            latestVetVisitApplication,
             latestEndemicsApplication: {
               reference: '123'
             },
-            latestVetVisitApplication
+            reference: 'tempClaimReference'
           }
         })
 
@@ -601,12 +601,12 @@ describe('Check answers test', () => {
             vetsName: 'VetName',
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
-            sheepTestResults,
-            reference: 'tempClaimReference',
             latestVetVisitApplication,
+            sheepTestResults,
             latestEndemicsApplication: {
               reference: '123'
-            }
+            },
+            reference: 'tempClaimReference'
           }
         })
 

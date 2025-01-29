@@ -107,5 +107,5 @@ module.exports = {
   getCustomer,
   setCustomer,
   getPkcecodes,
-  setPkcecodes,
+  setPkcecodes
 }

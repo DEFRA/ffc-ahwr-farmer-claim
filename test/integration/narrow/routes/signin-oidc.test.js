@@ -5,10 +5,10 @@ const authMock = require('../../../../app/auth')
 jest.mock('../../../../app/auth')
 const latestApplicationMock = require('../../../../app/routes/models/latest-application')
 jest.mock('../../../../app/routes/models/latest-application')
-const person = require('../../../../app/api-requests/rpa-api/person')
-const getPersonSummaryMock = jest.spyOn(person, 'getPersonSummary')
-const organisation = require('../../../../app/api-requests/rpa-api/organisation')
-const organisationIsEligibleMock = jest.spyOn(organisation, 'organisationIsEligible')
+const personMock = require('../../../../app/api-requests/rpa-api/person')
+jest.mock('../../../../app/api-requests/rpa-api/person')
+const organisationMock = require('../../../../app/api-requests/rpa-api/organisation')
+jest.mock('../../../../app/api-requests/rpa-api/organisation')
 const sendExceptionEventMock = require('../../../../app/event/raise-ineligibility-event')
 jest.mock('../../../../app/event/raise-ineligibility-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
@@ -123,7 +123,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -131,7 +131,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -175,7 +175,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -183,7 +183,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -229,7 +229,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -237,7 +237,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -281,7 +281,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -289,7 +289,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -329,7 +329,7 @@ describe('FarmerApply defra ID redirection test', () => {
 
       authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
       authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      personMock.getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -337,7 +337,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationMock.organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',

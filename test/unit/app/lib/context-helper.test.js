@@ -65,11 +65,6 @@ describe('context-helper', () => {
 
   test('getTypeOfLivestockFromLatestClaim will return from latest endemics claim if both exist', () => {
     mockSession.getEndemicsClaim.mockReturnValueOnce({
-      latestVetVisitApplication: {
-        data: {
-          whichReview: 'dairy'
-        }
-      },
       previousClaims: [
         {
           data: {
@@ -81,7 +76,12 @@ describe('context-helper', () => {
             typeOfLivestock: 'pigs'
           }
         }
-      ]
+      ],
+      latestVetVisitApplication: {
+        data: {
+          whichReview: 'dairy'
+        }
+      }
     })
 
     expect(getTypeOfLivestockFromLatestClaim({})).toBe('sheep')
@@ -96,7 +96,7 @@ describe('context-helper', () => {
         name: 'claim2'
       }
     ]
-    const mockRequest = { logger: () => { } }
+    const mockRequest = { logger: () => {} }
     mockClaimApi.getClaimsByApplicationReference.mockReturnValueOnce(mockClaims)
 
     const returnedClaims = await refreshClaims(mockRequest, 'anyOldRef')
@@ -116,7 +116,7 @@ describe('context-helper', () => {
         type: 'EE'
       }
     ]
-    const mockRequest = { logger: () => { }, query: { sbi: '123' } }
+    const mockRequest = { logger: () => {}, query: { sbi: '123' } }
     mockApplicationApi.getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
 
     const returnedApplication = await refreshApplications(mockRequest)
@@ -141,7 +141,7 @@ describe('context-helper', () => {
         type: 'VV'
       }
     ]
-    const mockRequest = { logger: () => { }, query: { sbi: '123' } }
+    const mockRequest = { logger: () => {}, query: { sbi: '123' } }
     mockApplicationApi.getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
     mockDateUtils.isWithin10Months.mockReturnValueOnce(true)
 
@@ -170,7 +170,7 @@ describe('context-helper', () => {
         type: 'VV'
       }
     ]
-    const mockRequest = { logger: () => { }, query: { sbi: '123' } }
+    const mockRequest = { logger: () => {}, query: { sbi: '123' } }
     mockApplicationApi.getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
     mockDateUtils.isWithin10Months.mockReturnValueOnce(false)
 

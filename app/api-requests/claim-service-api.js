@@ -166,7 +166,7 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
 }
 
 const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
-  const { typeOfReview, previousClaims, typeOfLivestock, latestVetVisitApplication } = session.getEndemicsClaim(request)
+  const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
   return (
     typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&

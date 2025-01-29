@@ -238,8 +238,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           sbi: '12345'
         },
         reviewTestResults: 'positive',
-        latestEndemicsApplication,
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
     })
     const options = {
