@@ -76,25 +76,27 @@ describe('Disease status test', () => {
         url,
         auth
       }
-      getEndemicsClaim.mockReturnValue({ reference: '123', diseaseStatus: '1' })
+      getEndemicsClaim.mockReturnValue({ reference: '123' })
 
       const response = await server.inject(options)
 
       expect(response.statusCode).toBe(200)
     })
+
     test('display question text', async () => {
       const options = {
         method: 'GET',
         url,
         auth
       }
-      getEndemicsClaim.mockReturnValue({ diseaseStatus: '1', reference: '123' })
+      getEndemicsClaim.mockReturnValue({ reference: '123' })
 
       const response = await server.inject(options)
 
       const $ = cheerio.load(response.payload)
       expect($('h1').text()).toMatch('What is the disease status category?')
     })
+
     test("select '1' when diseaseStatus is '1'", async () => {
       const options = {
         method: 'GET',
