@@ -445,6 +445,45 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
+  test('user makes a review claim and created an application on the same day', async () => { // happy path
+    session.getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        previousClaims: [],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication: {
+          ...latestEndemicsApplication,
+          createdAt: new Date('2025/01/01 14:30:00'),
+        }
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
   test('user makes a review claim and has a previous review claim for the same species within the last 10 months', async () => { // unhappy path
     session.getEndemicsClaim.mockImplementation(() => {
       return {
@@ -1390,6 +1429,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
+
+  
 })
 
 describe('previousPageUrl', () => {

@@ -47,12 +47,12 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
 const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
-        statusId: oldWorldApp.statusId,
-        data: {
-          claimType: oldWorldApp.data.whichReview,
-          dateOfVisit: oldWorldApp.data.visitDate
-        }
+      statusId: oldWorldApp.statusId,
+      data: {
+        claimType: oldWorldApp.data.whichReview,
+        dateOfVisit: oldWorldApp.data.visitDate
       }
+    }
     : undefined
 
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
@@ -115,8 +115,10 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     }
   }
 
-  if (new Date(newWorldApplication.createdAt) > dateOfVisit) {
-    return {
+  const applicationCreatedTime = new Date(newWorldApplication.createdAt).setHours(0, 0, 0, 0)
+
+  if (applicationCreatedTime > dateOfVisit.getTime()) {
+      return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} cannot be before the date your agreement began`,
         href: '#visit-date-day'
