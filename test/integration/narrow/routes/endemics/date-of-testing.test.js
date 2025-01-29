@@ -428,7 +428,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
     ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
         .mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
-      getApplication.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: '12345' } })
+      getApplication.mockImplementation(() => { return {} })
 
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
 
