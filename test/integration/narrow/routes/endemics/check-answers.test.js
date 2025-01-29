@@ -517,7 +517,7 @@ describe('Check answers test', () => {
       crumb = await getCrumbs(server)
     })
 
-    function expectAppInsightsEventRaised(tempClaimReference, claimReference, status) {
+    function expectAppInsightsEventRaised (tempClaimReference, claimReference, status) {
       expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
         name: 'claim-submitted',
         properties: {

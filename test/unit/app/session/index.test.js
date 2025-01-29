@@ -144,6 +144,6 @@ describe('session', () => {
     session.clearEndemicsClaim(requestSetMock)
 
     expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(1)
-    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
+    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(3)
   })
 })

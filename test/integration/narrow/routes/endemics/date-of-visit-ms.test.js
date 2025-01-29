@@ -680,7 +680,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'beef'
           }
         },
-        latestEndemicsApplication,
+        latestEndemicsApplication
       }
     })
     const options = {

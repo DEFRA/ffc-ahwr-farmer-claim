@@ -12,7 +12,7 @@ const createServer = require('../../../../../app/server')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
-function expectPageContentOk($) {
+function expectPageContentOk ($) {
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')

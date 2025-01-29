@@ -72,7 +72,7 @@ describe('Which type of review test', () => {
       jest.clearAllMocks()
       crumb = await getCrumbs(server)
       // this call is made by the pre-handler for logging context
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R', latestEndemicsApplication: { reference: 'APP-12345' }})
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R', latestEndemicsApplication: { reference: 'APP-12345' } })
     })
 
     test('Returns 400 and shows error message when payload is invalid', async () => {

@@ -64,6 +64,8 @@ function clearEndemicsClaim (request) {
   const endemicsClaim = getEndemicsClaim(request)
   request.yar.clear(entries.endemicsClaim)
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
+  setEndemicsClaim(request, 'latestVetVisitApplication', endemicsClaim?.latestVetVisitApplication)
+  setEndemicsClaim(request, 'latestEndemicsApplication', endemicsClaim?.latestEndemicsApplication)
 }
 
 function setTempClaimReference (request, key, value, status) {

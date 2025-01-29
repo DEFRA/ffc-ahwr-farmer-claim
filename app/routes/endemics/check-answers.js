@@ -3,7 +3,7 @@ const urlPrefix = require('../../config').urlPrefix
 const {
   setEndemicsClaim,
   getEndemicsClaim,
-  setTempClaimReference,
+  setTempClaimReference
 } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const {
