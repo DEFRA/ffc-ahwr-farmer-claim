@@ -560,7 +560,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         organisation: {
           name: 'Farmer Johns',
           sbi: '12345'
-        },    
+        },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestEndemicsApplication
