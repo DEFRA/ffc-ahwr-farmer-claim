@@ -459,7 +459,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reference: 'TEMP-6GSE-PIR8',
         latestEndemicsApplication: {
           ...latestEndemicsApplication,
-          createdAt: new Date('2025/01/01 14:30:00'),
+          createdAt: new Date('2025/01/01 14:30:00')
         }
       }
     })
@@ -1429,8 +1429,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
-
-  
 })
 
 describe('previousPageUrl', () => {
