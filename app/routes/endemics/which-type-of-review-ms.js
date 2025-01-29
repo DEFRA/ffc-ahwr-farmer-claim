@@ -62,8 +62,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfReview } = request.payload
-      const { typeOfLivestock, previousClaims } = getEndemicsClaim(request)
-      const { latestVetVisitApplication } = getApplication(request)
+      const { typeOfLivestock, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
 
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 

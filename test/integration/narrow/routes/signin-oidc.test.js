@@ -395,16 +395,17 @@ describe('FarmerApply defra ID redirection test', () => {
       expect(latestApplicationMock).toBeCalledTimes(1)
       expect(authMock.authenticate).toBeCalledTimes(1)
       expect(authMock.setAuthCookie).toBeCalledTimes(1)
-      expect(sessionMock.setOrganisation).toHaveBeenCalledWith(expect.any(Object), {
-        sbi: '101122201',
-        farmerName: 'Bill Smith',
-        name: 'Mrs Gill Black',
-        email: 'billsmith@testemail.com',
-        orgEmail: 'org1@testemail.com',
-        address: 'The Test House,Test road,Wicklewood,11,TestHouse,Test ROAD,Test City,TS1 1TS,United Kingdom',
-        crn: '1103452436',
-        frn: 'BUSI-123'
-      })
+      expect(sessionMock.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'organisation',
+        {
+          sbi: '101122201',
+          farmerName: 'Bill Smith',
+          name: 'Mrs Gill Black',
+          email: 'billsmith@testemail.com',
+          orgEmail: 'org1@testemail.com',
+          address: 'The Test House,Test road,Wicklewood,11,TestHouse,Test ROAD,Test City,TS1 1TS,United Kingdom',
+          crn: '1103452436',
+          frn: 'BUSI-123'
+        })
     })
   })
 })

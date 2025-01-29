@@ -108,8 +108,7 @@ const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview
 }
 
 const getReviewTestResultWithinLast10Months = (request) => {
-  const { dateOfVisit, previousClaims } = session.getEndemicsClaim(request)
-  const { latestVetVisitApplication } = session.getApplication(request)
+  const { dateOfVisit, previousClaims, latestVetVisitApplication } = session.getEndemicsClaim(request)
   const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
 
   if (!reviewWithinLast10Months) return undefined
@@ -167,8 +166,7 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
 }
 
 const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
-  const { typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
-  const { latestVetVisitApplication } = session.getApplication(request)
+  const { typeOfReview, previousClaims, typeOfLivestock, latestVetVisitApplication } = session.getEndemicsClaim(request)
   return (
     typeOfReview === claimType.endemics &&
     latestVetVisitApplication &&

@@ -9,11 +9,10 @@ const { getReviewType } = require('../../../../../app/lib/get-review-type')
 
 const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isDateOfTestingLessThanDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
 const createServer = require('../../../../../app/server')
-const { getApplication } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
-function expectPageContentOk ($) {
+function expectPageContentOk($) {
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
   expect($('.govuk-button').text()).toMatch('Continue')
   const backLink = $('.govuk-back-link')
@@ -43,8 +42,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { reference: '12345' } })
-    getApplication.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: '12345' } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
@@ -388,9 +386,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
       getEndemicsClaimMock
-        .mockReturnValue({ typeOfReview: 'E', typeOfLivestock, reference: '12345' })
-      getApplication
-        .mockReturnValue({ latestEndemicsApplication: { createdAt: new Date('2022-01-01') } })
+        .mockReturnValue({ typeOfReview: 'E', typeOfLivestock, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: '12345' })
 
       const options = {
         method: 'GET',
@@ -428,8 +424,6 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
     ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
         .mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
-      getApplication.mockImplementation(() => { return {} })
-
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
 
       const options = {

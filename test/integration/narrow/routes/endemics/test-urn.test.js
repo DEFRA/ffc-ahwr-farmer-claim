@@ -7,7 +7,6 @@ const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsCl
 const { isURNUnique } = require('../../../../../app/api-requests/claim-service-api')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const createServer = require('../../../../../app/server')
-const { getOrganisation } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -121,8 +120,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', nextPageUrl: '/claim/endemics/number-of-samples-tested' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock and $typeOfReview', async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345' } })
-      getOrganisation.mockReturnValueOnce({ sbi: '12345678' })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
       isURNUnique.mockImplementation(() => { return { isURNUnique: true } })
       const options = {
         method: 'POST',
@@ -143,9 +141,8 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', message: 'This test result unique reference number (URN) or certificate number was used in a previous claim.' },
       { typeOfLivestock: 'beef', typeOfReview: 'R', message: 'This test result unique reference number (URN) was used in a previous claim.' }
     ])('redirects to exception screen when the URN number is not unique', async ({ typeOfLivestock, typeOfReview, message }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345' } })
-        .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345' } })
-      getOrganisation.mockReturnValueOnce({ sbi: '12345678' })
+      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
+        .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
       isURNUnique.mockImplementationOnce(() => { return { isURNUnique: false } })
       const options = {
         method: 'POST',

@@ -11,7 +11,6 @@ const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
 const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
 const config = require('../../../../../app/config')
-const { getApplication } = require('../../../../../app/session')
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
@@ -70,14 +69,10 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     setEndemicsClaimMock.mockImplementation(() => { })
     getEndemicsClaimMock.mockImplementation(() => {
       return {
+        latestVetVisitApplication,
+        latestEndemicsApplication,
         landingPage,
         reference: '12345'
-      }
-    })
-    getApplication.mockImplementation(() => {
-      return {
-        latestVetVisitApplication,
-        latestEndemicsApplication
       }
     })
   })
@@ -136,6 +131,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
       getEndemicsClaimMock.mockImplementation(() => {
         return {
+          latestEndemicsApplication,
+          latestVetVisitApplication,
           typeOfReview: 'endemics',
           typeOfLivestock: 'beef',
           previousClaims: [{
@@ -146,10 +143,6 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           dateOfVisit: '2024-05-01',
           reference: '12345'
         }
-      })
-      getApplication.mockReturnValue({
-        latestEndemicsApplication,
-        latestVetVisitApplication
       })
       const options = {
         method: 'GET',
@@ -607,17 +600,15 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
         const mockEndemicsClaim = {
+          latestVetVisitApplication: {
+            ...latestVetVisitApplication,
+            createdAt: applicationCreationDate
+          },
           previousClaims: [claim],
           typeOfReview: 'R'
         }
         getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
           .mockImplementationOnce(() => { return mockEndemicsClaim })
-        getApplication.mockReturnValue({
-          latestVetVisitApplication: {
-            ...latestVetVisitApplication,
-            createdAt: applicationCreationDate
-          }
-        })
         const options = {
           method: 'POST',
           url,
@@ -770,15 +761,13 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
         getEndemicsClaimMock.mockReturnValue({
-          previousClaims: [claim],
-          typeOfLivestock: claim.data.typeOfLivestock,
-          typeOfReview: 'E'
-        })
-        getApplication.mockReturnValue({
           latestVetVisitApplication: {
             ...latestVetVisitApplication,
             createdAt: applicationCreationDate
-          }
+          },
+          previousClaims: [claim],
+          typeOfLivestock: claim.data.typeOfLivestock,
+          typeOfReview: 'E'
         })
         const options = {
           method: 'POST',

@@ -105,16 +105,12 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   test('returns 200 when you dont have any previous claims', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
+        latestEndemicsApplication,
+        latestVetVisitApplication,
         typeOfReview: 'endemics',
         typeOfLivestock: 'beef',
         previousClaims: [],
         reference: '12345'
-      }
-    })
-    session.getApplication.mockImplementation(() => {
-      return {
-        latestEndemicsApplication,
-        latestVetVisitApplication
       }
     })
     const options = {
@@ -146,12 +142,6 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
         reference: '12345'
       }
     })
-    session.getApplication.mockImplementation(() => {
-      return {
-        latestEndemicsApplication,
-        latestVetVisitApplication
-      }
-    })
     const options = {
       method: 'GET',
       url,
@@ -169,6 +159,8 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   test('returns 200 and fills input with value in session', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
+        latestEndemicsApplication,
+        latestVetVisitApplication,
         typeOfReview: 'endemics',
         typeOfLivestock: 'beef',
         previousClaims: [{
@@ -178,12 +170,6 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
         }],
         dateOfVisit: '2024-05-01',
         reference: '12345'
-      }
-    })
-    session.getApplication.mockImplementation(() => {
-      return {
-        latestEndemicsApplication,
-        latestVetVisitApplication
       }
     })
     const options = {
@@ -247,16 +233,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
+        latestEndemicsApplication,
         reference: 'TEMP-6GSE-PIR8'
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -294,17 +278,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -342,16 +323,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -389,17 +368,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -439,17 +415,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -488,16 +461,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         }],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -540,16 +511,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         }],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -588,16 +557,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         }],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },    
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -626,17 +593,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestVetVisitApplication,
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestVetVisitApplication,
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -665,17 +630,15 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'pigs',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestVetVisitApplication,
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestVetVisitApplication,
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -704,23 +667,21 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestVetVisitApplication: {
+          ...latestVetVisitApplication,
+          data: {
+            visitDate: '2024-12-01',
+            whichReview: 'beef'
+          }
+        },
+        latestEndemicsApplication,
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestVetVisitApplication: {
-        ...latestVetVisitApplication,
-        data: {
-          visitDate: '2024-12-01',
-          whichReview: 'beef'
-        }
-      },
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -753,23 +714,21 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'R',
         previousClaims: [],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestVetVisitApplication: {
+          ...latestVetVisitApplication,
+          data: {
+            visitDate: '2024-12-01',
+            whichReview: 'pigs'
+          }
+        },
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestVetVisitApplication: {
-        ...latestVetVisitApplication,
-        data: {
-          visitDate: '2024-12-01',
-          whichReview: 'pigs'
-        }
-      },
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -810,16 +769,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -861,16 +818,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -917,16 +872,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -984,16 +937,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -1062,16 +1013,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'pigs',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -1112,16 +1061,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -1167,16 +1114,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -1222,16 +1167,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -1265,24 +1208,22 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'E',
         previousClaims: [],
         typeOfLivestock: 'beef',
-        reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
-      }
-    })
-    session.getApplication.mockReturnValue({
-      latestVetVisitApplication: {
-        ...latestVetVisitApplication,
-        data: {
-          visitDate: '2024-12-01',
-          whichReview: 'beef'
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
         },
-        statusId: 9
-      },
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestVetVisitApplication: {
+          ...latestVetVisitApplication,
+          data: {
+            visitDate: '2024-12-01',
+            whichReview: 'beef'
+          },
+          statusId: 9
+        },
+        latestEndemicsApplication
+      }
     })
     const options = {
       method: 'POST',
@@ -1371,16 +1312,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'negative',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',
@@ -1423,16 +1362,14 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           }
         ],
         typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
         reviewTestResults: 'positive',
-        reference: 'TEMP-6GSE-PIR8'
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
       }
-    })
-    session.getApplication.mockReturnValue({
-      latestEndemicsApplication
-    })
-    session.getOrganisation.mockReturnValue({
-      name: 'Farmer Johns',
-      sbi: '12345'
     })
     const options = {
       method: 'POST',

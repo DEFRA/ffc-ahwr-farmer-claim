@@ -549,15 +549,13 @@ describe('Check answers test', () => {
             vetsName: 'VetName',
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
-            reference: 'tempClaimReference'
+            reference: 'tempClaimReference',
+            latestEndemicsApplication: {
+              reference: '123'
+            },
+            latestVetVisitApplication
           }
         })
-        getApplication.mockReturnValue(({
-          latestEndemicsApplication: {
-            reference: '123'
-          },
-          latestVetVisitApplication
-        }))
 
         const mockResponse = {
           res: {
@@ -604,15 +602,13 @@ describe('Check answers test', () => {
             vetRCVSNumber: '123456',
             laboratoryURN: '123456',
             sheepTestResults,
-            reference: 'tempClaimReference'
+            reference: 'tempClaimReference',
+            latestVetVisitApplication,
+            latestEndemicsApplication: {
+              reference: '123'
+            }
           }
         })
-        getApplication.mockReturnValueOnce(({
-          latestVetVisitApplication,
-          latestEndemicsApplication: {
-            reference: '123'
-          }
-        }))
 
         const mockResponse = {
           res: {

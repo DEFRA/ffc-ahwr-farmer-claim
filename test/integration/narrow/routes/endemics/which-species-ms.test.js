@@ -1,7 +1,7 @@
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
-const { getEndemicsClaim, getApplication } = require('../../../../../app/session')
+const { getEndemicsClaim } = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const createServer = require('../../../../../app/server')
 const { resetEndemicsClaimSession } = require('../../../../../app/lib/context-helper')
@@ -111,8 +111,7 @@ describe('Endemics which species test', () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: 'sheep' }
       }
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
-      getApplication.mockReturnValue({ latestEndemicsApplication: { reference: '12345 ' } })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep', latestEndemicsApplication: { reference: '12345' } })
 
       const res = await server.inject(options)
 
@@ -129,8 +128,7 @@ describe('Endemics which species test', () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: 'sheep' }
       }
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reference: 'CLAIM-12345' })
-      getApplication.mockReturnValue({ latestEndemicsApplication: { reference: 'APP-12345' } })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reference: 'CLAIM-12345', latestEndemicsApplication: { reference: 'APP-12345' } })
 
       const res = await server.inject(options)
 

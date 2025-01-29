@@ -29,8 +29,8 @@ async function refreshApplications (request) {
     return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
   })
 
-  session.setApplication(request, latestVetVisitApplicationKey, latestVetVisitApplication)
-  session.setApplication(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+  session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
+  session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
 
   return { latestEndemicsApplication, latestVetVisitApplication }
 }
@@ -58,8 +58,7 @@ const resetEndemicsClaimSession = async (request, applicationRef, claimId) => {
 }
 
 function getLatestClaimForContext (request) {
-  const { previousClaims } = getEndemicsClaim(request)
-  const { latestVetVisitApplication } = session.getApplication(request)
+  const { previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
 
   // When we add the MS code we can layer in here filtering by species
   // const { typeOfLivestock, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)

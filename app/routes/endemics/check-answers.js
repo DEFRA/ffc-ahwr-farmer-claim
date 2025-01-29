@@ -4,7 +4,6 @@ const {
   setEndemicsClaim,
   getEndemicsClaim,
   setTempClaimReference,
-  getApplication
 } = require('../../session')
 const { submitNewClaim } = require('../../api-requests/claim-service-api')
 const {
@@ -542,9 +541,9 @@ const postHandler = {
         sheepEndemicsPackage,
         numberOfSamplesTested,
         reference: tempClaimReference,
-        reviewTestResults
+        reviewTestResults,
+        latestEndemicsApplication
       } = getEndemicsClaim(request)
-      const { latestEndemicsApplication } = getApplication(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)

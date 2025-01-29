@@ -1,11 +1,9 @@
-const { getEndemicsClaim, getCustomer, getOrganisation, getApplication } = require('../session')
+const { getEndemicsClaim, getCustomer } = require('../session')
 const raiseEvent = require('./raise-event')
 const sessionKeys = require('../session/keys')
 
 const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
-  const { reference } = getEndemicsClaim(request)
-  const { latestEndemicsApplication: { reference: applicationReference } = {} } = getApplication(request)
-  const organisation = getOrganisation(request)
+  const { reference, latestEndemicsApplication: { reference: applicationReference } = {}, organisation } = getEndemicsClaim(request)
   const crn = getCustomer(request, sessionKeys.customer.crn)
 
   if (request?.yar?.id && exception) {

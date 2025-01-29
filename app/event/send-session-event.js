@@ -29,11 +29,11 @@ const renameSessionKeysForEventReporting = (key) => {
 }
 const renameClaimEntryKeyForEventReporting = (entryKey) => entryKey === 'endemicsClaim' ? 'claim' : entryKey
 
-const sendSessionEvent = async (claim, organisation, sessionId, entryKey, key, value, ip, status = 'success') => {
+const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, status = 'success') => {
   key = renameSessionKeysForEventReporting(key)
   entryKey = renameClaimEntryKeyForEventReporting(entryKey)
 
-  const { reference, latestEndemicsApplication: { reference: applicationReference } = {} } = claim
+  const { organisation, reference, latestEndemicsApplication: { reference: applicationReference } = {} } = claim
 
   if (sessionId && organisation) {
     const event = {

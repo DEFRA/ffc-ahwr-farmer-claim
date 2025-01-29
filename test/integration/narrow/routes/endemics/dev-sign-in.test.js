@@ -107,7 +107,7 @@ describe(`${url} route page`, () => {
       expect(res.headers.location).toEqual('/claim/endemics?from=dashboard&sbi=12345678')
       expect(latestApplicationMock).toBeCalledTimes(1)
       expect(authMock.setAuthCookie).toBeCalledTimes(1)
-      expect(sessionMock.setOrganisation).toBeCalledTimes(1)
+      expect(sessionMock.setEndemicsClaim).toBeCalledTimes(1)
     })
   })
 })

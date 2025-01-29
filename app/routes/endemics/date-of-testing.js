@@ -74,9 +74,9 @@ const getHandler = {
         dateOfVisit,
         dateOfTesting,
         typeOfReview,
-        typeOfLivestock
+        typeOfLivestock,
+        latestEndemicsApplication
       } = session.getEndemicsClaim(request)
-      const { latestEndemicsApplication } = session.getApplication(request)
       const { questionText, questionHintText } = getTheQuestionAndHintText(
         typeOfReview,
         typeOfLivestock
@@ -339,9 +339,9 @@ const postHandler = {
         dateOfVisit,
         typeOfReview,
         typeOfLivestock,
-        previousClaims
+        previousClaims,
+        latestVetVisitApplication,
       } = session.getEndemicsClaim(request)
-      const { latestVetVisitApplication } = session.getApplication(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 

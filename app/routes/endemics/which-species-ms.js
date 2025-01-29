@@ -1,5 +1,5 @@
 const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim, getApplication } = require('../../session')
+const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { livestockTypes } = require('../../constants/claim')
 const {
@@ -58,8 +58,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfLivestock } = request.payload
-      const { typeOfLivestock: prevTypeOfLivestock, reference } = getEndemicsClaim(request)
-      const { latestEndemicsApplication } = getApplication(request)
+      const { typeOfLivestock: prevTypeOfLivestock, reference, latestEndemicsApplication } = getEndemicsClaim(request)
 
       if (typeOfLivestock !== prevTypeOfLivestock) {
         await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference)

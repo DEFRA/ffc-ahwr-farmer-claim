@@ -256,9 +256,7 @@ const getHandler = {
   options: {
     pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
-      const { dateOfVisit, typeOfReview } =
-        session.getEndemicsClaim(request)
-      const { latestEndemicsApplication } = session.getApplication(request)
+      const { dateOfVisit, latestEndemicsApplication, typeOfReview } = session.getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -292,12 +290,12 @@ const postHandler = {
       const {
         typeOfReview,
         previousClaims,
+        latestVetVisitApplication,
         typeOfLivestock,
+        organisation,
         reviewTestResults,
         reference: tempClaimReference
       } = session.getEndemicsClaim(request)
-      const { latestVetVisitApplication } = session.getApplication(request)
-      const organisation = session.getOrganisation(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)

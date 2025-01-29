@@ -42,16 +42,20 @@ const getHandler = {
         request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
         await changeContactHistory(personSummary, organisationSummary, request.logger)
 
-        session.setOrganisation(request, {
-          sbi: organisationSummary.organisation.sbi?.toString(),
-          farmerName: getPersonName(personSummary),
-          name: organisationSummary.organisation.name,
-          email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
-          orgEmail: organisationSummary.organisation.email,
-          address: getOrganisationAddress(organisationSummary.organisation.address),
-          crn: personSummary.customerReferenceNumber,
-          frn: organisationSummary.organisation.businessReference
-        })
+        session.setEndemicsClaim(
+          request,
+          sessionKeys.endemicsClaim.organisation,
+          {
+            sbi: organisationSummary.organisation.sbi?.toString(),
+            farmerName: getPersonName(personSummary),
+            name: organisationSummary.organisation.name,
+            email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
+            orgEmail: organisationSummary.organisation.email,
+            address: getOrganisationAddress(organisationSummary.organisation.address),
+            crn: personSummary.customerReferenceNumber,
+            frn: organisationSummary.organisation.businessReference
+          }
+        )
 
         if (!organisationSummary.organisationPermission) {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)

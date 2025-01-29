@@ -118,12 +118,11 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { laboratoryURN } = request.payload
-      const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
-      const { sbi } = session.getOrganisation(request)
+      const { organisation, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
-      const response = await isURNUnique({ sbi, laboratoryURN }, request.logger)
+      const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger)
       session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
       if (!response?.isURNUnique) {
