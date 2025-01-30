@@ -128,14 +128,14 @@ describe('Endemics which species test', () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: 'sheep' }
       }
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reference: 'CLAIM-12345', latestEndemicsApplication: { reference: 'APP-12345' } })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { reference: 'AHWR-2470-6BA9' } })
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
-      expect(resetEndemicsClaimSession).toHaveBeenCalledWith(expect.any(Object), 'APP-12345', 'CLAIM-12345')
+      expect(resetEndemicsClaimSession).toHaveBeenCalledWith(expect.any(Object), 'AHWR-2470-6BA9', 'TEMP-6GSE-PIR8')
     })
   })
 })
