@@ -1,5 +1,6 @@
 const wreck = require('@hapi/wreck')
 const sessionMock = require('../../../../app/session')
+const { isCattleEndemicsClaimForOldWorldReview } = require('../../../../app/api-requests/claim-service-api')
 
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('@hapi/wreck')
@@ -204,10 +205,14 @@ describe('Claim Service API', () => {
     expect(claimServiceApi.isCattleEndemicsClaimForOldWorldReview()).toBe(true)
   })
 
-  test('Check if is first time endemic claim for active old world review claim of different species', () => {
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'sheep' } }, previousClaims: [{ data: { typeOfReview: 'R' } }] })
+  test('should return false when endemic claim and old review claim are different species', () => {
+    sessionMock.getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'beef',
+      latestVetVisitApplication: { data: { whichReview: 'sheep' } },
+      previousClaims: []
+    })
 
-    expect(claimServiceApi.isCattleEndemicsClaimForOldWorldReview()).toBe(false)
+    expect(isCattleEndemicsClaimForOldWorldReview()).toBe(false)
   })
 })
