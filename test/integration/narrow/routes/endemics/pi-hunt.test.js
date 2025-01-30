@@ -19,7 +19,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })

@@ -440,29 +440,15 @@ const getHandler = {
         sheepPackageRow,
         sheepDiseasesTestedRow,
         ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length
-          ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
-              return {
+          ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => (
+              {
                 key: {
                   text: index === 0 ? 'Disease or condition test result' : ''
                 },
                 value: {
-                  html:
-                  typeof sheepTest.result === 'object'
-                    ? sheepTest.result
-                        .map(
-                          (testResult) =>
-                          `${testResult.diseaseType} (${testResult.testResult})</br>`
-                        )
-                        .join(' ')
-                    : `${sheepTestTypes[
-                      sessionData?.sheepEndemicsPackage
-                    ].find((test) => test.value === sheepTest.diseaseType)
-                      .text
-                    } (${sheepTestResultsType[sheepTest.diseaseType].find(
-                      (resultType) =>
-                        resultType.value === sheepTest.result
-                    ).text
-                    })`
+                  html: typeof sheepTest.result === 'object'
+                    ? sheepTest.result.map((testResult) => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
+                    : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(({ value }) => value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find((resultType) => resultType.value === sheepTest.result).text})`
                 },
                 actions: {
                   items: [
@@ -473,9 +459,9 @@ const getHandler = {
                     }
                   ]
                 }
-              }
-            })
-          : [])
+              }))
+          : []
+        )
       ]
 
       const speciesRows = () => {

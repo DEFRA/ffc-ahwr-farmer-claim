@@ -410,7 +410,7 @@ describe('Check answers test', () => {
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
           testResults: 'testResults',
-          reference: '12345'
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {
@@ -446,7 +446,7 @@ describe('Check answers test', () => {
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
           testResults: undefined,
-          reference: '12345'
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {
@@ -489,7 +489,7 @@ describe('Check answers test', () => {
           vetRCVSNumber: 'vetRCVSNumber',
           laboratoryURN: 'laboratoryURN',
           vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
-          reference: '12345'
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {

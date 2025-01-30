@@ -42,7 +42,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
@@ -73,7 +73,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     test('returns 200', async () => {
       const endemicsMockInfo = { typeOfReview: 'E', typeOfLivestock: 'sheep', dateOfVisit: yesterday, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } }
       getEndemicsClaimMock.mockReturnValueOnce(endemicsMockInfo)
-        .mockReturnValueOnce({ reference: '12345' })
+        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
         .mockReturnValueOnce(endemicsMockInfo)
       const options = {
         method: 'GET',
@@ -125,7 +125,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
       const endemicsMock = { typeOfReview, dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } }
       getEndemicsClaimMock.mockImplementationOnce(() => { return endemicsMock })
-        .mockReturnValueOnce({ reference: '12345' })
+        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
         .mockImplementationOnce(() => { return endemicsMock })
       const options = {
         method: 'GET',
@@ -386,7 +386,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
       getEndemicsClaimMock
-        .mockReturnValue({ typeOfReview: 'E', typeOfLivestock, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: '12345' })
+        .mockReturnValue({ typeOfReview: 'E', typeOfLivestock, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
 
       const options = {
         method: 'GET',

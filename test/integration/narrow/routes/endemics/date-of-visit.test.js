@@ -72,7 +72,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         latestVetVisitApplication,
         latestEndemicsApplication,
         landingPage,
-        reference: '12345'
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
   })
@@ -111,7 +111,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
               typeOfReview: 'R'
             }
           }],
-          reference: '12345'
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {
@@ -141,7 +141,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
             }
           }],
           dateOfVisit: '2024-05-01',
-          reference: '12345'
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {

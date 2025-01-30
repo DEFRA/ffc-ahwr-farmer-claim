@@ -110,7 +110,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
         typeOfReview: 'endemics',
         typeOfLivestock: 'beef',
         previousClaims: [],
-        reference: '12345'
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
     const options = {
@@ -139,7 +139,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
             typeOfReview: 'R'
           }
         }],
-        reference: '12345'
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
     const options = {
@@ -169,7 +169,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
           }
         }],
         dateOfVisit: '2024-05-01',
-        reference: '12345'
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
     const options = {

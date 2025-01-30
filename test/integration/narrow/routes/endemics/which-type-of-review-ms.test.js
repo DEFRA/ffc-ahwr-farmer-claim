@@ -44,7 +44,7 @@ describe('Which type of review test', () => {
       // this call is made by the pre-handler for logging context
       sessionMock.getEndemicsClaim
         .mockReturnValueOnce({ typeOfReview: 'R' })
-        .mockReturnValueOnce({ reference: '12345' })
+        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
     })
 
     test('returns 200 and renders page', async () => {

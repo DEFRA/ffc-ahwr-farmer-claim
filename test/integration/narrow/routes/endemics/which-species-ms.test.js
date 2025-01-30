@@ -51,7 +51,7 @@ describe('Endemics which species test', () => {
         auth,
         url
       }
-      getEndemicsClaim.mockReturnValue({ reference: '12345' })
+      getEndemicsClaim.mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
 
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
@@ -76,7 +76,7 @@ describe('Endemics which species test', () => {
       url
     }
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock, reference: '12345' })
+    getEndemicsClaim.mockReturnValue({ typeOfLivestock, reference: 'TEMP-6GSE-PIR8' })
 
     const res = await server.inject(options)
 
@@ -111,7 +111,7 @@ describe('Endemics which species test', () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: 'sheep' }
       }
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep', latestEndemicsApplication: { reference: '12345' } })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep', latestEndemicsApplication: { reference: 'TEMP-6GSE-PIR8' } })
 
       const res = await server.inject(options)
 

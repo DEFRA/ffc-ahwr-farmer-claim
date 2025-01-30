@@ -18,7 +18,7 @@ describe('Number of samples tested test', () => {
   beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => {})
     setEndemicsClaimMock.mockImplementation(() => {})
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')

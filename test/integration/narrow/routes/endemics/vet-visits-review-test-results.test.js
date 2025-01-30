@@ -14,7 +14,7 @@ describe('Test Results test', () => {
 
   beforeAll(async () => {
     setEndemicsClaimMock.mockImplementation(() => { })
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -70,7 +70,7 @@ describe('Test Results test', () => {
     })
 
     test('backLink test', async () => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestocl: 'beef', reference: '12345' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestocl: 'beef', reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         url,

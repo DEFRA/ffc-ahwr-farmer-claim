@@ -65,7 +65,7 @@ describe('Sheep test result tests', () => {
         typeOfLivestock: 'sheep',
         sheepEndemicsPackage: 'reducedExternalParasites',
         sheepTestResults: [...sheepTestResultsMockData, { diseaseType: 'sheepScab', result: '', isCurrentPage: true }],
-        reference: '12345'
+        reference: 'TEMP-6GSE-PIR8'
       }))
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)

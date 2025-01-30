@@ -38,7 +38,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
     ])('returns 200', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: '12345' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         auth,
@@ -58,7 +58,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
     test('returns 404 when there is no claim', async () => {
       getEndemicsClaimMock.mockReturnValueOnce({})
-      getEndemicsClaimMock.mockReturnValueOnce({ reference: '12345' })
+      getEndemicsClaimMock.mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
       getEndemicsClaimMock.mockReturnValue(undefined)
       const options = {
         auth,
@@ -224,7 +224,7 @@ describe('Species numbers test when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'beef' },
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: '12345' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         auth,

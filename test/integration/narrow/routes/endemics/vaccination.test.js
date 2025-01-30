@@ -13,7 +13,7 @@ describe('Vaccination test', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaimMock.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
@@ -84,7 +84,7 @@ describe('Vaccination test', () => {
       { typeOfLivestock: 'pigs', vetVisitsReviewTestResults: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', vetVisitsReviewTestResults: true, backLink: '/claim/endemics/test-results' }
     ])('backLink when species is pigs and application from old world is $vetVisitsReviewTestResults', async ({ typeOfLivestock, vetVisitsReviewTestResults, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, vetVisitsReviewTestResults, reference: '12345' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, vetVisitsReviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         url,

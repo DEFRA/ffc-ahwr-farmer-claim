@@ -58,7 +58,7 @@ describe('Test Results test', () => {
   describe(`GET ${url} route`, () => {
     test('returns 200', async () => {
       getEndemicsClaimMock.mockImplementation(() => {
-        return { sheepEndemicsPackage: 'reducedExternalParasites', reference: '12345' }
+        return { sheepEndemicsPackage: 'reducedExternalParasites', reference: 'TEMP-6GSE-PIR8' }
       })
 
       const options = {

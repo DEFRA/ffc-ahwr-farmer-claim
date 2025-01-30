@@ -18,7 +18,7 @@ describe('Number of species tested test', () => {
   beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => {})
     setEndemicsClaimMock.mockImplementation(() => {})
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: '12345' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -81,7 +81,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'dairy', typeOfReview: 'R' }
     ])('returns 200 for review $typeOfLivestock journey', async ({ typeOfLivestock, typeOfReview }) => {
       getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
-        .mockImplementationOnce(() => { return { reference: '12345' } })
+        .mockImplementationOnce(() => { return { reference: 'TEMP-6GSE-PIR8' } })
         .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
 
       const options = {
