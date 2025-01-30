@@ -12,7 +12,7 @@ describe('Test Results test', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: '123' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaimMock.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
@@ -55,7 +55,7 @@ describe('Test Results test', () => {
       { typeOfReview: 'E', question: 'What was the follow-up test result' },
       { typeOfReview: 'R', question: 'What was the test result?' }
     ])('returns 200', async ({ typeOfReview, question }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfReview, reference: '123' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfReview, reference: 'TEMP-6GSE-PIR8' } })
 
       const options = {
         method: 'GET',
@@ -83,7 +83,7 @@ describe('Test Results test', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', backLink: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'dairy', typeOfReview: 'E', backLink: '/claim/endemics/test-urn' }
     ])('backLink when species $typeOfLivestock and type of review is $typeOfReview', async ({ typeOfLivestock, typeOfReview, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reference: '123' } })
+      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         url,

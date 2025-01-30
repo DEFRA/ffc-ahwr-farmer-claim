@@ -551,7 +551,7 @@ describe('Check answers test', () => {
             laboratoryURN: '123456',
             latestVetVisitApplication,
             latestEndemicsApplication: {
-              reference: '123'
+              reference: 'TEMP-6GSE-PIR8'
             },
             reference: 'tempClaimReference'
           }
@@ -562,14 +562,14 @@ describe('Check answers test', () => {
             statusCode: 200,
             statusMessage: 'OK'
           },
-          payload: { reference: '123' }
+          payload: { reference: 'TEMP-6GSE-PIR8' }
         }
 
         Wreck.post.mockResolvedValue(mockResponse)
 
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
+            submitNewClaim: jest.fn().mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
           }
         })
         const res = await server.inject(options)
@@ -577,7 +577,7 @@ describe('Check answers test', () => {
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
-        expectAppInsightsEventRaised('tempClaimReference', '123')
+        expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
       })
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
@@ -604,7 +604,7 @@ describe('Check answers test', () => {
             latestVetVisitApplication,
             sheepTestResults,
             latestEndemicsApplication: {
-              reference: '123'
+              reference: 'TEMP-6GSE-PIR8'
             },
             reference: 'tempClaimReference'
           }
@@ -615,14 +615,14 @@ describe('Check answers test', () => {
             statusCode: 200,
             statusMessage: 'OK'
           },
-          payload: { reference: '123' }
+          payload: { reference: 'TEMP-6GSE-PIR8' }
         }
 
         Wreck.post.mockResolvedValue(mockResponse)
 
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
+            submitNewClaim: jest.fn().mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
           }
         })
         const res = await server.inject(options)
@@ -630,7 +630,7 @@ describe('Check answers test', () => {
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
-        expectAppInsightsEventRaised('tempClaimReference', '123')
+        expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
       }
     )
 
