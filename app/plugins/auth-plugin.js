@@ -20,7 +20,7 @@ module.exports = {
         redirectTo: (request) => {
           return auth.requestAuthorizationCodeUrl(session, request)
         },
-        validateFunc: async (request, _) => ({ valid: !!session.getEndemicsClaim(request, organisationKey) })
+        validateFunc: async (request, _) => ({ valid: Boolean(session.getEndemicsClaim(request, organisationKey)) })
       })
       server.auth.default({ strategy: 'session', mode: 'required' })
     }
