@@ -12,9 +12,9 @@ const {
 const { getClaimsByApplicationReference } = require('../api-requests/claim-service-api')
 const { getEndemicsClaim, clearEndemicsClaim } = require('../session')
 const { claimType } = require('../constants/claim')
-const createClaimReference = require('../lib/create-temp-claim-reference')
+const { createTempClaimReference } = require('../lib/create-temp-claim-reference')
 
-async function refreshApplications (request) {
+async function refreshApplications(request) {
   const applications = await getAllApplicationsBySbi(request.query.sbi, request.logger)
 
   // get latest new world
@@ -35,7 +35,7 @@ async function refreshApplications (request) {
   return { latestEndemicsApplication, latestVetVisitApplication }
 }
 
-async function refreshClaims (request, applicationRef) {
+async function refreshClaims(request, applicationRef) {
   // fetch all the claims (all species)
   const claims = await getClaimsByApplicationReference(
     applicationRef,
@@ -47,17 +47,17 @@ async function refreshClaims (request, applicationRef) {
   return claims
 }
 
-const resetEndemicsClaimSession = async (request, applicationRef, claimId) => {
-  const tempClaimId = claimId ?? createClaimReference()
+const resetEndemicsClaimSession = async (request, applicationRef, claimRef) => {
+  const tempClaimRef = claimRef ?? createTempClaimReference()
 
   clearEndemicsClaim(request)
-  session.setEndemicsClaim(request, referenceKey, tempClaimId)
+  session.setEndemicsClaim(request, referenceKey, tempClaimRef)
   const claims = refreshClaims(request, applicationRef)
 
   return claims
 }
 
-function getLatestClaimForContext (request) {
+function getLatestClaimForContext(request) {
   const { previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
 
   // When we add the MS code we can layer in here filtering by species
@@ -68,13 +68,13 @@ function getLatestClaimForContext (request) {
   return latestEEClaim ?? latestVetVisitApplication
 }
 
-function getTypeOfLivestockFromLatestClaim (request) {
+function getTypeOfLivestockFromLatestClaim(request) {
   const claim = getLatestClaimForContext(request)
 
   return claim.data?.typeOfLivestock ?? claim.data?.whichReview
 }
 
-function canChangeSpecies (request, typeOfReview) {
+function canChangeSpecies(request, typeOfReview) {
   // for now we obey the following, we can manipulate this to consider MS
   const { previousClaims } = getEndemicsClaim(request)
   return claimType[typeOfReview] === claimType.review && !lockedToSpecies(previousClaims)
