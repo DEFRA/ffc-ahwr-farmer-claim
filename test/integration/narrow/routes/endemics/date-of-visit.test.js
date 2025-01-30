@@ -99,7 +99,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     })
 
     test('returns 200', async () => {
-      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           latestEndemicsApplication,
@@ -128,7 +128,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       expectPhaseBanner.ok($)
     })
     test('returns 200 and fills input with value in session', async () => {
-      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
       getEndemicsClaimMock.mockImplementation(() => {
         return {
           latestEndemicsApplication,

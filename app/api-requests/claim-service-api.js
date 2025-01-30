@@ -165,7 +165,7 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
   }
 }
 
-const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
+const isCattleEndemicsClaimForOldWorldReview = (request) => {
   const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
   return (
     typeOfReview === claimType.endemics &&
@@ -186,5 +186,5 @@ module.exports = {
   isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  isCattleEndemicsClaimForOldWorldReview
 }

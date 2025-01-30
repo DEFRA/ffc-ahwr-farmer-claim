@@ -3,7 +3,7 @@ const {
   isValidDateOfVisit,
   getReviewWithinLast10Months,
   getReviewTestResultWithinLast10Months,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  isCattleEndemicsClaimForOldWorldReview
 } = require('../../api-requests/claim-service-api')
 const { dateOfVetVisitExceptions } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
@@ -41,7 +41,7 @@ const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
   const { landingPage } = session.getEndemicsClaim(request)
 
-  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
+  if (isCattleEndemicsClaimForOldWorldReview(request)) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
   return landingPage
 }

@@ -3,7 +3,7 @@ const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
-const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
+const { isCattleEndemicsClaimForOldWorldReview } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
 const { canChangeSpecies, getTypeOfLivestockFromLatestClaim } = require('../../lib/context-helper')
 const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
@@ -90,7 +90,7 @@ const postHandler = {
       }
 
       // If user has an old world application within last 10 months
-      if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) {
+      if (isCattleEndemicsClaimForOldWorldReview(request)) {
         return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
       }
 

@@ -33,13 +33,13 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
 
   const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview
 
-  const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim =
+  const isCattleEndemicsClaimForOldWorldReview =
     typeOfReview === claimType.endemics &&
     [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
     relevantClaims.length === 0 &&
     typeOfLivestock === oldWorldClaimTypeOfLivestock
 
-  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) { return `${config.urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
+  if (isCattleEndemicsClaimForOldWorldReview) { return `${config.urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
   return `${config.urlPrefix}/${endemicsWhichTypeOfReview}`
 }

@@ -98,7 +98,7 @@ describe('Which type of review test', () => {
     test('Returns 302 and redirect to vet visit review test result', async () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
-      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
         method: 'POST',

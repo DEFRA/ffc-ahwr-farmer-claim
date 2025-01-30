@@ -121,7 +121,7 @@ describe('Which type of review test', () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
         .mockReturnValueOnce(endemicsMockValue)
-      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
         method: 'POST',
