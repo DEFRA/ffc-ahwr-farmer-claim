@@ -20,7 +20,6 @@ const {
   sheepTestResultsType
 } = require('../../constants/sheep-test-types')
 const appInsights = require('applicationinsights')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -146,7 +145,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const sessionData = getEndemicsClaim(request)
       const {

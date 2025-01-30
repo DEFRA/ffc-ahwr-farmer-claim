@@ -21,7 +21,6 @@ const { getReviewType } = require('../../lib/get-review-type')
 const { getTestResult } = require('../../lib/get-test-result')
 const { isURNUnique } = require('../../api-requests/claim-service-api')
 const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
@@ -67,7 +66,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { laboratoryURN } = session.getEndemicsClaim(request)
       return h.view(endemicsTestUrn, {

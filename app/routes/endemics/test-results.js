@@ -13,7 +13,6 @@ const { endemicsClaim: { testResults: testResultsKey } } = require('../../sessio
 const radios = require('../models/form-component/radios')
 const { getReviewType } = require('../../lib/get-review-type')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 const previousPageUrl = (request) => {
@@ -54,7 +53,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { testResults } = session.getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])

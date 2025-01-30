@@ -4,7 +4,6 @@ const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../sess
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -25,7 +24,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { typeOfReview } = getEndemicsClaim(request)
 

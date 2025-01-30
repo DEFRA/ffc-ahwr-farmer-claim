@@ -5,7 +5,6 @@ const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
 const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = require('../../config/routes')
 const { notOtherDiseaseTypeNoResult, getErrorResultString, getErrorResultObject } = require('../utils/disease-type-test-result')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTestResults}`
 const routes = (request) => {
@@ -223,7 +222,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const endemicsClaim = getEndemicsClaim(request)
       if (request.query?.diseaseType && endemicsClaim?.sheepTestResults) {

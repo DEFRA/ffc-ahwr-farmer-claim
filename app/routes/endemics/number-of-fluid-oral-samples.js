@@ -15,7 +15,6 @@ const {
 const {
   thresholds: { minimumNumberFluidOralSamples }
 } = require('../../constants/amounts')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
 
@@ -23,7 +22,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { numberOfOralFluidSamples } = session.getEndemicsClaim(request)
       return h.view(endemicsNumberOfOralFluidSamples, {

@@ -1,36 +1,76 @@
-const { claimDashboard } = require('../../../../app/config/routes')
-const { redirectReferenceMissing } = require('../../../../app/lib/redirect-reference-missing')
+const Hapi = require('@hapi/hapi')
+const plugin = require('../../../../app/plugins/redirect-claim-ref-missing')
 const { getEndemicsClaim } = require('../../../../app/session')
+const { claimDashboard } = require('../../../../app/config/routes')
 
 jest.mock('../../../../app/session')
 
-describe('redirectReferenceMissing', () => {
-  let h
+describe('redirect-reference-missing plugin', () => {
+  let server
 
-  beforeEach(() => {
-    h = {
-      redirect: jest.fn().mockReturnThis(),
-      takeover: jest.fn(),
-      continue: Symbol('continue')
-    }
+  beforeAll(async () => {
+    server = Hapi.server()
+    await server.register(plugin)
+    server.route({
+      method: 'GET',
+      path: '/claim/endemics/which-species',
+      handler: (_, h) => h.response('ok').code(200)
+    })
+    server.route({
+      method: 'GET',
+      path: '/claim/endemics',
+      handler: (_, h) => h.response('ok').code(200)
+    })
+    server.route({
+      method: 'POST',
+      path: '/claim/endemics/which-species',
+      handler: (_, h) => h.response('ok').code(200)
+    })
   })
 
-  test('should redirect to dashboard when claim reference is missing', () => {
+  afterAll(async () => {
+    await server.stop()
+  })
+
+  test('should redirect if claim reference is missing for endemic child routes', async () => {
     getEndemicsClaim.mockReturnValueOnce({})
 
-    redirectReferenceMissing({}, h)
+    const response = await server.inject({
+      method: 'GET',
+      url: '/claim/endemics/which-species'
+    })
 
-    expect(h.redirect).toHaveBeenCalledWith(claimDashboard)
-    expect(h.takeover).toHaveBeenCalled()
+    expect(response.statusCode).toBe(302)
+    expect(response.headers.location).toBe(claimDashboard)
   })
 
-  test('should continue when claim reference exists', async () => {
-    getEndemicsClaim.mockReturnValueOnce({ reference: 'some-ref' })
+  test('should allow request to continue if claim reference exists', async () => {
+    getEndemicsClaim.mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
 
-    const result = await redirectReferenceMissing({}, h)
+    const response = await server.inject({
+      method: 'GET',
+      url: '/claim/endemics/which-species'
+    })
 
-    expect(result).toBe(h.continue)
-    expect(h.redirect).not.toHaveBeenCalled()
-    expect(h.takeover).not.toHaveBeenCalled()
+    expect(response.statusCode).toBe(200)
+    expect(response.result).toBe('ok')
+  })
+
+  test('should allow request to continue for non endemics child routes', async () => {
+    const response = await server.inject({
+      method: 'GET',
+      url: '/claim/endemics'
+    })
+
+    expect(response.statusCode).toBe(200)
+  })
+
+  test('should allow request to continue for methods that are not GET', async () => {
+    const response = await server.inject({
+      method: 'POST',
+      url: '/claim/endemics/which-species'
+    })
+
+    expect(response.statusCode).toBe(200)
   })
 })

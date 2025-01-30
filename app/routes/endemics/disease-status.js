@@ -7,7 +7,6 @@ const {
 const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
 const { endemicsClaim } = require('../../session/keys')
 const { diseaseStatusTypes } = require('../../constants/claim')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const urlPrefix = require('../../config').urlPrefix
 const pageUrl = `${urlPrefix}/${endemicsDiseaseStatus}`
@@ -18,7 +17,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const endemicsClaimData = getEndemicsClaim(request)
       return h.view(endemicsDiseaseStatus, {

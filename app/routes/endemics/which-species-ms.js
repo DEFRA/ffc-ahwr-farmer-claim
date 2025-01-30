@@ -7,7 +7,6 @@ const {
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 const { resetEndemicsClaimSession } = require('../../lib/context-helper')
 const urlPrefix = require('../../config').urlPrefix
 
@@ -20,7 +19,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const endemicsClaim = getEndemicsClaim(request)
       // to do - customise the view for MS as it has different content

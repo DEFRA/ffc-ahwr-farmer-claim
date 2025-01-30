@@ -6,7 +6,6 @@ const {
 } = require('../../config')
 const { endemicsConfirmation, claimDashboard } = require('../../config/routes')
 const { getReviewType } = require('../../lib/get-review-type')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsConfirmation}`
 
@@ -14,7 +13,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const session = getEndemicsClaim(request)
       // Create copies before clearing session

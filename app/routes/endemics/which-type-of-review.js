@@ -6,7 +6,6 @@ const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemics
 const { isCattleEndemicsClaimForOldWorldReview } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
 const { canChangeSpecies, getTypeOfLivestockFromLatestClaim } = require('../../lib/context-helper')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
@@ -25,7 +24,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       // this can come after the which species page, or before
       const { typeOfReview } = getEndemicsClaim(request)

@@ -8,7 +8,6 @@ const {
 } = require('../../session/keys')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getReviewType } = require('../../lib/get-review-type')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 
 const pageUrl = `${urlPrefix}/${endemicsVetName}`
 const backLink = (request) => {
@@ -25,7 +24,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const { vetsName } = session.getEndemicsClaim(request)
       return h.view(endemicsVetName, {

@@ -4,7 +4,6 @@ const { urlPrefix } = require('../../config')
 const radios = require('../models/form-component/radios')
 const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = require('../../config/routes')
 const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = require('../../session/keys')
-const { redirectReferenceMissing } = require('../../lib/redirect-reference-missing')
 const pageUrl = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
 const options = {
   hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might take samples to test for are listed with each package.'
@@ -15,7 +14,6 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    pre: [{ method: redirectReferenceMissing }],
     handler: async (request, h) => {
       const session = getEndemicsClaim(request)
       const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', undefined, options)(
