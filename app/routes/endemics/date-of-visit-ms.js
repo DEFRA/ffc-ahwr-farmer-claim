@@ -24,6 +24,7 @@ const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const appInsights = require('applicationinsights')
 const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
 const { isValidDate } = require('../../lib/date-utils')
+const { getOldWorldClaimFromApplication } = require('../../lib')
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
@@ -42,17 +43,6 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
 
   return `${config.urlPrefix}/${endemicsWhichTypeOfReview}`
 }
-
-const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
-  oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
-    ? {
-        statusId: oldWorldApp.statusId,
-        data: {
-          claimType: oldWorldApp.data.whichReview,
-          dateOfVisit: oldWorldApp.data.visitDate
-        }
-      }
-    : undefined
 
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   const dateSchema = joi.object({

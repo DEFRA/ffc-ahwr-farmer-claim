@@ -14,7 +14,7 @@ const canMakeReviewClaim = (dateOfVisit, prevReviewClaimDateOfVisit) => {
 }
 
 const canMakeEndemicsClaim = (dateOfVisit, prevReviewClaim, prevEndemicsClaimDateOfVisit, organisation, formattedTypeOfLivestock) => {
-  if (!prevReviewClaim || !isWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
+  if (!isWithin10Months(dateOfVisit, prevReviewClaim.data.dateOfVisit)) {
     return 'There must be no more than 10 months between your reviews and follow-ups.'
   }
 

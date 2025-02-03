@@ -2,8 +2,10 @@ const Joi = require('joi')
 const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies, endemicsWhichTypeOfReviewException } = require('../../config/routes')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
+const { getOldWorldClaimFromApplication } = require('../../lib')
+const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -60,7 +62,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfReview } = request.payload
-      const { typeOfLivestock, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
+      const { typeOfLivestock, previousClaims, latestVetVisitApplication: oldWorldApplication } = getEndemicsClaim(request)
 
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
@@ -80,7 +82,27 @@ const postHandler = {
 
       const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
-      const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview
+      const oldWorldClaimTypeOfLivestock = oldWorldApplication?.data?.whichReview
+
+      if (claimType[typeOfReview] === claimType.endemics) {
+        const prevReviewClaim = relevantClaims.find(claim => claim.type === claimType.review) || getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
+
+        if (!prevReviewClaim) {
+          raiseInvalidDataEvent(
+            request,
+            typeOfReviewKey,
+            'Cannot claim for endemics without a previous review.'
+          )
+
+          return h
+            .view(`${endemicsWhichTypeOfReviewException}-ms`, {
+              backLink: pageUrl,
+              backToPageMessage: 'Tell us if you are claiming for a review or follow up.'
+            })
+            .code(400)
+            .takeover()
+        }
+      }
 
       const isCattleEndemicsClaimForOldWorldReview =
         claimType[typeOfReview] === claimType.endemics &&
