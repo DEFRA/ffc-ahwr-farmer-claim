@@ -38,11 +38,11 @@ const getNoChangeRows = (
   isPigs,
   isSheep,
   typeOfLivestock,
-  organisation
+  organisationName
 ) => [
   {
     key: { text: 'Business name' },
-    value: { html: upperFirstLetter(organisation?.name) }
+    value: { html: upperFirstLetter(organisationName) }
   },
   {
     key: { text: 'Livestock' },
@@ -68,7 +68,7 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
       html:
         isPigs && sessionData?.biosecurity
           ? upperFirstLetter(
-              `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
+            `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
             )
           : upperFirstLetter(sessionData?.biosecurity)
     },
@@ -118,10 +118,9 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
     const testList = sessionData?.sheepTestResults
       .map(
         (sheepTest) =>
-          `${
-            sheepTestTypes[sessionData?.sheepEndemicsPackage].find(
-              (test) => test.value === sheepTest.diseaseType
-            ).text
+          `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(
+            (test) => test.value === sheepTest.diseaseType
+          ).text
           }</br>`
       )
       .join(' ')
@@ -439,31 +438,15 @@ const getHandler = {
         sheepPackageRow,
         sheepDiseasesTestedRow,
         ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length
-          ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => {
-              return {
+          ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => (
+              {
                 key: {
                   text: index === 0 ? 'Disease or condition test result' : ''
                 },
                 value: {
-                  html:
-                    typeof sheepTest.result === 'object'
-                      ? sheepTest.result
-                          .map(
-                            (testResult) =>
-                              `${testResult.diseaseType} (${testResult.testResult})</br>`
-                          )
-                          .join(' ')
-                      : `${
-                          sheepTestTypes[
-                            sessionData?.sheepEndemicsPackage
-                          ].find((test) => test.value === sheepTest.diseaseType)
-                            .text
-                        } (${
-                          sheepTestResultsType[sheepTest.diseaseType].find(
-                            (resultType) =>
-                              resultType.value === sheepTest.result
-                          ).text
-                        })`
+                  html: typeof sheepTest.result === 'object'
+                    ? sheepTest.result.map((testResult) => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
+                    : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(({ value }) => value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find((resultType) => resultType.value === sheepTest.result).text})`
                 },
                 actions: {
                   items: [
@@ -474,9 +457,9 @@ const getHandler = {
                     }
                   ]
                 }
-              }
-            })
-          : [])
+              }))
+          : []
+        )
       ]
 
       const speciesRows = () => {
@@ -500,7 +483,7 @@ const getHandler = {
           isPigs,
           isSheep,
           typeOfLivestock,
-          organisation
+          organisation?.name
         ),
         ...speciesRows()
       ]
@@ -598,7 +581,7 @@ const postHandler = {
       })
 
       return h.redirect(
-          `${urlPrefix}/${routes.endemicsConfirmation}`
+        `${urlPrefix}/${routes.endemicsConfirmation}`
       )
     }
   }

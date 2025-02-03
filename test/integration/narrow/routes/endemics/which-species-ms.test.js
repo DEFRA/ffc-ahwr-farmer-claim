@@ -4,8 +4,11 @@ const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
 const { getEndemicsClaim } = require('../../../../../app/session')
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const createServer = require('../../../../../app/server')
+const { resetEndemicsClaimSession } = require('../../../../../app/lib/context-helper')
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/lib/context-helper')
+
 describe('Endemics which species test', () => {
   setEndemicsClaimMock.mockImplementation(() => { })
   jest.mock('../../../../../app/config', () => {
@@ -48,6 +51,7 @@ describe('Endemics which species test', () => {
         auth,
         url
       }
+      getEndemicsClaim.mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
 
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
@@ -72,7 +76,7 @@ describe('Endemics which species test', () => {
       url
     }
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock })
+    getEndemicsClaim.mockReturnValue({ typeOfLivestock, reference: 'TEMP-6GSE-PIR8' })
 
     const res = await server.inject(options)
 
@@ -107,13 +111,31 @@ describe('Endemics which species test', () => {
         headers: { cookie: `crumb=${crumb}` },
         payload: { crumb, typeOfLivestock: 'sheep' }
       }
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep', latestEndemicsApplication: { reference: 'TEMP-6GSE-PIR8' } })
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
       expect(setEndemicsClaimMock).toHaveBeenCalled()
+    })
+
+    test('should redirect to next page when livestock selected has changed from previous session', async () => {
+      const options = {
+        method: 'POST',
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` },
+        payload: { crumb, typeOfLivestock: 'sheep' }
+      }
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { reference: 'AHWR-2470-6BA9' } })
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
+      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(resetEndemicsClaimSession).toHaveBeenCalledWith(expect.any(Object), 'AHWR-2470-6BA9', 'TEMP-6GSE-PIR8')
     })
   })
 })

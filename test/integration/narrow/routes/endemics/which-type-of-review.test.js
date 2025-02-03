@@ -41,8 +41,9 @@ describe('Which type of review test', () => {
 
   describe('GET', () => {
     beforeEach(() => {
-      // this call is made by the pre-handler for logging context
+      // this call is made by the pre-handler for logging context and reference
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
     })
 
     test('sets typeOfLivestock from old world applications', async () => {
@@ -120,7 +121,7 @@ describe('Which type of review test', () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
         .mockReturnValueOnce(endemicsMockValue)
-      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
         method: 'POST',

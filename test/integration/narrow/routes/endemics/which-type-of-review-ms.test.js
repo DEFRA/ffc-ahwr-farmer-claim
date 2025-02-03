@@ -42,11 +42,14 @@ describe('Which type of review test', () => {
   describe('GET', () => {
     beforeEach(() => {
       // this call is made by the pre-handler for logging context
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      sessionMock.getEndemicsClaim
+        .mockReturnValueOnce({ typeOfReview: 'R' })
+        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
     })
 
     test('returns 200 and renders page', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      sessionMock.getEndemicsClaim
+        .mockReturnValueOnce({ typeOfReview: 'R' })
         .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [], latestVetVisitApplication })
       const options = {
         method: 'GET',
@@ -69,12 +72,11 @@ describe('Which type of review test', () => {
       jest.clearAllMocks()
       crumb = await getCrumbs(server)
       // this call is made by the pre-handler for logging context
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R', latestEndemicsApplication: { reference: 'AHWR-2470-6BA9' } })
     })
 
     test('Returns 400 and shows error message when payload is invalid', async () => {
       sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
-        .mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
         url,
@@ -96,7 +98,7 @@ describe('Which type of review test', () => {
     test('Returns 302 and redirect to vet visit review test result', async () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
       sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
-      claimServiceApiMock.isFirstTimeEndemicClaimForActiveOldWorldReviewClaim.mockReturnValueOnce(true)
+      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
         method: 'POST',

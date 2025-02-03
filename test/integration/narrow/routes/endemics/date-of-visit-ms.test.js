@@ -109,7 +109,8 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
         latestVetVisitApplication,
         typeOfReview: 'endemics',
         typeOfLivestock: 'beef',
-        previousClaims: []
+        previousClaims: [],
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
     const options = {
@@ -137,7 +138,8 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
           data: {
             typeOfReview: 'R'
           }
-        }]
+        }],
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
     const options = {
@@ -153,6 +155,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     expectPageContentOk($, '/claim/endemics/which-type-of-review')
     expectPhaseBanner.ok($)
   })
+
   test('returns 200 and fills input with value in session', async () => {
     session.getEndemicsClaim.mockImplementation(() => {
       return {
@@ -165,7 +168,8 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
             typeOfReview: 'R'
           }
         }],
-        dateOfVisit: '2024-05-01'
+        dateOfVisit: '2024-05-01',
+        reference: 'TEMP-6GSE-PIR8'
       }
     })
     const options = {
@@ -418,6 +422,45 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('user makes a review claim and created an application on the same day', async () => { // happy path
+    session.getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        previousClaims: [],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication: {
+          ...latestEndemicsApplication,
+          createdAt: new Date('2025/01/01 14:30:00')
+        }
       }
     })
     const options = {

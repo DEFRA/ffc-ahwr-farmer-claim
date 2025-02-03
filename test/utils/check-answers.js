@@ -45,7 +45,8 @@ const baseReviewClaim = {
   speciesNumbers: 'Yes',
   vetsName: 'George',
   vetRCVSNumber: '1234567',
-  laboratoryURN: 'laboratoryURN'
+  laboratoryURN: 'laboratoryURN',
+  reference: 'TEMP-6GSE-PIR8'
 }
 
 const beefReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive' }
@@ -230,7 +231,8 @@ const baseEndemicsFollowUpClaim = {
   speciesNumbers: 'Yes',
   vetsName: 'George',
   vetRCVSNumber: '1234567',
-  laboratoryURN: 'laboratoryURN'
+  laboratoryURN: 'laboratoryURN',
+  reference: 'TEMP-6GSE-PIR8'
 }
 
 const sheepEndemicsPackage = 'reducedExternalParasites'

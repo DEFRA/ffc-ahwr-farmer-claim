@@ -66,7 +66,7 @@ describe('Endemics which species test', () => {
       url
     }
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep' })
+    getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'sheep', reference: 'TEMP-6GSE-PIR8' })
 
     const res = await server.inject(options)
     const $ = cheerio.load(res.payload)

@@ -64,7 +64,8 @@ describe('Sheep test result tests', () => {
       getEndemicsClaim.mockImplementation(() => ({
         typeOfLivestock: 'sheep',
         sheepEndemicsPackage: 'reducedExternalParasites',
-        sheepTestResults: [...sheepTestResultsMockData, { diseaseType: 'sheepScab', result: '', isCurrentPage: true }]
+        sheepTestResults: [...sheepTestResultsMockData, { diseaseType: 'sheepScab', result: '', isCurrentPage: true }],
+        reference: 'TEMP-6GSE-PIR8'
       }))
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)

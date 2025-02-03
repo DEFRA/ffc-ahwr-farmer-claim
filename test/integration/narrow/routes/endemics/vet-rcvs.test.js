@@ -15,7 +15,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaimMock.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()

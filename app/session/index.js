@@ -11,11 +11,11 @@ const entries = {
   tempClaimReference: 'tempClaimReference'
 }
 
-function set (request, entryKey, key, value, status, endemics = false) {
+function set (request, entryKey, key, value, status) {
   const entryValue = request.yar?.get(entryKey) || {}
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
-  const claim = endemics ? getEndemicsClaim(request) : getClaim(request)
+  const claim = getEndemicsClaim(request)
   const xForwardedForHeader = request.headers['x-forwarded-for']
   const ip = xForwardedForHeader
     ? xForwardedForHeader.split(',')[0]
@@ -53,23 +53,23 @@ function getClaim (request, key) {
 }
 
 function setEndemicsClaim (request, key, value, status) {
-  set(request, entries.endemicsClaim, key, value, status, true)
+  set(request, entries.endemicsClaim, key, value, status)
 }
 
 function getEndemicsClaim (request, key) {
   return get(request, entries.endemicsClaim, key)
 }
 
-function clearEndemicsClaim (request) { // Remove all journey related data
+function clearEndemicsClaim (request) {
   const endemicsClaim = getEndemicsClaim(request)
   request.yar.clear(entries.endemicsClaim)
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
-  setEndemicsClaim(request, 'reference', endemicsClaim?.reference)
-  setEndemicsClaim(request, 'amount', endemicsClaim?.amount)
+  setEndemicsClaim(request, 'latestVetVisitApplication', endemicsClaim?.latestVetVisitApplication)
+  setEndemicsClaim(request, 'latestEndemicsApplication', endemicsClaim?.latestEndemicsApplication)
 }
 
 function setTempClaimReference (request, key, value, status) {
-  set(request, entries.tempClaimReference, key, value, status, true)
+  set(request, entries.tempClaimReference, key, value, status)
 }
 
 function setToken (request, key, value) {

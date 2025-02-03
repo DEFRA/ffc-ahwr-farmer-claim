@@ -61,7 +61,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
         auth
       }
 
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs' })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' })
 
       const response = await server.inject(options)
 
@@ -74,7 +74,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
         auth
       }
 
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reviewTestResults: 'negative' })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'beef', reviewTestResults: 'negative', reference: 'TEMP-6GSE-PIR8' })
 
       const response = await server.inject(options)
 
@@ -100,7 +100,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
         url
       }
 
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', biosecurity: 'yes' })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', biosecurity: 'yes', reference: 'TEMP-6GSE-PIR8' })
 
       const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
@@ -283,7 +283,7 @@ describe('Biosecurity test when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'beef', piHunt: 'yes', piHuntRecommended: 'yes', piHuntAllAnimals: 'yes', reviewTestResults: 'negative', backLink: '/claim/endemics/test-results' },
       { typeOfLivestock: 'beef', piHunt: 'yes', piHuntRecommended: 'yes', piHuntAllAnimals: 'yes', reviewTestResults: 'positive', backLink: '/claim/endemics/test-results' }
     ])('return 200', async ({ typeOfLivestock, piHunt, piHuntRecommended, piHuntAllAnimals, reviewTestResults, backLink }) => {
-      getEndemicsClaim.mockReturnValue({ typeOfLivestock, piHunt, piHuntRecommended, reviewTestResults, piHuntAllAnimals })
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock, piHunt, piHuntRecommended, reviewTestResults, piHuntAllAnimals, reference: 'TEMP-6GSE-PIR8' })
       const options = {
         method: 'GET',
         url,

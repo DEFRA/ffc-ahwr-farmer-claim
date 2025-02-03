@@ -82,12 +82,13 @@ const postHandler = {
 
       const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview
 
-      const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim =
-      claimType[typeOfReview] === claimType.endemics &&
+      const isCattleEndemicsClaimForOldWorldReview =
+        claimType[typeOfReview] === claimType.endemics &&
         [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
-        relevantClaims.length === 0
+        relevantClaims.length === 0 &&
+        typeOfLivestock === oldWorldClaimTypeOfLivestock
 
-      if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) {
+      if (isCattleEndemicsClaimForOldWorldReview) {
         return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
       }
 

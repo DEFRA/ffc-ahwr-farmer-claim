@@ -14,8 +14,11 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { reference, amount, typeOfReview } = getEndemicsClaim(request)
-      const { isReview } = getReviewType(typeOfReview)
+      const session = getEndemicsClaim(request)
+      // Create copies before clearing session
+      const reference = session.reference
+      const amount = session.amount
+      const { isReview } = getReviewType(session.typeOfReview)
 
       clearEndemicsClaim(request)
 

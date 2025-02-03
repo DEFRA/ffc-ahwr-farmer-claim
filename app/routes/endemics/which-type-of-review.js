@@ -3,7 +3,7 @@ const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
 const { livestockTypes, claimType } = require('../../constants/claim')
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
-const { isFirstTimeEndemicClaimForActiveOldWorldReviewClaim } = require('../../api-requests/claim-service-api')
+const { isCattleEndemicsClaimForOldWorldReview } = require('../../api-requests/claim-service-api')
 const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
 const { canChangeSpecies, getTypeOfLivestockFromLatestClaim } = require('../../lib/context-helper')
 
@@ -25,7 +25,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      // this ca come after the which species page, or before
+      // this can come after the which species page, or before
       const { typeOfReview } = getEndemicsClaim(request)
       const typeOfLivestock = getTypeOfLivestockFromLatestClaim(request)
 
@@ -88,7 +88,7 @@ const postHandler = {
       }
 
       // If user has an old world application within last 10 months
-      if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) {
+      if (isCattleEndemicsClaimForOldWorldReview(request)) {
         return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
       }
 

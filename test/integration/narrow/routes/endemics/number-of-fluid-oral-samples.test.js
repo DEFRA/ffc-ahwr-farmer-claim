@@ -18,7 +18,7 @@ describe('Number of fluid oral samples test', () => {
   beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaimMock.mockImplementation(() => { })
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     process.env.ENDEMICS_ENABLED = 'true'
 
     jest.mock('../../../../../app/config', () => {

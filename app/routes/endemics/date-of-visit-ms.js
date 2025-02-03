@@ -32,12 +32,13 @@ const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims
 
   const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview
 
-  const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim =
+  const isCattleEndemicsClaimForOldWorldReview =
     typeOfReview === claimType.endemics &&
     [livestockTypes.beef, livestockTypes.dairy].includes(oldWorldClaimTypeOfLivestock) &&
-    relevantClaims.length === 0
+    relevantClaims.length === 0 &&
+    typeOfLivestock === oldWorldClaimTypeOfLivestock
 
-  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim) { return `${config.urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
+  if (isCattleEndemicsClaimForOldWorldReview) { return `${config.urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
   return `${config.urlPrefix}/${endemicsWhichTypeOfReview}`
 }
@@ -113,7 +114,9 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     }
   }
 
-  if (new Date(newWorldApplication.createdAt) > dateOfVisit) {
+  const applicationCreatedTime = new Date(newWorldApplication.createdAt).setHours(0, 0, 0, 0)
+
+  if (applicationCreatedTime > dateOfVisit.getTime()) {
     return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} cannot be before the date your agreement began`,

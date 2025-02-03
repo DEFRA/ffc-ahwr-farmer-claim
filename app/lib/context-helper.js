@@ -5,12 +5,14 @@ const {
   endemicsClaim: {
     latestEndemicsApplication: latestEndemicsApplicationKey,
     latestVetVisitApplication: latestVetVisitApplicationKey,
-    previousClaims: previousClaimsKey
+    previousClaims: previousClaimsKey,
+    reference: referenceKey
   }
 } = require('../session/keys')
 const { getClaimsByApplicationReference } = require('../api-requests/claim-service-api')
-const { getEndemicsClaim } = require('../session')
+const { getEndemicsClaim, clearEndemicsClaim } = require('../session')
 const { claimType } = require('../constants/claim')
+const { createTempClaimReference } = require('../lib/create-temp-claim-reference')
 
 async function refreshApplications (request) {
   const applications = await getAllApplicationsBySbi(request.query.sbi, request.logger)
@@ -41,6 +43,16 @@ async function refreshClaims (request, applicationRef) {
   )
 
   session.setEndemicsClaim(request, previousClaimsKey, claims)
+
+  return claims
+}
+
+const resetEndemicsClaimSession = async (request, applicationRef, claimRef) => {
+  const tempClaimRef = claimRef ?? createTempClaimReference()
+
+  clearEndemicsClaim(request)
+  session.setEndemicsClaim(request, referenceKey, tempClaimRef)
+  const claims = refreshClaims(request, applicationRef)
 
   return claims
 }
@@ -77,5 +89,6 @@ module.exports = {
   canChangeSpecies,
   getTypeOfLivestockFromLatestClaim,
   refreshApplications,
-  refreshClaims
+  refreshClaims,
+  resetEndemicsClaimSession
 }

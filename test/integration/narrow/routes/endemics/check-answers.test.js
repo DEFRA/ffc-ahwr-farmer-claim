@@ -42,10 +42,6 @@ describe('Check answers test', () => {
 
   let server
 
-  afterAll(async () => {
-    await server.stop()
-  })
-
   beforeAll(async () => {
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -81,7 +77,8 @@ describe('Check answers test', () => {
     await server.initialize()
   })
 
-  afterAll(() => {
+  afterAll(async () => {
+    await server.stop()
     jest.resetAllMocks()
   })
 
@@ -329,7 +326,7 @@ describe('Check answers test', () => {
 
       test('for unknown species', async () => {
         getEndemicsClaimMock.mockImplementation(() => {
-          return { sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
+          return { ...sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
         })
         const options = {
           method: 'GET',
@@ -412,7 +409,8 @@ describe('Check answers test', () => {
           laboratoryURN: 'laboratoryURN',
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
-          testResults: 'testResults'
+          testResults: 'testResults',
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {
@@ -447,7 +445,8 @@ describe('Check answers test', () => {
           laboratoryURN: 'laboratoryURN',
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
-          testResults: undefined
+          testResults: undefined,
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {
@@ -489,7 +488,8 @@ describe('Check answers test', () => {
           vetsName: 'vetsName',
           vetRCVSNumber: 'vetRCVSNumber',
           laboratoryURN: 'laboratoryURN',
-          vetVisitsReviewTestResults: 'vetVisitsReviewTestResults'
+          vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
+          reference: 'TEMP-6GSE-PIR8'
         }
       })
       const options = {
@@ -539,7 +539,6 @@ describe('Check answers test', () => {
           payload: { crumb },
           headers: { cookie: `crumb=${crumb}` }
         }
-
         getEndemicsClaimMock.mockImplementation(() => {
           return {
             typeOfLivestock: 'pigs',
@@ -552,7 +551,7 @@ describe('Check answers test', () => {
             laboratoryURN: '123456',
             latestVetVisitApplication,
             latestEndemicsApplication: {
-              reference: '123'
+              reference: 'TEMP-6GSE-PIR8'
             },
             reference: 'tempClaimReference'
           }
@@ -563,14 +562,14 @@ describe('Check answers test', () => {
             statusCode: 200,
             statusMessage: 'OK'
           },
-          payload: { reference: '123' }
+          payload: { reference: 'TEMP-6GSE-PIR8' }
         }
 
         Wreck.post.mockResolvedValue(mockResponse)
 
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
+            submitNewClaim: jest.fn().mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
           }
         })
         const res = await server.inject(options)
@@ -578,9 +577,8 @@ describe('Check answers test', () => {
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
-        expectAppInsightsEventRaised('tempClaimReference', '123')
-      }
-    )
+        expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
+      })
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
       'When post new claim (sheep endemics), it should redirect to confirmation page',
@@ -606,7 +604,7 @@ describe('Check answers test', () => {
             latestVetVisitApplication,
             sheepTestResults,
             latestEndemicsApplication: {
-              reference: '123'
+              reference: 'TEMP-6GSE-PIR8'
             },
             reference: 'tempClaimReference'
           }
@@ -617,14 +615,14 @@ describe('Check answers test', () => {
             statusCode: 200,
             statusMessage: 'OK'
           },
-          payload: { reference: '123' }
+          payload: { reference: 'TEMP-6GSE-PIR8' }
         }
 
         Wreck.post.mockResolvedValue(mockResponse)
 
         jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
           return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: '123' })
+            submitNewClaim: jest.fn().mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
           }
         })
         const res = await server.inject(options)
@@ -632,7 +630,7 @@ describe('Check answers test', () => {
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
-        expectAppInsightsEventRaised('tempClaimReference', '123')
+        expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
       }
     )
 

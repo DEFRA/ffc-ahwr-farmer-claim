@@ -7,6 +7,7 @@ const {
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
 } = require('../../config/routes')
+const { resetEndemicsClaimSession } = require('../../lib/context-helper')
 const urlPrefix = require('../../config').urlPrefix
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -19,11 +20,11 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const endemicsClaimData = getEndemicsClaim(request)
+      const endemicsClaim = getEndemicsClaim(request)
       // to do - customise the view for MS as it has different content
       return h.view(view, {
-        ...(endemicsClaimData?.typeOfLivestock && {
-          previousAnswer: endemicsClaimData.typeOfLivestock
+        ...(endemicsClaim?.typeOfLivestock && {
+          previousAnswer: endemicsClaim.typeOfLivestock
         }),
         backLink
       })
@@ -55,6 +56,11 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfLivestock } = request.payload
+      const { typeOfLivestock: prevTypeOfLivestock, reference, latestEndemicsApplication } = getEndemicsClaim(request)
+
+      if (typeOfLivestock !== prevTypeOfLivestock) {
+        await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference)
+      }
 
       setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
 

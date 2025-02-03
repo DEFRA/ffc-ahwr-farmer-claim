@@ -19,7 +19,7 @@ const {
   endemicsPIHuntRecommended,
   endemicsPIHuntAllAnimals
 } = require('../../config/routes')
-const { livestockTypes } = require('../../constants/claim')
+const { livestockTypes: { pigs } } = require('../../constants/claim')
 const { getLivestockTypes } = require('../../lib/get-livestock-types')
 const { getTestResult } = require('../../lib/get-test-result')
 
@@ -166,7 +166,6 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { pigs } = livestockTypes
       const { typeOfLivestock } = getEndemicsClaim(request)
       const { biosecurity, assessmentPercentage } = request.payload
       setEndemicsClaim(request, biosecurityKey, typeOfLivestock === pigs ? { biosecurity, assessmentPercentage } : biosecurity)

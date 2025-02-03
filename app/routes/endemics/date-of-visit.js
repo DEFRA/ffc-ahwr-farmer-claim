@@ -3,7 +3,7 @@ const {
   isValidDateOfVisit,
   getReviewWithinLast10Months,
   getReviewTestResultWithinLast10Months,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  isCattleEndemicsClaimForOldWorldReview
 } = require('../../api-requests/claim-service-api')
 const { dateOfVetVisitExceptions } = require('../../constants/claim')
 const { labels } = require('../../config/visit-date')
@@ -40,7 +40,7 @@ const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
   const { landingPage } = session.getEndemicsClaim(request)
 
-  if (isFirstTimeEndemicClaimForActiveOldWorldReviewClaim(request)) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
+  if (isCattleEndemicsClaimForOldWorldReview(request)) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
   return landingPage
 }
@@ -165,7 +165,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
               error: error.details.find(
                 (e) =>
                   e.context.label === 'visit-date-day' ||
-                  e.type.startsWith('dateOfVisit')
+                e.type.startsWith('dateOfVisit')
               )
             },
             month: {
@@ -173,7 +173,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
               error: error.details.find(
                 (e) =>
                   e.context.label === 'visit-date-month' ||
-                  e.type.startsWith('dateOfVisit')
+                e.type.startsWith('dateOfVisit')
               )
             },
             year: {
@@ -181,7 +181,7 @@ const isValidDateInput = (request, reviewOrFollowUpText) => {
               error: error.details.find(
                 (e) =>
                   e.context.label === 'visit-date-year' ||
-                  e.type.startsWith('dateOfVisit')
+                e.type.startsWith('dateOfVisit')
               )
             },
             errorMessage: error.details.find((e) =>

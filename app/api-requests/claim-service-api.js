@@ -165,14 +165,16 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
   }
 }
 
-const isFirstTimeEndemicClaimForActiveOldWorldReviewClaim = (request) => {
-  const { latestVetVisitApplication, typeOfReview, previousClaims } = session.getEndemicsClaim(request)
-
+const isCattleEndemicsClaimForOldWorldReview = (request) => {
+  const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+  const oldWorldReview = latestVetVisitApplication?.data
+  const previousReviewIsCattle = oldWorldReview?.whichReview === livestockTypes.beef || oldWorldReview?.whichReview === livestockTypes.dairy
+  const previousReviewIsSameSpeciesAsCurrentClaim = oldWorldReview?.whichReview === typeOfLivestock
   return (
     typeOfReview === claimType.endemics &&
-    latestVetVisitApplication &&
-    (latestVetVisitApplication?.data?.whichReview === livestockTypes.beef || latestVetVisitApplication?.data?.whichReview === livestockTypes.dairy) &&
-    !previousClaims?.find((claim) => claim.type === claimType.endemics || claim.type === claimType.review)
+    previousReviewIsCattle &&
+    previousReviewIsSameSpeciesAsCurrentClaim &&
+    !previousClaims?.length
   )
 }
 
@@ -186,5 +188,5 @@ module.exports = {
   isDateOfTestingLessThanDateOfVisit,
   getReviewTestResultWithinLast10Months,
   isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isFirstTimeEndemicClaimForActiveOldWorldReviewClaim
+  isCattleEndemicsClaimForOldWorldReview
 }
