@@ -5,6 +5,7 @@ module.exports = {
   endemicsIndex: 'endemics',
   endemicsWhichSpecies: 'endemics/which-species',
   endemicsWhichTypeOfReview: 'endemics/which-type-of-review',
+  endemicsWhichTypeOfReviewException: 'endemics/which-type-of-review-exception',
   endemicsWhichTypeOfReviewDairyFollowUpException: 'endemics/which-type-of-review-dairy-follow-up-exception',
   endemicsDateOfVisit: 'endemics/date-of-visit',
   endemicsDateOfVisitException: 'endemics/date-of-visit-exception',
