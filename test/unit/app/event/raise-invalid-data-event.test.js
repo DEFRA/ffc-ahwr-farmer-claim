@@ -1,5 +1,6 @@
-const raiseEvent = require('../../../../app/event/raise-event')
-const raiseInvalidDataEvent = require('../../../../app/event/raise-invalid-data-event')
+import { raiseInvalidDataEvent } from '../../../../app/event/raise-invalid-data-event.js'
+import { raiseEvent } from '../../../../app/event/raise-event.js'
+
 const getEndemicsClaimMock = require('../../../../app/session').getEndemicsClaim
 const getCustomerMock = require('../../../../app/session').getCustomer
 

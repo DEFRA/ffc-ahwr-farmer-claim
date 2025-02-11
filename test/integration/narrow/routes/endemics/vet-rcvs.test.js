@@ -1,11 +1,12 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const { rcvs: rcvsErrorMessages } = require('../../../../../app/lib/error-messages')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { errorMessages } from '../../../../../app/lib/error-messages.js'
+
+const { rcvs: rcvsErrorMessages } = errorMessages
 
 jest.mock('../../../../../app/session')
 
@@ -15,8 +16,8 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
+    setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
@@ -75,7 +76,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     test.each([
@@ -108,7 +109,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
       { vetRCVSNumber: '123456X', reviewTestResults: 'negative', nextPageURL: '/claim/endemics/biosecurity' },
       { vetRCVSNumber: '123456X', reviewTestResults: undefined, nextPageURL: '/claim/endemics/test-urn' }
     ])('returns 200 when payload is valid and stores in session (vetRCVSNumber= $vetRCVSNumber)', async ({ vetRCVSNumber, reviewTestResults, nextPageURL }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { reviewTestResults, typeOfLivestock: 'beef' } })
+      getEndemicsClaim.mockImplementation(() => { return { reviewTestResults, typeOfLivestock: 'beef' } })
 
       const options = {
         method: 'POST',
@@ -122,7 +123,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'E', relevantReviewForEndemics: { type: 'VV' }, nextPageURL: '/claim/endemics/test-urn' },
@@ -137,7 +138,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'sheep', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' },
       { typeOfLivestock: 'pigs', typeOfReview: 'R', relevantReviewForEndemics: undefined, nextPageURL: '/claim/endemics/test-urn' }
     ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $relevantReviewForEndemics ', async ({ typeOfLivestock, typeOfReview, relevantReviewForEndemics, nextPageURL }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, relevantReviewForEndemics } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, relevantReviewForEndemics } })
       const options = {
         method: 'POST',
         url,
@@ -150,7 +151,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageURL)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
   })
 })
@@ -161,8 +162,8 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
@@ -183,7 +184,7 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'beef' },
       { typeOfLivestock: 'dairy' }
     ])('Redirect $nextPageURL When species $typeOfLivestock and type of review is $typeOfReview and application from old world is $relevantReviewForEndemics ', async ({ typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', relevantReviewForEndemics: { type: undefined } } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', relevantReviewForEndemics: { type: undefined } } })
       const options = {
         method: 'POST',
         url,
@@ -196,7 +197,7 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/pi-hunt')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
   })
 })

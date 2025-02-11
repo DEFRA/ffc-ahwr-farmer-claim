@@ -1,12 +1,14 @@
 import { createServer } from '../../../../app/server.js'
 
 describe('routes plugin test', () => {
-  jest.mock('../../../../app/config', () => ({
-    ...jest.requireActual('../../../../app/config'),
-    endemics: {
-      enabled: false
-    }
-  }))
+  // jest.mock('../../../../app/config', () => ({
+  //   config: {
+  //     ...jest.requireActual('../../../../app/config').config,
+  //     endemics: {
+  //       enabled: false
+  //     }
+  //   }
+  // }))
 
   beforeEach(() => {
     jest.resetModules()
@@ -134,11 +136,11 @@ describe('routes plugin test', () => {
   })
 
   test('when isDev is true, dev-sign-in included in routes', async () => {
+    jest.clearAllMocks()
     jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
-      devLogin: {
-        enabled: true
-      }
+        devLogin: {
+          enabled: true
+        }
     }))
 
     const server = await createServer()

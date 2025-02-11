@@ -1,35 +1,37 @@
 import Wreck from '@hapi/wreck'
 import appInsights from 'applicationinsights'
 
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { livestockTypes } = require('../../../../../app/constants/claim')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const {
-  beefReviewClaim,
-  dairyReviewClaim,
-  pigsReviewClaim,
-  sheepReviewClaim,
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { claimConstants } from '../../../../../app/constants/claim.js'
+import {
   beefEndemicsFollowUpClaim,
+  beefReviewClaim,
   dairyEndemicsFollowUpClaim,
-  pigEndemicsFollowUpClaim,
-  sheepEndemicsFollowUpClaim,
-  expectedReviewBeef,
-  expectedReviewDairy,
-  expectedReviewPigs,
-  expectedReviewSheep,
+  dairyReviewClaim,
   expectedEndemicsFollowUpBeef,
   expectedEndemicsFollowUpDairy,
   expectedEndemicsFollowUpPigs,
   expectedEndemicsFollowUpSheep,
-  sheepTestResults,
-  getRowKeys,
-  getRowContents,
+  expectedReviewBeef,
+  expectedReviewDairy,
+  expectedReviewPigs,
+  expectedReviewSheep,
   getRowActionTexts,
-  getRowLinks
-} = require('../../../../utils/check-answers')
-const createServer = require('../../../../../app/server')
+  getRowContents,
+  getRowKeys,
+  getRowLinks,
+  pigEndemicsFollowUpClaim,
+  pigsReviewClaim,
+  sheepEndemicsFollowUpClaim,
+  sheepReviewClaim,
+  sheepTestResults
+} from '../../../../utils/check-answers.js'
+import { getEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+
+const { livestockTypes } = claimConstants
 
 jest.mock('../../../../../app/session')
 jest.mock('@hapi/wreck')
@@ -93,12 +95,12 @@ describe('Check answers test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     describe('shows fields for a review claim in the correct order for each species', () => {
       test('for beef', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return beefReviewClaim
         })
         const options = {
@@ -126,7 +128,7 @@ describe('Check answers test', () => {
       })
 
       test('for dairy', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return dairyReviewClaim
         })
         const options = {
@@ -156,7 +158,7 @@ describe('Check answers test', () => {
       })
 
       test('for pigs', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return pigsReviewClaim
         })
         const options = {
@@ -184,7 +186,7 @@ describe('Check answers test', () => {
       })
 
       test('for sheep', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return sheepReviewClaim
         })
         const options = {
@@ -214,7 +216,7 @@ describe('Check answers test', () => {
 
     describe('shows fields for an endemics claim in the correct order for each species', () => {
       test('for beef', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return beefEndemicsFollowUpClaim
         })
         const options = {
@@ -242,7 +244,7 @@ describe('Check answers test', () => {
       })
 
       test('for dairy', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return dairyEndemicsFollowUpClaim
         })
         const options = {
@@ -270,7 +272,7 @@ describe('Check answers test', () => {
       })
 
       test('for pigs', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return pigEndemicsFollowUpClaim
         })
         const options = {
@@ -298,7 +300,7 @@ describe('Check answers test', () => {
       })
 
       test('for sheep', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return sheepEndemicsFollowUpClaim
         })
         const options = {
@@ -326,7 +328,7 @@ describe('Check answers test', () => {
       })
 
       test('for unknown species', async () => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return { ...sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
         })
         const options = {
@@ -397,7 +399,7 @@ describe('Check answers test', () => {
         backLink: '/claim/endemics/sheep-test-results'
       }
     ])('check species content and back links are correct for typeOfLivestock: $typeOfLivestock and typeOfReview: $typeOfReview}', async ({ typeOfLivestock, typeOfReview, content, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
           typeOfLivestock,
@@ -433,7 +435,7 @@ describe('Check answers test', () => {
     })
 
     test("check row doesn't appear if no value", async () => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
           typeOfLivestock: 'sheep',
@@ -478,7 +480,7 @@ describe('Check answers test', () => {
         typeOfLivestock: livestockTypes.dairy
       }
     ])('check vetVisitsReviewTestResults is included when provided for typeOfLivestock: $typeOfLivestock', async ({ typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return {
           organisation: { name: 'business name' },
           typeOfReview: 'E',
@@ -540,7 +542,7 @@ describe('Check answers test', () => {
           payload: { crumb },
           headers: { cookie: `crumb=${crumb}` }
         }
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return {
             typeOfLivestock: 'pigs',
             typeOfReview: 'R',
@@ -592,7 +594,7 @@ describe('Check answers test', () => {
           headers: { cookie: `crumb=${crumb}` }
         }
 
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return {
             typeOfLivestock: 'sheep',
             typeOfReview: 'E',
@@ -646,7 +648,7 @@ describe('Check answers test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 })

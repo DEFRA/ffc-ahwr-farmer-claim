@@ -1,7 +1,6 @@
 import wreck from '@hapi/wreck'
-
-const { updateContactHistory } = require('../../../../app/api-requests/contact-history-api')
-const config = require('../../../../app/config')
+import { config } from '../../../../app/config/index.js'
+import { updateContactHistory } from '../../../../app/api-requests/contact-history-api.js'
 
 jest.mock('@hapi/wreck')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))

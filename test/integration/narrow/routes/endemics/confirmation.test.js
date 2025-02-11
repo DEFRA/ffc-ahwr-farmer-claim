@@ -1,8 +1,10 @@
-const cheerio = require('cheerio')
-const { getEndemicsClaim } = require('../../../../../app/session')
-const { endemicsConfirmation } = require('../../../../../app/config/routes')
-const { getReviewType } = require('../../../../../app/lib/get-review-type')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import links from '../../../../../app/config/routes.js'
+import { createServer } from '../../../../../app/server.js'
+import { getReviewType } from '../../../../../app/lib/get-review-type.js'
+import { getEndemicsClaim } from '../../../../../app/session/index.js'
+
+const { endemicsConfirmation } = links
 jest.mock('../../../../../app/session')
 
 describe('Claim confirmation', () => {

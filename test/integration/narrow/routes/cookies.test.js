@@ -1,42 +1,30 @@
-const cheerio = require('cheerio')
-const { serviceName } = require('../../../../app/config')
-const expectPhaseBanner = require('../../../utils/phase-banner-expect')
-const createServer = require('../../../../app/server')
+import { createServer } from '../../../../app/server.js'
+import { config } from '../../../../app/config/index.js'
+import expectPhaseBanner from 'assert'
+
+import cheerio from 'cheerio'
+
+jest.mock('../../../../app/config', () => {
+  const originalModule = jest.requireActual('../../../../app/config')
+  return {
+    config: {
+      ...originalModule.config,
+      endemics: {
+        enabled: false
+      },
+      dateOfTesting: {
+        enabled: false
+      }
+    }
+  }
+})
+
+const { serviceName } = config
 
 describe('cookies route', () => {
   let server
 
   beforeAll(async () => {
-    jest.mock('../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        endemics: {
-          enabled: false
-        },
-        dateOfTesting: {
-          enabled: false
-        }
-      }
-    })
-
     server = await createServer()
     await server.initialize()
   })

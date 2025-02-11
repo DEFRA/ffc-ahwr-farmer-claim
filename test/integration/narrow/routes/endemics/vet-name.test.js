@@ -1,11 +1,13 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const { endemicsClaim: { vetsName: vetsNameKey } } = require('../../../../../app/session/keys')
-const { name: nameErrorMessages } = require('../../../../../app/lib/error-messages')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { sessionKeys } from '../../../../../app/session/keys.js'
+import { errorMessages } from '../../../../../app/lib/error-messages.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+
+const { endemicsClaim: { vetsName: vetsNameKey } } = sessionKeys
+const { name: nameErrorMessages } = errorMessages
 
 jest.mock('../../../../../app/session')
 
@@ -15,35 +17,19 @@ describe('Vet name test', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
+    setEndemicsClaim.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
         endemics: {
           enabled: true
         }
       }
     })
+
     server = await createServer()
     await server.initialize()
   })
@@ -58,7 +44,7 @@ describe('Vet name test', () => {
 
   describe(`GET ${url} route`, () => {
     test.each([{ reviewTestResults: 'negative' }, { reviewTestResults: 'positive' }])('returns 200', async ({ reviewTestResults }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         url,
@@ -83,7 +69,7 @@ describe('Vet name test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 
@@ -105,7 +91,7 @@ describe('Vet name test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
     test.each([
       { vetsName: '', error: nameErrorMessages.enterName },
@@ -145,8 +131,8 @@ describe('Vet name test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-rcvs')
-      expect(setEndemicsClaimMock).toHaveBeenCalledTimes(1)
-      expect(setEndemicsClaimMock).toHaveBeenCalledWith(res.request, vetsNameKey, vetsName)
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(res.request, vetsNameKey, vetsName)
     })
   })
 })

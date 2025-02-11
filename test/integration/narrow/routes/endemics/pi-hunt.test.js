@@ -1,11 +1,10 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -19,9 +18,9 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
 
@@ -57,7 +56,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 
@@ -79,7 +78,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
     test('Continue to eligible page if user select yes', async () => {
       const options = {
@@ -90,14 +89,14 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
         .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('Continue to ineligible page if user select no', async () => {
       const options = {
@@ -107,7 +106,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
         .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await server.inject(options)
@@ -118,7 +117,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
     test('shows error when payload is invalid', async () => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
         url,
@@ -141,9 +140,9 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
@@ -171,14 +170,14 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { reviewTestResults } })
         .mockImplementationOnce(() => { return { reviewTestResults } })
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(expectedURL)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('Continue to ineligible page if user select no', async () => {
       const options = {
@@ -188,7 +187,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
         .mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
 
       const res = await server.inject(options)

@@ -1,6 +1,6 @@
 import wreck from '@hapi/wreck'
+import { retrieveApimAccessToken } from '../../../../../app/auth/client-credential-grant/retrieve-apim-access-token.js'
 
-const retrieveApimAccessToken = require('../../../../../app/auth/client-credential-grant/retrieve-apim-access-token')
 jest.mock('@hapi/wreck')
 
 jest.mock('../../../../../app/config', () => {
@@ -71,7 +71,7 @@ describe('Retrieve apim access token', () => {
     wreck.post = jest.fn().mockRejectedValueOnce(wreckResponse)
 
     const request = { logger: { setBindings: jest.fn() } }
-    expect(async () =>
+    await expect(async () =>
       await retrieveApimAccessToken(request)
     ).rejects.toEqual(wreckResponse)
 

@@ -1,16 +1,17 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
-const { getEndemicsClaim } = require('../../../../../app/session')
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const createServer = require('../../../../../app/server')
-const { resetEndemicsClaimSession } = require('../../../../../app/lib/context-helper')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import links from '../../../../../app/config/routes.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'
+
+const { endemicsWhichSpecies } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/lib/context-helper')
 
 describe('Endemics which species test', () => {
-  setEndemicsClaimMock.mockImplementation(() => { })
+  setEndemicsClaim.mockImplementation(() => { })
   jest.mock('../../../../../app/config', () => {
     const originalModule = jest.requireActual('../../../../../app/config')
     return {
@@ -117,7 +118,7 @@ describe('Endemics which species test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
     test('should redirect to next page when livestock selected has changed from previous session', async () => {
@@ -134,7 +135,7 @@ describe('Endemics which species test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
       expect(resetEndemicsClaimSession).toHaveBeenCalledWith(expect.any(Object), 'AHWR-2470-6BA9', 'TEMP-6GSE-PIR8')
     })
   })

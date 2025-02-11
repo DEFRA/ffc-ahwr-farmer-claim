@@ -1,6 +1,6 @@
-const sendSessionEvent = require('../../../../app/event/send-session-event')
+import { sendSessionEvent } from '../../../../app/event/send-session-event.js'
+import { raiseEvent } from '../../../../app/event/raise-event.js'
 
-const raiseEvent = require('../../../../app/event/raise-event')
 jest.mock('../../../../app/event/raise-event')
 
 const claim = { organisation: {}, reference: 'AHWR-TEMP-IDE' }

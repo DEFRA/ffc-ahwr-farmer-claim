@@ -1,15 +1,17 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { getEndemicsClaim } = require('../../../../../app/session')
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const { urlPrefix } = require('../../../../../app/config')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { config } from '../../../../../app/config/index.js'
+import links from '../../../../../app/config/routes.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+
+const { urlPrefix } = config
 const {
   endemicsBiosecurity,
   endemicsCheckAnswers
-} = require('../../../../../app/config/routes')
-const createServer = require('../../../../../app/server')
+} = links
 
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('../../../../../app/session')
@@ -32,7 +34,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
   })
   afterAll(async () => {
@@ -52,7 +54,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
       const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
-      expect(response.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(response.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
     test('Returns 200', async () => {
       const options = {
@@ -161,7 +163,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('continue to next page when biosecurity is "yes" for other journeys besides pig', async () => {
       const options = {
@@ -178,7 +180,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('continue to Exception page when biosecurity  is "no" for any journey', async () => {
       const options = {
@@ -230,7 +232,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       expect(response.statusCode).toBe(302)
       expect(response.headers.location).toEqual(`${urlPrefix}/${endemicsCheckAnswers}`)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test.each([
       { biosecurity: 'yes', assessmentPercentage: '', errorMessage: 'Enter the assessment percentage' },

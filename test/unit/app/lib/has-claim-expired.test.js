@@ -1,4 +1,5 @@
-const { claimHasExpired } = require('../../../../app/lib/claim-has-expired')
+import { claimHasExpired } from '../../../../app/lib/claim-has-expired.js'
+
 describe('Has claim expired test', () => {
   afterEach(() => {
     jest.useRealTimers()

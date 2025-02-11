@@ -1,20 +1,29 @@
-const cheerio = require('cheerio')
-const sessionMock = require('../../../../app/session')
-jest.mock('../../../../app/session')
-const authMock = require('../../../../app/auth')
-jest.mock('../../../../app/auth')
-const latestApplicationMock = require('../../../../app/routes/models/latest-application')
-jest.mock('../../../../app/routes/models/latest-application')
-const person = require('../../../../app/api-requests/rpa-api/person')
-const getPersonSummaryMock = jest.spyOn(person, 'getPersonSummary')
-const organisation = require('../../../../app/api-requests/rpa-api/organisation')
-const organisationIsEligibleMock = jest.spyOn(organisation, 'organisationIsEligible')
-const sendExceptionEventMock = require('../../../../app/event/raise-ineligibility-event')
-jest.mock('../../../../app/event/raise-ineligibility-event')
-jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+import cheerio from 'cheerio'
+import { requestAuthorizationCodeUrl } from '../../../../app/auth/auth-code-grant/request-authorization-code-url.js'
+import { InvalidStateError } from '../../../../app/exceptions/invalid-state-error.js'
+import { authenticate } from '../../../../app/auth/authenticate.js'
+import { raiseIneligibilityEvent } from '../../../../app/event/raise-ineligibility-event.js'
+import { retrieveApimAccessToken } from '../../../../app/auth/client-credential-grant/retrieve-apim-access-token.js'
+import { getPersonSummary } from '../../../../app/api-requests/rpa-api/person.js'
+import { organisationIsEligible } from '../../../../app/api-requests/rpa-api/organisation.js'
+import { getLatestApplicationForSbi } from '../../../../app/routes/models/latest-application.js'
+import { NoApplicationFoundError } from '../../../../app/exceptions/no-application-found.js'
+import { ClaimHasExpiredError } from '../../../../app/exceptions/claim-has-expired.js'
+import { ClaimHasAlreadyBeenMadeError } from '../../../../app/exceptions/claim-has-already-been-made.js'
+import { setEndemicsClaim } from '../../../../app/session/index.js'
+import { setAuthCookie } from '../../../../app/auth/cookie-auth/cookie-auth.js'
+import { createServer } from '../../.././../app/server.js'
 
-const { NoApplicationFoundError, InvalidStateError, ClaimHasExpiredError, ClaimHasAlreadyBeenMadeError } = require('../../../../app/exceptions')
-const createServer = require('../../../../app/server')
+jest.mock('../../../../app/session')
+jest.mock('../../../../app/routes/models/latest-application')
+jest.mock('../../../../app/event/raise-ineligibility-event')
+jest.mock('../../../../app/api-requests/rpa-api/person')
+jest.mock('../../../../app/api-requests/rpa-api/organisation')
+jest.mock('../../../../app/auth/cookie-auth/cookie-auth')
+jest.mock('../../../../app/auth/auth-code-grant/request-authorization-code-url')
+jest.mock('../../../../app/auth/client-credential-grant/retrieve-apim-access-token')
+jest.mock('../../../../app/auth/authenticate')
+jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 
 jest.mock('@hapi/wreck', () => ({
   put: jest.fn().mockResolvedValue({ payload: {} })
@@ -64,7 +73,7 @@ describe('FarmerApply defra ID redirection test', () => {
       const res = await server.inject(options)
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect($('.govuk-heading-l').text()).toMatch('Login failed')
     })
 
@@ -78,7 +87,7 @@ describe('FarmerApply defra ID redirection test', () => {
       const res = await server.inject(options)
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect($('.govuk-heading-l').text()).toMatch('Login failed')
     })
 
@@ -92,7 +101,7 @@ describe('FarmerApply defra ID redirection test', () => {
       const res = await server.inject(options)
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
       expect($('.govuk-heading-l').text()).toMatch('Login failed')
     })
 
@@ -103,15 +112,15 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      authMock.authenticate.mockImplementation(() => {
+      authenticate.mockImplementation(() => {
         throw new InvalidStateError('Invalid state')
       })
 
       const res = await server.inject(options)
       expect(res.statusCode).toBe(302)
-      expect(authMock.authenticate).toBeCalledTimes(1)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledTimes(0)
+      expect(authenticate).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledTimes(0)
     })
 
     test('returns 400 and cannot claim for review view when no application to claim for', async () => {
@@ -121,9 +130,9 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
+      getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -131,7 +140,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -152,16 +161,16 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new NoApplicationFoundError('No application found for SBI - 101122201'))
+      getLatestApplicationForSbi.mockRejectedValueOnce(new NoApplicationFoundError('No application found for SBI - 101122201'))
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
-      expect(authMock.authenticate).toBeCalledTimes(1)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
-      expect(latestApplicationMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'NoApplicationFoundError', undefined)
+      expect(authenticate).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(getLatestApplicationForSbi).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'NoApplicationFoundError', undefined)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
@@ -173,9 +182,9 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
+      getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -183,7 +192,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -204,16 +213,16 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new ClaimHasExpiredError('Claim has expired for reference - AHWR-1111-3213', {}, '1 Jan 2023', '2 Jun 2023'))
+      getLatestApplicationForSbi.mockRejectedValueOnce(new ClaimHasExpiredError('Claim has expired for reference - AHWR-1111-3213', {}, '1 Jan 2023', '2 Jun 2023'))
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
-      expect(authMock.authenticate).toBeCalledTimes(1)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
-      expect(latestApplicationMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasExpired', undefined)
+      expect(authenticate).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(getLatestApplicationForSbi).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasExpired', undefined)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
       expect($('.govuk-body').text()).toContain('You accepted your annual health and welfare agreement offer on 1 Jan 2023.')
@@ -227,9 +236,9 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
+      getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -237,7 +246,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -258,16 +267,16 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockRejectedValueOnce(new ClaimHasAlreadyBeenMadeError('Claim has already been made'))
+      getLatestApplicationForSbi.mockRejectedValueOnce(new ClaimHasAlreadyBeenMadeError('Claim has already been made'))
 
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
-      expect(authMock.authenticate).toBeCalledTimes(1)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
-      expect(latestApplicationMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledTimes(1)
-      expect(sendExceptionEventMock).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasAlreadyBeenMadeError', undefined)
+      expect(authenticate).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(getLatestApplicationForSbi).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledTimes(1)
+      expect(raiseIneligibilityEvent).toBeCalledWith(expect.anything(), undefined, undefined, undefined, 'ClaimHasAlreadyBeenMadeError', undefined)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
@@ -279,9 +288,9 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
+      getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -289,7 +298,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -314,8 +323,8 @@ describe('FarmerApply defra ID redirection test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(400)
-      expect(authMock.authenticate).toBeCalledTimes(1)
-      expect(authMock.requestAuthorizationCodeUrl).toBeCalledTimes(1)
+      expect(authenticate).toBeCalledTimes(1)
+      expect(requestAuthorizationCodeUrl).toBeCalledTimes(1)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-heading-l').text()).toMatch('You cannot claim for a livestock review for this business')
     })
@@ -327,9 +336,9 @@ describe('FarmerApply defra ID redirection test', () => {
         url: baseUrl
       }
 
-      authMock.authenticate.mockResolvedValueOnce({ accessToken: '2323' })
-      authMock.retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
-      getPersonSummaryMock.mockResolvedValueOnce({
+      authenticate.mockResolvedValueOnce({ accessToken: '2323' })
+      retrieveApimAccessToken.mockResolvedValueOnce('Bearer 2323')
+      getPersonSummary.mockResolvedValueOnce({
         firstName: 'Bill',
         middleName: null,
         lastName: 'Smith',
@@ -337,7 +346,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
-      organisationIsEligibleMock.mockResolvedValueOnce({
+      organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
           name: 'Mrs Gill Black',
@@ -359,7 +368,7 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
-      latestApplicationMock.mockResolvedValueOnce(
+      getLatestApplicationForSbi.mockResolvedValueOnce(
         {
           claimed: false,
           createdAt: '2023-01-17 14:55:20',
@@ -392,10 +401,10 @@ describe('FarmerApply defra ID redirection test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics?from=dashboard&sbi=101122201')
-      expect(latestApplicationMock).toBeCalledTimes(1)
-      expect(authMock.authenticate).toBeCalledTimes(1)
-      expect(authMock.setAuthCookie).toBeCalledTimes(1)
-      expect(sessionMock.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'organisation',
+      expect(getLatestApplicationForSbi).toBeCalledTimes(1)
+      expect(authenticate).toBeCalledTimes(1)
+      expect(setAuthCookie).toBeCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'organisation',
         {
           sbi: '101122201',
           farmerName: 'Bill Smith',

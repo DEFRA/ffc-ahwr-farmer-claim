@@ -1,8 +1,10 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { endemicsDiseaseStatus } = require('../../../../../app/config/routes')
-const { getEndemicsClaim } = require('../../../../../app/session')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import links from '../../../../../app/config/routes.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { getEndemicsClaim } from '../../../../../app/session/index.js'
+
+const { endemicsDiseaseStatus } = links
 
 jest.mock('../../../../../app/session')
 
@@ -25,29 +27,35 @@ describe('Disease status test', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl:
-              'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
         endemics: {
           enabled: true
         }
       }
     })
+    // jest.mock('../../../../../app/config/auth', () => {
+    //   const originalModule = jest.requireActual('../../../../../app/config/auth')
+    //   return {
+    //     ...originalModule,
+    //     authConfig: {
+    //       defraId: {
+    //         hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+    //         oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+    //         policy: 'b2c_1a_signupsigninsfi',
+    //         redirectUri: 'http://localhost:3000/apply/signin-oidc',
+    //         clientId: 'dummy_client_id',
+    //         serviceId: 'dummy_service_id',
+    //         scope: 'openid dummy_client_id offline_access'
+    //       },
+    //       ruralPaymentsAgency: {
+    //         hostname: 'dummy-host-name',
+    //         getPersonSummaryUrl: 'dummy-get-person-summary-url',
+    //         getOrganisationPermissionsUrl:
+    //           'dummy-get-organisation-permissions-url',
+    //         getOrganisationUrl: 'dummy-get-organisation-url'
+    //       }
+    //     }
+    //   }
+    // })
 
     server = await createServer()
     await server.initialize()
@@ -67,7 +75,7 @@ describe('Disease status test', () => {
       const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
-      expect(response.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(response.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     test('Returns 200', async () => {

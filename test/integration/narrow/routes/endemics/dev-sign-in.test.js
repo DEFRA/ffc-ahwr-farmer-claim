@@ -1,14 +1,27 @@
-const cheerio = require('cheerio')
-const sessionMock = require('../../../../../app/session')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { getLatestApplicationForSbi } from '../../../../../app/routes/models/latest-application.js'
+import { setAuthCookie } from '../../../../../app/auth/cookie-auth/cookie-auth.js'
+import { setEndemicsClaim } from '../../../../../app/session/index.js'
+
 jest.mock('../../../../../app/session')
-const latestApplicationMock = require('../../../../../app/routes/models/latest-application')
 jest.mock('../../../../../app/routes/models/latest-application')
-const authMock = require('../../../../../app/auth')
-jest.mock('../../../../../app/auth')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const createServer = require('../../../../../app/server')
+jest.mock('../../../../../app/auth/cookie-auth/cookie-auth')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+
+jest.mock('../../../../../app/config', () => {
+  const originalModule = jest.requireActual('../../../../../app/config')
+  return {
+    config: {
+      ...originalModule.config,
+      devLogin: {
+        enabled: true
+      }
+    }
+  }
+})
 
 const url = '/claim/endemics/dev-sign-in'
 
@@ -16,15 +29,6 @@ describe(`${url} route page`, () => {
   let server
 
   beforeAll(async () => {
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        devLogin: {
-          enabled: true
-        }
-      }
-    })
     server = await createServer()
     await server.initialize()
   })
@@ -73,7 +77,7 @@ describe(`${url} route page`, () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      latestApplicationMock.mockResolvedValueOnce(
+      getLatestApplicationForSbi.mockResolvedValueOnce(
         {
           claimed: false,
           createdAt: '2023-01-17 14:55:20',
@@ -105,9 +109,9 @@ describe(`${url} route page`, () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics?from=dashboard&sbi=12345678')
-      expect(latestApplicationMock).toBeCalledTimes(1)
-      expect(authMock.setAuthCookie).toBeCalledTimes(1)
-      expect(sessionMock.setEndemicsClaim).toBeCalledTimes(1)
+      expect(getLatestApplicationForSbi).toBeCalledTimes(1)
+      expect(setAuthCookie).toBeCalledTimes(1)
+      expect(setEndemicsClaim).toBeCalledTimes(1)
     })
   })
 })

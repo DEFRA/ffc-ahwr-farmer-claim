@@ -1,7 +1,7 @@
-jest.mock('../../../../app/event/raise-event')
-const raiseEvent = require('../../../../app/event/raise-event')
+import { raiseIneligibilityEvent } from '../../../../app/event/raise-ineligibility-event.js'
+import { raiseEvent } from '../../../../app/event/raise-event.js'
 
-const raiseIneligibilityEvent = require('../../../../app/event/raise-ineligibility-event')
+jest.mock('../../../../app/event/raise-event')
 
 let event
 const sessionId = '9e016c50-046b-4597-b79a-ebe4f0bf8505'

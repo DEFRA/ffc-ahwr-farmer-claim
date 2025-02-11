@@ -1,8 +1,8 @@
 import Wreck from '@hapi/wreck'
+import { getToken } from '../../../../../app/session/index.js'
+import { decodeJwt } from '../../../../../app/auth/token-verify/jwt-decode.js'
+import { get } from '../../../../../app/api-requests/rpa-api/base.js'
 
-const mockSession = require('../../../../../app/session/index')
-const base = require('../../../../../app/api-requests/rpa-api/base')
-const mockJwtDecode = require('../../../../../app/auth/token-verify/jwt-decode')
 jest.mock('../../../../../app/session/index')
 jest.mock('@hapi/wreck')
 jest.mock('../../../../../app/auth/token-verify/jwt-decode')
@@ -69,10 +69,10 @@ describe('Base', () => {
       return wreckResponse
     })
 
-    mockSession.getToken.mockResolvedValueOnce(accessToken)
-    mockJwtDecode.mockResolvedValue(contactId)
+    getToken.mockResolvedValueOnce(accessToken)
+    decodeJwt.mockResolvedValue(contactId)
 
-    const result = await base.get(hostname, url, expect.anything(), expect.anything())
+    const result = await get(hostname, url, expect.anything(), expect.anything())
 
     expect(result).not.toBeNull()
     expect(result.name).toMatch(contactName)
@@ -92,11 +92,11 @@ describe('Base', () => {
       throw error
     })
 
-    mockSession.getToken.mockResolvedValueOnce(accessToken)
-    mockJwtDecode.mockResolvedValue(contactId)
+    getToken.mockResolvedValueOnce(accessToken)
+    decodeJwt.mockResolvedValue(contactId)
 
-    expect(async () =>
-      await base.get(hostname, url, expect.anything(), expect.anything())
+    await expect(async () =>
+      await get(hostname, url, expect.anything(), expect.anything())
     ).rejects.toThrowError(error)
   })
 })

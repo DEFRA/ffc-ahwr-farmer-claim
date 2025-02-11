@@ -1,4 +1,4 @@
-const { getReviewWithinLast10Months } = require('../../../../app/api-requests/claim-service-api')
+import { getReviewWithinLast10Months } from '../../../../app/api-requests/claim-service-api.js'
 
 const generateMockPreviousClaim = (data, type = 'R') => {
   return data.map((d) => (

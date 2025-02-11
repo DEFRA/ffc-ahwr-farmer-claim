@@ -1,4 +1,4 @@
-const { createTempClaimReference } = require('../../../../app/lib/create-temp-claim-reference')
+import { createTempClaimReference } from '../../../../app/lib/create-temp-claim-reference.js'
 
 test('should return a string temp reference', () => {
   const tempRef = createTempClaimReference()

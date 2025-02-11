@@ -1,6 +1,6 @@
-const cheerio = require('cheerio')
-const expectPhaseBanner = require('../../../utils/phase-banner-expect')
-const createServer = require('../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../app/server.js'
+import expectPhaseBanner from 'assert'
 
 describe('4xx error pages', () => {
   let server

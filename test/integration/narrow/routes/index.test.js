@@ -1,5 +1,6 @@
+import { createServer } from '../../../../app/server.js'
+
 const mockConfig = require('../../../../app/config')
-const createServer = require('../../../../app/server')
 jest.mock('../../../../app/lib/logout')
 
 describe('Farmer claim home page test', () => {

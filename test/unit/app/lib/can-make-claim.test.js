@@ -1,5 +1,7 @@
-const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../../../app/lib/can-make-claim')
-const { READY_TO_PAY, PAID, REJECTED, ACCEPTED } = require('../../../../app/constants/status')
+import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../../../app/lib/can-make-claim.js'
+import { status } from '../../../../app/constants/constants.js'
+
+const { READY_TO_PAY, PAID, REJECTED, ACCEPTED } = status
 
 const createReviewClaim = (dateOfVisit, statusId = 9) => ({
   statusId,

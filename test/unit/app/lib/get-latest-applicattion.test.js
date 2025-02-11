@@ -1,4 +1,4 @@
-const { getLatestApplication } = require('../../../../app/lib/get-latest-application')
+import { getLatestApplication } from '../../../../app/lib/get-latest-application.js'
 
 describe('getLatestApplication', () => {
   test('returns the latest application', () => {

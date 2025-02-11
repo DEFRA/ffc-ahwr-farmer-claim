@@ -5,13 +5,10 @@ import { getAllApplicationsBySbi } from '../../../../../app/api-requests/applica
 import { claimHasExpired } from '../../../../../app/lib/claim-has-expired.js'
 import { getLatestApplicationForSbi } from '../../../../../app/routes/models/latest-application.js'
 
+jest.mock('../../../../../app/lib/claim-has-expired')
+jest.mock('../../../../../app/api-requests/application-service-api')
+
 describe('Latest Applications Tests', () => {
-  beforeAll(() => {
-    jest.mock('../../../../../app/api-requests/application-service-api')
-
-    jest.mock('../../../../../app/lib/claim-has-expired')
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
   })
