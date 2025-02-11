@@ -1,7 +1,10 @@
-const Joi = require('joi')
-const ViewModel = require('./models/cookies-policy')
-const { updatePolicy } = require('../cookies')
-const { cookie: { cookieNameCookiePolicy } } = require('../config')
+import Joi from 'joi'
+import { config } from '../config/index.js'
+
+import { ViewModel } from './models/cookies-policy.js'
+import { updatePolicy } from '../cookies.js'
+
+const { cookie: { cookieNameCookiePolicy } } = config
 
 const getHandler = {
   method: 'GET',
@@ -38,4 +41,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const cookiesHandlers = [getHandler, postHandler]

@@ -1,29 +1,27 @@
-const { endemicsClaim: { piHuntRecommended, piHuntAllAnimals, dateOfTesting, laboratoryURN, testResults } } = require('../session/keys')
-const { setEndemicsClaim, getEndemicsClaim } = require('../session')
+import { getEndemicsClaim, setEndemicsClaim } from '../session/index.js'
+import { sessionKeys } from '../session/keys.js'
 
-const clearTestDetails = (request, session) => {
-  session.dateOfTesting && setEndemicsClaim(request, dateOfTesting, undefined)
-  session.laboratoryURN && setEndemicsClaim(request, laboratoryURN, undefined)
-  session.testResults && setEndemicsClaim(request, testResults, undefined)
+const { endemicsClaim: { piHuntRecommended, piHuntAllAnimals, dateOfTesting, laboratoryURN, testResults } } = sessionKeys
+
+const clearTestDetails = (request) => {
+  dateOfTesting && setEndemicsClaim(request, dateOfTesting, undefined)
+  laboratoryURN && setEndemicsClaim(request, laboratoryURN, undefined)
+  testResults && setEndemicsClaim(request, testResults, undefined)
 }
 
-function clearPiHuntSessionOnChange (request, piHuntStage) {
-  const session = getEndemicsClaim(request)
+export function clearPiHuntSessionOnChange (request, piHuntStage) {
+  const sessionEndemicsClaim = getEndemicsClaim(request)
   switch (piHuntStage) {
     case 'piHunt':
-      session.piHuntRecommended && setEndemicsClaim(request, piHuntRecommended, undefined)
-      session.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
-      clearTestDetails(request, session)
+      piHuntRecommended && setEndemicsClaim(request, piHuntRecommended, undefined)
+      piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearTestDetails(request)
       break
     case 'piHuntRecommended':
-      session.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
-      clearTestDetails(request, session)
+      sessionEndemicsClaim.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearTestDetails(request)
       break
     case 'piHuntAllAnimals':
-      clearTestDetails(request, session)
+      clearTestDetails(request)
   }
-}
-
-module.exports = {
-  clearPiHuntSessionOnChange
 }

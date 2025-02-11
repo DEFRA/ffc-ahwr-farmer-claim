@@ -1,7 +1,7 @@
-const { getClaimType } = require('./get-claim-type')
-const { vaccination } = require('../constants/claim')
+import { claimConstants } from '../constants/claim.js'
+import { getClaimType } from './get-claim-type.js'
 
-function getTypeOfReviewForDisplay (claimData) {
+export function getTypeOfReviewForDisplay (claimData) {
   return {
     beef: 'Beef cattle',
     dairy: 'Dairy cattle',
@@ -10,11 +10,11 @@ function getTypeOfReviewForDisplay (claimData) {
   }[getClaimType(claimData)]
 }
 
-const isSpecies = (typeOfLivestock, species) => {
+export const isSpecies = (typeOfLivestock, species) => {
   return typeOfLivestock === species
 }
 
-function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false) {
+export function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false) {
   return {
     beef: isEndemicsClaims ? '11 or more beef cattle ' : '11 or more cattle ',
     dairy: isEndemicsClaims ? '11 or more dairy cattle ' : '11 or more cattle ',
@@ -23,33 +23,22 @@ function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false
   }[getClaimType(claimData, isEndemicsClaims)]
 }
 
-function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
-  if (vaccinatedNotVaccinated === vaccination.vaccinated) return 'Vaccinated'
-  if (vaccinatedNotVaccinated === vaccination.notVaccinated) return 'Not vaccinated'
+export function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
+  if (vaccinatedNotVaccinated === claimConstants.vaccination.vaccinated) return 'Vaccinated'
+  if (vaccinatedNotVaccinated === claimConstants.vaccination.notVaccinated) return 'Not vaccinated'
   return undefined
 }
 
-function getTypeOfReviewRowForDisplay (claimData) {
+export function getTypeOfReviewRowForDisplay (claimData) {
   return { key: { text: 'Type of review' }, value: { text: getTypeOfReviewForDisplay(claimData) } }
 }
 
-function getEligibleNumberRowForDisplay (claimData) {
+export function getEligibleNumberRowForDisplay (claimData) {
   return { key: { text: getSpeciesEligibleNumberForDisplay(claimData) }, value: { text: `${claimData.eligibleSpecies}, I had ${getSpeciesEligibleNumberForDisplay(claimData)}` } }
 }
 
-function upperFirstLetter (str) {
+export function upperFirstLetter (str) {
   if (str && typeof str === 'string' && str !== '') return str?.charAt(0)?.toUpperCase() + str?.slice(1)
 }
 
-const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
-
-module.exports = {
-  getTypeOfReviewRowForDisplay,
-  getEligibleNumberRowForDisplay,
-  upperFirstLetter,
-  getSpeciesEligibleNumberForDisplay,
-  getVaccinationStatusForDisplay,
-  getTypeOfReviewForDisplay,
-  isSpecies,
-  formatDate
-}
+export const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })

@@ -1,11 +1,14 @@
-const { clearEndemicsClaim, getEndemicsClaim } = require('../../session')
+import { clearEndemicsClaim, getEndemicsClaim } from '../../session/index.js'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+
 const {
   urlPrefix,
   ruralPaymentsAgency,
   customerSurvey
-} = require('../../config')
-const { endemicsConfirmation, claimDashboard } = require('../../config/routes')
-const { getReviewType } = require('../../lib/get-review-type')
+} = config
+const { endemicsConfirmation, claimDashboard } = links
 
 const pageUrl = `${urlPrefix}/${endemicsConfirmation}`
 
@@ -14,11 +17,11 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const session = getEndemicsClaim(request)
+      const cachedEndemicsClaim = getEndemicsClaim(request)
       // Create copies before clearing session
-      const reference = session.reference
-      const amount = session.amount
-      const { isReview } = getReviewType(session.typeOfReview)
+      const reference = cachedEndemicsClaim.reference
+      const amount = cachedEndemicsClaim.amount
+      const { isReview } = getReviewType(cachedEndemicsClaim.typeOfReview)
 
       clearEndemicsClaim(request)
 
@@ -34,4 +37,4 @@ const getHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler] }
+export const confirmationHandlers = [getHandler]

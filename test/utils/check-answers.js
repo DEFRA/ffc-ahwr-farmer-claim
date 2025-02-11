@@ -1,27 +1,27 @@
-const getRowKeys = ($) => {
+export const getRowKeys = ($) => {
   return $('.govuk-summary-list__key').map((index, element) => $(element).text().trim()).get()
 }
-const getRowContents = ($) => {
+export const getRowContents = ($) => {
   return $('.govuk-summary-list__value').map((index, element) => $(element).text().trim()).get()
 }
-const getRowActionTexts = ($) => {
+export const getRowActionTexts = ($) => {
   return $('.govuk-summary-list__actions').map((index, element) => $(element).text().trim()).get()
 }
-const getRowLinks = ($) => {
+export const getRowLinks = ($) => {
   return $('.govuk-summary-list__actions .govuk-link').map((index, element) => $(element).attr('href')).get()
 }
 
-const commonVetRowKeys = [
+export const commonVetRowKeys = [
   "Vet's name",
   "Vet's RCVS number"
 ]
 
-const commonVetRowActionTexts = [
+export const commonVetRowActionTexts = [
   "Change vet's name",
   "Change vet's rcvs number"
 ]
 
-const commonReviewRowKeys = [
+export const commonReviewRowKeys = [
   'Business name',
   'Livestock',
   'Review or follow-up',
@@ -29,7 +29,7 @@ const commonReviewRowKeys = [
   'Date of sampling'
 ]
 
-const commonEndemicsFollowUpRowKeys = [
+export const commonEndemicsFollowUpRowKeys = [
   'Business name',
   'Livestock',
   'Review or follow-up',
@@ -37,7 +37,7 @@ const commonEndemicsFollowUpRowKeys = [
 ]
 
 // Review claim data
-const baseReviewClaim = {
+export const baseReviewClaim = {
   organisation: { name: 'business name' },
   typeOfReview: 'R',
   dateOfVisit: '2023-12-19T10:25:11.318Z',
@@ -49,12 +49,12 @@ const baseReviewClaim = {
   reference: 'TEMP-6GSE-PIR8'
 }
 
-const beefReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive' }
-const dairyReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'dairy', testResults: 'positive' }
-const pigsReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfOralFluidSamples: '10', testResults: 'positive' }
-const sheepReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42' }
+export const beefReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive' }
+export const dairyReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'dairy', testResults: 'positive' }
+export const pigsReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfOralFluidSamples: '10', testResults: 'positive' }
+export const sheepReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42' }
 
-const expectedReviewBeef = {
+export const expectedReviewBeef = {
   rowKeys: [
     ...commonReviewRowKeys,
     '11 or more beef cattle',
@@ -97,7 +97,7 @@ const expectedReviewBeef = {
   ]
 }
 
-const expectedReviewDairy = {
+export const expectedReviewDairy = {
   rowKeys: [
     ...commonReviewRowKeys,
     '11 or more dairy cattle',
@@ -136,7 +136,7 @@ const expectedReviewDairy = {
   ]
 }
 
-const expectedReviewPigs = {
+export const expectedReviewPigs = {
   rowKeys: [
     ...commonReviewRowKeys,
     '51 or more pigs',
@@ -183,7 +183,7 @@ const expectedReviewPigs = {
   ]
 }
 
-const expectedReviewSheep = {
+export const expectedReviewSheep = {
   rowKeys: [
     ...commonReviewRowKeys,
     '21 or more sheep',
@@ -223,7 +223,7 @@ const expectedReviewSheep = {
 }
 
 // Endemic follow-up claim data
-const baseEndemicsFollowUpClaim = {
+export const baseEndemicsFollowUpClaim = {
   organisation: { name: 'business name' },
   typeOfReview: 'E',
   dateOfVisit: '2023-12-19T10:25:11.318Z',
@@ -235,9 +235,9 @@ const baseEndemicsFollowUpClaim = {
   reference: 'TEMP-6GSE-PIR8'
 }
 
-const sheepEndemicsPackage = 'reducedExternalParasites'
-const sheepTests = ['flystrike', 'sheepScab', 'other']
-const sheepTestResults = [
+export const sheepEndemicsPackage = 'reducedExternalParasites'
+export const sheepTests = ['flystrike', 'sheepScab', 'other']
+export const sheepTestResults = [
   { diseaseType: 'flystrike', result: 'clinicalSymptomsPresent' },
   { diseaseType: 'sheepScab', result: 'negative' },
   {
@@ -249,12 +249,12 @@ const sheepTestResults = [
   }
 ]
 
-const beefEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive', biosecurity: 'yes' }
-const dairyEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'dairy', testResults: 'positive', biosecurity: 'yes' }
-const pigEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfSamplesTested: '5', diseaseStatus: '3', herdVaccinationStatus: 'vaccinated', biosecurity: { biosecurity: 'yes', assessmentPercentage: '50' } }
-const sheepEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42', sheepEndemicsPackage, sheepTests, sheepTestResults }
+export const beefEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive', biosecurity: 'yes' }
+export const dairyEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'dairy', testResults: 'positive', biosecurity: 'yes' }
+export const pigEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfSamplesTested: '5', diseaseStatus: '3', herdVaccinationStatus: 'vaccinated', biosecurity: { biosecurity: 'yes', assessmentPercentage: '50' } }
+export const sheepEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42', sheepEndemicsPackage, sheepTests, sheepTestResults }
 
-const expectedEndemicsFollowUpBeef = {
+export const expectedEndemicsFollowUpBeef = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     '11 or more beef cattle',
@@ -302,7 +302,7 @@ const expectedEndemicsFollowUpBeef = {
   ]
 }
 
-const expectedEndemicsFollowUpDairy = {
+export const expectedEndemicsFollowUpDairy = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     '11 or more dairy cattle',
@@ -346,7 +346,7 @@ const expectedEndemicsFollowUpDairy = {
   ]
 }
 
-const expectedEndemicsFollowUpPigs = {
+export const expectedEndemicsFollowUpPigs = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     'Date of sampling',
@@ -402,7 +402,7 @@ const expectedEndemicsFollowUpPigs = {
   ]
 }
 
-const expectedEndemicsFollowUpSheep = {
+export const expectedEndemicsFollowUpSheep = {
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     'Date of sampling',
@@ -460,28 +460,4 @@ const expectedEndemicsFollowUpSheep = {
     '/claim/endemics/sheep-test-results?diseaseType=sheepScab',
     '/claim/endemics/sheep-test-results?diseaseType=other'
   ]
-}
-
-module.exports = {
-  beefReviewClaim,
-  dairyReviewClaim,
-  pigsReviewClaim,
-  sheepReviewClaim,
-  beefEndemicsFollowUpClaim,
-  dairyEndemicsFollowUpClaim,
-  pigEndemicsFollowUpClaim,
-  sheepEndemicsFollowUpClaim,
-  expectedReviewBeef,
-  expectedReviewDairy,
-  expectedReviewPigs,
-  expectedReviewSheep,
-  expectedEndemicsFollowUpBeef,
-  expectedEndemicsFollowUpDairy,
-  expectedEndemicsFollowUpPigs,
-  expectedEndemicsFollowUpSheep,
-  sheepTestResults,
-  getRowKeys,
-  getRowContents,
-  getRowActionTexts,
-  getRowLinks
 }

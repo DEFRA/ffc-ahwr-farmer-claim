@@ -1,8 +1,8 @@
-const { getEndemicsClaim, getCustomer } = require('../session')
-const raiseEvent = require('./raise-event')
-const sessionKeys = require('../session/keys')
+import { raiseEvent } from './raise-event.js'
+import { sessionKeys } from '../session/keys.js'
+import { getCustomer, getEndemicsClaim } from '../session/index.js'
 
-const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
+export const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
   const { reference, organisation, latestEndemicsApplication: { reference: applicationReference } = {} } = getEndemicsClaim(request)
   const crn = getCustomer(request, sessionKeys.customer.crn)
 
@@ -30,5 +30,3 @@ const raiseInvalidDataEvent = async (request, sessionKey, exception) => {
     await raiseEvent(event, 'alert')
   }
 }
-
-module.exports = raiseInvalidDataEvent

@@ -1,4 +1,4 @@
-const session = require('../../../../app/session')
+import * as session from '../../../../app/session'
 
 describe('session', () => {
   const endemicsClaimKey = 'endemicsClaim'

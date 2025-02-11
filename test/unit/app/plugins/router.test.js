@@ -1,3 +1,5 @@
+import { createServer } from '../../../../app/server.js'
+
 describe('routes plugin test', () => {
   jest.mock('../../../../app/config', () => ({
     ...jest.requireActual('../../../../app/config'),
@@ -12,7 +14,6 @@ describe('routes plugin test', () => {
   })
 
   test('routes included', async () => {
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table().forEach((element) => {
@@ -40,7 +41,6 @@ describe('routes plugin test', () => {
       }
     }))
 
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table()
@@ -121,7 +121,6 @@ describe('routes plugin test', () => {
       }
     }))
 
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table()
@@ -142,7 +141,6 @@ describe('routes plugin test', () => {
       }
     }))
 
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table().forEach((element) => {

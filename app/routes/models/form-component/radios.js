@@ -1,4 +1,4 @@
-function radios (legendText, id, errorText = undefined, options = {}) {
+export function radios (legendText, id, errorText = undefined, options = {}) {
   return (items) => {
     const { isPageHeading = true, legendClasses = 'govuk-fieldset__legend--l', inline = false, hintHtml = '' } = options
     return {
@@ -22,5 +22,3 @@ function radios (legendText, id, errorText = undefined, options = {}) {
     }
   }
 }
-
-module.exports = radios

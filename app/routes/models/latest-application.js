@@ -1,9 +1,14 @@
-const applicationApi = require('../../api-requests/application-service-api')
-const applicationStatus = require('../../constants/status')
-const { claimHasExpired } = require('../../lib/claim-has-expired')
-const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../exceptions')
-const { claimExpiryTimeMonths } = require('../../config')
-const { getLatestApplication } = require('../../lib/get-latest-application')
+import { getLatestApplication } from '../../lib/get-latest-application.js'
+import { getAllApplicationsBySbi } from '../../api-requests/application-service-api.js'
+import { status as applicationStatus } from '../../constants/constants.js'
+import { claimHasExpired } from '../../lib/claim-has-expired.js'
+import { NoApplicationFoundError } from '../../exceptions/no-application-found.js'
+import { ClaimHasAlreadyBeenMadeError } from '../../exceptions/claim-has-already-been-made.js'
+import { ClaimHasExpiredError } from '../../exceptions/claim-has-expired.js'
+import { config } from '../../config/index.js'
+
+const { claimExpiryTimeMonths } = config
+
 function formatDate (date) {
   return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
 }
@@ -16,8 +21,8 @@ function claimTimeLimitDates (latestApplication) {
   return { startDate: start, endDate: end }
 }
 
-async function getLatestApplicationForSbi (sbi, name = '') {
-  const latestApplicationsForSbi = await applicationApi.getAllApplicationsBySbi(sbi)
+export async function getLatestApplicationForSbi (sbi, name = '') {
+  const latestApplicationsForSbi = await getAllApplicationsBySbi(sbi)
 
   if (!latestApplicationsForSbi || !Array.isArray(latestApplicationsForSbi) || latestApplicationsForSbi.length === 0) {
     throw new NoApplicationFoundError(
@@ -67,5 +72,3 @@ async function getLatestApplicationForSbi (sbi, name = '') {
       )
   }
 }
-
-module.exports = getLatestApplicationForSbi

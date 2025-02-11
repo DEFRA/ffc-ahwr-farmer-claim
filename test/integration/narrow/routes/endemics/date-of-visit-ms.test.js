@@ -1,10 +1,11 @@
+import appInsights from 'applicationinsights'
+
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { labels } = require('../../../../../app/config/visit-date')
 const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
 const session = require('../../../../../app/session')
-const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
 const config = require('../../../../../app/config')
 const { previousPageUrl } = require('../../../../../app/routes/endemics/date-of-visit-ms')

@@ -1,6 +1,6 @@
 const labelPrefix = 'visit-date-'
 
-module.exports = {
+export const visitDate = {
   inputErrorClass: 'govuk-input--error',
   labelPrefix,
   labels: {

@@ -1,6 +1,7 @@
+import Wreck from '@hapi/wreck'
+import appInsights from 'applicationinsights'
+
 const cheerio = require('cheerio')
-const Wreck = require('@hapi/wreck')
-const appInsights = require('applicationinsights')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const { livestockTypes } = require('../../../../../app/constants/claim')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')

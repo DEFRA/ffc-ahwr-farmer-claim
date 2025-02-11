@@ -1,4 +1,4 @@
-const { visitDate: errorMessages } = require('../../../app/lib/error-messages')
+import { errorMessages } from '../error-messages.js'
 
 function isDateInFuture (date) {
   return date > new Date()
@@ -42,12 +42,12 @@ function isDateBefore (date, dateToCompare) {
  * `errorMessage` property object containing `text` - a string representing the
   * error message.
  */
-function isDateInFutureOrBeforeFirstValidDate (date, dateToCompare) {
+export function isDateInFutureOrBeforeFirstValidDate (date, dateToCompare) {
   const futureDate = isDateInFuture(date)
   if (futureDate || isDateBefore(date, dateToCompare) || isDateWithinYear(date, dateToCompare)) {
     return {
       errorMessage: {
-        text: futureDate ? errorMessages.todayOrPast : errorMessages.startDateOrAfter(dateToCompare)
+        text: futureDate ? errorMessages.visitDate.todayOrPast : errorMessages.visitDate.startDateOrAfter(dateToCompare)
       },
       isDateValid: false
     }
@@ -55,8 +55,4 @@ function isDateInFutureOrBeforeFirstValidDate (date, dateToCompare) {
   return {
     isDateValid: true
   }
-}
-
-module.exports = {
-  isDateInFutureOrBeforeFirstValidDate
 }

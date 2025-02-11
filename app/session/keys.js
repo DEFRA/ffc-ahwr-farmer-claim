@@ -1,4 +1,4 @@
-module.exports = {
+export const sessionKeys = {
   answers: {
     cattle: 'cattle',
     cattleType: 'cattleType',

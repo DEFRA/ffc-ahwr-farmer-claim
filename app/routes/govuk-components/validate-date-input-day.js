@@ -1,10 +1,10 @@
-const Joi = require('joi')
+import Joi from 'joi'
 
 const isYearEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-year`] === ''
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
 const isLeapYear = (year) => (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
 
-const validateDateInputDay = (namePrefix, dateName) => {
+export const validateDateInputDay = (namePrefix, dateName) => {
   return Joi.when(`${namePrefix}-day`, {
     switch: [
       {
@@ -53,5 +53,3 @@ const validateDateInputDay = (namePrefix, dateName) => {
     'dateInputDay.ifTheDateIsIncomplete.day': `${dateName} must include a day`
   })
 }
-
-module.exports = validateDateInputDay

@@ -1,4 +1,4 @@
-module.exports = {
+export const claimConstants = {
   thresholdPerClaimType: {
     beef: 5,
     pigs: 30,

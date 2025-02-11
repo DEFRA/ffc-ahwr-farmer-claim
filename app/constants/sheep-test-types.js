@@ -1,4 +1,4 @@
-const sheepPackages = {
+export const sheepPackages = {
   improvedEwePerformance: 'Ewe condition',
   improvedReproductivePerformance: 'Reproductive performance',
   improvedLambPerformance: 'Lamb performance',
@@ -7,7 +7,7 @@ const sheepPackages = {
   reducedLameness: 'Lameness'
 }
 
-const sheepTestTypes = {
+export const sheepTestTypes = {
   improvedEwePerformance: [
     { value: 'johnes', text: 'Johne’s' },
     { value: 'mv', text: 'Maedi Visna (MV)' },
@@ -83,14 +83,15 @@ const sheepTestTypes = {
   ]
 }
 
-const testResultOptions = {
+export const testResultOptions = {
   clinicalSymptoms: [{ value: 'clinicalSymptomsPresent', text: 'Clinical symptoms present' }, { value: 'clinicalSymptomsNotPresent', text: 'Clinical symptoms not present' }],
   positiveNegative: [{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }],
   problem: [{ value: 'problemIdentified', text: 'Problem identified' }, { value: 'noProblemIdentified', text: 'No problem identified' }]
 }
-const { positiveNegative, clinicalSymptoms, problem } = testResultOptions
 
-const sheepTestResultsType = {
+export const { positiveNegative, clinicalSymptoms, problem } = testResultOptions
+
+export const sheepTestResultsType = {
   bd: positiveNegative,
   cla: positiveNegative,
   coccidiosis: clinicalSymptoms,
@@ -125,5 +126,3 @@ const sheepTestResultsType = {
   traceElements: problem,
   wateryMouth: clinicalSymptoms
 }
-
-module.exports = { sheepPackages, sheepTestTypes, sheepTestResultsType, testResultOptions }

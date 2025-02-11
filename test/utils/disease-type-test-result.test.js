@@ -1,36 +1,6 @@
-const { getErrorResultString } = require('../../app/routes/utils/disease-type-test-result')
+import { getErrorResultString } from '../../app/routes/utils/disease-type-test-result.js'
 
 describe('getErrorResultString', () => {
-  it('should return the validation message object', () => {
-    const payload = {
-      diseaseType: 'someDiseaseType',
-      testResult: 'positive'
-    }
-
-    const validatorFn = (field) => {
-      return {
-        validate: (value) => {
-          if (field === 'diseaseType') {
-            return {
-              error: null
-            }
-          } else if (field === 'testResult') {
-            return {
-              error: null
-            }
-          }
-        }
-      }
-    }
-
-    const result = getErrorResultString(payload, validatorFn)
-
-    expect(result).toEqual(expect.objectContaining({
-      diseaseType: { value: 'someDiseaseType', text: undefined },
-      testResult: { value: 'positive', text: undefined }
-    }))
-  })
-}); describe('getErrorResultString', () => {
   it('should return the validation message object', () => {
     const payload = {
       diseaseType: 'someDiseaseType',

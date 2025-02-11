@@ -1,30 +1,26 @@
-const { get } = require('./base')
-const session = require('../../session')
-const { tokens } = require('../../session/keys')
-const config = require('../../config')
-const decodeJwt = require('../../auth/token-verify/jwt-decode')
-const hostname = config.authConfig.ruralPaymentsAgency.hostname
+import { get } from './base.js'
+import { getToken } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import { decodeJwt } from '../../auth/token-verify/jwt-decode.js'
+import { authConfig } from '../../config/auth.js'
+
+const hostname = authConfig.ruralPaymentsAgency.hostname
 
 // This URL contains a hardcoded personId value (3337243) which has been confirmed by
 // Version One - "We will be using a static "3337243" value as the personId parameter."
-const getPersonSummaryUrl = config.authConfig.ruralPaymentsAgency.getPersonSummaryUrl
+const getPersonSummaryUrl = authConfig.ruralPaymentsAgency.getPersonSummaryUrl
 
-function getPersonName (personSummary) {
+export function getPersonName (personSummary) {
   return [personSummary.firstName, personSummary.middleName, personSummary.lastName].filter(Boolean).join(' ')
 }
 
 function parsedAccessToken (request) {
-  const accessToken = session.getToken(request, tokens.accessToken)
+  const accessToken = getToken(request, sessionKeys.tokens.accessToken)
   return decodeJwt(accessToken)
 }
 
-const getPersonSummary = async (request, apimAccessToken) => {
+export const getPersonSummary = async (request, apimAccessToken) => {
   const crn = parsedAccessToken(request).contactId
   const response = await get(hostname, getPersonSummaryUrl, request, { crn, Authorization: apimAccessToken })
   return response._data
-}
-
-module.exports = {
-  getPersonSummary,
-  getPersonName
 }

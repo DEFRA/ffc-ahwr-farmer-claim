@@ -1,11 +1,16 @@
-const Joi = require('joi')
-const { setEndemicsClaim, getEndemicsClaim } = require('../../session')
-const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = require('../../session/keys')
-const { livestockTypes, claimType } = require('../../constants/claim')
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = require('../../config/routes')
-const { isCattleEndemicsClaimForOldWorldReview } = require('../../api-requests/claim-service-api')
-const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
-const { canChangeSpecies, getTypeOfLivestockFromLatestClaim } = require('../../lib/context-helper')
+import Joi from 'joi'
+import { sessionKeys } from '../../session/keys.js'
+import { claimConstants } from '../../constants/claim.js'
+import links from '../../config/routes.js'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { canChangeSpecies, getTypeOfLivestockFromLatestClaim } from '../../lib/context-helper.js'
+import { isCattleEndemicsClaimForOldWorldReview } from '../../api-requests/claim-service-api.js'
+
+const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = sessionKeys
+const { livestockTypes, claimType } = claimConstants
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = links
+const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = config
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
@@ -97,4 +102,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const whichReviewHandlers = [getHandler, postHandler]

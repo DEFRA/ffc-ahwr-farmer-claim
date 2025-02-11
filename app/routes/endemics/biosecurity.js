@@ -1,13 +1,19 @@
-const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { biosecurity: biosecurityKey } =
-  require('../../session/keys').endemicsClaim
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+import Joi from 'joi'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { claimConstants } from '../../constants/claim.js'
+import { getTestResult } from '../../lib/get-test-result.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+
+const { biosecurity: biosecurityKey } = sessionKeys.endemicsClaim
 const {
   urlPrefix,
   ruralPaymentsAgency,
   optionalPIHunt
-} = require('../../config')
+} = config
 const {
   endemicsTestResults,
   endemicsBiosecurity,
@@ -18,13 +24,11 @@ const {
   endemicsPIHunt,
   endemicsPIHuntRecommended,
   endemicsPIHuntAllAnimals
-} = require('../../config/routes')
-const { livestockTypes: { pigs } } = require('../../constants/claim')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getTestResult } = require('../../lib/get-test-result')
+} = links
+const { livestockTypes: { pigs } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
-const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
+export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
 const isPIHuntValidNegative = (
   isNegative,
   piHuntDone,
@@ -45,7 +49,7 @@ const isPIHuntValid = (
     piHuntRecommended,
     piHuntAllAnimals
   )
-const getBeefOrDairyPage = (session, isNegative, isPositive) => {
+export const getBeefOrDairyPage = (session, isNegative, isPositive) => {
   const piHuntDone = session?.piHunt === 'yes'
   const piHuntRecommended = session?.piHuntRecommended === 'yes'
   const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
@@ -75,7 +79,7 @@ const getBeefOrDairyPage = (session, isNegative, isPositive) => {
 
   return `${urlPrefix}/${endemicsTestResults}`
 }
-const previousPageUrl = (request) => {
+export const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
   const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
   const { isBeef, isDairy, isPigs } = getLivestockTypes(
@@ -94,7 +98,7 @@ const previousPageUrl = (request) => {
   }
 }
 
-const getAssessmentPercentageErrorMessage = (
+export const getAssessmentPercentageErrorMessage = (
   biosecurity,
   assessmentPercentage
 ) => {
@@ -180,10 +184,4 @@ const postHandler = {
   }
 }
 
-module.exports = {
-  handlers: [getHandler, postHandler],
-  getBeefOrDairyPage,
-  previousPageUrl,
-  getAssessmentPercentageErrorMessage,
-  isPIHuntValidPositive
-}
+export const biosecurityHandlers = [getHandler, postHandler]

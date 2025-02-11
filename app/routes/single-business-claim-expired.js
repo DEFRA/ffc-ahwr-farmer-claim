@@ -1,8 +1,8 @@
-const config = require('../config/index')
+import { config } from '../config/index.js'
 
 // is this file/route needed? it doesnt get added to the router
 
-const getHandler = {
+export const singleBusinessClaimExpiredHandler = {
   method: 'GET',
   path: '/claim/single-business-claim-expired',
   options: {
@@ -13,5 +13,3 @@ const getHandler = {
     }
   }
 }
-
-module.exports = { handlers: [getHandler] }

@@ -1,15 +1,15 @@
-const { claimDashboard } = require('../config/routes')
-const session = require('../session')
+import { getEndemicsClaim } from '../session/index.js'
+import links from '../config/routes.js'
 
-module.exports = {
+export const redirectWhenClaimRefMissingPlugin = {
   plugin: {
     name: 'redirect-claim-ref-missing',
     register: (server, _) => {
       server.ext('onPreHandler', (request, h) => {
         if (request.method === 'get' && request.path.includes('/claim/endemics/') && !request.path.includes('dev-sign-in') && !request.path.includes('assets')) {
-          const claim = session.getEndemicsClaim(request)
+          const claim = getEndemicsClaim(request)
           if (!claim?.reference) {
-            return h.redirect(claimDashboard).takeover()
+            return h.redirect(links.claimDashboard).takeover()
           }
         }
         return h.continue

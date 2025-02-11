@@ -1,14 +1,18 @@
-const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { endemicsClaim } = require('../../session/keys')
-const { livestockTypes } = require('../../constants/claim')
+import Joi from 'joi'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import links from '../../config/routes.js'
+import { config } from '../../config/index.js'
+import { claimConstants } from '../../constants/claim.js'
+import { resetEndemicsClaimSession } from '../../lib/context-helper.js'
+
+const { livestockTypes } = claimConstants
 const {
   claimDashboard,
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
-} = require('../../config/routes')
-const { resetEndemicsClaimSession } = require('../../lib/context-helper')
-const urlPrefix = require('../../config').urlPrefix
+} = links
+const { urlPrefix } = config
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = claimDashboard
@@ -62,11 +66,11 @@ const postHandler = {
         await resetEndemicsClaimSession(request, latestEndemicsApplication.reference, reference)
       }
 
-      setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
+      setEndemicsClaim(request, sessionKeys.endemicsClaim.typeOfLivestock, typeOfLivestock)
 
       return h.redirect(`${urlPrefix}/${endemicsWhichTypeOfReview}`)
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const whichSpeciesMsHandlers = [getHandler, postHandler]

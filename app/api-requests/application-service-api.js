@@ -1,7 +1,7 @@
-const Wreck = require('@hapi/wreck')
-const config = require('../config')
+import Wreck from '@hapi/wreck'
+import { config } from '../config/index.js'
 
-async function getAllApplicationsBySbi (sbi, logger) {
+export async function getAllApplicationsBySbi (sbi, logger) {
   const endpoint = `${config.applicationApiUri}/applications/latest?sbi=${sbi}`
 
   try {
@@ -18,8 +18,4 @@ async function getAllApplicationsBySbi (sbi, logger) {
     logger.setBindings({ err })
     throw err
   }
-}
-
-module.exports = {
-  getAllApplicationsBySbi
 }

@@ -1,4 +1,5 @@
-const wreck = require('@hapi/wreck')
+import wreck from '@hapi/wreck'
+
 const sessionMock = require('../../../../app/session')
 const { isCattleEndemicsClaimForOldWorldReview } = require('../../../../app/api-requests/claim-service-api')
 

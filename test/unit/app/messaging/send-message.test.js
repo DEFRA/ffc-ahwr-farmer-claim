@@ -1,6 +1,6 @@
-const createMessage = require('../../../../app/messaging/create-message')
-const { createMessageSender } = require('../../../../app/messaging/create-message-sender')
-const sendMessage = require('../../../../app/messaging/send-message')
+import { createMessage } from '../../../../app/messaging/create-message.js'
+import { createMessageSender } from '../../../../app/messaging/create-message-sender.js'
+import { sendMessage } from '../../../../app/messaging/send-message.js'
 
 jest.mock('../../../../app/messaging/create-message')
 jest.mock('../../../../app/messaging/create-message-sender')

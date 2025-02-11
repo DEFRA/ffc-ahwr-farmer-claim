@@ -1,18 +1,22 @@
-const Joi = require('joi')
-const session = require('../../session')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const config = require('../../config')
-const urlPrefix = require('../../config').urlPrefix
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import links from '../../config/routes.js'
+import { thresholds } from '../../constants/amounts.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+
+const urlPrefix = config.urlPrefix
 const {
   endemicsTestUrn,
   endemicsNumberOfSamplesTested,
   endemicsNumberOfSamplesTestedException,
   endemicsDiseaseStatus
-} = require('../../config/routes')
+} = links
 const {
   endemicsClaim: { numberOfSamplesTested: numberOfSamplesTestedKey }
-} = require('../../session/keys')
-const { thresholds: { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } } = require('../../constants/amounts')
+} = sessionKeys
+const { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } = thresholds
 
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
 
@@ -21,7 +25,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { numberOfSamplesTested } = session.getEndemicsClaim(request)
+      const { numberOfSamplesTested } = getEndemicsClaim(request)
       return h.view(endemicsNumberOfSamplesTested, {
         numberOfSamplesTested,
         backLink: `${urlPrefix}/${endemicsTestUrn}`
@@ -57,9 +61,9 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { numberOfSamplesTested } = request.payload
-      session.setEndemicsClaim(request, numberOfSamplesTestedKey, numberOfSamplesTested)
+      setEndemicsClaim(request, numberOfSamplesTestedKey, numberOfSamplesTested)
 
-      const endemicsClaim = session.getEndemicsClaim(request)
+      const endemicsClaim = getEndemicsClaim(request)
       const lastReviewTestResults = endemicsClaim.vetVisitsReviewTestResults ?? endemicsClaim.relevantReviewForEndemics?.data?.testResults
 
       const threshold = lastReviewTestResults === 'positive' ? positiveReviewNumberOfSamplesTested : negativeReviewNumberOfSamplesTested
@@ -73,4 +77,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const numberOfSamplesTestedHandlers = [getHandler, postHandler]

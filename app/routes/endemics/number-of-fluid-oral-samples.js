@@ -1,20 +1,22 @@
-const Joi = require('joi')
-const session = require('../../session')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const config = require('../../config')
-const urlPrefix = require('../../config').urlPrefix
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import links from '../../config/routes.js'
+import { thresholds } from '../../constants/amounts.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+
+const urlPrefix = config.urlPrefix
 const {
   endemicsTestUrn,
   endemicsNumberOfOralFluidSamples,
   endemicsNumberOfOralFluidSamplesException,
   endemicsTestResults
-} = require('../../config/routes')
+} = links
 const {
   endemicsClaim: { numberOfOralFluidSamples: numberOfOralFluidSamplesKey }
-} = require('../../session/keys')
-const {
-  thresholds: { minimumNumberFluidOralSamples }
-} = require('../../constants/amounts')
+} = sessionKeys
+const { minimumNumberFluidOralSamples } = thresholds
 
 const pageUrl = `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
 
@@ -23,7 +25,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { numberOfOralFluidSamples } = session.getEndemicsClaim(request)
+      const { numberOfOralFluidSamples } = getEndemicsClaim(request)
       return h.view(endemicsNumberOfOralFluidSamples, {
         numberOfOralFluidSamples,
         backLink: `${urlPrefix}/${endemicsTestUrn}`
@@ -60,7 +62,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { numberOfOralFluidSamples } = request.payload
-      session.setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
+      setEndemicsClaim(request, numberOfOralFluidSamplesKey, numberOfOralFluidSamples)
 
       if (numberOfOralFluidSamples < minimumNumberFluidOralSamples) {
         raiseInvalidDataEvent(request, numberOfOralFluidSamplesKey, `Value ${numberOfOralFluidSamples} is less than required threshold ${minimumNumberFluidOralSamples}`)
@@ -78,4 +80,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const numberOfOralFluidSamplesHandlers = [getHandler, postHandler]

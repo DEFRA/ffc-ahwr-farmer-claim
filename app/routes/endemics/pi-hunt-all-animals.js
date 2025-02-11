@@ -1,14 +1,18 @@
-const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { urlPrefix, ruralPaymentsAgency } = require('../../config')
-const radios = require('../models/form-component/radios')
-const { getAmount } = require('../../api-requests/claim-service-api')
-const { getTestResult } = require('../../lib/get-test-result')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = require('../../config/routes')
-const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = require('../../session/keys')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { radios } from '../models/form-component/radios.js'
+import { sessionKeys } from '../../session/keys.js'
+import links from '../../config/routes.js'
+import { getTestResult } from '../../lib/get-test-result.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getAmount } from '../../api-requests/claim-service-api.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
+
+const { urlPrefix, ruralPaymentsAgency } = config
+const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = links
+const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
 const backLink = (reviewTestResults) => {
@@ -83,4 +87,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const piHuntAllAnimalsHandlers = [getHandler, postHandler]

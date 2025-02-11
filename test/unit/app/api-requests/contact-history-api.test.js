@@ -1,5 +1,6 @@
+import wreck from '@hapi/wreck'
+
 const { updateContactHistory } = require('../../../../app/api-requests/contact-history-api')
-const wreck = require('@hapi/wreck')
 const config = require('../../../../app/config')
 
 jest.mock('@hapi/wreck')

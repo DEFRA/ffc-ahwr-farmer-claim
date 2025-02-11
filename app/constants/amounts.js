@@ -1,13 +1,15 @@
-const { livestockTypes: { beef, dairy, pigs, sheep }, claimType: { review, endemics } } = require('./claim')
+import { claimConstants } from './claim.js'
 
-const amounts = {
+const { livestockTypes: { beef, dairy, pigs, sheep }, claimType: { review, endemics } } = claimConstants
+
+export const amounts = {
   beef: 522,
   dairy: 372,
   pigs: 684,
   sheep: 436
 }
 
-const thresholds = {
+export const thresholds = {
   minimumNumberFluidOralSamples: 5,
   positiveReviewNumberOfSamplesTested: '6',
   negativeReviewNumberOfSamplesTested: '30',
@@ -30,5 +32,3 @@ const thresholds = {
     }
   }
 }
-
-module.exports = { amounts, thresholds }

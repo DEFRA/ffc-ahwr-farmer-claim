@@ -1,4 +1,4 @@
-const raiseEvent = require('./raise-event')
+import { raiseEvent } from './raise-event.js'
 
 // This has been done to keep consistent with old journey.
 // Should look at refactoring this for best name options.
@@ -29,7 +29,7 @@ const renameSessionKeysForEventReporting = (key) => {
 }
 const renameClaimEntryKeyForEventReporting = (entryKey) => entryKey === 'endemicsClaim' ? 'claim' : entryKey
 
-const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, status = 'success') => {
+export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, status = 'success') => {
   key = renameSessionKeysForEventReporting(key)
   entryKey = renameClaimEntryKeyForEventReporting(entryKey)
 
@@ -51,5 +51,3 @@ const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, stat
     await raiseEvent(event, status)
   }
 }
-
-module.exports = sendSessionEvent

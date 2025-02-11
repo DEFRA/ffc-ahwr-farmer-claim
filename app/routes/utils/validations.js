@@ -1,4 +1,4 @@
-const addError = (error, label, type, href) => {
+export const addError = (error, label, type, href) => {
   if (
     error.details
       .filter(e => e.context.label.startsWith(label))
@@ -15,8 +15,4 @@ const addError = (error, label, type, href) => {
     }
   }
   return {}
-}
-
-module.exports = {
-  addError
 }

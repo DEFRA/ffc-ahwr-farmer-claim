@@ -1,15 +1,20 @@
-const Joi = require('joi')
-const session = require('../../session')
-const { urlPrefix } = require('../../config')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { claimConstants } from '../../constants/claim.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { radios } from '../models/form-component/radios.js'
+
+const { urlPrefix } = config
 const {
   endemicsVaccination,
   endemicsTestUrn,
   endemicsVetRCVS,
   endemicsTestResults
-} = require('../../config/routes')
-const { endemicsClaim: { herdVaccinationStatus: herdVaccinationStatusKey } } = require('../../session/keys')
-const radios = require('../models/form-component/radios')
-const { vaccination } = require('../../constants/claim')
+} = links
+const { endemicsClaim: { herdVaccinationStatus: herdVaccinationStatusKey } } = sessionKeys
+const { vaccination } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsVaccination}`
 
@@ -18,7 +23,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { vetVisitsReviewTestResults, herdVaccinationStatus } = session.getEndemicsClaim(request)
+      const { vetVisitsReviewTestResults, herdVaccinationStatus } = getEndemicsClaim(request)
       const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: vaccination.vaccinated, text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
       const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
       return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios })
@@ -36,7 +41,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { vetVisitsReviewTestResults } = session.getEndemicsClaim(request)
+        const { vetVisitsReviewTestResults } = getEndemicsClaim(request)
         const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: vaccination.vaccinated, text: 'Vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated' }])
         const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsVaccination, {
@@ -53,10 +58,10 @@ const postHandler = {
     handler: async (request, h) => {
       const { herdVaccinationStatus } = request.payload
 
-      session.setEndemicsClaim(request, herdVaccinationStatusKey, herdVaccinationStatus)
+      setEndemicsClaim(request, herdVaccinationStatusKey, herdVaccinationStatus)
       return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const vaccinationHandlers = [getHandler, postHandler]

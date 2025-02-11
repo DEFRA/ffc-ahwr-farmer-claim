@@ -1,13 +1,17 @@
-const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { endemicsClaim } = require('../../session/keys')
-const { livestockTypes, claimType } = require('../../constants/claim')
+import Joi from 'joi'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import links from '../../config/routes.js'
+import { config } from '../../config/index.js'
+import { claimConstants } from '../../constants/claim.js'
+
+const { livestockTypes } = claimConstants
 const {
   claimDashboard,
-  endemicsDateOfVisit,
-  endemicsWhichSpecies
-} = require('../../config/routes')
-const urlPrefix = require('../../config').urlPrefix
+  endemicsWhichSpecies,
+  endemicsDateOfVisit
+} = links
+const { urlPrefix } = config
 
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = claimDashboard
@@ -57,13 +61,13 @@ const postHandler = {
     handler: async (request, h) => {
       const { typeOfLivestock } = request.payload
 
-      setEndemicsClaim(request, endemicsClaim.typeOfLivestock, typeOfLivestock)
+      setEndemicsClaim(request, sessionKeys.endemicsClaim.typeOfLivestock, typeOfLivestock)
       // not sure we should be setting this here, but for now will keep it so as not to disrupt current flows
-      setEndemicsClaim(request, endemicsClaim.typeOfReview, claimType.review)
+      setEndemicsClaim(request, sessionKeys.endemicsClaim.typeOfReview, claimConstants.claimType.review)
 
       return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const whichSpeciesHandlers = [getHandler, postHandler]

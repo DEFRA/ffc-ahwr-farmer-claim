@@ -1,3 +1,5 @@
+import appInsights from 'applicationinsights'
+
 const cheerio = require('cheerio')
 const getCrumbs = require('../../../../utils/get-crumbs')
 const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
@@ -8,7 +10,6 @@ const getEndemicsClaimMock =
 const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
 const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
 const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const appInsights = require('applicationinsights')
 const createServer = require('../../../../../app/server')
 const config = require('../../../../../app/config')
 

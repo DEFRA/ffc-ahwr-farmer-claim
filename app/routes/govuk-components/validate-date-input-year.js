@@ -1,9 +1,9 @@
-const Joi = require('joi')
+import Joi from 'joi'
 
 const isDayEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-day`] === ''
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
 
-const validateDateInputYear = (namePrefix, dateName, customValidation, customMessages) => {
+export const validateDateInputYear = (namePrefix, dateName, customValidation, customMessages) => {
   return Joi.when(`${namePrefix}-year`, {
     switch: [
       {
@@ -43,5 +43,3 @@ const validateDateInputYear = (namePrefix, dateName, customValidation, customMes
     ...customMessages
   })
 }
-
-module.exports = validateDateInputYear

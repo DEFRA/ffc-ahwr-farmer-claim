@@ -1,3 +1,7 @@
+import { createServer } from '../../../app/server.js'
+import { closeAllConnections as closeSenderConnections } from '../../../app/messaging/create-message-sender.js'
+import { closeAllConnections as closeReceiverConnections } from '../../../app/messaging/create-message-receiver.js'
+
 jest.mock('../../../app/server', () => jest.fn().mockResolvedValue({
   initialize: jest.fn(),
   stop: jest.fn().mockResolvedValue()
@@ -5,12 +9,9 @@ jest.mock('../../../app/server', () => jest.fn().mockResolvedValue({
 
 describe('Server', () => {
   let server
-  let createServer
   let originalProcessOn
   let origianlProcessExit
   let originalConsoleError
-  let MessageSenders
-  let MessageReceivers
 
   beforeAll(() => {
     originalProcessOn = process.on
@@ -40,9 +41,6 @@ describe('Server', () => {
     jest.mock('../../../app/messaging/create-message-receiver', () => ({
       closeAllConnections: jest.fn()
     }))
-    createServer = require('../../../app/server')
-    MessageSenders = require('../../../app/messaging/create-message-sender')
-    MessageReceivers = require('../../../app/messaging/create-message-receiver')
   })
 
   afterEach(() => {
@@ -70,8 +68,8 @@ describe('Server', () => {
     await Promise.resolve() // Wait for pending promises to settle
 
     expect(server.stop).toHaveBeenCalled()
-    expect(MessageSenders.closeAllConnections).toHaveBeenCalled()
-    expect(MessageReceivers.closeAllConnections).toHaveBeenCalled()
+    expect(closeSenderConnections).toHaveBeenCalled()
+    expect(closeReceiverConnections).toHaveBeenCalled()
     expect(process.exit).toHaveBeenCalledWith(0)
   })
 
@@ -98,8 +96,8 @@ describe('Server', () => {
 
     expect(server.stop).toHaveBeenCalled()
     expect(console.error).toHaveBeenCalledWith(error)
-    expect(MessageSenders.closeAllConnections).toHaveBeenCalled()
-    expect(MessageReceivers.closeAllConnections).toHaveBeenCalled()
+    expect(closeSenderConnections).toHaveBeenCalled()
+    expect(closeReceiverConnections).toHaveBeenCalled()
     expect(process.exit).toHaveBeenCalledWith(1)
   })
 
@@ -113,8 +111,8 @@ describe('Server', () => {
 
     expect(createServer).toHaveBeenCalled()
     expect(console.error).toHaveBeenCalledWith(error)
-    expect(MessageSenders.closeAllConnections).toHaveBeenCalled()
-    expect(MessageReceivers.closeAllConnections).toHaveBeenCalled()
+    expect(closeSenderConnections).toHaveBeenCalled()
+    expect(closeReceiverConnections).toHaveBeenCalled()
     expect(process.exit).toHaveBeenCalledWith(1)
   })
 })

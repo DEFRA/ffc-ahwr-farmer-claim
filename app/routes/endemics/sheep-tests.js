@@ -1,8 +1,12 @@
-const { urlPrefix } = require('../../config')
-const { sheepTestTypes } = require('../../constants/sheep-test-types')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { sheepTests: sheepTestsKey, sheepTestResults: sheepTestResultsKey } = require('../../session/keys').endemicsClaim
-const { endemicsSheepEndemicsPackage, endemicsSheepTests, endemicsSheepTestResults } = require('../../config/routes')
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { sheepTestTypes } from '../../constants/sheep-test-types.js'
+
+const { urlPrefix } = config
+const { sheepTests: sheepTestsKey, sheepTestResults: sheepTestResultsKey } = sessionKeys.endemicsClaim
+const { endemicsSheepEndemicsPackage, endemicsSheepTests, endemicsSheepTestResults } = links
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTests}`
 const backLink = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
@@ -12,8 +16,8 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const session = getEndemicsClaim(request)
-      const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: session.sheepTests?.includes(test.value) }))
+      const sessionEndemicsClaim = getEndemicsClaim(request)
+      const sheepTestCheckboxItems = sheepTestTypes[sessionEndemicsClaim?.sheepEndemicsPackage].map((test) => ({ ...test, checked: sessionEndemicsClaim.sheepTests?.includes(test.value) }))
 
       return h.view(endemicsSheepTests, {
         sheepTestCheckboxItems,
@@ -34,7 +38,7 @@ const postHandler = {
 
       if (!sheepTests) {
         setEndemicsClaim(request, sheepTestResultsKey, undefined)
-        const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: session.sheepTests?.includes(test.value) }))
+        const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: sheepTests?.includes(test.value) }))
 
         return h.view(endemicsSheepTests, {
           sheepTestCheckboxItems,
@@ -47,7 +51,7 @@ const postHandler = {
       }
 
       if (sheepTests === 'other') {
-        const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: session.sheepTests?.includes(test.value) }))
+        const sheepTestCheckboxItems = sheepTestTypes[session?.sheepEndemicsPackage].map((test) => ({ ...test, checked: sheepTests?.includes(test.value) }))
 
         return h.view(endemicsSheepTests, {
           sheepTestCheckboxItems,
@@ -67,4 +71,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const sheepTestsHandlers = [getHandler, postHandler]

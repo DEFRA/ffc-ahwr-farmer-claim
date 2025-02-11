@@ -1,14 +1,19 @@
-const Joi = require('joi')
+import Joi from 'joi'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { claimConstants } from '../../constants/claim.js'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+
 const {
   endemicsDiseaseStatus,
   endemicsNumberOfSamplesTested,
   endemicsBiosecurity
-} = require('../../config/routes')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { endemicsClaim } = require('../../session/keys')
-const { diseaseStatusTypes } = require('../../constants/claim')
+} = links
+const { endemicsClaim } = sessionKeys
+const { diseaseStatusTypes } = claimConstants
 
-const urlPrefix = require('../../config').urlPrefix
+const urlPrefix = config.urlPrefix
 const pageUrl = `${urlPrefix}/${endemicsDiseaseStatus}`
 const backLink = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
 const errorMessage = { text: 'Enter the disease status category' }
@@ -58,4 +63,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const diseaseStatusHandlers = [getHandler, postHandler]

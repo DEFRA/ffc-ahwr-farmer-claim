@@ -1,4 +1,4 @@
-function getClaimType (claimData, isEndemicsClaims = false) {
+export function getClaimType (claimData, isEndemicsClaims = false) {
   if (!isEndemicsClaims) {
     const { whichReview } = claimData
     if (whichReview) {
@@ -11,8 +11,4 @@ function getClaimType (claimData, isEndemicsClaims = false) {
     return typeOfLivestock
   }
   throw new Error('No claim type found, \'typeOfLivestock\' property empty.')
-}
-
-module.exports = {
-  getClaimType
 }

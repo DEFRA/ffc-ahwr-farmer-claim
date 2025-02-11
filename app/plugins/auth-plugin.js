@@ -1,9 +1,11 @@
-const config = require('../config')
-const auth = require('../auth')
-const session = require('../session')
-const { organisation: organisationKey } = require('../session/keys').farmerApplyData
+import { config } from '../config/index.js'
+import { requestAuthorizationCodeUrl } from '../auth/auth-code-grant/request-authorization-code-url.js'
+import { getEndemicsClaim } from '../session/index.js'
+import { sessionKeys } from '../session/keys.js'
 
-module.exports = {
+const { organisation: organisationKey } = sessionKeys.farmerApplyData
+
+export const authPlugin = {
   plugin: {
     name: 'auth',
     register: async (server, _) => {
@@ -18,9 +20,9 @@ module.exports = {
         },
         keepAlive: true,
         redirectTo: (request) => {
-          return auth.requestAuthorizationCodeUrl(session, request)
+          return requestAuthorizationCodeUrl(request)
         },
-        validateFunc: async (request, _) => ({ valid: Boolean(session.getEndemicsClaim(request, organisationKey)) })
+        validateFunc: async (request, _) => ({ valid: Boolean(getEndemicsClaim(request, organisationKey)) })
       })
       server.auth.default({ strategy: 'session', mode: 'required' })
     }

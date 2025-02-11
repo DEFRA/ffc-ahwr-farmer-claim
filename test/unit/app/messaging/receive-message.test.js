@@ -1,5 +1,5 @@
-const { createMessageReceiver } = require('../../../../app/messaging/create-message-receiver')
-const receiveMessage = require('../../../../app/messaging/receive-message')
+import { createMessageReceiver } from '../../../../app/messaging/create-message-receiver.js'
+import { receiveMessage } from '../../../../app/messaging/receive-message.js'
 
 jest.mock('../../../../app/messaging/create-message-receiver', () => ({
   createMessageReceiver: jest.fn()

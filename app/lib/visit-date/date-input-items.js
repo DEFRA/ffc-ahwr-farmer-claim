@@ -1,4 +1,4 @@
-const { inputErrorClass, labelPrefix } = require('../../config/visit-date')
+import { visitDate } from '../../config/visit-date.js'
 
 function getValue (date, period) {
   switch (period) {
@@ -11,7 +11,7 @@ function getValue (date, period) {
   }
 }
 
-function createItemsFromDate (date, includeErrorClass) {
+export function createItemsFromDate (date, includeErrorClass) {
   const items = [{
     name: 'day',
     classes: 'govuk-input--width-2'
@@ -25,12 +25,12 @@ function createItemsFromDate (date, includeErrorClass) {
 
   items.forEach(item => {
     item.value = getValue(date, item.name)
-    item.classes += includeErrorClass ? ` ${inputErrorClass}` : ''
+    item.classes += includeErrorClass ? ` ${visitDate.inputErrorClass}` : ''
   })
   return items
 }
 
-function createItemsFromPayload (payload, includeErrorClass) {
+export function createItemsFromPayload (payload, includeErrorClass) {
   const items = [{
     name: 'day',
     classes: 'govuk-input--width-2'
@@ -43,13 +43,8 @@ function createItemsFromPayload (payload, includeErrorClass) {
   }]
 
   items.forEach(item => {
-    item.value = payload?.[`${labelPrefix}${item.name}`]
-    item.classes += includeErrorClass ? ` ${inputErrorClass}` : ''
+    item.value = payload?.[`${visitDate.labelPrefix}${item.name}`]
+    item.classes += includeErrorClass ? ` ${visitDate.inputErrorClass}` : ''
   })
   return items
-}
-
-module.exports = {
-  createItemsFromDate,
-  createItemsFromPayload
 }
