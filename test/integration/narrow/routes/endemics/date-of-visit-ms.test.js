@@ -7,7 +7,7 @@ import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-da
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
-import { previousPageUrl } from '../../../../../app/routes/endemics/biosecurity.js'
+import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-ms.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
 const { labels } = visitDate

@@ -78,26 +78,29 @@ const endemicsWithMsOnHandlers = [
   dateOfVisitMSHandlers
 ].flat()
 
-let routes = alwaysOnRouteHandlers
+let routes
+const mapRoutes = () => {
+  routes = alwaysOnRouteHandlers
+  if (config.endemics.enabled) {
+    routes = routes.concat(endemicsSpecificRouteHandlers)
 
-if (config.endemics.enabled) {
-  routes = routes.concat(endemicsSpecificRouteHandlers)
-
-  if (!config.multiSpecies.enabled) {
-    routes = routes.concat(endemicsWithMsOffHandlers)
-  } else {
-    routes = routes.concat(endemicsWithMsOnHandlers)
+    if (!config.multiSpecies.enabled) {
+      routes = routes.concat(endemicsWithMsOffHandlers)
+    } else {
+      routes = routes.concat(endemicsWithMsOnHandlers)
+    }
   }
-}
 
-if (config.devLogin.enabled) {
-  routes = routes.concat(devSignInHandlers)
+  if (config.devLogin.enabled) {
+    routes = routes.concat(devSignInHandlers)
+  }
 }
 
 export const routerPlugin = {
   plugin: {
     name: 'router',
     register: (server, _) => {
+      mapRoutes()
       server.route(routes)
     }
   }

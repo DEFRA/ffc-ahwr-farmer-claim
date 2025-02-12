@@ -3,6 +3,7 @@ import { createServer } from '../../../../../app/server.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config/index.js'
 
 const { endemicsWhichSpecies } = links
 
@@ -21,6 +22,7 @@ jest.mock('../../../../../app/config', () => {
 })
 
 describe('Endemics which species test', () => {
+  config.multiSpecies.enabled = false
   setEndemicsClaim.mockImplementation(() => { })
 
   jest.mock('../../../../../app/config/auth', () => {
@@ -86,7 +88,7 @@ describe('Endemics which species test', () => {
     )
     expect($('.govuk-back-link').text()).toMatch('Back')
   })
-  test('Continue without seleceted livestock should return error', async () => {
+  test('Continue without selected livestock should return error', async () => {
     const options = {
       method: 'POST',
       auth,
@@ -103,7 +105,7 @@ describe('Endemics which species test', () => {
 
     expect($('p.govuk-error-message').text()).toMatch(errorMessage)
   })
-  test('Continue with Sheep seleceted as a livestock', async () => {
+  test('Continue with Sheep selected as a livestock', async () => {
     const options = {
       method: 'POST',
       auth,

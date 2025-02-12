@@ -17,8 +17,14 @@ import { createServer } from '../../.././../app/server.js'
 jest.mock('../../../../app/session')
 jest.mock('../../../../app/routes/models/latest-application')
 jest.mock('../../../../app/event/raise-ineligibility-event')
-jest.mock('../../../../app/api-requests/rpa-api/person')
-jest.mock('../../../../app/api-requests/rpa-api/organisation')
+jest.mock('../../../../app/api-requests/rpa-api/person', () => ({
+  ...jest.requireActual('../../../../app/api-requests/rpa-api/person'),
+  getPersonSummary: jest.fn()
+}))
+jest.mock('../../../../app/api-requests/rpa-api/organisation', () => ({
+  ...jest.requireActual('../../../../app/api-requests/rpa-api/organisation'),
+  organisationIsEligible: jest.fn()
+}))
 jest.mock('../../../../app/auth/cookie-auth/cookie-auth')
 jest.mock('../../../../app/auth/auth-code-grant/request-authorization-code-url')
 jest.mock('../../../../app/auth/client-credential-grant/retrieve-apim-access-token')
@@ -346,6 +352,7 @@ describe('FarmerApply defra ID redirection test', () => {
         id: 1234567,
         customerReferenceNumber: '1103452436'
       })
+
       organisationIsEligible.mockResolvedValueOnce({
         organisation: {
           id: 7654321,
@@ -368,6 +375,7 @@ describe('FarmerApply defra ID redirection test', () => {
         },
         organisationPermission: true
       })
+
       getLatestApplicationForSbi.mockResolvedValueOnce(
         {
           claimed: false,

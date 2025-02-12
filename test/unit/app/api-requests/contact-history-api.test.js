@@ -60,7 +60,7 @@ describe('updateContactHistory', () => {
 
     const logger = { setBindings: jest.fn() }
 
-    expect(async () => {
+    await expect(async () => {
       await updateContactHistory(data, logger)
     }).rejects.toEqual(response)
   })
