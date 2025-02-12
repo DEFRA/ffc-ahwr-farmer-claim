@@ -36,7 +36,7 @@ const postHandler = {
       payload: Joi.object({
         piHuntRecommended: Joi.string().valid('yes', 'no').required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, _error) => {
         const { piHuntRecommended } = getEndemicsClaim(request)
         const errorText = 'Select if the vet recommended the PI hunt'
         const yesOrNoRadios = radios('', 'piHuntRecommended', errorText, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])

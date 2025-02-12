@@ -54,12 +54,10 @@ describe('Claim Service API', () => {
     wreck.get.mockRejectedValueOnce(mockResponse)
 
     const logger = { setBindings: jest.fn() }
-    expect(async () => {
-      await getClaimsByApplicationReference(
-        'applicationReference',
-        logger
-      )
-    }).rejects.toEqual(mockResponse)
+    await expect(getClaimsByApplicationReference(
+      'applicationReference',
+      logger
+    )).rejects.toEqual(mockResponse)
   })
 
   test('Post claim should return status 200', async () => {
@@ -89,12 +87,12 @@ describe('Claim Service API', () => {
     wreck.post.mockRejectedValueOnce(mockResponse)
 
     const logger = { setBindings: jest.fn() }
-    await expect(async () => {
-      await submitNewClaim(
+    await expect(
+      submitNewClaim(
         'new claim with invalid data',
         logger
       )
-    }).rejects.toEqual(mockResponse)
+    ).rejects.toEqual(mockResponse)
   })
 
   test('Check if URN number is unique', async () => {
@@ -126,12 +124,10 @@ describe('Claim Service API', () => {
     wreck.post.mockRejectedValueOnce(mockResponse)
 
     const logger = { setBindings: jest.fn() }
-    await expect(async () => {
-      await isURNUnique(
-        'new claim with invalid data',
-        logger
-      )
-    }).rejects.toEqual(mockResponse)
+    await expect(isURNUnique(
+      'new claim with invalid data',
+      logger
+    )).rejects.toEqual(mockResponse)
   })
 
   test('Get amount for claim', async () => {
@@ -160,12 +156,10 @@ describe('Claim Service API', () => {
     wreck.post.mockRejectedValueOnce(mockResponse)
 
     const logger = { setBindings: jest.fn() }
-    await expect(async () => {
-      await getAmount(
-        { type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' },
-        logger
-      )
-    }).rejects.toEqual(mockResponse)
+    await expect(getAmount(
+      { type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' },
+      logger
+    )).rejects.toEqual(mockResponse)
   })
 
   test('Check if the date is with in 8 months', async () => {

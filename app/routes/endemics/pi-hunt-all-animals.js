@@ -47,7 +47,7 @@ const postHandler = {
       payload: Joi.object({
         piHuntAllAnimals: Joi.string().valid('yes', 'no').required()
       }),
-      failAction: async (request, h, error) => {
+      failAction: async (request, h, _error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
         const errorText = `Select if the PI hunt was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
         const yesOrNoRadios = radios('', 'piHuntAllAnimals', errorText, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])

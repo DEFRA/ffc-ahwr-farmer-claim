@@ -1,19 +1,6 @@
 import { claimConstants } from '../constants/claim.js'
 import { getClaimType } from './get-claim-type.js'
 
-export function getTypeOfReviewForDisplay (claimData) {
-  return {
-    beef: 'Beef cattle',
-    dairy: 'Dairy cattle',
-    pigs: 'Pigs',
-    sheep: 'Sheep'
-  }[getClaimType(claimData)]
-}
-
-export const isSpecies = (typeOfLivestock, species) => {
-  return typeOfLivestock === species
-}
-
 export function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims = false) {
   return {
     beef: isEndemicsClaims ? '11 or more beef cattle ' : '11 or more cattle ',
@@ -27,14 +14,6 @@ export function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
   if (vaccinatedNotVaccinated === claimConstants.vaccination.vaccinated) return 'Vaccinated'
   if (vaccinatedNotVaccinated === claimConstants.vaccination.notVaccinated) return 'Not vaccinated'
   return undefined
-}
-
-export function getTypeOfReviewRowForDisplay (claimData) {
-  return { key: { text: 'Type of review' }, value: { text: getTypeOfReviewForDisplay(claimData) } }
-}
-
-export function getEligibleNumberRowForDisplay (claimData) {
-  return { key: { text: getSpeciesEligibleNumberForDisplay(claimData) }, value: { text: `${claimData.eligibleSpecies}, I had ${getSpeciesEligibleNumberForDisplay(claimData)}` } }
 }
 
 export function upperFirstLetter (str) {

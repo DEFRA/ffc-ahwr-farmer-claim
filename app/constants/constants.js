@@ -23,27 +23,3 @@ export const openStatuses = [
   status.ACCEPTED,
   status.ON_HOLD
 ]
-
-export const closedStatuses = [
-  status.WITHDRAWN,
-  status.NOT_AGREED,
-  status.READY_TO_PAY,
-  status.REJECTED
-]
-
-export const successfulStatuses = [
-  status.WITHDRAWN,
-  status.NOT_AGREED,
-  status.READY_TO_PAY
-]
-
-export const statusesFor10MonthCheck = [
-  ...openStatuses,
-  status.READY_TO_PAY,
-  status.REJECTED
-]
-
-export const validReviewStatuses = [
-  ...openStatuses,
-  status.READY_TO_PAY
-]

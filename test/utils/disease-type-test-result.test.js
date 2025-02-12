@@ -8,7 +8,7 @@ describe('getErrorResultString', () => {
     }
     const validatorFn = (field) => {
       return {
-        validate: (value) => {
+        validate: (_value) => {
           if (field === 'diseaseType') {
             return {
               error: null
@@ -35,7 +35,7 @@ describe('getErrorResultString', () => {
     }
     const validatorFn = (field) => {
       return {
-        validate: (value) => {
+        validate: (_value) => {
           if (field === 'diseaseType') {
             return {
               error: {
