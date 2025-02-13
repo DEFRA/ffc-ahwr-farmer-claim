@@ -1,35 +1,32 @@
-require('./insights').setup()
-const createServer = require('./server')
-const MessageSenders = require('./messaging/create-message-sender')
-const MessageReceivers = require('./messaging/create-message-receiver')
+import { setup } from './insights.js'
+import { createServer } from './server.js'
+import { closeAllConnections as closeSenders } from './messaging/create-message-sender.js'
+import { closeAllConnections as closeReceivers } from './messaging/create-message-receiver.js'
 
 let server
 
-createServer()
-  .then(_server => {
-    server = _server
-    server.start()
-  })
-  .catch(err => {
-    console.error(err)
-    cleanup()
-    process.exit(1)
-  })
+const init = async () => {
+  setup()
+  server = await createServer()
+  await server.start()
+}
 
-process.on('SIGINT', () => {
-  server.stop()
-    .then(() => {
-      cleanup()
-      process.exit(0)
-    })
-    .catch(err => {
-      console.error(err)
-      cleanup()
-      process.exit(1)
-    })
+process.on('unhandledRejection', async (err) => {
+  await server.stop()
+  server.logger.error(err, 'unhandledRejection')
+  await cleanup()
+  process.exit(1)
 })
 
-function cleanup () {
-  MessageSenders.closeAllConnections()
-  MessageReceivers.closeAllConnections()
+process.on('SIGINT', async () => {
+  await server.stop()
+  await cleanup()
+  process.exit(0)
+})
+
+async function cleanup () {
+  await closeSenders()
+  await closeReceivers()
 }
+
+init()

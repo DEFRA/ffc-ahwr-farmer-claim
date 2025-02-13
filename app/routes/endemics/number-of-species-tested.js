@@ -1,7 +1,14 @@
-const Joi = require('joi')
-const session = require('../../session')
-const config = require('../../config')
-const urlPrefix = require('../../config').urlPrefix
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { thresholds } from '../../constants/amounts.js'
+import { sessionKeys } from '../../session/keys.js'
+import links from '../../config/routes.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+
+const urlPrefix = config.urlPrefix
 const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
@@ -9,16 +16,11 @@ const {
   endemicsVetName,
   endemicsNumberOfSpeciesSheepException,
   endemicsNumberOfSpeciesPigsException
-} = require('../../config/routes')
+} = links
 const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey }
-} = require('../../session/keys')
-const {
-  thresholds: { numberOfSpeciesTested: numberOfSpeciesTestedThreshold }
-} = require('../../constants/amounts')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getReviewType } = require('../../lib/get-review-type')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+} = sessionKeys
+const { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } = thresholds
 const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
 const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
 const nextPageURL = `${urlPrefix}/${endemicsVetName}`
@@ -50,7 +52,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { numberAnimalsTested, typeOfLivestock, typeOfReview } =
-        session.getEndemicsClaim(request)
+        getEndemicsClaim(request)
 
       return h.view(endemicsNumberOfSpeciesTested, {
         questionText: getTheQuestionText(typeOfLivestock, typeOfReview),
@@ -81,7 +83,7 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         const { typeOfLivestock, typeOfReview } =
-          session.getEndemicsClaim(request)
+          getEndemicsClaim(request)
         return h
           .view(endemicsNumberOfSpeciesTested, {
             ...request.payload,
@@ -99,7 +101,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { numberAnimalsTested } = request.payload
       const { typeOfLivestock, typeOfReview } =
-        session.getEndemicsClaim(request)
+        getEndemicsClaim(request)
       const { isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const threshold =
@@ -109,7 +111,7 @@ const postHandler = {
           ? Number(numberAnimalsTested) === threshold
           : Number(numberAnimalsTested) >= threshold
 
-      session.setEndemicsClaim(
+      setEndemicsClaim(
         request,
         numberAnimalsTestedKey,
         numberAnimalsTested
@@ -178,4 +180,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const numberOfSpeciesHandlers = [getHandler, postHandler]

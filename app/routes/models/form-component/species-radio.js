@@ -1,4 +1,4 @@
-function speciesRadios (legendText, id, previousAnswer, errorText = undefined, options = {}) {
+export function speciesRadios (legendText, id, previousAnswer, errorText = undefined, options = {}) {
   const { isPageHeading = true, legendClasses = 'govuk-fieldset__legend--l', inline = false, hintHtml = '' } = options
   return {
     radios: {
@@ -40,8 +40,4 @@ function speciesRadios (legendText, id, previousAnswer, errorText = undefined, o
       ...(errorText ? { errorMessage: { text: errorText } } : {})
     }
   }
-}
-
-module.exports = {
-  speciesRadios
 }

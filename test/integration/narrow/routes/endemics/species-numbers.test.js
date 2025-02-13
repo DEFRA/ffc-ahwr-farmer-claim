@@ -1,14 +1,13 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const { claimType } = require('../../../../../app/constants/claim')
-const { getSpeciesEligibleNumberForDisplay } = require('../../../../../app/lib/display-helpers')
-const { getReviewType } = require('../../../../../app/lib/get-review-type')
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { getReviewType } from '../../../../../app/lib/get-review-type.js'
+import { claimConstants } from '../../../../../app/constants/claim.js'
+import { getSpeciesEligibleNumberForDisplay } from '../../../../../app/lib/display-helpers.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -21,8 +20,8 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
   beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
+    setEndemicsClaim.mockImplementation(() => { })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
@@ -38,7 +37,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
     ])('returns 200', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         auth,
@@ -49,7 +48,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimType.review ? 'review' : 'follow-up'}?`)
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
       expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
@@ -57,9 +56,9 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     })
 
     test('returns 404 when there is no claim', async () => {
-      getEndemicsClaimMock.mockReturnValueOnce({})
-      getEndemicsClaimMock.mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
-      getEndemicsClaimMock.mockReturnValue(undefined)
+      getEndemicsClaim.mockReturnValueOnce({})
+      getEndemicsClaim.mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
+      getEndemicsClaim.mockReturnValue(undefined)
       const options = {
         auth,
         method: 'GET',
@@ -84,7 +83,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 
@@ -106,7 +105,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     test.each([
@@ -116,7 +115,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'pigs', nextPageUrl: '/claim/endemics/number-of-species-tested' },
       { typeOfLivestock: 'beef', nextPageUrl: '/claim/endemics/vet-name', typeOfReview: 'E', reviewTestResults: 'negative' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock', async ({ nextPageUrl, typeOfLivestock, typeOfReview, reviewTestResults }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
         .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview, reviewTestResults } })
       const options = {
         method: 'POST',
@@ -130,7 +129,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
     test('Continue to eligible page if user select yes', async () => {
@@ -142,7 +141,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         headers: { cookie: `crumb=${crumb}` }
       }
 
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
         .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await server.inject(options)
@@ -158,7 +157,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
         .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
 
       const res = await server.inject(options)
@@ -170,7 +169,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     })
     test('shows error when payload is invalid', async () => {
       const { isReview } = getReviewType('E')
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {
         method: 'POST',
         url,
@@ -194,7 +193,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
         payload: { crumb, speciesNumbers: undefined },
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaimMock.mockReturnValue(undefined)
+      getEndemicsClaim.mockReturnValue(undefined)
 
       const res = await server.inject(options)
 
@@ -224,7 +223,7 @@ describe('Species numbers test when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'beef' },
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         auth,

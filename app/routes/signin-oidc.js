@@ -1,17 +1,25 @@
-const Joi = require('joi')
-const config = require('../config')
-const auth = require('../auth')
-const session = require('../session')
-const sessionKeys = require('../session/keys')
-const latestApplicationForSbi = require('./models/latest-application')
-const { farmerClaim } = require('../constants/user-types')
-const { getPersonSummary, getPersonName, organisationIsEligible, getOrganisationAddress } = require('../api-requests/rpa-api')
-const { NoApplicationFoundError, InvalidPermissionsError, ClaimHasAlreadyBeenMadeError, InvalidStateError, ClaimHasExpiredError } = require('../exceptions')
-const { raiseIneligibilityEvent } = require('../event')
-const { changeContactHistory } = require('../api-requests/contact-history-api')
-const appInsights = require('applicationinsights')
+import Joi from 'joi'
+import { config } from '../config/index.js'
+import { sessionKeys } from '../session/keys.js'
+import appInsights from 'applicationinsights'
+import { requestAuthorizationCodeUrl } from '../auth/auth-code-grant/request-authorization-code-url.js'
+import { authenticate } from '../auth/authenticate.js'
+import { retrieveApimAccessToken } from '../auth/client-credential-grant/retrieve-apim-access-token.js'
+import { getClaim, getCustomer, setCustomer, setEndemicsClaim } from '../session/index.js'
+import { setAuthCookie } from '../auth/cookie-auth/cookie-auth.js'
+import { getLatestApplicationForSbi } from './models/latest-application.js'
+import { getPersonName, getPersonSummary } from '../api-requests/rpa-api/person.js'
+import { getOrganisationAddress, organisationIsEligible } from '../api-requests/rpa-api/organisation.js'
+import { changeContactHistory } from '../api-requests/contact-history-api.js'
+import { InvalidPermissionsError } from '../exceptions/invalid-permissions-error.js'
+import { farmerClaim } from '../constants/constants.js'
+import { InvalidStateError } from '../exceptions/invalid-state-error.js'
+import { NoApplicationFoundError } from '../exceptions/no-application-found.js'
+import { ClaimHasAlreadyBeenMadeError } from '../exceptions/claim-has-already-been-made.js'
+import { ClaimHasExpiredError } from '../exceptions/claim-has-expired.js'
+import { raiseIneligibilityEvent } from '../event/raise-ineligibility-event.js'
 
-const getHandler = {
+export const signInHandler = {
   method: 'GET',
   path: '/claim/signin-oidc',
   options: {
@@ -27,22 +35,22 @@ const getHandler = {
         request.logger.setBindings({ err })
         appInsights.defaultClient.trackException({ exception: err })
         return h.view('verify-login-failed', {
-          backLink: auth.requestAuthorizationCodeUrl(session, request),
+          backLink: requestAuthorizationCodeUrl(request),
           ruralPaymentsAgency: config.ruralPaymentsAgency
         }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       try {
-        await auth.authenticate(request)
+        await authenticate(request)
 
-        const apimAccessToken = await auth.retrieveApimAccessToken(request)
+        const apimAccessToken = await retrieveApimAccessToken(request)
         const personSummary = await getPersonSummary(request, apimAccessToken)
         const organisationSummary = await organisationIsEligible(request, personSummary.id, apimAccessToken)
         request.logger.setBindings({ sbi: organisationSummary.organisation.sbi })
         await changeContactHistory(personSummary, organisationSummary, request.logger)
 
-        session.setEndemicsClaim(
+        setEndemicsClaim(
           request,
           sessionKeys.endemicsClaim.organisation,
           {
@@ -61,20 +69,20 @@ const getHandler = {
           throw new InvalidPermissionsError(`Person id ${personSummary.id} does not have the required permissions for organisation id ${organisationSummary.organisation.id}`)
         }
 
-        const latestApplication = await latestApplicationForSbi(
+        const latestApplication = await getLatestApplicationForSbi(
           organisationSummary.organisation.sbi?.toString(),
           organisationSummary.organisation.name
         )
 
-        session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
+        setCustomer(request, sessionKeys.customer.id, personSummary.id)
 
-        auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
+        setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
 
         appInsights.defaultClient.trackEvent({
           name: 'login',
           properties: {
             sbi: organisationSummary.organisation.sbi,
-            crn: session.getCustomer(request, sessionKeys.customer.crn),
+            crn: getCustomer(request, sessionKeys.customer.crn),
             email: personSummary.email
           }
         })
@@ -86,13 +94,13 @@ const getHandler = {
       } catch (error) {
         request.logger.setBindings({ err: error })
 
-        const crn = session.getCustomer(request, sessionKeys.customer.crn)
-        const attachedToMultipleBusinesses = session.getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses)
-        const organisation = session.getClaim(request, sessionKeys.farmerApplyData.organisation)
+        const crn = getCustomer(request, sessionKeys.customer.crn)
+        const attachedToMultipleBusinesses = getCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses)
+        const organisation = getClaim(request, sessionKeys.farmerApplyData.organisation)
 
         switch (true) {
           case error instanceof InvalidStateError:
-            return h.redirect(auth.requestAuthorizationCodeUrl(session, request))
+            return h.redirect(requestAuthorizationCodeUrl(request))
           case error instanceof InvalidPermissionsError:
             break
           case error instanceof NoApplicationFoundError:
@@ -103,7 +111,7 @@ const getHandler = {
             break
           default:
             return h.view('verify-login-failed', {
-              backLink: auth.requestAuthorizationCodeUrl(session, request),
+              backLink: requestAuthorizationCodeUrl(request),
               ruralPaymentsAgency: config.ruralPaymentsAgency
             }).code(400).takeover()
         }
@@ -123,7 +131,7 @@ const getHandler = {
           organisationName: organisation?.name,
           sbiText: organisation?.sbi !== undefined ? ` - SBI ${organisation.sbi}` : null,
           ruralPaymentsAgency: config.ruralPaymentsAgency,
-          backLink: auth.requestAuthorizationCodeUrl(session, request),
+          backLink: requestAuthorizationCodeUrl(request),
           hasMultipleBusinesses: attachedToMultipleBusinesses,
           latestApplicationDate: error.latestApplicationDate,
           claimExpiredDate: error.claimExpiredDate
@@ -132,5 +140,3 @@ const getHandler = {
     }
   }
 }
-
-module.exports = { handlers: [getHandler] }

@@ -1,7 +1,9 @@
-const { cookie: { cookieNameCookiePolicy }, cookiePolicy } = require('../config')
-const { getCurrentPolicy } = require('../cookies')
+import { config } from '../config/index.js'
+import { getCurrentPolicy } from '../cookies.js'
 
-module.exports = {
+const { cookie: { cookieNameCookiePolicy }, cookiePolicy } = config
+
+export const cookiePlugin = {
   plugin: {
     name: 'cookies',
     register: (server, _) => {
@@ -15,9 +17,8 @@ module.exports = {
           statusCode !== 500 &&
           request.response.source.manager._context
         ) {
-          const cookiesPolicy = getCurrentPolicy(request, h)
           request.response.source.manager._context.cookiesPolicy =
-            cookiesPolicy
+            getCurrentPolicy(request, h)
         }
         return h.continue
       })

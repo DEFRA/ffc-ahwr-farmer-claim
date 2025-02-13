@@ -1,30 +1,11 @@
-const { cookie: { cookieNameCookiePolicy } } = require('./config')
+import { config } from './config/index.js'
 
-function getCurrentPolicy (request, h) {
-  let cookiesPolicy = request.state[cookieNameCookiePolicy]
-  if (!cookiesPolicy) {
-    cookiesPolicy = createDefaultPolicy(h)
-  }
-  return cookiesPolicy
-}
+const { cookie: { cookieNameCookiePolicy } } = config
 
 function createDefaultPolicy (h) {
   const cookiesPolicy = { confirmed: false, essential: true, analytics: false }
   h.state(cookieNameCookiePolicy, cookiesPolicy)
   return cookiesPolicy
-}
-
-function updatePolicy (request, h, analytics) {
-  const cookiesPolicy = getCurrentPolicy(request, h)
-
-  cookiesPolicy.analytics = analytics
-  cookiesPolicy.confirmed = true
-
-  h.state(cookieNameCookiePolicy, cookiesPolicy)
-
-  if (!analytics) {
-    removeAnalytics(request, h)
-  }
 }
 
 function removeAnalytics (request, h) {
@@ -36,7 +17,23 @@ function removeAnalytics (request, h) {
   })
 }
 
-module.exports = {
-  getCurrentPolicy,
-  updatePolicy
+export function getCurrentPolicy (request, h) {
+  let cookiesPolicy = request.state[cookieNameCookiePolicy]
+  if (!cookiesPolicy) {
+    cookiesPolicy = createDefaultPolicy(h)
+  }
+  return cookiesPolicy
+}
+
+export function updatePolicy (request, h, analytics) {
+  const cookiesPolicy = getCurrentPolicy(request, h)
+
+  cookiesPolicy.analytics = analytics
+  cookiesPolicy.confirmed = true
+
+  h.state(cookieNameCookiePolicy, cookiesPolicy)
+
+  if (!analytics) {
+    removeAnalytics(request, h)
+  }
 }

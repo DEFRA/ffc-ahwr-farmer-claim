@@ -1,6 +1,12 @@
-const wreck = require('@hapi/wreck')
-const sessionMock = require('../../../../app/session')
-const { isCattleEndemicsClaimForOldWorldReview } = require('../../../../app/api-requests/claim-service-api')
+import wreck from '@hapi/wreck'
+import {
+  getAmount,
+  getClaimsByApplicationReference,
+  isCattleEndemicsClaimForOldWorldReview,
+  isURNUnique,
+  submitNewClaim
+} from '../../../../app/api-requests/claim-service-api.js'
+import { getEndemicsClaim } from '../../../../app/session/index.js'
 
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('@hapi/wreck')
@@ -17,8 +23,7 @@ describe('Claim Service API', () => {
     }
     wreck.get.mockResolvedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.getClaimsByApplicationReference(
+    const result = await getClaimsByApplicationReference(
       'applicationReference'
     )
 
@@ -33,8 +38,7 @@ describe('Claim Service API', () => {
     }
     wreck.get.mockRejectedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.getClaimsByApplicationReference(
+    const result = await getClaimsByApplicationReference(
       'applicationReference'
     )
 
@@ -49,14 +53,11 @@ describe('Claim Service API', () => {
     }
     wreck.get.mockRejectedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const logger = { setBindings: jest.fn() }
-    expect(async () => {
-      await claimServiceApi.getClaimsByApplicationReference(
-        'applicationReference',
-        logger
-      )
-    }).rejects.toEqual(mockResponse)
+    await expect(getClaimsByApplicationReference(
+      'applicationReference',
+      logger
+    )).rejects.toEqual(mockResponse)
   })
 
   test('Post claim should return status 200', async () => {
@@ -69,8 +70,7 @@ describe('Claim Service API', () => {
     }
     wreck.post.mockResolvedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.submitNewClaim(
+    const result = await submitNewClaim(
       'new claim data'
     )
 
@@ -86,14 +86,13 @@ describe('Claim Service API', () => {
     }
     wreck.post.mockRejectedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const logger = { setBindings: jest.fn() }
-    expect(async () => {
-      await claimServiceApi.submitNewClaim(
+    await expect(
+      submitNewClaim(
         'new claim with invalid data',
         logger
       )
-    }).rejects.toEqual(mockResponse)
+    ).rejects.toEqual(mockResponse)
   })
 
   test('Check if URN number is unique', async () => {
@@ -107,9 +106,8 @@ describe('Claim Service API', () => {
     }
     wreck.post.mockResolvedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const logger = { setBindings: jest.fn() }
-    const result = await claimServiceApi.isURNUnique(
+    const result = await isURNUnique(
       { sbi: '123456789', laboratoryURN: '1234567' },
       logger
     )
@@ -125,14 +123,11 @@ describe('Claim Service API', () => {
     }
     wreck.post.mockRejectedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const logger = { setBindings: jest.fn() }
-    expect(async () => {
-      await claimServiceApi.isURNUnique(
-        'new claim with invalid data',
-        logger
-      )
-    }).rejects.toEqual(mockResponse)
+    await expect(isURNUnique(
+      'new claim with invalid data',
+      logger
+    )).rejects.toEqual(mockResponse)
   })
 
   test('Get amount for claim', async () => {
@@ -146,8 +141,7 @@ describe('Claim Service API', () => {
     }
     wreck.post.mockResolvedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    const result = await claimServiceApi.getAmount({ type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
+    const result = await getAmount({ type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' })
 
     expect(result).toBe(payload)
   })
@@ -161,14 +155,11 @@ describe('Claim Service API', () => {
     }
     wreck.post.mockRejectedValueOnce(mockResponse)
 
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
     const logger = { setBindings: jest.fn() }
-    expect(async () => {
-      await claimServiceApi.getAmount(
-        { type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' },
-        logger
-      )
-    }).rejects.toEqual(mockResponse)
+    await expect(getAmount(
+      { type: 'E', reviewTestResults: 'positive', typeOfLivestock: 'beef', piHunt: 'yes', piHuntAllAnimals: 'yes' },
+      logger
+    )).rejects.toEqual(mockResponse)
   })
 
   test('Check if the date is with in 8 months', async () => {
@@ -199,14 +190,13 @@ describe('Claim Service API', () => {
   })
 
   test('Check if is first time endemic claim for active old world review claim', () => {
-    const claimServiceApi = require('../../../../app/api-requests/claim-service-api')
-    sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [] })
+    getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [] })
 
-    expect(claimServiceApi.isCattleEndemicsClaimForOldWorldReview()).toBe(true)
+    expect(isCattleEndemicsClaimForOldWorldReview()).toBe(true)
   })
 
   test('should return false when endemic claim and old review claim are different species', () => {
-    sessionMock.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'beef',
       latestVetVisitApplication: { data: { whichReview: 'sheep' } },

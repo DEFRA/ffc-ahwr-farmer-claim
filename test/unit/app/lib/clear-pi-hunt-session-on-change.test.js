@@ -1,5 +1,5 @@
-const { clearPiHuntSessionOnChange } = require('../../../../app/lib/clear-pi-hunt-session-on-change')
-const { setEndemicsClaim, getEndemicsClaim } = require('../../../../app/session')
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
+import { clearPiHuntSessionOnChange } from '../../../../app/lib/clear-pi-hunt-session-on-change.js'
 
 jest.mock('../../../../app/session', () => ({
   setEndemicsClaim: jest.fn(),

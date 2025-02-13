@@ -1,25 +1,19 @@
-const routes = require('../../config/routes')
-const urlPrefix = require('../../config').urlPrefix
-const {
-  setEndemicsClaim,
-  getEndemicsClaim,
-  setTempClaimReference
-} = require('../../session')
-const { submitNewClaim } = require('../../api-requests/claim-service-api')
-const {
+import appInsights from 'applicationinsights'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim, setTempClaimReference } from '../../session/index.js'
+import routes from '../../config/routes.js'
+import {
+  formatDate,
   getSpeciesEligibleNumberForDisplay,
   getVaccinationStatusForDisplay,
-  upperFirstLetter,
-  formatDate
-} = require('../../lib/display-helpers')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getReviewType } = require('../../lib/get-review-type')
-const {
-  sheepPackages,
-  sheepTestTypes,
-  sheepTestResultsType
-} = require('../../constants/sheep-test-types')
-const appInsights = require('applicationinsights')
+  upperFirstLetter
+} from '../../lib/display-helpers.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { sheepPackages, sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
+import { submitNewClaim } from '../../api-requests/claim-service-api.js'
+
+const urlPrefix = config.urlPrefix
 
 const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
 
@@ -587,4 +581,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const checkAnswersHandlers = [getHandler, postHandler]

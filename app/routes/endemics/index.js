@@ -1,12 +1,14 @@
-const config = require('../../config')
-const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
-const { endemicsIndex } = require('../../config/routes')
-const { requestAuthorizationCodeUrl } = require('../../auth')
-const logout = require('../../lib/logout')
-const { endemicsWhichSpecies, endemicsWhichTypeOfReview } = require('../../config/routes')
-const { endemicsClaim: { landingPage: landingPageKey } } = require('../../session/keys')
-const { refreshApplications, resetEndemicsClaimSession } = require('../../lib/context-helper')
+import { config } from '../../config/index.js'
+import { setEndemicsClaim } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import links from '../../config/routes.js'
+import { refreshApplications, resetEndemicsClaimSession } from '../../lib/context-helper.js'
+import { logout } from '../../lib/logout.js'
+import { requestAuthorizationCodeUrl } from '../../auth/auth-code-grant/request-authorization-code-url.js'
+
+const urlPrefix = config.urlPrefix
+const { endemicsIndex, endemicsWhichSpecies, endemicsWhichTypeOfReview } = links
+const { endemicsClaim: { landingPage: landingPageKey } } = sessionKeys
 
 const endemicsWhichTypeOfReviewURI = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
@@ -26,25 +28,25 @@ const getHandler = {
 
         if (config.multiSpecies.enabled) {
           // for MS we want to always go through same flow, so just redirect straight there
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
+          setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
 
         // new user (has no claims, and no relevant old world application)
         if (claims.length === 0 && latestVetVisitApplication === undefined) {
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
+          setEndemicsClaim(request, landingPageKey, endemicsWhichSpeciesURI)
           return h.redirect(endemicsWhichSpeciesURI)
         }
 
         // new claims (already made at least 1 claim in new world)
         if (claims.length > 0) {
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
+          setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI) // this was going straight to which type of review, skipping species
         }
 
         // old claim, but NO new world claims - NOTE this is only if the old claim is less than 10 months old
         if (latestVetVisitApplication) {
-          session.setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
+          setEndemicsClaim(request, landingPageKey, endemicsWhichTypeOfReviewURI)
           return h.redirect(endemicsWhichTypeOfReviewURI)
         }
       }
@@ -56,11 +58,11 @@ const getHandler = {
 
       return h.view(loginView, {
         devLogin,
-        defraIdLogin: requestAuthorizationCodeUrl(session, request),
+        defraIdLogin: requestAuthorizationCodeUrl(request),
         ruralPaymentsAgency: config.ruralPaymentsAgency
       })
     }
   }
 }
 
-module.exports = { handlers: [getHandler] }
+export const indexHandlers = [getHandler]

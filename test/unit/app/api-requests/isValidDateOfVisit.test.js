@@ -1,4 +1,4 @@
-const { isValidDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
+import { isValidDateOfVisit } from '../../../../app/api-requests/claim-service-api.js'
 
 const generateMockPreviousClaim = (data, type = 'R', statusId = 9) => {
   return data.map((d) => (

@@ -1,18 +1,21 @@
-describe('routes plugin test', () => {
-  jest.mock('../../../../app/config', () => ({
-    ...jest.requireActual('../../../../app/config'),
-    endemics: {
-      enabled: false
-    }
-  }))
+import { createServer } from '../../../../app/server.js'
+import { config } from '../../../../app/config/index.js'
 
+jest.mock('../../../../app/config', () => ({
+  ...jest.requireActual('../../../../app/config'),
+  endemics: {
+    enabled: false
+  }
+}))
+
+describe('routes plugin test', () => {
   beforeEach(() => {
     jest.resetModules()
     jest.clearAllMocks()
   })
 
   test('routes included', async () => {
-    const createServer = require('../../../../app/server')
+    config.endemics.enabled = false
     const server = await createServer()
     const routePaths = []
     server.table().forEach((element) => {
@@ -30,17 +33,9 @@ describe('routes plugin test', () => {
   })
 
   test('routes included - endemics enabled', async () => {
-    jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
-      endemics: {
-        enabled: true
-      },
-      multiSpecies: {
-        enabled: false
-      }
-    }))
+    config.endemics.enabled = true
+    config.multiSpecies.enabled = false
 
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table()
@@ -111,17 +106,9 @@ describe('routes plugin test', () => {
   })
 
   test('when multi-species is enabled, include correct routes', async () => {
-    jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
-      endemics: {
-        enabled: true
-      },
-      multiSpecies: {
-        enabled: true
-      }
-    }))
+    config.endemics.enabled = true
+    config.multiSpecies.enabled = true
 
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table()
@@ -135,14 +122,8 @@ describe('routes plugin test', () => {
   })
 
   test('when isDev is true, dev-sign-in included in routes', async () => {
-    jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
-      devLogin: {
-        enabled: true
-      }
-    }))
+    config.devLogin.enabled = true
 
-    const createServer = require('../../../../app/server')
     const server = await createServer()
     const routePaths = []
     server.table().forEach((element) => {

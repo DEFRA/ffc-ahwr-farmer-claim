@@ -1,4 +1,4 @@
-const getHandler = {
+export const assetsRouteHandlers = {
   method: 'GET',
   path: '/claim/assets/{path*}',
   options: {
@@ -14,5 +14,3 @@ const getHandler = {
     tags: ['assets']
   }
 }
-
-module.exports = { handlers: [getHandler] }

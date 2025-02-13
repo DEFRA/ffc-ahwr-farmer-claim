@@ -1,17 +1,17 @@
-const state = require('./auth-code-grant/state')
-const redeemAuthorizationCodeForAccessToken = require('./auth-code-grant/redeem-authorization-code-for-access-token')
-const jwtVerify = require('./token-verify/jwt-verify')
-const decodeJwt = require('./token-verify/jwt-decode')
-const jwtVerifyIss = require('./token-verify/jwt-verify-iss')
-const nonce = require('./id-token/nonce')
-const expiresIn = require('./auth-code-grant/expires-in')
-const session = require('../session')
-const sessionKeys = require('../session/keys')
-const cookieAuth = require('./cookie-auth/cookie-auth')
-const { InvalidStateError } = require('../exceptions')
+import { verify as verifyState } from './auth-code-grant/state.js'
+import { verify as verifyNonce } from './id-token/nonce.js'
+import { jwtVerify } from './token-verify/jwt-verify.js'
+import { decodeJwt } from './token-verify/jwt-decode.js'
+import { toISOString } from './auth-code-grant/expires-in.js'
+import { jwtVerifyIss } from './token-verify/jwt-verify-iss.js'
+import { redeemAuthorizationCodeForAccessToken } from './auth-code-grant/redeem-authorization-code-for-access-token.js'
+import { setCustomer, setToken } from '../session/index.js'
+import { set } from './cookie-auth/cookie-auth.js'
+import { sessionKeys } from '../session/keys.js'
+import { InvalidStateError } from '../exceptions/invalid-state-error.js'
 
-const authenticate = async (request) => {
-  if (!state.verify(request)) {
+export const authenticate = async (request) => {
+  if (!verifyState(request)) {
     throw new InvalidStateError('Invalid state')
   }
   const redeemResponse = await redeemAuthorizationCodeForAccessToken(request)
@@ -20,17 +20,15 @@ const authenticate = async (request) => {
   request.logger.setBindings({ iss: accessToken.iss })
   const idToken = decodeJwt(redeemResponse.id_token)
   await jwtVerifyIss(accessToken.iss)
-  nonce.verify(request, idToken)
+  verifyNonce(request, idToken)
 
-  session.setToken(request, sessionKeys.tokens.accessToken, redeemResponse.access_token)
-  session.setToken(request, sessionKeys.tokens.tokenExpiry, expiresIn.toISOString(redeemResponse.expires_in))
-  session.setCustomer(request, sessionKeys.customer.crn, accessToken.contactId)
-  session.setCustomer(request, sessionKeys.customer.organisationId, accessToken.currentRelationshipId)
-  session.setCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses, typeof accessToken.enrolmentCount !== 'undefined' && accessToken.enrolmentCount > 1)
+  setToken(request, sessionKeys.tokens.accessToken, redeemResponse.access_token)
+  setToken(request, sessionKeys.tokens.tokenExpiry, toISOString(redeemResponse.expires_in))
+  setCustomer(request, sessionKeys.customer.crn, accessToken.contactId)
+  setCustomer(request, sessionKeys.customer.organisationId, accessToken.currentRelationshipId)
+  setCustomer(request, sessionKeys.customer.attachedToMultipleBusinesses, typeof accessToken.enrolmentCount !== 'undefined' && accessToken.enrolmentCount > 1)
 
-  cookieAuth.set(request, accessToken)
+  set(request, accessToken)
 
   return accessToken
 }
-
-module.exports = authenticate

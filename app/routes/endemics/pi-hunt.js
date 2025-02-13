@@ -1,12 +1,15 @@
-const Joi = require('joi')
-const config = require('../../config')
-const { urlPrefix, optionalPIHunt } = require('../../config')
-const { endemicsClaim: { piHunt: piHuntKey } } = require('../../session/keys')
-const { getTestResult } = require('../../lib/get-test-result')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = require('../../config/routes')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { clearPiHuntSessionOnChange } = require('../../lib/clear-pi-hunt-session-on-change')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import links from '../../config/routes.js'
+import { getTestResult } from '../../lib/get-test-result.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
+
+const { urlPrefix, optionalPIHunt } = config
+const { endemicsClaim: { piHunt: piHuntKey } } = sessionKeys
+const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = links
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
@@ -76,4 +79,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const piHuntHandlers = [getHandler, postHandler]

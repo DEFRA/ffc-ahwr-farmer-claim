@@ -1,16 +1,21 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const { labels } = require('../../../../../app/config/visit-date')
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const getEndemicsClaimMock =
-  require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const appInsights = require('applicationinsights')
-const createServer = require('../../../../../app/server')
-const config = require('../../../../../app/config')
+import appInsights from 'applicationinsights'
+
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { visitDate } from '../../../../../app/config/visit-date.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { config } from '../../../../../app/config/index.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import {
+  getReviewTestResultWithinLast10Months,
+  isCattleEndemicsClaimForOldWorldReview,
+  isValidDateOfVisit
+} from '../../../../../app/api-requests/claim-service-api.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+
+const { labels } = visitDate
 
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/session')
@@ -66,8 +71,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
-    getEndemicsClaimMock.mockImplementation(() => {
+    setEndemicsClaim.mockImplementation(() => { })
+    getEndemicsClaim.mockImplementation(() => {
       return {
         latestVetVisitApplication,
         latestEndemicsApplication,
@@ -99,8 +104,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     })
 
     test('returns 200', async () => {
-      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
-      getEndemicsClaimMock.mockImplementation(() => {
+      isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
+      getEndemicsClaim.mockImplementation(() => {
         return {
           latestEndemicsApplication,
           latestVetVisitApplication,
@@ -128,8 +133,8 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       expectPhaseBanner.ok($)
     })
     test('returns 200 and fills input with value in session', async () => {
-      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
-      getEndemicsClaimMock.mockImplementation(() => {
+      isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
+      getEndemicsClaim.mockImplementation(() => {
         return {
           latestEndemicsApplication,
           latestVetVisitApplication,
@@ -172,7 +177,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(
         expect.stringContaining(
-          'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
+          'oauth2/v2.0/authorize'
         )
       )
     })
@@ -204,7 +209,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(
         expect.stringContaining(
-          'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
+          'oauth2/v2.0/authorize'
         )
       )
     })
@@ -353,7 +358,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
         applicationCreationDate,
         typeOfReview
       }) => {
-        getEndemicsClaimMock.mockImplementation(() => {
+        getEndemicsClaim.mockImplementation(() => {
           return {
             ...(typeOfReview && { typeOfReview }),
             latestVetVisitApplication: {
@@ -449,7 +454,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           previousClaims: [claim],
           typeOfReview: 'R'
         }
-        getEndemicsClaimMock.mockImplementationOnce(() => {
+        getEndemicsClaim.mockImplementationOnce(() => {
           return mockEndemicsClaim
         })
           .mockImplementationOnce(() => {
@@ -468,7 +473,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
-        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+        isValidDateOfVisit.mockImplementationOnce(() => ({
           isValid: false,
           reason: 'rejected review'
         }))
@@ -531,7 +536,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
     ])(
       'Redirect to exception screen when ($description) and match content',
       async ({ day, month, year, applicationCreationDate, content, dateOfVetVisitException }) => {
-        getEndemicsClaimMock.mockImplementationOnce(() => { return { typeOfReview: 'E' } })
+        getEndemicsClaim.mockImplementationOnce(() => { return { typeOfReview: 'E' } })
           .mockImplementationOnce(() => { return { typeOfReview: 'E' } })
         const options = {
           method: 'POST',
@@ -546,7 +551,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
-        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+        isValidDateOfVisit.mockImplementationOnce(() => ({
           isValid: false,
           reason: dateOfVetVisitException
         }))
@@ -607,7 +612,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           previousClaims: [claim],
           typeOfReview: 'R'
         }
-        getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
+        getEndemicsClaim.mockImplementationOnce(() => { return mockEndemicsClaim })
           .mockImplementationOnce(() => { return mockEndemicsClaim })
         const options = {
           method: 'POST',
@@ -622,7 +627,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
-        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+        isValidDateOfVisit.mockImplementationOnce(() => ({
           isValid: true
         }))
 
@@ -630,7 +635,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-        expect(setEndemicsClaimMock).toHaveBeenCalled()
+        expect(setEndemicsClaim).toHaveBeenCalled()
       }
     )
 
@@ -665,7 +670,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           typeOfLivestock: 'beef',
           typeOfReview: 'E'
         }
-        getEndemicsClaimMock.mockImplementationOnce(() => { return mockEndemicsClaim })
+        getEndemicsClaim.mockImplementationOnce(() => { return mockEndemicsClaim })
           .mockImplementationOnce(() => { return mockEndemicsClaim })
         const options = {
           method: 'POST',
@@ -680,16 +685,16 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
-        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+        isValidDateOfVisit.mockImplementationOnce(() => ({
           isValid: true
         }))
-        claimServiceApiMock.getReviewTestResultWithinLast10Months.mockImplementationOnce(() => ('negative'))
+        getReviewTestResultWithinLast10Months.mockImplementationOnce(() => ('negative'))
 
         const res = await server.inject(options)
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-        expect(setEndemicsClaimMock).toHaveBeenCalled()
+        expect(setEndemicsClaim).toHaveBeenCalled()
       }
     )
   })
@@ -760,7 +765,7 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
     ])(
       'Redirect to next page when ($description)',
       async ({ day, month, year, applicationCreationDate, claim }) => {
-        getEndemicsClaimMock.mockReturnValue({
+        getEndemicsClaim.mockReturnValue({
           latestVetVisitApplication: {
             ...latestVetVisitApplication,
             createdAt: applicationCreationDate
@@ -782,16 +787,16 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
           auth,
           headers: { cookie: `crumb=${crumb}` }
         }
-        claimServiceApiMock.isValidDateOfVisit.mockImplementationOnce(() => ({
+        isValidDateOfVisit.mockImplementationOnce(() => ({
           isValid: true
         }))
-        claimServiceApiMock.getReviewTestResultWithinLast10Months.mockImplementationOnce(() => ('negative'))
+        getReviewTestResultWithinLast10Months.mockImplementationOnce(() => ('negative'))
 
         const res = await server.inject(options)
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-        expect(setEndemicsClaimMock).toHaveBeenCalled()
+        expect(setEndemicsClaim).toHaveBeenCalled()
       }
     )
   })

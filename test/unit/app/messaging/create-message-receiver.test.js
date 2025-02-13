@@ -1,4 +1,8 @@
-const { createMessageReceiver, cachedReceivers, closeAllConnections } = require('../../../../app/messaging/create-message-receiver')
+import {
+  cachedReceivers,
+  closeAllConnections,
+  createMessageReceiver
+} from '../../../../app/messaging/create-message-receiver.js'
 
 const MOCK_CLOSE_CONNECTION = jest.fn()
 
@@ -41,8 +45,8 @@ describe('closeAllConnections', () => {
     expect(Object.keys(cachedReceivers)).toHaveLength(0)
   })
 
-  test('should do nothing when cachedSenders is empty', async () => {
-    // Call closeAllConnections when cachedSenders is empty
+  test('should do nothing when cachedReceivers is empty', async () => {
+    // Call closeAllConnections when cachedReceivers is empty
     await closeAllConnections()
 
     // Expect no errors to be thrown

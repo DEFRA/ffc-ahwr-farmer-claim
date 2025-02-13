@@ -1,8 +1,17 @@
-const Joi = require('joi')
-const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
-const { rcvs: rcvsErrorMessages } = require('../../../app/lib/error-messages')
-const { claimType, livestockTypes } = require('../../constants/claim')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { errorMessages } from '../../lib/error-messages.js'
+import { claimConstants } from '../../constants/claim.js'
+import links from '../../config/routes.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getTestResult } from '../../lib/get-test-result.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+
+const { optionalPIHunt, urlPrefix } = config
+const { rcvs: rcvsErrorMessages } = errorMessages
+const { claimType, livestockTypes } = claimConstants
 
 const {
   endemicsVetName,
@@ -13,20 +22,16 @@ const {
   endemicsPIHunt,
   endemicsSheepEndemicsPackage,
   endemicsVetVisitsReviewTestResults
-} = require('../../config/routes')
+} = links
 const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
-} = require('../../session/keys')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getTestResult } = require('../../lib/get-test-result')
-const { getReviewType } = require('../../lib/get-review-type')
-const { optionalPIHunt } = require('../../config')
+} = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
 const backLink = `${urlPrefix}/${endemicsVetName}`
 
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getEndemicsClaim(request)
   const { isBeef, isDairy, isSheep } = getLivestockTypes(typeOfLivestock)
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
   if (isReview) return `${urlPrefix}/${endemicsTestUrn}`
@@ -45,7 +50,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { vetRCVSNumber } = session.getEndemicsClaim(request)
+      const { vetRCVSNumber } = getEndemicsClaim(request)
       return h.view(endemicsVetRCVS, {
         vetRCVSNumber,
         backLink
@@ -85,12 +90,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { vetRCVSNumber } = request.payload
-      const { reviewTestResults, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+      const { reviewTestResults, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
-      session.setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
+      setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
       if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
         return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
@@ -106,4 +111,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const vetRCVSHandlers = [getHandler, postHandler]

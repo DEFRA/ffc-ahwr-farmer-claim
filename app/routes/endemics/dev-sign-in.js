@@ -1,10 +1,13 @@
-const urlPrefix = require('../../config').urlPrefix
-const session = require('../../session')
-const sessionKeys = require('../../session/keys')
-const { getPersonName, getOrganisationAddress } = require('../../api-requests/rpa-api')
-const latestApplicationForSbi = require('../models/latest-application')
-const auth = require('../../auth')
-const { farmerClaim } = require('../../constants/user-types')
+import { config } from '../../config/index.js'
+import { setCustomer, setEndemicsClaim } from '../../session/index.js'
+import { getPersonName } from '../../api-requests/rpa-api/person.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getOrganisationAddress } from '../../api-requests/rpa-api/organisation.js'
+import { setAuthCookie } from '../../auth/cookie-auth/cookie-auth.js'
+import { getLatestApplicationForSbi } from '../models/latest-application.js'
+import { farmerClaim } from '../../constants/constants.js'
+
+const urlPrefix = config.urlPrefix
 
 const pageUrl = `${urlPrefix}/endemics/dev-sign-in`
 
@@ -53,7 +56,7 @@ const postHandler = {
       request.logger.setBindings({ sbi })
       const [personSummary, organisationSummary] = await createDevDetails(sbi)
 
-      session.setEndemicsClaim(
+      setEndemicsClaim(
         request,
         sessionKeys.endemicsClaim.organisation,
         {
@@ -68,17 +71,17 @@ const postHandler = {
         }
       )
 
-      const latestApplication = await latestApplicationForSbi(
+      const latestApplication = await getLatestApplicationForSbi(
         organisationSummary.organisation.sbi?.toString(),
         organisationSummary.organisation.name
       )
 
-      session.setCustomer(request, sessionKeys.customer.id, personSummary.id)
-      auth.setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
+      setCustomer(request, sessionKeys.customer.id, personSummary.id)
+      setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
 
       return h.redirect(`/claim/endemics?from=dashboard&sbi=${organisationSummary.organisation.sbi}`)
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const devSignInHandlers = [getHandler, postHandler]

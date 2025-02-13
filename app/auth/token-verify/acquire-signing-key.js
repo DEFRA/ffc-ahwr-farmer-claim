@@ -1,9 +1,9 @@
-const wreck = require('@hapi/wreck')
-const config = require('../../config')
+import wreck from '@hapi/wreck'
+import { authConfig } from '../../config/auth.js'
 
-const acquireSigningKey = async () => {
+export const acquireSigningKey = async () => {
   const { payload } = await wreck.get(
-    `${config.authConfig.defraId.hostname}/discovery/v2.0/keys?p=${config.authConfig.defraId.policy}`,
+    `${authConfig.defraId.hostname}/discovery/v2.0/keys?p=${authConfig.defraId.policy}`,
     {
       json: true
     }
@@ -11,5 +11,3 @@ const acquireSigningKey = async () => {
 
   return payload.keys[0]
 }
-
-module.exports = acquireSigningKey

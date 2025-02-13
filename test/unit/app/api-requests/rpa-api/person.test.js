@@ -1,7 +1,8 @@
-const mockSession = require('../../../../../app/session/index')
-const mockJwtDecode = require('../../../../../app/auth/token-verify/jwt-decode')
-const mockBase = require('../../../../../app/api-requests/rpa-api/base')
-const person = require('../../../../../app/api-requests/rpa-api/person')
+import { getToken } from '../../../../../app/session/index.js'
+import { decodeJwt } from '../../../../../app/auth/token-verify/jwt-decode.js'
+import { get } from '../../../../../app/api-requests/rpa-api/base.js'
+import { getPersonName, getPersonSummary } from '../../../../../app/api-requests/rpa-api/person.js'
+
 jest.mock('../../../../../app/session/index')
 jest.mock('../../../../../app/auth/token-verify/jwt-decode')
 jest.mock('../../../../../app/api-requests/rpa-api/base')
@@ -24,9 +25,9 @@ jest.mock('../../../../../app/config', () => {
 describe('Person', () => {
   test('when getPersonSummary called - returns valid person data', async () => {
     const apimToken = 'apim_token'
-    mockSession.getToken.mockResolvedValueOnce({ access_token: 1234567 })
-    mockJwtDecode.mockResolvedValue({ contactId: 1234567 })
-    mockBase.get.mockResolvedValueOnce({
+    getToken.mockResolvedValueOnce({ access_token: 1234567 })
+    decodeJwt.mockResolvedValue({ contactId: 1234567 })
+    get.mockResolvedValueOnce({
       _data: {
         firstName: 'Bill',
         middleName: 'James',
@@ -37,11 +38,11 @@ describe('Person', () => {
       }
     })
 
-    const result = await person.getPersonSummary(expect.anything(), apimToken)
+    const result = await getPersonSummary(expect.anything(), apimToken)
 
-    expect(mockSession.getToken).toHaveBeenCalledTimes(1)
-    expect(mockJwtDecode).toHaveBeenCalledTimes(1)
-    expect(mockBase.get).toHaveBeenCalledTimes(1)
+    expect(getToken).toHaveBeenCalledTimes(1)
+    expect(decodeJwt).toHaveBeenCalledTimes(1)
+    expect(get).toHaveBeenCalledTimes(1)
     expect(result.firstName).toMatch('Bill')
     expect(result.middleName).toMatch('James')
     expect(result.lastName).toMatch('Smith')
@@ -64,7 +65,7 @@ describe('Person', () => {
       middleName,
       lastName
     }
-    const result = person.getPersonName(personSummary)
+    const result = getPersonName(personSummary)
     expect(result).toEqual(expectedResult)
   })
 })

@@ -1,8 +1,8 @@
-const { MessageReceiver } = require('ffc-messaging')
+import { MessageReceiver } from 'ffc-messaging'
 
-const cachedReceivers = {}
+export const cachedReceivers = {}
 
-const createMessageReceiver = (config) => {
+export const createMessageReceiver = (config) => {
   if (cachedReceivers[config.address]) {
     return cachedReceivers[config.address]
   }
@@ -13,7 +13,7 @@ const createMessageReceiver = (config) => {
   return receiver
 }
 
-const closeAllConnections = async () => {
+export const closeAllConnections = async () => {
   const receiverKeys = Object.keys(cachedReceivers)
 
   for (const key of receiverKeys) {
@@ -21,10 +21,4 @@ const closeAllConnections = async () => {
     await receiver.closeConnection()
     delete cachedReceivers[key]
   }
-}
-
-module.exports = {
-  createMessageReceiver,
-  closeAllConnections,
-  cachedReceivers
 }

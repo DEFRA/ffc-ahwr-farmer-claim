@@ -1,15 +1,21 @@
-const mockSession = require('../../../../app/session/index')
-const mockClaimApi = require('../../../../app/api-requests/claim-service-api')
-const mockApplicationApi = require('../../../../app/api-requests/application-service-api')
-const mockDateUtils = require('../../../../app/lib/date-utils')
-const { canChangeSpecies, getTypeOfLivestockFromLatestClaim, refreshClaims, refreshApplications } = require('../../../../app/lib/context-helper')
+import {
+  canChangeSpecies,
+  getTypeOfLivestockFromLatestClaim,
+  refreshApplications,
+  refreshClaims
+} from '../../../../app/lib/context-helper.js'
+import { getClaimsByApplicationReference } from '../../../../app/api-requests/claim-service-api.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
+import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
+import { isWithin10Months } from '../../../../app/lib/date-utils.js'
+
 jest.mock('../../../../app/session/index')
 jest.mock('../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../app/api-requests/application-service-api')
 jest.mock('../../../../app/lib/date-utils')
 describe('context-helper', () => {
   test('canChangeSpecies should return false when there are previous endemic (new-world) claims', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       previousClaims: [{ data: { typeOfReview: 'R' } }]
     })
 
@@ -17,7 +23,7 @@ describe('context-helper', () => {
   })
 
   test('canChangeSpecies should return false when type of review is follow-up', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       previousClaims: []
     })
 
@@ -25,7 +31,7 @@ describe('context-helper', () => {
   })
 
   test('canChangeSpecies should return true when there are no previous endemic (new-world) claims, and type of review is review', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       previousClaims: []
     })
 
@@ -33,7 +39,7 @@ describe('context-helper', () => {
   })
 
   test('getTypeOfLivestockFromLatestClaim will return from latest endemics claim', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       previousClaims: [
         {
           data: {
@@ -52,7 +58,7 @@ describe('context-helper', () => {
   })
 
   test('getTypeOfLivestockFromLatestClaim will return from latest application', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       latestVetVisitApplication: {
         data: {
           whichReview: 'sheep'
@@ -64,7 +70,7 @@ describe('context-helper', () => {
   })
 
   test('getTypeOfLivestockFromLatestClaim will return from latest endemics claim if both exist', () => {
-    mockSession.getEndemicsClaim.mockReturnValueOnce({
+    getEndemicsClaim.mockReturnValueOnce({
       previousClaims: [
         {
           data: {
@@ -97,11 +103,11 @@ describe('context-helper', () => {
       }
     ]
     const mockRequest = { logger: () => {} }
-    mockClaimApi.getClaimsByApplicationReference.mockReturnValueOnce(mockClaims)
+    getClaimsByApplicationReference.mockReturnValueOnce(mockClaims)
 
     const returnedClaims = await refreshClaims(mockRequest, 'anyOldRef')
 
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'previousClaims', mockClaims)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'previousClaims', mockClaims)
     expect(returnedClaims).toHaveLength(2)
   })
 
@@ -117,7 +123,7 @@ describe('context-helper', () => {
       }
     ]
     const mockRequest = { logger: () => {}, query: { sbi: '123' } }
-    mockApplicationApi.getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
+    getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
 
     const returnedApplication = await refreshApplications(mockRequest)
 
@@ -126,8 +132,8 @@ describe('context-helper', () => {
       type: 'EE'
     })
     expect(returnedApplication.latestVetVisitApplication).toBeUndefined()
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
   })
 
   test('refreshApplications sets latest old world application into the session and returns it if within 10 months of latest new world one', async () => {
@@ -142,8 +148,8 @@ describe('context-helper', () => {
       }
     ]
     const mockRequest = { logger: () => {}, query: { sbi: '123' } }
-    mockApplicationApi.getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
-    mockDateUtils.isWithin10Months.mockReturnValueOnce(true)
+    getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
+    isWithin10Months.mockReturnValueOnce(true)
 
     const returnedApplication = await refreshApplications(mockRequest)
 
@@ -155,8 +161,8 @@ describe('context-helper', () => {
       name: 'app2',
       type: 'VV'
     })
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
   })
 
   test('refreshApplications does not set latest old world application into the session or return it if not within 10 months of latest new world one', async () => {
@@ -171,8 +177,8 @@ describe('context-helper', () => {
       }
     ]
     const mockRequest = { logger: () => {}, query: { sbi: '123' } }
-    mockApplicationApi.getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
-    mockDateUtils.isWithin10Months.mockReturnValueOnce(false)
+    getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
+    isWithin10Months.mockReturnValueOnce(false)
 
     const returnedApplication = await refreshApplications(mockRequest)
 
@@ -181,7 +187,7 @@ describe('context-helper', () => {
       type: 'EE'
     })
     expect(returnedApplication.latestVetVisitApplication).toBeUndefined()
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
-    expect(mockSession.setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
+    expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
   })
 })

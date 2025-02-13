@@ -1,19 +1,18 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const urlPrefix = require('../../../../../app/config').urlPrefix
-const { endemicsWhichTypeOfReview } = require('../../../../../app/config/routes')
-const sessionMock = require('../../../../../app/session')
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const claimServiceApiMock = require('../../../../../app/api-requests/claim-service-api')
-const { setEndemicsAndOptionalPIHunt, setMultiSpecies } = require('../../../../mocks/config')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { config } from '../../../../../app/config/index.js'
+import { setEndemicsAndOptionalPIHunt, setMultiSpecies } from '../../../../mocks/config.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { isCattleEndemicsClaimForOldWorldReview } from '../../../../../app/api-requests/claim-service-api.js'
+import links from '../../../../../app/config/routes.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
 describe('Which type of review test', () => {
-  const url = `${urlPrefix}/${endemicsWhichTypeOfReview}`
+  const url = `${config.urlPrefix}/${links.endemicsWhichTypeOfReview}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'
@@ -24,7 +23,7 @@ describe('Which type of review test', () => {
   let server
 
   beforeAll(async () => {
-    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsClaim.mockImplementation(() => { })
     setMultiSpecies(false)
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
@@ -42,12 +41,12 @@ describe('Which type of review test', () => {
   describe('GET', () => {
     beforeEach(() => {
       // this call is made by the pre-handler for logging context and reference
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
         .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
     })
 
     test('sets typeOfLivestock from old world applications', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
         .mockReturnValueOnce({ typeOfLivestock: 'beef', previousClaims: [], latestVetVisitApplication })
       const options = {
         method: 'GET',
@@ -61,14 +60,14 @@ describe('Which type of review test', () => {
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
-      expect(setEndemicsClaimMock.mock.calls).toEqual([
+      expect(setEndemicsClaim.mock.calls).toEqual([
         [expect.any(Object), 'typeOfLivestock', 'beef']
       ])
     })
 
     test('sets typeOfLivestock from new world claims if present', async () => {
       const endemicsValue = { typeOfReview: 'review', latestVetVisitApplication, previousClaims }
-      sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsValue)
+      getEndemicsClaim.mockReturnValueOnce(endemicsValue)
         .mockReturnValueOnce(endemicsValue)
       const options = {
         method: 'GET',
@@ -82,7 +81,7 @@ describe('Which type of review test', () => {
       expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
 
-      expect(setEndemicsClaimMock.mock.calls).toEqual([
+      expect(setEndemicsClaim.mock.calls).toEqual([
         [expect.any(Object), 'typeOfLivestock', 'sheep']
       ])
     })
@@ -93,11 +92,11 @@ describe('Which type of review test', () => {
       jest.clearAllMocks()
       crumb = await getCrumbs(server)
       // this call is made by the pre-handler for logging context
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'R' })
     })
 
     test('Returns 400 and shows error message when payload is invalid', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
         .mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
@@ -119,9 +118,9 @@ describe('Which type of review test', () => {
 
     test('Returns 302 and redirect to vet visit review test result', async () => {
       const endemicsMockValue = { typeOfReview: 'endemics', typeOfLivestock: 'beef', latestVetVisitApplication, previousClaims }
-      sessionMock.getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
+      getEndemicsClaim.mockReturnValueOnce(endemicsMockValue)
         .mockReturnValueOnce(endemicsMockValue)
-      claimServiceApiMock.isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
+      isCattleEndemicsClaimForOldWorldReview.mockReturnValueOnce(true)
 
       const options = {
         method: 'POST',
@@ -138,14 +137,14 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/vet-visits-review-test-results')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
     test.each([
       { typeOfReview: 'review', nextPageUrl: '/claim/endemics/which-species', expectSetEndemicsCalls: 0 },
       { typeOfReview: 'endemics', nextPageUrl: '/claim/endemics/date-of-visit', expectSetEndemicsCalls: 1 }
     ])('Returns 302 and redirects to next page if payload is valid', async ({ typeOfReview, nextPageUrl, expectSetEndemicsCalls }) => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'beef' })
         .mockReturnValueOnce({ typeOfLivestock: 'beef' })
       const options = {
         method: 'POST',
@@ -162,11 +161,11 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual(nextPageUrl)
-      expect(setEndemicsClaimMock).toBeCalledTimes(expectSetEndemicsCalls)
+      expect(setEndemicsClaim).toBeCalledTimes(expectSetEndemicsCalls)
     })
 
     test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {
         method: 'POST',
@@ -189,7 +188,7 @@ describe('Which type of review test', () => {
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
       setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
-      sessionMock.getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
+      getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {
         method: 'POST',
@@ -206,7 +205,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
   })
 })

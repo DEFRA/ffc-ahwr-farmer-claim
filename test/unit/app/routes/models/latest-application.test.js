@@ -1,20 +1,14 @@
-const { NoApplicationFoundError, ClaimHasAlreadyBeenMadeError, ClaimHasExpiredError } = require('../../../../../app/exceptions')
+import { NoApplicationFoundError } from '../../../../../app/exceptions/no-application-found.js'
+import { ClaimHasAlreadyBeenMadeError } from '../../../../../app/exceptions/claim-has-already-been-made.js'
+import { ClaimHasExpiredError } from '../../../../../app/exceptions/claim-has-expired.js'
+import { getAllApplicationsBySbi } from '../../../../../app/api-requests/application-service-api.js'
+import { claimHasExpired } from '../../../../../app/lib/claim-has-expired.js'
+import { getLatestApplicationForSbi } from '../../../../../app/routes/models/latest-application.js'
+
+jest.mock('../../../../../app/lib/claim-has-expired')
+jest.mock('../../../../../app/api-requests/application-service-api')
 
 describe('Latest Applications Tests', () => {
-  let applicationApiMock
-  let hasClaimExpiredMock
-  let latestApplication
-
-  beforeAll(() => {
-    applicationApiMock = require('../../../../../app/api-requests/application-service-api')
-    jest.mock('../../../../../app/api-requests/application-service-api')
-
-    hasClaimExpiredMock = require('../../../../../app/lib/claim-has-expired')
-    jest.mock('../../../../../app/lib/claim-has-expired')
-
-    latestApplication = require('../../../../../app/routes/models/latest-application')
-  })
-
   beforeEach(() => {
     jest.clearAllMocks()
   })
@@ -424,15 +418,15 @@ describe('Latest Applications Tests', () => {
     }
   ])('%s', async (testCase) => {
     if (testCase.when.agreementExpired) {
-      hasClaimExpiredMock.claimHasExpired.mockReturnValueOnce(true)
+      claimHasExpired.mockReturnValueOnce(true)
     }
-    applicationApiMock.getAllApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
+    getAllApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
     if (testCase.expect.error) {
       await expect(
-        latestApplication(testCase.given.sbi)
+        getLatestApplicationForSbi(testCase.given.sbi)
       ).rejects.toEqual(testCase.expect.error)
     } else {
-      const result = await latestApplication(testCase.given.sbi)
+      const result = await getLatestApplicationForSbi(testCase.given.sbi)
       expect(result).toEqual(testCase.expect.latestApplication)
     }
   })

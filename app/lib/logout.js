@@ -1,8 +1,8 @@
-const session = require('../session')
+import { clear } from '../session/index.js'
 
-module.exports = (request) => {
+export const logout = (request) => {
   if (request) {
     request.cookieAuth.clear()
-    session.clear(request)
+    clear(request)
   }
 }

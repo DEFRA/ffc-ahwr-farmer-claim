@@ -1,16 +1,29 @@
-const { getReviewWithinLast10Months, getReviewTestResultWithinLast10Months } = require('../../api-requests/claim-service-api')
-const joi = require('joi')
-const { claimType, livestockTypes } = require('../../constants/claim')
-const { labels } = require('../../config/visit-date')
-const session = require('../../session')
+import joi from 'joi'
+import appInsights from 'applicationinsights'
+import { sessionKeys } from '../../session/keys.js'
+import { config } from '../../config/index.js'
+import { claimConstants } from '../../constants/claim.js'
+import { visitDate } from '../../config/visit-date.js'
+import links from '../../config/routes.js'
+import { isValidDate } from '../../lib/date-utils.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getOldWorldClaimFromApplication } from '../../lib/index.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import {
+  getReviewTestResultWithinLast10Months,
+  getReviewWithinLast10Months
+} from '../../api-requests/claim-service-api.js'
+import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
+
 const {
   endemicsClaim: {
     reviewTestResults: reviewTestResultsKey, dateOfVisit: dateOfVisitKey,
     relevantReviewForEndemics: relevantReviewForEndemicsKey
   }
-} = require('../../session/keys')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const config = require('../../config')
+} = sessionKeys
+
 const {
   endemicsDateOfVisit,
   endemicsDateOfVisitException,
@@ -18,17 +31,14 @@ const {
   endemicsSpeciesNumbers,
   endemicsWhichTypeOfReview,
   endemicsVetVisitsReviewTestResults
-} = require('../../config/routes')
-const { getReviewType } = require('../../lib/get-review-type')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const appInsights = require('applicationinsights')
-const { canMakeReviewClaim, canMakeEndemicsClaim } = require('../../lib/can-make-claim')
-const { isValidDate } = require('../../lib/date-utils')
-const { getOldWorldClaimFromApplication } = require('../../lib')
+} = links
+
+const { claimType, livestockTypes } = claimConstants
+const { labels } = visitDate
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
-const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
+export const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
   const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
   const oldWorldClaimTypeOfLivestock = latestVetVisitApplication?.data?.whichReview
@@ -128,7 +138,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { dateOfVisit, typeOfReview, latestVetVisitApplication: oldWorldApplication, previousClaims, typeOfLivestock } =
-        session.getEndemicsClaim(request)
+        getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -159,7 +169,7 @@ const postHandler = {
         reviewTestResults,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication
-      } = session.getEndemicsClaim(request)
+      } = getEndemicsClaim(request)
 
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
@@ -216,7 +226,7 @@ const postHandler = {
           `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
         )
 
-        session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
+        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
           .view(`${endemicsDateOfVisitException}-ms`, {
@@ -230,7 +240,7 @@ const postHandler = {
       }
 
       if (isEndemicsFollowUp) {
-        session.setEndemicsClaim(
+        setEndemicsClaim(
           request,
           relevantReviewForEndemicsKey,
           getReviewWithinLast10Months(
@@ -241,12 +251,12 @@ const postHandler = {
         )
       }
 
-      session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
+      setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
         const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
 
-        session.setEndemicsClaim(
+        setEndemicsClaim(
           request,
           reviewTestResultsKey,
           reviewTestResultsValue
@@ -261,4 +271,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler], previousPageUrl }
+export const dateOfVisitMSHandlers = [getHandler, postHandler]

@@ -1,4 +1,4 @@
-const { sendSessionEvent } = require('../event')
+import { sendSessionEvent } from '../event/send-session-event.js'
 
 const entries = {
   application: 'application',
@@ -36,7 +36,7 @@ function get (request, entryKey, key) {
   return key ? request.yar?.get(entryKey)?.[key] : request.yar?.get(entryKey)
 }
 
-function clear (request) {
+export function clear (request) {
   request.yar.clear(entries.claim)
   request.yar.clear(entries.endemicsClaim)
   request.yar.clear(entries.application)
@@ -44,23 +44,23 @@ function clear (request) {
   request.yar.clear(entries.tempClaimReference)
 }
 
-function setClaim (request, key, value, status) {
+export function setClaim (request, key, value, status) {
   set(request, entries.claim, key, value, status)
 }
 
-function getClaim (request, key) {
+export function getClaim (request, key) {
   return get(request, entries.claim, key)
 }
 
-function setEndemicsClaim (request, key, value, status) {
+export function setEndemicsClaim (request, key, value, status) {
   set(request, entries.endemicsClaim, key, value, status)
 }
 
-function getEndemicsClaim (request, key) {
+export function getEndemicsClaim (request, key) {
   return get(request, entries.endemicsClaim, key)
 }
 
-function clearEndemicsClaim (request) {
+export function clearEndemicsClaim (request) {
   const endemicsClaim = getEndemicsClaim(request)
   request.yar.clear(entries.endemicsClaim)
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
@@ -68,46 +68,30 @@ function clearEndemicsClaim (request) {
   setEndemicsClaim(request, 'latestEndemicsApplication', endemicsClaim?.latestEndemicsApplication)
 }
 
-function setTempClaimReference (request, key, value, status) {
+export function setTempClaimReference (request, key, value, status) {
   set(request, entries.tempClaimReference, key, value, status)
 }
 
-function setToken (request, key, value) {
+export function setToken (request, key, value) {
   set(request, entries.tokens, key, value)
 }
 
-function getToken (request, key) {
+export function getToken (request, key) {
   return get(request, entries.tokens, key)
 }
 
-function setCustomer (request, key, value) {
+export function setCustomer (request, key, value) {
   set(request, entries.customer, key, value)
 }
 
-function getCustomer (request, key) {
+export function getCustomer (request, key) {
   return get(request, entries.customer, key)
 }
 
-function setPkcecodes (request, key, value) {
+export function setPkcecodes (request, key, value) {
   set(request, entries.pkcecodes, key, value)
 }
 
-function getPkcecodes (request, key) {
+export function getPkcecodes (request, key) {
   return get(request, entries.pkcecodes, key)
-}
-
-module.exports = {
-  getClaim,
-  setClaim,
-  getEndemicsClaim,
-  setEndemicsClaim,
-  clearEndemicsClaim,
-  clear,
-  setTempClaimReference,
-  getToken,
-  setToken,
-  getCustomer,
-  setCustomer,
-  getPkcecodes,
-  setPkcecodes
 }

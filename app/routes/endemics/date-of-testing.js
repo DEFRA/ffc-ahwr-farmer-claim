@@ -1,19 +1,28 @@
-const Joi = require('joi')
-const session = require('../../session')
-const { addError } = require('../utils/validations')
-const { ruralPaymentsAgency, optionalPIHunt, urlPrefix } = require('../../config')
-const {
-  isWithIn4MonthsBeforeOrAfterDateOfVisit,
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { sessionKeys } from '../../session/keys.js'
+import { claimConstants } from '../../constants/claim.js'
+import links from '../../config/routes.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { validateDateInputDay } from '../govuk-components/validate-date-input-day.js'
+import { validateDateInputMonth } from '../govuk-components/validate-date-input-month.js'
+import { validateDateInputYear } from '../govuk-components/validate-date-input-year.js'
+import { isValidDate } from '../../lib/date-utils.js'
+import { addError } from '../utils/validations.js'
+import {
+  getReviewWithinLast10Months,
   isDateOfTestingLessThanDateOfVisit,
-  getReviewWithinLast10Months
-} = require('../../api-requests/claim-service-api')
-const validateDateInputDay = require('../govuk-components/validate-date-input-day')
-const validateDateInputYear = require('../govuk-components/validate-date-input-year')
-const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
+  isWithIn4MonthsBeforeOrAfterDateOfVisit
+} from '../../api-requests/claim-service-api.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+
+const { ruralPaymentsAgency, optionalPIHunt, urlPrefix } = config
 const {
   endemicsClaim: { dateOfTesting: dateOfTestingKey }
-} = require('../../session/keys')
-const { claimType } = require('../../constants/claim')
+} = sessionKeys
+const { claimType } = claimConstants
 const {
   endemicsDateOfVisit,
   endemicsDateOfTesting,
@@ -21,15 +30,11 @@ const {
   endemicsDateOfTestingException,
   endemicsTestUrn,
   endemicsPIHuntAllAnimals
-} = require('../../config/routes')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const { getReviewType } = require('../../lib/get-review-type')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { isValidDate } = require('../../lib/date-utils')
+} = links
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
@@ -74,7 +79,7 @@ const getHandler = {
         latestEndemicsApplication,
         typeOfReview,
         typeOfLivestock
-      } = session.getEndemicsClaim(request)
+      } = getEndemicsClaim(request)
       const { questionText, questionHintText } = getTheQuestionAndHintText(
         typeOfReview,
         typeOfLivestock
@@ -242,7 +247,7 @@ const postHandler = {
       }),
       failAction: async (request, h, error) => {
         const { dateOfVisit, typeOfReview, typeOfLivestock } =
-          session.getEndemicsClaim(request)
+          getEndemicsClaim(request)
         const { questionText, questionHintText } = getTheQuestionAndHintText(
           typeOfReview,
           typeOfLivestock
@@ -339,7 +344,7 @@ const postHandler = {
         typeOfLivestock,
         previousClaims,
         latestVetVisitApplication
-      } = session.getEndemicsClaim(request)
+      } = getEndemicsClaim(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
@@ -428,7 +433,7 @@ const postHandler = {
           .takeover()
       }
 
-      session.setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
+      setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
 
       if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
         return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
@@ -439,4 +444,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const dateOfTestingHandlers = [getHandler, postHandler]

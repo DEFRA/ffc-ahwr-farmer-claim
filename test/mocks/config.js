@@ -1,10 +1,13 @@
+import { config } from '../../app/config/index.js'
+import { authConfig } from '../../app/config/auth.js'
+
 jest.mock('../../app/config', () => ({
   ...jest.requireActual('../../app/config')
 }))
 const {
   endemics, optionalPIHunt,
-  multiSpecies, authConfig
-} = require('../../app/config')
+  multiSpecies
+} = config
 
 const defraId = {
   hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
@@ -22,17 +25,12 @@ const ruralPaymentsAgency = {
   getOrganisationUrl: 'dummy-get-organisation-url'
 }
 
-const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEnabled }) => {
+export const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEnabled }) => {
   endemics.enabled = endemicsEnabled
   optionalPIHunt.enabled = optionalPIHuntEnabled
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency
 }
-const setMultiSpecies = (enabled) => {
+export const setMultiSpecies = (enabled) => {
   multiSpecies.enabled = enabled
-}
-
-module.exports = {
-  setEndemicsAndOptionalPIHunt,
-  setMultiSpecies
 }

@@ -1,5 +1,4 @@
-const pino = require('hapi-pino')
-const { name } = require('../../package.json')
+import pino from 'hapi-pino'
 
 const transport = {
   target: 'pino-pretty',
@@ -34,10 +33,10 @@ const err = (err) => ({
   }
 })
 
-module.exports = {
+export const loggingPlugin = {
   plugin: pino,
   options: {
-    name,
+    name: 'ffc-ahwr-farmer-claim',
     ...(process.env.NODE_ENV === 'test' && testLevel),
     formatters: {
       level: (level) => ({ level })

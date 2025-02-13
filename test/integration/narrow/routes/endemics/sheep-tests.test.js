@@ -1,9 +1,8 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const createServer = require('../../../../../app/server')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
 jest.mock('../../../../../app/session')
 
@@ -14,10 +13,10 @@ describe('Test Results test', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return { typeOfLivestock: 'sheep' }
     })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsClaim.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
@@ -57,7 +56,7 @@ describe('Test Results test', () => {
 
   describe(`GET ${url} route`, () => {
     test('returns 200', async () => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return { sheepEndemicsPackage: 'reducedExternalParasites', reference: 'TEMP-6GSE-PIR8' }
       })
 
@@ -87,7 +86,7 @@ describe('Test Results test', () => {
     })
 
     test('returns 400 when user didnt select any test', async () => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return { sheepEndemicsPackage: 'reducedExternalParasites' }
       })
 
@@ -111,7 +110,7 @@ describe('Test Results test', () => {
     })
 
     test('returns 200  when user select multiple tests', async () => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return { sheepEndemicsPackage: 'reducedExternalParasites', sheepTestResults: [{ diseaseType: 'sheepScab', result: 'positive' }] }
       })
 
@@ -127,11 +126,11 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/sheep-test-results')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
     test('returns 200  when user select one test', async () => {
-      getEndemicsClaimMock.mockImplementation(() => {
+      getEndemicsClaim.mockImplementation(() => {
         return { sheepEndemicsPackage: 'reducedExternalParasites' }
       })
 
@@ -147,7 +146,7 @@ describe('Test Results test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/sheep-test-results')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
   })
 })

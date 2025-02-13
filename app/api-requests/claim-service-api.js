@@ -1,13 +1,16 @@
-const wreck = require('@hapi/wreck')
-const session = require('../session')
-const appInsights = require('applicationinsights')
-const config = require('../config')
-const { livestockTypes, claimType, dateOfVetVisitExceptions } = require('../constants/claim')
-const { REJECTED, READY_TO_PAY, PAID } = require('../constants/status')
-const { getReviewType } = require('../lib/get-review-type')
-const { isWithin10Months } = require('../lib/date-utils')
+import wreck from '@hapi/wreck'
+import appInsights from 'applicationinsights'
+import { config } from '../config/index.js'
+import { claimConstants } from '../constants/claim.js'
+import { status } from '../constants/constants.js'
+import { isWithin10Months } from '../lib/date-utils.js'
+import { getEndemicsClaim } from '../session/index.js'
+import { getReviewType } from '../lib/get-review-type.js'
 
-async function getClaimsByApplicationReference (applicationReference, logger) {
+const { claimType, livestockTypes, dateOfVetVisitExceptions } = claimConstants
+const { REJECTED, READY_TO_PAY, PAID } = status
+
+export async function getClaimsByApplicationReference (applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/claim/get-by-application-reference/${applicationReference}`
 
   try {
@@ -22,7 +25,7 @@ async function getClaimsByApplicationReference (applicationReference, logger) {
   }
 }
 
-async function isURNUnique (data, logger) {
+export async function isURNUnique (data, logger) {
   const endpoint = `${config.applicationApiUri}/claim/is-urn-unique`
   try {
     const { payload } = await wreck.post(endpoint, {
@@ -38,7 +41,7 @@ async function isURNUnique (data, logger) {
   }
 }
 
-async function getAmount (data, logger) {
+export async function getAmount (data, logger) {
   const { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals } = data
   const endpoint = `${config.applicationApiUri}/claim/get-amount`
 
@@ -56,7 +59,7 @@ async function getAmount (data, logger) {
   }
 }
 
-async function submitNewClaim (data, logger) {
+export async function submitNewClaim (data, logger) {
   const endpoint = `${config.applicationApiUri}/claim`
 
   try {
@@ -73,7 +76,7 @@ async function submitNewClaim (data, logger) {
   }
 }
 
-const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
+export const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
   const startDate = new Date(dateOfVisit)
   const endDate = new Date(dateOfVisit)
 
@@ -88,11 +91,11 @@ const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => 
   return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
 }
 
-const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) => {
+export const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) => {
   return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
-const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
+export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
   const pastReviewClaims = previousClaims?.filter((prevClaim) => new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) && prevClaim.type === claimType.review) ?? []
   if (vetVisitReview) {
     pastReviewClaims.push({
@@ -107,8 +110,8 @@ const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview
   return pastReviewClaimsWithin10Months?.[0]
 }
 
-const getReviewTestResultWithinLast10Months = (request) => {
-  const { dateOfVisit, previousClaims, latestVetVisitApplication } = session.getEndemicsClaim(request)
+export const getReviewTestResultWithinLast10Months = (request) => {
+  const { dateOfVisit, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
   const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
 
   if (!reviewWithinLast10Months) return undefined
@@ -116,7 +119,7 @@ const getReviewTestResultWithinLast10Months = (request) => {
   return reviewWithinLast10Months?.data?.testResults
 }
 
-const isAClaimTypeWithin10Months = (typeOfClaim, dateOfVisit, previousClaims, vetVisitReview) => {
+export const isAClaimTypeWithin10Months = (typeOfClaim, dateOfVisit, previousClaims, vetVisitReview) => {
   const allClaimTypeClaims =
     previousClaims?.filter((prevClaim) => prevClaim.type === typeOfClaim)?.map((prevReviewClaim) => ({ dateOfVisit: prevReviewClaim.data.dateOfVisit })) ?? []
   if (vetVisitReview && typeOfClaim === claimType.review) {
@@ -127,17 +130,17 @@ const isAClaimTypeWithin10Months = (typeOfClaim, dateOfVisit, previousClaims, ve
   return allClaimTypeClaimsWithin10Months.length > 0
 }
 
-const getDateOfVetVisitException = (claimType) => {
+export const getDateOfVetVisitException = (claimType) => {
   const { isReview } = getReviewType(claimType)
   return isReview ? dateOfVetVisitExceptions.reviewWithin10 : dateOfVetVisitExceptions.endemicsWithin10
 }
 
-const isValidClaimWithin10Months = (claimType, dateOfVisit, previousClaims, vetVisitReview) => {
+export const isValidClaimWithin10Months = (claimType, dateOfVisit, previousClaims, vetVisitReview) => {
   const isValid = !isAClaimTypeWithin10Months(claimType, dateOfVisit, previousClaims, vetVisitReview)
   return { isValid, ...(!isValid && { reason: getDateOfVetVisitException(claimType) }) }
 }
 
-const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitReview) => {
+export const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitReview) => {
   switch (typeOfClaim) {
     case claimType.review:
       // Cannot have another review dateOfVisit +- 10 months
@@ -165,8 +168,8 @@ const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitRe
   }
 }
 
-const isCattleEndemicsClaimForOldWorldReview = (request) => {
-  const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = session.getEndemicsClaim(request)
+export const isCattleEndemicsClaimForOldWorldReview = (request) => {
+  const { latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock } = getEndemicsClaim(request)
   const oldWorldReview = latestVetVisitApplication?.data
   const previousReviewIsCattle = oldWorldReview?.whichReview === livestockTypes.beef || oldWorldReview?.whichReview === livestockTypes.dairy
   const previousReviewIsSameSpeciesAsCurrentClaim = oldWorldReview?.whichReview === typeOfLivestock
@@ -176,17 +179,4 @@ const isCattleEndemicsClaimForOldWorldReview = (request) => {
     previousReviewIsSameSpeciesAsCurrentClaim &&
     !previousClaims?.length
   )
-}
-
-module.exports = {
-  getAmount,
-  isURNUnique,
-  submitNewClaim,
-  isValidDateOfVisit,
-  getReviewWithinLast10Months,
-  getClaimsByApplicationReference,
-  isDateOfTestingLessThanDateOfVisit,
-  getReviewTestResultWithinLast10Months,
-  isWithIn4MonthsBeforeOrAfterDateOfVisit,
-  isCattleEndemicsClaimForOldWorldReview
 }

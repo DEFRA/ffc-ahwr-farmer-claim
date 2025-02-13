@@ -1,6 +1,13 @@
-const Joi = require('joi')
-const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { radios } from '../models/form-component/radios.js'
+
+const { urlPrefix } = config
 const {
   endemicsTestResults,
   endemicsCheckAnswers,
@@ -8,15 +15,12 @@ const {
   endemicsDiseaseStatus,
   endemicsBiosecurity,
   endemicsNumberOfOralFluidSamples
-} = require('../../config/routes')
-const { endemicsClaim: { testResults: testResultsKey } } = require('../../session/keys')
-const radios = require('../models/form-component/radios')
-const { getReviewType } = require('../../lib/get-review-type')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
+} = links
+const { endemicsClaim: { testResults: testResultsKey } } = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsTestResults}`
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isBeef, isDairy, isSheep, isPigs } = getLivestockTypes(typeOfLivestock)
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
@@ -31,7 +35,7 @@ const previousPageUrl = (request) => {
   }
 }
 const nextPageURL = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
@@ -42,7 +46,7 @@ const nextPageURL = (request) => {
   return `${urlPrefix}/${endemicsCheckAnswers}`
 }
 const pageTitle = (request) => {
-  const { typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfReview } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   return isEndemicsFollowUp ? 'What was the follow-up test result?' : 'What was the test result?'
 }
@@ -54,7 +58,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { testResults } = session.getEndemicsClaim(request)
+      const { testResults } = getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
       return h.view(endemicsTestResults, { title: pageTitle(request), backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
@@ -87,10 +91,10 @@ const postHandler = {
     handler: async (request, h) => {
       const { testResults } = request.payload
 
-      session.setEndemicsClaim(request, testResultsKey, testResults)
+      setEndemicsClaim(request, testResultsKey, testResults)
       return h.redirect(nextPageURL(request))
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const testResultsHandlers = [getHandler, postHandler]

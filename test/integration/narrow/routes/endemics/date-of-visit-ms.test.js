@@ -1,13 +1,16 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { labels } = require('../../../../../app/config/visit-date')
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const session = require('../../../../../app/session')
-const appInsights = require('applicationinsights')
-const createServer = require('../../../../../app/server')
-const config = require('../../../../../app/config')
-const { previousPageUrl } = require('../../../../../app/routes/endemics/date-of-visit-ms')
+import appInsights from 'applicationinsights'
+
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { visitDate } from '../../../../../app/config/visit-date.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { config } from '../../../../../app/config/index.js'
+import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-ms.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+
+const { labels } = visitDate
 
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
   getReviewTestResultWithinLast10Months: jest.fn().mockReturnValue('negative'),
@@ -16,6 +19,30 @@ jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+
+jest.mock('../../../../../app/config/auth', () => {
+  const originalModule = jest.requireActual('../../../../../app/config/auth')
+  return {
+    ...originalModule,
+    authConfig: {
+      defraId: {
+        hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
+        oAuthAuthorisePath: '/oauth2/v2.0/authorize',
+        policy: 'b2c_1a_signupsigninsfi',
+        redirectUri: 'http://localhost:3000/apply/signin-oidc',
+        clientId: 'dummy_client_id',
+        serviceId: 'dummy_service_id',
+        scope: 'openid dummy_client_id offline_access'
+      },
+      ruralPaymentsAgency: {
+        hostname: 'dummy-host-name',
+        getPersonSummaryUrl: 'dummy-get-person-summary-url',
+        getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
+        getOrganisationUrl: 'dummy-get-organisation-url'
+      }
+    }
+  }
+})
 
 function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
@@ -58,37 +85,13 @@ const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-visit'
 
 describe('GET /claim/endemics/date-of-visit handler', () => {
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
-    return {
-      ...originalModule,
-      authConfig: {
-        defraId: {
-          hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-          oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-          policy: 'b2c_1a_signupsigninsfi',
-          redirectUri: 'http://localhost:3000/apply/signin-oidc',
-          clientId: 'dummy_client_id',
-          serviceId: 'dummy_service_id',
-          scope: 'openid dummy_client_id offline_access'
-        },
-        ruralPaymentsAgency: {
-          hostname: 'dummy-host-name',
-          getPersonSummaryUrl: 'dummy-get-person-summary-url',
-          getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-          getOrganisationUrl: 'dummy-get-organisation-url'
-        }
-      }
-    }
-  })
-
   let server
 
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockResolvedValue({})
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         latestVetVisitApplication,
         latestEndemicsApplication,
@@ -103,7 +106,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   })
 
   test('returns 200 when you dont have any previous claims', async () => {
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
         latestVetVisitApplication,
@@ -128,7 +131,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   })
 
   test('returns 200 when you do have previous claims', async () => {
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
         latestVetVisitApplication,
@@ -157,7 +160,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   })
 
   test('returns 200 and fills input with value in session', async () => {
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
         latestVetVisitApplication,
@@ -200,7 +203,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     expect(res.statusCode).toBe(302)
     expect(res.headers.location.toString()).toEqual(
       expect.stringContaining(
-        'https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'
+        'oauth2/v2.0/authorize'
       )
     )
   })
@@ -228,7 +231,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('redirect back to page with errors if the entered date is of an incorrect format', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -273,7 +276,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('redirect back to page with errors if the entered date is of a correct format, but the date isnt real', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -318,7 +321,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('redirect back to page with errors if the entered date is before the agreement date', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -363,7 +366,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('redirect back to page with errors if the entered date is in the future', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -410,7 +413,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes a review claim and has zero previous claims', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -441,12 +444,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes a review claim and created an application on the same day', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -480,12 +483,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes a review claim and has a previous review claim for the same species within the last 10 months', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [{
@@ -530,12 +533,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 1).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
 
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes a review claim and has a previous review claim for the same species over 10 months ago', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [{
@@ -576,12 +579,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes a review claim and has a previous review claim for a different species, and no others for same species', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [{
@@ -622,12 +625,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user has an old world claim, and makes a new world claim over 10 months later for the same species', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -659,12 +662,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user has an old world claim, and makes a new world claim over 10 months later for a different species', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -696,12 +699,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user has an old world claim, and makes a new world claim within 10 months for the same species', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -743,12 +746,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
     expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `Value ${new Date(2025, 0, 2).toString()} is invalid. Error: There must be at least 10 months between your reviews.`)
 
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 2))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 2))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user has an old world claim, and makes a new world claim within 10 months for a different species', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
         previousClaims: [],
@@ -786,12 +789,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 2))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 2))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes an endemics claim within 10 months of the same species of their initial review claim', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -834,12 +837,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of the same species', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -904,7 +907,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes an endemics claim within 10 months of a previous endemics claim of a different species, assuming everything else otherwise ok', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -969,12 +972,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('user makes an endemics claim and the review in question is rejected', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -1027,7 +1030,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes an endemics claim and the review is not in READY_TO_PAY status (statusId: 9)', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -1080,7 +1083,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes an endemics claim and the review is not in PAID status (statusId: 8)', async () => { // unhappy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -1133,7 +1136,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user has an old world claim, and makes a new world endemics claim', async () => { // happy path
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [],
@@ -1172,12 +1175,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('for an endemics claim, it redirects to endemics date of testing page when claim is for beef or dairy, and the previous review test results are positive', async () => {
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -1220,12 +1223,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-    expect(session.setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
   test('for an endemics claim, it redirects to endemics species numbers page when claim is for beef or dairy, and the previous review test results are negative', async () => {
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [
@@ -1275,7 +1278,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         is for beef or dairy, and the previous review test results are positive 
         BUT optional PI hunt is enabled`, async () => {
     config.optionalPIHunt.enabled = true
-    session.getEndemicsClaim.mockImplementation(() => {
+    getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
         previousClaims: [

@@ -1,16 +1,20 @@
-const Joi = require('joi')
-const session = require('../../session')
-const { urlPrefix } = require('../../config')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { radios } from '../models/form-component/radios.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+
+const { urlPrefix } = config
 const {
   endemicsVetRCVS,
   endemicsVaccination,
   endemicsDateOfVisit,
   endemicsWhichTypeOfReview,
   endemicsVetVisitsReviewTestResults
-} = require('../../config/routes')
-const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = require('../../session/keys')
-const radios = require('../models/form-component/radios')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
+} = links
+const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
 
@@ -21,7 +25,7 @@ const previousPageUrl = (typeOfLivestock) => {
 }
 
 const nextPageURL = (request) => {
-  const { typeOfLivestock } = session.getEndemicsClaim(request)
+  const { typeOfLivestock } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isBeef || isDairy) return `${urlPrefix}/${endemicsDateOfVisit}`
@@ -33,7 +37,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { vetVisitsReviewTestResults, typeOfLivestock } = session.getEndemicsClaim(request)
+      const { vetVisitsReviewTestResults, typeOfLivestock } = getEndemicsClaim(request)
       const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults')([{ value: 'positive', text: 'Positive', checked: vetVisitsReviewTestResults === 'positive' }, { value: 'negative', text: 'Negative', checked: vetVisitsReviewTestResults === 'negative' }])
       return h.view(endemicsVetVisitsReviewTestResults, { typeOfLivestock, backLink: previousPageUrl(typeOfLivestock), ...positiveNegativeRadios })
     }
@@ -50,7 +54,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock } = session.getEndemicsClaim(request)
+        const { typeOfLivestock } = getEndemicsClaim(request)
         const positiveNegativeRadios = radios('', 'vetVisitsReviewTestResults', 'Select a test result')([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsVetVisitsReviewTestResults, {
           ...request.payload,
@@ -67,12 +71,12 @@ const postHandler = {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults } = request.payload
 
-      session.setEndemicsClaim(request, vetVisitsReviewTestResultsKey, vetVisitsReviewTestResults)
-      session.setEndemicsClaim(request, reviewTestResultsKey, vetVisitsReviewTestResults)
+      setEndemicsClaim(request, vetVisitsReviewTestResultsKey, vetVisitsReviewTestResults)
+      setEndemicsClaim(request, reviewTestResultsKey, vetVisitsReviewTestResults)
 
       return h.redirect(nextPageURL(request))
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const vetVisitsReviewTestResultsHandlers = [getHandler, postHandler]

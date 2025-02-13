@@ -1,9 +1,13 @@
-const Joi = require('joi')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { urlPrefix } = require('../../config')
-const radios = require('../models/form-component/radios')
-const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = require('../../config/routes')
-const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = require('../../session/keys')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { radios } from '../models/form-component/radios.js'
+
+const { urlPrefix } = config
+const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = links
+const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = sessionKeys
 const pageUrl = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
 const options = {
   hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might take samples to test for are listed with each package.'
@@ -158,4 +162,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const sheepEndemicsPackageHandlers = [getHandler, postHandler]

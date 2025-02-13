@@ -1,4 +1,4 @@
-const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
+export const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
   oldWorldApp && typeOfLivestock === oldWorldApp.data.whichReview
     ? {
         statusId: oldWorldApp.statusId,
@@ -8,5 +8,3 @@ const getOldWorldClaimFromApplication = (oldWorldApp, typeOfLivestock) =>
         }
       }
     : undefined
-
-module.exports = { getOldWorldClaimFromApplication }

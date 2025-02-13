@@ -1,9 +1,18 @@
-const Joi = require('joi')
-const boom = require('@hapi/boom')
-const urlPrefix = require('../../config').urlPrefix
-const session = require('../../session')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const config = require('../../config')
+import Joi from 'joi'
+import boom from '@hapi/boom'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getSpeciesEligibleNumberForDisplay } from '../../lib/display-helpers.js'
+import { getYesNoRadios } from '../models/form-component/yes-no-radios.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getTestResult } from '../../lib/get-test-result.js'
+
+const { optionalPIHunt, urlPrefix } = config
+
 const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
@@ -11,17 +20,11 @@ const {
   endemicsVetName,
   endemicsDateOfTesting,
   endemicsDateOfVisit
-} = require('../../config/routes')
-const { getReviewType } = require('../../lib/get-review-type')
-const { getYesNoRadios } = require('../models/form-component/yes-no-radios')
-const { speciesNumbers } = require('../../session/keys').endemicsClaim
-const { getSpeciesEligibleNumberForDisplay } = require('../../lib/display-helpers')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getTestResult } = require('../../lib/get-test-result')
-const { optionalPIHunt } = require('../../config')
+} = links
+const { speciesNumbers } = sessionKeys.endemicsClaim
 
 const backLink = (request) => {
-  const { reviewTestResults, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { reviewTestResults, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
@@ -56,7 +59,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const claim = session.getEndemicsClaim(request)
+      const claim = getEndemicsClaim(request)
       if (!claim) {
         return boom.notFound()
       }
@@ -67,7 +70,7 @@ const getHandler = {
         ...getYesNoRadios(
           legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
           speciesNumbers,
-          session.getEndemicsClaim(request, speciesNumbers),
+          getEndemicsClaim(request, speciesNumbers),
           undefined,
           radioOptions
         )
@@ -86,7 +89,7 @@ const postHandler = {
       }),
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
-        const claim = session.getEndemicsClaim(request)
+        const claim = getEndemicsClaim(request)
         if (!claim) {
           return boom.notFound()
         }
@@ -97,7 +100,7 @@ const postHandler = {
           ...getYesNoRadios(
             legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
             speciesNumbers,
-            session.getEndemicsClaim(request, speciesNumbers),
+            getEndemicsClaim(request, speciesNumbers),
             errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay),
             radioOptions
           )
@@ -107,12 +110,12 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+      const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
       const answer = request.payload[speciesNumbers]
-      session.setEndemicsClaim(request, speciesNumbers, answer)
+      setEndemicsClaim(request, speciesNumbers, answer)
 
       if (answer === 'yes') {
         if (isDairy || (isBeef && isEndemicsFollowUp)) {
@@ -128,4 +131,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const speciesNumbersHandlers = [getHandler, postHandler]

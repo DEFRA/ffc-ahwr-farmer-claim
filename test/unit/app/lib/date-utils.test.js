@@ -1,4 +1,4 @@
-const { isValidDate, isWithin10Months } = require('../../../../app/lib/date-utils')
+import { isValidDate, isWithin10Months } from '../../../../app/lib/date-utils.js'
 
 describe('isValidDate', () => {
   test('returns true for a valid date', () => {

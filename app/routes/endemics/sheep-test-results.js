@@ -1,27 +1,35 @@
-const Joi = require('joi')
-const { urlPrefix } = require('../../config')
-const radios = require('../models/form-component/radios')
-const { getEndemicsClaim, setEndemicsClaim } = require('../../session')
-const { sheepTestTypes, sheepTestResultsType } = require('../../constants/sheep-test-types')
-const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = require('../../config/routes')
-const { notOtherDiseaseTypeNoResult, getErrorResultString, getErrorResultObject } = require('../utils/disease-type-test-result')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import {
+  getErrorResultObject,
+  getErrorResultString,
+  notOtherDiseaseTypeNoResult
+} from '../utils/disease-type-test-result.js'
+import { radios } from '../models/form-component/radios.js'
+
+const { urlPrefix } = config
+
+const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = links
 
 const pageUrl = `${urlPrefix}/${endemicsSheepTestResults}`
 const routes = (request) => {
   const { sheepTestResults } = getEndemicsClaim(request)
 
   const currentDiseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
-  const previouseDiseaseTypeIndex = currentDiseaseTypeIndex - 1
+  const previousDiseaseTypeIndex = currentDiseaseTypeIndex - 1
   const nextPageDiseaseTypeIndex = currentDiseaseTypeIndex + 1
 
   const currentDiseaseType = sheepTestResults[currentDiseaseTypeIndex]?.diseaseType
-  const previouseDiseaseType = previouseDiseaseTypeIndex >= 0 && sheepTestResults[previouseDiseaseTypeIndex]?.diseaseType
+  const previousDiseaseType = previousDiseaseTypeIndex >= 0 && sheepTestResults[previousDiseaseTypeIndex]?.diseaseType
   const nextPageDiseaseType = nextPageDiseaseTypeIndex <= sheepTestResults.length - 1 && sheepTestResults[nextPageDiseaseTypeIndex]?.diseaseType
 
   return {
     currentPage: `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${currentDiseaseType}`,
     nextPage: nextPageDiseaseType ? `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${nextPageDiseaseType}` : `${urlPrefix}/${endemicsCheckAnswers}`,
-    previousePage: previouseDiseaseType ? `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${previouseDiseaseType}` : `${urlPrefix}/${endemicsSheepTests}`
+    previousPage: previousDiseaseType ? `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${previousDiseaseType}` : `${urlPrefix}/${endemicsSheepTests}`
   }
 }
 
@@ -231,11 +239,11 @@ const getHandler = {
       }
 
       const pageContent = getPageContent(request)
-      const { previousePage } = routes(request)
+      const { previousPage } = routes(request)
 
       return h.view(endemicsSheepTestResults, {
         ...pageContent,
-        backLink: previousePage
+        backLink: previousPage
       })
     }
   }
@@ -247,7 +255,7 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const { payload } = request
-      const { nextPage, previousePage } = routes(request)
+      const { nextPage, previousPage } = routes(request)
       const { sheepTestResults } = getEndemicsClaim(request)
       const diseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
       const diseaseType = sheepTestResults[diseaseTypeIndex]
@@ -255,7 +263,7 @@ const postHandler = {
 
       if (diseaseType?.diseaseType !== 'other') {
         const pageContent = getPageContent(request, { error: true })
-        const backLink = previousePage
+        const backLink = previousPage
         const errorList = [{ text: 'Select a result', href: '#testResult' }]
 
         if (!payload?.testResult) {
@@ -285,7 +293,7 @@ const postHandler = {
 
         return h.view(endemicsSheepTestResults, {
           ...pageContent,
-          backLink: previousePage,
+          backLink: previousPage,
           errorList: getErrorList(diseaseTypeValidationError, testResultValidationError)
         }).code(400).takeover()
       }
@@ -315,7 +323,7 @@ const postHandler = {
 
         return h.view(endemicsSheepTestResults, {
           ...pageContent,
-          backLink: previousePage,
+          backLink: previousPage,
           errorList: [
             ...(diseaseTypeErrorList?.length ? diseaseTypeErrorList.map((error) => Object.values(error)[0]) : []),
             ...(testResultEmptyItems?.length ? testResultEmptyItems.map((error) => Object.values(error)[0]) : []),
@@ -331,10 +339,10 @@ const postHandler = {
 
       return h.view(endemicsSheepTestResults, {
         ...pageContent,
-        backLink: previousePage
+        backLink: previousPage
       })
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const sheepTestResultsHandlers = [getHandler, postHandler]

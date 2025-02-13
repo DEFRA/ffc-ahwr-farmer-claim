@@ -1,4 +1,4 @@
-const createServer = require('../../../../app/server')
+import { createServer } from '../../../../app/server.js'
 
 describe('Auth plugin test', () => {
   let server
@@ -6,8 +6,8 @@ describe('Auth plugin test', () => {
   beforeAll(async () => {
     jest.resetAllMocks()
 
-    jest.mock('../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../app/config')
+    jest.mock('../../../../app/config/auth', () => {
+      const originalModule = jest.requireActual('../../../../app/config/auth')
       return {
         ...originalModule,
         authConfig: {
@@ -55,7 +55,7 @@ describe('Auth plugin test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 })

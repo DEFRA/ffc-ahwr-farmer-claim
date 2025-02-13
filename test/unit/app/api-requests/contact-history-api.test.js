@@ -1,6 +1,6 @@
-const { updateContactHistory } = require('../../../../app/api-requests/contact-history-api')
-const wreck = require('@hapi/wreck')
-const config = require('../../../../app/config')
+import wreck from '@hapi/wreck'
+import { config } from '../../../../app/config/index.js'
+import { updateContactHistory } from '../../../../app/api-requests/contact-history-api.js'
 
 jest.mock('@hapi/wreck')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
@@ -60,9 +60,7 @@ describe('updateContactHistory', () => {
 
     const logger = { setBindings: jest.fn() }
 
-    expect(async () => {
-      await updateContactHistory(data, logger)
-    }).rejects.toEqual(response)
+    await expect(updateContactHistory(data, logger)).rejects.toEqual(response)
   })
 
   test('returns the response payload on success', async () => {

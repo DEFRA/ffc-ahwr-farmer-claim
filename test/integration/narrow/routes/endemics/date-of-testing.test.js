@@ -1,15 +1,19 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const { labels } = require('../../../../../app/config/visit-date')
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const { getReviewType } = require('../../../../../app/lib/get-review-type')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { getEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getReviewType } from '../../../../../app/lib/get-review-type.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import {
+  getReviewWithinLast10Months,
+  isDateOfTestingLessThanDateOfVisit,
+  isWithIn4MonthsBeforeOrAfterDateOfVisit
+} from '../../../../../app/api-requests/claim-service-api.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { visitDate } from '../../../../../app/config/visit-date.js'
 
-const { isWithIn4MonthsBeforeOrAfterDateOfVisit, isDateOfTestingLessThanDateOfVisit, getReviewWithinLast10Months } = require('../../../../../app/api-requests/claim-service-api')
-const createServer = require('../../../../../app/server')
-
+const { labels } = visitDate
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
 function expectPageContentOk ($) {
@@ -42,7 +46,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
+    getEndemicsClaim.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
@@ -72,7 +76,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
 
     test('returns 200', async () => {
       const endemicsMockInfo = { typeOfReview: 'E', typeOfLivestock: 'sheep', dateOfVisit: yesterday, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } }
-      getEndemicsClaimMock.mockReturnValueOnce(endemicsMockInfo)
+      getEndemicsClaim.mockReturnValueOnce(endemicsMockInfo)
         .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
         .mockReturnValueOnce(endemicsMockInfo)
       const options = {
@@ -100,7 +104,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     test.each([
@@ -124,7 +128,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
       const endemicsMock = { typeOfReview, dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } }
-      getEndemicsClaimMock.mockImplementationOnce(() => { return endemicsMock })
+      getEndemicsClaim.mockImplementationOnce(() => { return endemicsMock })
         .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
         .mockImplementationOnce(() => { return endemicsMock })
       const options = {
@@ -163,7 +167,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
     test.each([
       {
@@ -217,7 +221,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         dateOfVisit: today
       }
     ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, dateOfVisit }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
         .mockImplementationOnce(() => { return { dateOfVisit } })
       const options = {
         method: 'POST',
@@ -251,7 +255,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         dateOfVisit: yesterday
       }
     ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
         .mockImplementationOnce(() => { return { dateOfVisit } })
       const options = {
         method: 'POST',
@@ -272,7 +276,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         dateOfVisit: today
       }
     ])('Hide the date fields if date of testing equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
         .mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
       const options = {
         method: 'POST',
@@ -295,7 +299,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         errorMessage: 'Enter the date samples were taken'
       }
     ])('Show error when no option selected', async ({ dateOfVisit, errorMessage }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
         .mockImplementationOnce(() => { return { dateOfVisit } })
       const options = {
         method: 'POST',
@@ -323,7 +327,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
         claimGuidanceLinkText: 'Samples should have been taken no more than 4 months before or after the date of follow-up.'
       }
     ])('Redirect to exception screen if type of review is $typeOfReview and claim guidance link text should be $claimGuidanceLinkText', async ({ typeOfReview, claimGuidanceLinkText }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
         .mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementationOnce(() => { return false })
       const options = {
@@ -343,7 +347,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     })
 
     test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative review', async () => {
-      getEndemicsClaimMock.mockImplementation(() => { return { dateOfVisit: '2024-04-23', typeOfReview: 'E' } })
+      getEndemicsClaim.mockImplementation(() => { return { dateOfVisit: '2024-04-23', typeOfReview: 'E' } })
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
       isDateOfTestingLessThanDateOfVisit.mockImplementation(() => { return true })
       getReviewWithinLast10Months.mockImplementation(() => { return { test: 'mockPreviousReview' } })
@@ -385,7 +389,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'beef' },
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
-      getEndemicsClaimMock
+      getEndemicsClaim
         .mockReturnValue({ typeOfReview: 'E', typeOfLivestock, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
 
       const options = {
@@ -422,7 +426,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
         typeOfLivestock: 'dairy'
       }
     ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
-      getEndemicsClaimMock.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
         .mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
 

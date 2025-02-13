@@ -1,44 +1,48 @@
-const Joi = require('joi')
-const {
-  isValidDateOfVisit,
-  getReviewWithinLast10Months,
+import Joi from 'joi'
+import { sessionKeys } from '../../session/keys.js'
+import { config } from '../../config/index.js'
+import { claimConstants } from '../../constants/claim.js'
+import links from '../../config/routes.js'
+import { visitDate } from '../../config/visit-date.js'
+import appInsights from 'applicationinsights'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import {
   getReviewTestResultWithinLast10Months,
-  isCattleEndemicsClaimForOldWorldReview
-} = require('../../api-requests/claim-service-api')
-const { dateOfVetVisitExceptions } = require('../../constants/claim')
-const { labels } = require('../../config/visit-date')
-const session = require('../../session')
+  getReviewWithinLast10Months,
+  isCattleEndemicsClaimForOldWorldReview,
+  isValidDateOfVisit
+} from '../../api-requests/claim-service-api.js'
+import { validateDateInputDay } from '../govuk-components/validate-date-input-day.js'
+import { validateDateInputMonth } from '../govuk-components/validate-date-input-month.js'
+import { validateDateInputYear } from '../govuk-components/validate-date-input-year.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { addError } from '../utils/validations.js'
+
+const { dateOfVetVisitExceptions } = claimConstants
 const {
-  endemicsClaim: { reviewTestResults: reviewTestResultsKey }
-} = require('../../session/keys')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
-const config = require('../../../app/config')
-const urlPrefix = require('../../config').urlPrefix
-const { optionalPIHunt } = require('../../config')
+  endemicsClaim: {
+    reviewTestResults: reviewTestResultsKey,
+    dateOfVisit: dateOfVisitKey,
+    relevantReviewForEndemics: relevantReviewForEndemicsKey
+  }
+} = sessionKeys
+
+const { optionalPIHunt, urlPrefix } = config
 const {
   endemicsDateOfVisit,
   endemicsDateOfVisitException,
   endemicsDateOfTesting,
   endemicsVetVisitsReviewTestResults,
   endemicsSpeciesNumbers
-} = require('../../config/routes')
-const {
-  endemicsClaim: {
-    dateOfVisit: dateOfVisitKey,
-    relevantReviewForEndemics: relevantReviewForEndemicsKey
-  }
-} = require('../../session/keys')
-const validateDateInputDay = require('../govuk-components/validate-date-input-day')
-const validateDateInputMonth = require('../govuk-components/validate-date-input-month')
-const validateDateInputYear = require('../govuk-components/validate-date-input-year')
-const { addError } = require('../utils/validations')
-const { getReviewType } = require('../../lib/get-review-type')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const appInsights = require('applicationinsights')
+} = links
+
+const { labels } = visitDate
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const previousPageUrl = (request) => {
-  const { landingPage } = session.getEndemicsClaim(request)
+  const { landingPage } = getEndemicsClaim(request)
 
   if (isCattleEndemicsClaimForOldWorldReview(request)) { return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}` }
 
@@ -255,7 +259,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { dateOfVisit, latestEndemicsApplication, typeOfReview } =
-        session.getEndemicsClaim(request)
+        getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -294,7 +298,7 @@ const postHandler = {
         organisation,
         reviewTestResults,
         reference: tempClaimReference
-      } = session.getEndemicsClaim(request)
+      } = getEndemicsClaim(request)
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -353,7 +357,7 @@ const postHandler = {
       }
 
       if (isEndemicsFollowUp) {
-        session.setEndemicsClaim(
+        setEndemicsClaim(
           request,
           relevantReviewForEndemicsKey,
           getReviewWithinLast10Months(
@@ -364,12 +368,12 @@ const postHandler = {
         )
       }
 
-      session.setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
+      setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
         const reviewTestResultsValue =
           reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
-        session.setEndemicsClaim(
+        setEndemicsClaim(
           request,
           reviewTestResultsKey,
           reviewTestResultsValue
@@ -385,4 +389,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const dateOfVisitHandlers = [getHandler, postHandler]

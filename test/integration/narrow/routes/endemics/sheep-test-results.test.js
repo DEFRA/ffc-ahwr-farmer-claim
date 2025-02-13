@@ -1,8 +1,7 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { getEndemicsClaim } = require('../../../../../app/session')
-const createServer = require('../../../../../app/server')
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
 jest.mock('../../../../../app/session')
 
@@ -14,7 +13,7 @@ const sheepTestResultsMockData = [
 describe('Sheep test result tests', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
   const url = '/claim/endemics/sheep-test-results'
-  setEndemicsClaimMock.mockImplementation(() => {})
+  setEndemicsClaim.mockImplementation(() => {})
 
   let server
 
@@ -123,7 +122,7 @@ describe('Sheep test result tests', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
     test('Post Returns 400 when disease type is Other and test and test result is not provided', async () => {
@@ -217,7 +216,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toBe('/claim/endemics/check-answers')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('Post Returns 400 when disease type is Other and latest test is not provided and continue button pressed', async () => {
       const options = {
@@ -634,7 +633,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toBe('/claim/endemics/check-answers')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('Post Returns 200 when disease type is Other and test and test result is provided when add another button pressed', async () => {
       const options = {
@@ -671,7 +670,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
     test('Post Returns 200 when disease type is Other and delete button pressed', async () => {
@@ -709,7 +708,7 @@ describe('Sheep test result tests', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('h1').text()).toMatch('Other condition or disease details')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
   })
 })

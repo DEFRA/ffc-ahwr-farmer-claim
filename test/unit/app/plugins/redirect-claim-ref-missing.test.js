@@ -1,7 +1,9 @@
-const Hapi = require('@hapi/hapi')
-const plugin = require('../../../../app/plugins/redirect-claim-ref-missing')
-const { getEndemicsClaim } = require('../../../../app/session')
-const { claimDashboard } = require('../../../../app/config/routes')
+import Hapi from '@hapi/hapi'
+import { redirectWhenClaimRefMissingPlugin } from '../../../../app/plugins/redirect-claim-ref-missing.js'
+import links from '../../../../app/config/routes.js'
+import { getEndemicsClaim } from '../../../../app/session/index.js'
+
+const { claimDashboard } = links
 
 jest.mock('../../../../app/session')
 
@@ -10,7 +12,7 @@ describe('redirect-reference-missing plugin', () => {
 
   beforeAll(async () => {
     server = Hapi.server()
-    await server.register(plugin)
+    await server.register(redirectWhenClaimRefMissingPlugin)
     server.route({
       method: 'GET',
       path: '/claim/endemics/which-species',

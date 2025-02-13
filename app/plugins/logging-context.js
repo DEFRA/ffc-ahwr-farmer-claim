@@ -1,7 +1,7 @@
-const session = require('../session')
+import { getEndemicsClaim } from '../session/index.js'
 
 function addBindings (request) {
-  const endemicsClaim = session.getEndemicsClaim(request)
+  const endemicsClaim = getEndemicsClaim(request)
   request.logger.setBindings({
     sbi: endemicsClaim?.organisation?.sbi,
     crn: endemicsClaim?.organisation?.crn,
@@ -10,7 +10,7 @@ function addBindings (request) {
   })
 }
 
-module.exports = {
+export const loggingContextPlugin = {
   plugin: {
     name: 'logging-context',
     register: (server, _) => {

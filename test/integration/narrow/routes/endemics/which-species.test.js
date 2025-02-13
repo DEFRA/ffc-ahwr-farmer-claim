@@ -1,15 +1,32 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const { endemicsWhichSpecies } = require('../../../../../app/config/routes')
-const { getEndemicsClaim } = require('../../../../../app/session')
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import links from '../../../../../app/config/routes.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config/index.js'
+
+const { endemicsWhichSpecies } = links
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/config', () => {
+  const originalModule = jest.requireActual('../../../../../app/config')
+  return {
+    ...originalModule,
+    endemics: {
+      enabled: true
+    },
+    multiSpecies: {
+      enabled: false
+    }
+  }
+})
+
 describe('Endemics which species test', () => {
-  setEndemicsClaimMock.mockImplementation(() => { })
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
+  config.multiSpecies.enabled = false
+  setEndemicsClaim.mockImplementation(() => { })
+
+  jest.mock('../../../../../app/config/auth', () => {
+    const originalModule = jest.requireActual('../../../../../app/config/auth')
     return {
       ...originalModule,
       authConfig: {
@@ -29,12 +46,6 @@ describe('Endemics which species test', () => {
             'dummy-get-organisation-permissions-url',
           getOrganisationUrl: 'dummy-get-organisation-url'
         }
-      },
-      endemics: {
-        enabled: true
-      },
-      multiSpecies: {
-        enabled: false
       }
     }
   })
@@ -77,7 +88,7 @@ describe('Endemics which species test', () => {
     )
     expect($('.govuk-back-link').text()).toMatch('Back')
   })
-  test('Continue without seleceted livestock should return error', async () => {
+  test('Continue without selected livestock should return error', async () => {
     const options = {
       method: 'POST',
       auth,
@@ -94,7 +105,7 @@ describe('Endemics which species test', () => {
 
     expect($('p.govuk-error-message').text()).toMatch(errorMessage)
   })
-  test('Continue with Sheep seleceted as a livestock', async () => {
+  test('Continue with Sheep selected as a livestock', async () => {
     const options = {
       method: 'POST',
       auth,
@@ -109,6 +120,6 @@ describe('Endemics which species test', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-visit')
-    expect(setEndemicsClaimMock).toHaveBeenCalled()
+    expect(setEndemicsClaim).toHaveBeenCalled()
   })
 })

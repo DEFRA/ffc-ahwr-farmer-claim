@@ -1,6 +1,6 @@
-const { createMessageReceiver } = require('./create-message-receiver')
+import { createMessageReceiver } from './create-message-receiver.js'
 
-async function receiveMessage (messageId, config) {
+export async function receiveMessage (messageId, config) {
   const receiver = createMessageReceiver(config)
   const sessionReceiver = await receiver.sbClient.acceptSession(config.address, messageId)
   const messages = await sessionReceiver.receiveMessages(1, { maxWaitTimeInMs: 50000 })
@@ -12,5 +12,3 @@ async function receiveMessage (messageId, config) {
   await sessionReceiver.close()
   return result
 }
-
-module.exports = receiveMessage

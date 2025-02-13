@@ -1,12 +1,12 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const raiseInvalidDataEvent = require('../../../../../app/event/raise-invalid-data-event')
-const { setEndemicsAndOptionalPIHunt } = require('../../../../mocks/config')
-const { getAmount } = require('../../../../../app/api-requests/claim-service-api')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+
+import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { getAmount } from '../../../../../app/api-requests/claim-service-api.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -21,9 +21,9 @@ describe('PI Hunt recommended tests', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    getEndemicsClaimMock.mockImplementation(() => { return { reference: 'TEMP-6GSE-PIR8' } })
+    getEndemicsClaim.mockImplementation(() => { return { reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
 
@@ -95,7 +95,7 @@ describe('PI Hunt recommended tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/pi-hunt-all-animals')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
     test('Continue to ineligible page if user select no', async () => {
       const options = {

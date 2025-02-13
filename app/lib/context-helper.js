@@ -1,6 +1,11 @@
-const { getAllApplicationsBySbi } = require('../api-requests/application-service-api')
-const { isWithin10Months } = require('./date-utils')
-const session = require('../session')
+import { clearEndemicsClaim, getEndemicsClaim, setEndemicsClaim } from '../session/index.js'
+import { sessionKeys } from '../session/keys.js'
+import { isWithin10Months } from './date-utils.js'
+import { getAllApplicationsBySbi } from '../api-requests/application-service-api.js'
+import { getClaimsByApplicationReference } from '../api-requests/claim-service-api.js'
+import { createTempClaimReference } from './create-temp-claim-reference.js'
+import { claimConstants } from '../constants/claim.js'
+
 const {
   endemicsClaim: {
     latestEndemicsApplication: latestEndemicsApplicationKey,
@@ -8,13 +13,9 @@ const {
     previousClaims: previousClaimsKey,
     reference: referenceKey
   }
-} = require('../session/keys')
-const { getClaimsByApplicationReference } = require('../api-requests/claim-service-api')
-const { getEndemicsClaim, clearEndemicsClaim } = require('../session')
-const { claimType } = require('../constants/claim')
-const { createTempClaimReference } = require('../lib/create-temp-claim-reference')
+} = sessionKeys
 
-async function refreshApplications (request) {
+export async function refreshApplications (request) {
   const applications = await getAllApplicationsBySbi(request.query.sbi, request.logger)
 
   // get latest new world
@@ -29,35 +30,33 @@ async function refreshApplications (request) {
     return application.type === 'VV' && isWithin10Months(application.data?.visitDate, latestEndemicsApplication.createdAt)
   })
 
-  session.setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
-  session.setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
+  setEndemicsClaim(request, latestVetVisitApplicationKey, latestVetVisitApplication)
+  setEndemicsClaim(request, latestEndemicsApplicationKey, latestEndemicsApplication)
 
   return { latestEndemicsApplication, latestVetVisitApplication }
 }
 
-async function refreshClaims (request, applicationRef) {
+export async function refreshClaims (request, applicationRef) {
   // fetch all the claims (all species)
   const claims = await getClaimsByApplicationReference(
     applicationRef,
     request.logger
   )
 
-  session.setEndemicsClaim(request, previousClaimsKey, claims)
+  setEndemicsClaim(request, previousClaimsKey, claims)
 
   return claims
 }
 
-const resetEndemicsClaimSession = async (request, applicationRef, claimRef) => {
+export const resetEndemicsClaimSession = async (request, applicationRef, claimRef) => {
   const tempClaimRef = claimRef ?? createTempClaimReference()
 
   clearEndemicsClaim(request)
-  session.setEndemicsClaim(request, referenceKey, tempClaimRef)
-  const claims = refreshClaims(request, applicationRef)
-
-  return claims
+  setEndemicsClaim(request, referenceKey, tempClaimRef)
+  return refreshClaims(request, applicationRef)
 }
 
-function getLatestClaimForContext (request) {
+export function getLatestClaimForContext (request) {
   const { previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
 
   // When we add the MS code we can layer in here filtering by species
@@ -68,27 +67,19 @@ function getLatestClaimForContext (request) {
   return latestEEClaim ?? latestVetVisitApplication
 }
 
-function getTypeOfLivestockFromLatestClaim (request) {
+export function getTypeOfLivestockFromLatestClaim (request) {
   const claim = getLatestClaimForContext(request)
 
   return claim.data?.typeOfLivestock ?? claim.data?.whichReview
 }
 
-function canChangeSpecies (request, typeOfReview) {
-  // for now we obey the following, we can manipulate this to consider MS
+export function canChangeSpecies (request, typeOfReview) {
+  // for now, we obey the following, we can manipulate this to consider MS
   const { previousClaims } = getEndemicsClaim(request)
-  return claimType[typeOfReview] === claimType.review && !lockedToSpecies(previousClaims)
+  return claimConstants.claimType[typeOfReview] === claimConstants.claimType.review && !lockedToSpecies(previousClaims)
 }
 
 const lockedToSpecies = (previousEndemicClaims) => {
   // any endemic (new-world) claims means they have missed their opportunity to switch species
   return (previousEndemicClaims && previousEndemicClaims.length > 0)
-}
-
-module.exports = {
-  canChangeSpecies,
-  getTypeOfLivestockFromLatestClaim,
-  refreshApplications,
-  refreshClaims,
-  resetEndemicsClaimSession
 }

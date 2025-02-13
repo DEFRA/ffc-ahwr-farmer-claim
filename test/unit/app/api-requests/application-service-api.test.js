@@ -1,22 +1,24 @@
-const wreck = require('@hapi/wreck')
-const mockConfig = require('../../../../app/config')
-jest.mock('@hapi/wreck')
+import wreck from '@hapi/wreck'
+import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
+
 const mockApplicationApiUri = 'http://internal:3333/api'
+jest.mock('@hapi/wreck')
+jest.mock('../../../../app/config/index.js', () => {
+  const originalModule = jest.requireActual('../../../../app/config/index.js')
+  return {
+    ...originalModule,
+    config: {
+      applicationApiUri: 'http://internal:3333/api'
+    }
+  }
+})
 
 const MOCK_NOW = new Date()
 
 describe('Application API', () => {
-  let applicationApi
-
   beforeAll(() => {
     jest.useFakeTimers('modern')
     jest.setSystemTime(MOCK_NOW)
-
-    jest.mock('../../../../app/config', () => ({
-      ...mockConfig,
-      applicationApiUri: mockApplicationApiUri
-    }))
-    applicationApi = require('../../../../app/api-requests/application-service-api')
   })
 
   afterAll(() => {
@@ -121,7 +123,7 @@ describe('Application API', () => {
       }
       const SBI = 11333333
       wreck.get = jest.fn().mockResolvedValue(expectedResponse)
-      const response = await applicationApi.getAllApplicationsBySbi(SBI)
+      const response = await getAllApplicationsBySbi(SBI)
       expect(response).not.toBeNull()
       expect(wreck.get).toHaveBeenCalledTimes(1)
       expect(wreck.get).toHaveBeenCalledWith(
@@ -141,7 +143,7 @@ describe('Application API', () => {
       }
       const SBI = 1133333
       wreck.get = jest.fn().mockRejectedValue(expectedResponse)
-      const response = await applicationApi.getAllApplicationsBySbi(SBI)
+      const response = await getAllApplicationsBySbi(SBI)
 
       expect(response).toEqual([])
       expect(wreck.get).toHaveBeenCalledWith(
@@ -163,8 +165,8 @@ describe('Application API', () => {
       wreck.get = jest.fn().mockRejectedValue(expectedResponse)
 
       const logger = { setBindings: jest.fn() }
-      expect(async () => {
-        await applicationApi.getAllApplicationsBySbi(SBI, logger)
+      await expect(async () => {
+        await getAllApplicationsBySbi(SBI, logger)
       }).rejects.toEqual(expectedResponse)
 
       expect(wreck.get).toHaveBeenCalledWith(

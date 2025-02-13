@@ -1,6 +1,6 @@
-const createServer = require('../../../../app/server')
+import { createServer } from '../../../../app/server.js'
 
-describe('Healthy test', () => {
+describe('Health test', () => {
   let server
 
   beforeAll(async () => {
@@ -16,6 +16,17 @@ describe('Healthy test', () => {
     const options = {
       method: 'GET',
       url: '/healthy'
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(200)
+  })
+
+  test('GET /healthz route returns 200', async () => {
+    const options = {
+      method: 'GET',
+      url: '/healthz'
     }
 
     const res = await server.inject(options)

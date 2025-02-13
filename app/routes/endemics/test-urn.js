@@ -1,6 +1,15 @@
-const Joi = require('joi')
-const session = require('../../session')
-const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = require('../../config')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { getTestResult } from '../../lib/get-test-result.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { isURNUnique } from '../../api-requests/claim-service-api.js'
+
+const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = config
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
@@ -12,20 +21,15 @@ const {
   endemicsTestResults,
   endemicsPIHunt,
   endemicsDateOfTesting
-} = require('../../config/routes')
+} = links
 const {
   endemicsClaim: { laboratoryURN: laboratoryURNKey }
-} = require('../../session/keys')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getReviewType } = require('../../lib/get-review-type')
-const { getTestResult } = require('../../lib/get-test-result')
-const { isURNUnique } = require('../../api-requests/claim-service-api')
-const raiseInvalidDataEvent = require('../../event/raise-invalid-data-event')
+} = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsTestUrn}`
 
 const title = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
@@ -37,7 +41,7 @@ const title = (request) => {
 }
 
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview, reviewTestResults } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, reviewTestResults } = getEndemicsClaim(request)
   const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
@@ -51,7 +55,7 @@ const previousPageUrl = (request) => {
 }
 
 const nextPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
@@ -67,7 +71,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { laboratoryURN } = session.getEndemicsClaim(request)
+      const { laboratoryURN } = getEndemicsClaim(request)
       return h.view(endemicsTestUrn, {
         title: title(request),
         laboratoryURN,
@@ -98,7 +102,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+        const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
         const { isEndemicsFollowUp } = getReviewType(typeOfReview)
         const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
         const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
@@ -116,12 +120,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { laboratoryURN } = request.payload
-      const { organisation, typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+      const { organisation, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
       const isBeefOrDairyEndemics = (isBeef || isDairy) && isEndemicsFollowUp
       const response = await isURNUnique({ sbi: organisation.sbi, laboratoryURN }, request.logger)
-      session.setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
+      setEndemicsClaim(request, laboratoryURNKey, laboratoryURN)
 
       if (!response?.isURNUnique) {
         raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
@@ -133,4 +137,4 @@ const postHandler = {
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const testUrnHandlers = [getHandler, postHandler]

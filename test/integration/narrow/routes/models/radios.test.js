@@ -1,4 +1,4 @@
-const radios = require('../../../../../app/routes/models/form-component/radios')
+import { radios } from '../../../../../app/routes/models/form-component/radios.js'
 
 describe('radios', () => {
   test.each([

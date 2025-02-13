@@ -1,9 +1,11 @@
-const cheerio = require('cheerio')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const urlPrefix = require('../../../../../app/config').urlPrefix
-const contextHelperMock = require('../../../../../app/lib/context-helper')
-const { setMultiSpecies } = require('../../../../mocks/config')
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { config } from '../../../../../app/config/index.js'
+import { setMultiSpecies } from '../../../../mocks/config.js'
+import { refreshApplications, resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'
+import expectPhaseBanner from 'assert'
+
+const urlPrefix = config.urlPrefix
 
 jest.mock('../../../../../app/lib/logout')
 jest.mock('../../../../../app/lib/context-helper')
@@ -33,7 +35,7 @@ describe('Claim endemics home page test', () => {
   })
 
   test('Redirects us to endemicsWhichTypeOfReviewURI if latest VV application is within 10 months', async () => {
-    contextHelperMock.refreshApplications.mockReturnValue({
+    refreshApplications.mockReturnValue({
       latestEndemicsApplication: {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -47,7 +49,7 @@ describe('Claim endemics home page test', () => {
         type: 'VV'
       }
     })
-    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([])
+    resetEndemicsClaimSession.mockReturnValue([])
 
     const options = {
       method: 'GET',
@@ -62,7 +64,7 @@ describe('Claim endemics home page test', () => {
   })
 
   test('Redirects us to endemicsWhichSpeciesURI if latest VV application is NOT within 10 months', async () => {
-    contextHelperMock.refreshApplications.mockReturnValue({
+    refreshApplications.mockReturnValue({
       latestEndemicsApplication: {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -72,7 +74,7 @@ describe('Claim endemics home page test', () => {
       latestVetVisitApplication: undefined
     })
 
-    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([])
+    resetEndemicsClaimSession.mockReturnValue([])
 
     const options = {
       method: 'GET',
@@ -87,7 +89,7 @@ describe('Claim endemics home page test', () => {
   })
 
   test('Redirects to endemicsWhichTypeOfReviewURI if EE claim is already made', async () => {
-    contextHelperMock.refreshApplications.mockReturnValue({
+    refreshApplications.mockReturnValue({
       latestEndemicsApplication: {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -97,7 +99,7 @@ describe('Claim endemics home page test', () => {
       latestVetVisitApplication: undefined
     })
 
-    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([
+    resetEndemicsClaimSession.mockReturnValue([
       {
         info: 'some claim'
       }
@@ -132,13 +134,7 @@ describe('Claim endemics home page test', () => {
   })
 
   test('Redirects us to endemicsWhichSpeciesURI if multiple species enabled', async () => {
-    jest.mock('../../../../../app/config', () => ({
-      ...jest.requireActual('../../../../../app/config'),
-      multiSpecies: {
-        enabled: true
-      }
-    }))
-    contextHelperMock.refreshApplications.mockReturnValue({
+    refreshApplications.mockReturnValue({
       latestEndemicsApplication: {
         reference: 'AHWR-2470-6BA9',
         createdAt: Date.now(),
@@ -146,7 +142,7 @@ describe('Claim endemics home page test', () => {
         type: 'EE'
       }
     })
-    contextHelperMock.resetEndemicsClaimSession.mockReturnValue([])
+    resetEndemicsClaimSession.mockReturnValue([])
 
     const options = {
       method: 'GET',

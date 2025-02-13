@@ -1,6 +1,6 @@
-const config = require('../config')
+import { config } from './index.js'
 
-module.exports = {
+export default {
   claimDashboard: `${config.dashboardServiceUri}/vet-visits`,
   endemicsIndex: 'endemics',
   endemicsWhichSpecies: 'endemics/which-species',

@@ -1,17 +1,22 @@
-const Joi = require('joi')
-const session = require('../../session')
-const urlPrefix = require('../../config').urlPrefix
-const { name: nameErrorMessages } = require('../../../app/lib/error-messages')
-const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers } = require('../../config/routes')
+import Joi from 'joi'
+import { config } from '../../config/index.js'
+import { errorMessages } from '../../lib/error-messages.js'
+import links from '../../config/routes.js'
+import { sessionKeys } from '../../session/keys.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { getReviewType } from '../../lib/get-review-type.js'
+
+const { urlPrefix } = config
+const { name: nameErrorMessages } = errorMessages
+const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers } = links
 const {
   endemicsClaim: { vetsName: vetsNameKey }
-} = require('../../session/keys')
-const { getLivestockTypes } = require('../../lib/get-livestock-types')
-const { getReviewType } = require('../../lib/get-review-type')
+} = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsVetName}`
 const backLink = (request) => {
-  const { typeOfLivestock, typeOfReview } = session.getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
@@ -25,7 +30,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { vetsName } = session.getEndemicsClaim(request)
+      const { vetsName } = getEndemicsClaim(request)
       return h.view(endemicsVetName, {
         vetsName,
         backLink: backLink(request)
@@ -67,10 +72,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { vetsName } = request.payload
-      session.setEndemicsClaim(request, vetsNameKey, vetsName)
+      setEndemicsClaim(request, vetsNameKey, vetsName)
       return h.redirect(`${urlPrefix}/${endemicsVetRCVS}`)
     }
   }
 }
 
-module.exports = { handlers: [getHandler, postHandler] }
+export const vetsNameHandlers = [getHandler, postHandler]

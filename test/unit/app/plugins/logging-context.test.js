@@ -1,7 +1,7 @@
-const Hapi = require('@hapi/hapi')
-const loggingContextPlugin = require('../../../../app/plugins/logging-context')
-const loggerPlugin = require('../../../../app/plugins/logger')
-const config = require('../../../../app/config')
+import Hapi from '@hapi/hapi'
+import { loggingContextPlugin } from '../../../../app/plugins/logging-context.js'
+import { loggingPlugin } from '../../../../app/plugins/logger.js'
+import { config } from '../../../../app/config/index.js'
 
 jest.mock('../../../../app/session', () => ({
   getEndemicsClaim: (_) => ({
@@ -27,7 +27,7 @@ describe('Logging context plugin', () => {
     server = Hapi.server()
 
     await server.register(loggingContextPlugin)
-    await server.register(loggerPlugin)
+    await server.register(loggingPlugin)
 
     server.route({
       method: 'GET',

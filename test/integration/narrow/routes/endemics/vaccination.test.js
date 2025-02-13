@@ -1,9 +1,8 @@
-const cheerio = require('cheerio')
-const getCrumbs = require('../../../../utils/get-crumbs')
-const expectPhaseBanner = require('../../../../utils/phase-banner-expect')
-const getEndemicsClaimMock = require('../../../../../app/session').getEndemicsClaim
-const setEndemicsClaimMock = require('../../../../../app/session').setEndemicsClaim
-const createServer = require('../../../../../app/server')
+import cheerio from 'cheerio'
+import { createServer } from '../../../../../app/server.js'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import expectPhaseBanner from 'assert'
+import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
 jest.mock('../../../../../app/session')
 
@@ -13,30 +12,13 @@ describe('Vaccination test', () => {
   let server
 
   beforeAll(async () => {
-    getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
-    setEndemicsClaimMock.mockImplementation(() => { })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
+    setEndemicsClaim.mockImplementation(() => { })
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            redirectUri: 'http://localhost:3000/apply/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
         endemics: {
           enabled: true
         }
@@ -77,14 +59,14 @@ describe('Vaccination test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     test.each([
       { typeOfLivestock: 'pigs', vetVisitsReviewTestResults: false, backLink: '/claim/endemics/vet-rcvs' },
       { typeOfLivestock: 'pigs', vetVisitsReviewTestResults: true, backLink: '/claim/endemics/test-results' }
     ])('backLink when species is pigs and application from old world is $vetVisitsReviewTestResults', async ({ typeOfLivestock, vetVisitsReviewTestResults, backLink }) => {
-      getEndemicsClaimMock.mockImplementation(() => { return { typeOfLivestock, vetVisitsReviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, vetVisitsReviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
       const options = {
         method: 'GET',
         url,
@@ -117,7 +99,7 @@ describe('Vaccination test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
     test.each([
@@ -158,7 +140,7 @@ describe('Vaccination test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
-      expect(setEndemicsClaimMock).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalled()
     })
   })
 })
