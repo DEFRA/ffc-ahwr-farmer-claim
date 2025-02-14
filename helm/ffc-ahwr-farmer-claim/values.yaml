@@ -76,7 +76,7 @@ container:
   optionalPIHuntEnabled: 'false'
   multiSpeciesEnabled: 'false'
   devLoginEnabled: 'false'
-  customerSurveyClaimUri:
+  customerSurveyClaimUri: https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u
 
 ingress:
   class: nginx
