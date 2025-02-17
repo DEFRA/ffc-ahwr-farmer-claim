@@ -95,9 +95,15 @@ export const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) =
   return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
-export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview) => {
-  const pastReviewClaims = previousClaims?.filter((prevClaim) => new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) && prevClaim.type === claimType.review) ?? []
-  if (vetVisitReview) {
+const getPastReviewClaimsForSpecies = (previousClaims = [], dateOfVisit, typeOfLivestock) => previousClaims.filter(prevClaim =>
+  new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) &&
+  prevClaim.type === claimType.review &&
+  typeOfLivestock === prevClaim.data.typeOfLivestock
+)
+
+export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview, typeOfLivestock) => {
+  const pastReviewClaims = getPastReviewClaimsForSpecies(previousClaims, dateOfVisit, typeOfLivestock)
+  if (vetVisitReview?.data?.whichReview === typeOfLivestock) {
     pastReviewClaims.push({
       ...vetVisitReview,
       data: {
@@ -111,9 +117,8 @@ export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisi
 }
 
 export const getReviewTestResultWithinLast10Months = (request) => {
-  const { dateOfVisit, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
-  const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication)
-
+  const { dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock } = getEndemicsClaim(request)
+  const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock)
   if (!reviewWithinLast10Months) return undefined
 
   return reviewWithinLast10Months?.data?.testResults

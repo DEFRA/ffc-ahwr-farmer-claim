@@ -363,7 +363,8 @@ const postHandler = {
           getReviewWithinLast10Months(
             dateOfVisit,
             previousClaims,
-            latestVetVisitApplication
+            latestVetVisitApplication,
+            typeOfLivestock
           )
         )
       }

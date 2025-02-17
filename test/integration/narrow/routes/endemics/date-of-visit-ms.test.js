@@ -12,10 +12,6 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
 const { labels } = visitDate
 
-jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
-  getReviewTestResultWithinLast10Months: jest.fn().mockReturnValue('negative'),
-  getReviewWithinLast10Months: jest.fn()
-}))
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
@@ -1223,6 +1219,81 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('should redirect to endemics date of testing page when endemics claim is for beef or dairy, the previous review test results has not been set and there are multiple previous reviews of different species with different test results', async () => {
+    config.optionalPIHunt.enabled = false
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'sheep',
+              dateOfVisit: '2024-09-01',
+              testResults: 'negative'
+            }
+          },
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01',
+              testResults: 'positive'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication,
+        dateOfVisit: '2024-10-01'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '01',
+        [labels.month]: '01',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', {
+      reference: 'AHWR-C2EA-C718',
+      applicationReference: 'AHWR-2470-6BA9',
+      statusId: 9,
+      type: 'R',
+      createdAt: '2024-09-01T10:25:11.318Z',
+      data: {
+        typeOfLivestock: 'beef',
+        dateOfVisit: '2024-09-01',
+        testResults: 'positive'
+      }
+    })
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/01/01'))
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })

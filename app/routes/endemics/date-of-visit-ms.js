@@ -246,7 +246,8 @@ const postHandler = {
           getReviewWithinLast10Months(
             dateOfVisit,
             previousClaims,
-            oldWorldApplication
+            oldWorldApplication,
+            typeOfLivestock
           )
         )
       }
