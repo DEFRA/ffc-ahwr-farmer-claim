@@ -6,15 +6,16 @@ import expectPhaseBanner from 'assert'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import {
-  getReviewWithinLast10Months,
-  isDateOfTestingLessThanDateOfVisit,
   isWithIn4MonthsBeforeOrAfterDateOfVisit
 } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
 
 const { labels } = visitDate
-jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
+  ...jest.requireActual('../../../../../app/api-requests/claim-service-api'),
+  isWithIn4MonthsBeforeOrAfterDateOfVisit: jest.fn()
+}))
 
 function expectPageContentOk ($) {
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
@@ -347,17 +348,37 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     })
 
     test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative review', async () => {
-      getEndemicsClaim.mockImplementation(() => { return { dateOfVisit: '2024-04-23', typeOfReview: 'E' } })
+      getEndemicsClaim.mockImplementation(() => {
+        return {
+          dateOfVisit: '2024-04-23',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'sheep',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }]
+        }
+      })
       isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
-      isDateOfTestingLessThanDateOfVisit.mockImplementation(() => { return true })
-      getReviewWithinLast10Months.mockImplementation(() => { return { test: 'mockPreviousReview' } })
 
       const options = {
         method: 'POST',
         url,
         auth,
         headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23', dateOfAgreementAccepted: '2022-01-01' }
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          'on-another-date-day': '01',
+          'on-another-date-month': '01',
+          'on-another-date-year': '2023',
+          dateOfVisit: '2024-04-23',
+          dateOfAgreementAccepted: '2022-01-01'
+        }
       }
 
       const res = await server.inject(options)
@@ -441,6 +462,86 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       const res = await server.inject(options)
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
+    })
+
+    test('should redirect to species number when endemics claim and previous review claim of differet species with date of testing less than date of visit', async () => {
+      getEndemicsClaim
+        .mockImplementationOnce(() => ({}))
+        .mockImplementationOnce(() => ({
+          dateOfVisit: '2024-01-01',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }]
+        }))
+      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
+      const options = {
+        method: 'POST',
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          dateOfVisit: '2024-01-01',
+          dateOfAgreementAccepted: '2022-01-01',
+          'on-another-date-day': '01',
+          'on-another-date-month': '01',
+          'on-another-date-year': '2023'
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+    })
+
+    test('should redirect to date of testing exception when endemics claim and previous review claim of same species with date of testing less than date of visit', async () => {
+      getEndemicsClaim
+        .mockImplementationOnce(() => ({}))
+        .mockImplementationOnce(() => ({
+          dateOfVisit: '2024-01-01',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'sheep',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }]
+        }))
+      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
+      const options = {
+        method: 'POST',
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          dateOfVisit: '2024-01-01',
+          dateOfAgreementAccepted: '2022-01-01',
+          'on-another-date-day': '01',
+          'on-another-date-month': '01',
+          'on-another-date-year': '2023'
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(400)
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
   })
 })

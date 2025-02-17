@@ -4,7 +4,8 @@ import {
   getClaimsByApplicationReference,
   isCattleEndemicsClaimForOldWorldReview,
   isURNUnique,
-  submitNewClaim
+  submitNewClaim,
+  getReviewTestResultWithinLast10Months
 } from '../../../../app/api-requests/claim-service-api.js'
 import { getEndemicsClaim } from '../../../../app/session/index.js'
 
@@ -204,5 +205,189 @@ describe('Claim Service API', () => {
     })
 
     expect(isCattleEndemicsClaimForOldWorldReview()).toBe(false)
+  })
+
+  test('should return testResults when there is a previous review within 10 months and the same species', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'beef',
+      dateOfVisit: '2025-02-01',
+      previousClaims: [
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2024-09-01',
+            testResults: 'positive'
+          }
+        }
+      ]
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe('positive')
+  })
+
+  test('should return undefined when there are previous reviews within 10 months and not the same species', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'beef',
+      latestVetVisitApplication: { data: { whichReview: 'sheep' } },
+      dateOfVisit: '2025-02-01',
+      previousClaims: [
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'sheep',
+            dateOfVisit: '2024-09-01',
+            testResults: 'positive'
+          }
+        }
+      ]
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
+  })
+
+  test('should return undefined when there are previous reviews outside of 10 months and the same species', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'beef',
+      latestVetVisitApplication: { data: { whichReview: 'sheep' } },
+      dateOfVisit: '2025-02-01',
+      previousClaims: [
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2023-09-01',
+            testResults: 'positive'
+          }
+        }
+      ]
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
+  })
+
+  test('should return testResults of the most recent previous same species review when there are multiple previous reviews within 10 months and are different species', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'sheep',
+      latestVetVisitApplication: { data: { whichReview: 'sheep' } },
+      dateOfVisit: '2025-02-01',
+      previousClaims: [
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'sheep',
+            dateOfVisit: '2024-11-01',
+            testResults: 'negative'
+          }
+        },
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2024-10-01',
+            testResults: 'positive'
+          }
+        },
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'sheep',
+            dateOfVisit: '2024-09-01',
+            testResults: 'positive'
+          }
+        }
+      ]
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe('negative')
+  })
+
+  test('should return testResults when an old world review within 10 months and the same species', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'sheep',
+      latestVetVisitApplication: {
+        data: {
+          whichReview: 'sheep',
+          visitDate: '2024-09-01',
+          testResults: 'positive'
+        }
+      },
+      dateOfVisit: '2025-02-01',
+      previousClaims: [
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'beef',
+            dateOfVisit: '2024-09-01',
+            testResults: 'positive'
+          }
+        }
+      ]
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe('positive')
+  })
+
+  test('should return undefined when an old world review outside 10 months and the same species', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'sheep',
+      latestVetVisitApplication: {
+        data: {
+          whichReview: 'sheep',
+          visitDate: '2023-09-01',
+          testResults: 'positive'
+        }
+      },
+      dateOfVisit: '2025-02-01',
+      previousClaims: []
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
+  })
+
+  test('should return undefined when there are no previous claims', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'sheep',
+      latestVetVisitApplication: undefined,
+      dateOfVisit: '2025-02-01',
+      previousClaims: undefined
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
   })
 })

@@ -403,7 +403,8 @@ const postHandler = {
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
         previousClaims,
-        latestVetVisitApplication
+        latestVetVisitApplication,
+        typeOfLivestock
       )
       if (
         typeOfReview === claimType.endemics &&
