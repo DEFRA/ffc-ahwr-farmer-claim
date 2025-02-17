@@ -95,14 +95,14 @@ export const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) =
   return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
-const getPastSameSpeciesReviewClaims = (previousClaims = [], dateOfVisit, typeOfLivestock) => previousClaims.filter(prevClaim =>
+const getPastReviewClaimsForSpecies = (previousClaims = [], dateOfVisit, typeOfLivestock) => previousClaims.filter(prevClaim =>
   new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) &&
   prevClaim.type === claimType.review &&
   typeOfLivestock === prevClaim.data.typeOfLivestock
 )
 
 export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview, typeOfLivestock) => {
-  const pastReviewClaims = getPastSameSpeciesReviewClaims(previousClaims, dateOfVisit, typeOfLivestock)
+  const pastReviewClaims = getPastReviewClaimsForSpecies(previousClaims, dateOfVisit, typeOfLivestock)
   if (vetVisitReview?.data?.whichReview === typeOfLivestock) {
     pastReviewClaims.push({
       ...vetVisitReview,
