@@ -101,7 +101,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     jest.resetAllMocks()
   })
 
-  test.only('returns 200 when you dont have any previous claims', async () => {
+  test('returns 200 when you dont have any previous claims', async () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         latestEndemicsApplication,
