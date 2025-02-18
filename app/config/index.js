@@ -128,7 +128,7 @@ export const getConfig = () => {
       telephone: '03000 200 301'
     },
     customerSurvey: {
-      uri: 'https://defragroup.eu.qualtrics.com/jfe/form/SV_4IsQyL0cOUbFDQG'
+      uri: process.env.CUSTOMER_SURVEY_CLAIM_URI
     },
     wreckHttp: {
       timeoutMilliseconds: Number(process.env.WRECK_HTTP_TIMEOUT_MILLISECONDS) || 10000
