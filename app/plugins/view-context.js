@@ -1,6 +1,6 @@
 import { config } from '../config/index.js'
 
-const { serviceName, applyServiceUri, urlPrefix, endemics } = config
+const { serviceName, applyServiceUri, urlPrefix, endemics, customerSurvey } = config
 
 export const viewContextPlugin = {
   plugin: {
@@ -17,6 +17,7 @@ export const viewContextPlugin = {
           ctx.serviceName = !endemics.enabled ? serviceName : 'Get funding to improve animal health and welfare'
           ctx.urlPrefix = path.startsWith('/cookies') ? '/cookies' : urlPrefix
           ctx.applyServiceUri = applyServiceUri
+          ctx.customerSurveyUri = customerSurvey.uri
 
           response.source.context = ctx
         }
