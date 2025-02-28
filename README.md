@@ -26,16 +26,15 @@ Values for development are set in the Docker Compose configuration. Default
 values for production-like deployments are set in the Helm chart and may be
 overridden by build and release pipelines.
 
-| Name                                  | Description                                                                                      |
-| ----                                  | -----------                                                                                      |
-| APPLICATIONREQUEST_QUEUE_ADDRESS      | Name of message queue used to send application requests                                          |
-| APPLICATIONRESPONSE_QUEUE_ADDRESS     | Name of session enabled message queue used to receive application responses                      |
-| MESSAGE_QUEUE_HOST                    | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net`                           |
-| MESSAGE_QUEUE_PASSWORD                | Azure Service Bus SAS policy key                                                                 |
-| MESSAGE_QUEUE_SUFFIX                  | Developer initials                                                                               |
-| MESSAGE_QUEUE_USER                    | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey`                              |
-| SERVICE_URI                           | URI of service (used in links, in emails) e.g. `http://localhost:3000` or `https://defra.gov.uk` |
-| AZURE_STORAGE_CREATE_CONTAINERS       | Set true to use connection string, false to connect using azure credentials for blobstorage      |
+| Name                              | Description                                                                                      |
+|-----------------------------------|--------------------------------------------------------------------------------------------------|
+| EVENT_QUEUE_ADDRESS               | Name of message queue used to send events to                                                     |
+| MESSAGE_QUEUE_HOST                | Azure Service Bus hostname, e.g. `myservicebus.servicebus.windows.net`                           |
+| MESSAGE_QUEUE_PASSWORD            | Azure Service Bus SAS policy key                                                                 |
+| MESSAGE_QUEUE_SUFFIX              | Developer initials                                                                               |
+| MESSAGE_QUEUE_USER                | Azure Service Bus SAS policy name, e.g. `RootManageSharedAccessKey`                              |
+| SERVICE_URI                       | URI of service (used in links, in emails) e.g. `http://localhost:3000` or `https://defra.gov.uk` |
+| AZURE_STORAGE_CREATE_CONTAINERS   | Set true to use connection string, false to connect using azure credentials for blobstorage      |
 
 ## Running the application
 

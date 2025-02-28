@@ -16,10 +16,3 @@ export const status = {
   REJECTED: 10,
   ON_HOLD: 11
 }
-
-export const openStatuses = [
-  status.AGREED,
-  status.IN_CHECK,
-  status.ACCEPTED,
-  status.ON_HOLD
-]
