@@ -4,11 +4,3 @@ resources:
     - name: ffc-ahwr-event
       role: sender
       session: false
-
-    - name: ffc-ahwr-application-request
-      role: sender
-      session: false
-
-    - name: ffc-ahwr-application-response
-      role: receiver
-      session: true

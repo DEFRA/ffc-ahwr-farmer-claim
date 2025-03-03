@@ -5,8 +5,6 @@ data:
   PORT: {{ quote .Values.container.port }}
   NAMESPACE: {{ quote .Values.namespace }}
   APPINSIGHTS_CLOUDROLE: {{ quote .Values.name }}
-  APPLICATIONREQUEST_QUEUE_ADDRESS: {{ quote .Values.container.applicationRequestQueueAddress }}
-  APPLICATIONRESPONSE_QUEUE_ADDRESS: {{ quote .Values.container.applicationResponseQueueAddress }}
   EVENT_QUEUE_ADDRESS: {{ .Values.container.eventQueueAddress }}
   GOOGLE_TAG_MANAGER_KEY: {{ quote .Values.container.googleTagManagerKey }}
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
