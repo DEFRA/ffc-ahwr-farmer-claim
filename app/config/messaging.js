@@ -9,7 +9,8 @@ export const getMessageQueueConfig = () => {
       password: Joi.string(),
       useCredentialChain: Joi.bool().required(),
       managedIdentityClientId: Joi.string().optional(),
-      appInsights: Joi.object()
+      appInsights: Joi.object(),
+      connectionString: Joi.string().optional()
     },
     eventQueue: {
       address: process.env.EVENT_QUEUE_ADDRESS,
@@ -24,7 +25,8 @@ export const getMessageQueueConfig = () => {
       password: process.env.MESSAGE_QUEUE_PASSWORD,
       useCredentialChain: process.env.NODE_ENV === 'production',
       managedIdentityClientId: process.env.AZURE_CLIENT_ID,
-      appInsights
+      appInsights,
+      connectionString: process.env.QUEUE_CONNECTION_STRING
     },
     eventQueue: {
       address: process.env.EVENT_QUEUE_ADDRESS,
