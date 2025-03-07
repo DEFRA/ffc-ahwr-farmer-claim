@@ -19,7 +19,7 @@ const createDevDetails = async (sbi) => {
       sbi,
       name: 'madeUpCo',
       email: 'org@company.com',
-      frn: 'frn123456',
+      frn: '1100918140',
       address: {
         address1: 'Somewhere'
       }
@@ -27,7 +27,7 @@ const createDevDetails = async (sbi) => {
   }
   const personSummary = {
     email: 'farmer@farm.com',
-    customerReferenceNumber: 'abc123',
+    customerReferenceNumber: '2054561445',
     firstName: 'John',
     lastName: 'Smith'
   }
@@ -79,6 +79,7 @@ const postHandler = {
         )
 
         setCustomer(request, sessionKeys.customer.id, personSummary.id)
+        setCustomer(request, sessionKeys.customer.crn, personSummary.customerReferenceNumber)
         setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
 
         return h.redirect(`/claim/endemics?from=dashboard&sbi=${organisationSummary.organisation.sbi}`)
