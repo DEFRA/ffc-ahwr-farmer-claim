@@ -5,6 +5,7 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getLatestApplicationForSbi } from '../../../../../app/routes/models/latest-application.js'
 import { setAuthCookie } from '../../../../../app/auth/cookie-auth/cookie-auth.js'
 import { setEndemicsClaim } from '../../../../../app/session/index.js'
+import { NoApplicationFoundError } from '../../../../../app/exceptions/no-application-found.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/routes/models/latest-application')
@@ -112,6 +113,39 @@ describe(`${url} route page`, () => {
       expect(getLatestApplicationForSbi).toBeCalledTimes(1)
       expect(setAuthCookie).toBeCalledTimes(1)
       expect(setEndemicsClaim).toBeCalledTimes(1)
+    })
+
+    test('redirects to exception page if getLatestApplicationForSbi throws a NoApplicationFoundError', async () => {
+      const sbi = '12345678'
+      const baseUrl = `${url}`
+      const options = {
+        method: 'POST',
+        url: baseUrl,
+        payload: {
+          crumb,
+          sbi
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      getLatestApplicationForSbi.mockImplementation(() => {
+        throw new NoApplicationFoundError(
+          `No application found for SBI - ${sbi}`,
+          {
+            sbi,
+            name: ''
+          }
+        )
+      })
+
+      const res = await server.inject(options)
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h1').text().trim()).toMatch(`You cannot sign in with SBI ${sbi}`)
+      expect(getLatestApplicationForSbi).toBeCalledTimes(1)
+      expect(setAuthCookie).toBeCalledTimes(0)
+      expect(setEndemicsClaim).toBeCalledTimes(0)
     })
   })
 })
