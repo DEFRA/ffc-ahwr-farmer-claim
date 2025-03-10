@@ -58,16 +58,13 @@ const postHandler = {
       const [personSummary, organisationSummary] = await createDevDetails(sbi)
 
       try {
-        const latestApplication = await getLatestApplicationForSbi(
-          organisationSummary.organisation.sbi?.toString(),
-          organisationSummary.organisation.name
-        )
+        const latestApplication = await getLatestApplicationForSbi(sbi, organisationSummary.organisation.name)
 
         setEndemicsClaim(
           request,
           sessionKeys.endemicsClaim.organisation,
           {
-            sbi: organisationSummary.organisation.sbi?.toString(),
+            sbi,
             farmerName: getPersonName(personSummary),
             name: organisationSummary.organisation.name,
             email: personSummary.email ? personSummary.email : organisationSummary.organisation.email,
@@ -82,7 +79,7 @@ const postHandler = {
         setCustomer(request, sessionKeys.customer.crn, personSummary.customerReferenceNumber)
         setAuthCookie(request, latestApplication.data.organisation.email, farmerClaim)
 
-        return h.redirect(`/claim/endemics?from=dashboard&sbi=${organisationSummary.organisation.sbi}`)
+        return h.redirect(`/claim/endemics?from=dashboard&sbi=${sbi}`)
       } catch (error) {
         if (error instanceof NoApplicationFoundError) {
           const errorMessage = `${sbi} does not have an active agreement in the database.`
