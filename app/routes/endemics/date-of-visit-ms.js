@@ -41,10 +41,6 @@ const { labels } = visitDate
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
-const isBeforeMSRelease = (date) => date < MULTIPLE_SPECIES_RELEASE_DATE
-
-const isBeforeDairyFollowUpRelease = (date) => date < DAIRY_FOLLOW_UP_RELEASE_DATE
-
 export const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
   const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
@@ -218,13 +214,9 @@ const postHandler = {
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
 
-      if (isDairy && isEndemicsFollowUp && isBeforeDairyFollowUpRelease(dateOfVisit)) {
-        raiseInvalidDataEvent(
-          request,
-          dateOfVisitKey,
-          `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
-        )
-
+      if (isDairy && isEndemicsFollowUp && dateOfVisit < DAIRY_FOLLOW_UP_RELEASE_DATE) {
+        const exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
+        raiseInvalidDataEvent(request, dateOfVisitKey, exception)
         setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
@@ -236,13 +228,9 @@ const postHandler = {
       if (previousClaims.length > 0) {
         const speciesChanged = Boolean(previousClaims.find(claim => claim.data.typeOfLivestock !== typeOfLivestock))
 
-        if (speciesChanged && isBeforeMSRelease(dateOfVisit)) {
-          raiseInvalidDataEvent(
-            request,
-            dateOfVisitKey,
-            `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
-          )
-
+        if (speciesChanged && dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE) {
+          const exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
+          raiseInvalidDataEvent(request, dateOfVisitKey, exception)
           setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
           return h
