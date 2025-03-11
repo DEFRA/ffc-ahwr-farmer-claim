@@ -43,5 +43,6 @@ export default {
   endemicsPIHuntRecommendedException: 'endemics/pi-hunt-recommended-exception',
   endemicsPIHuntAllAnimals: 'endemics/pi-hunt-all-animals',
   endemicsPIHuntAllAnimalsException: 'endemics/pi-hunt-all-animals-exception',
-  endemicsMultipleSpeciesDateException: 'endemics/multiple-species-date-exception'
+  endemicsMultipleSpeciesDateException: 'endemics/multiple-species-date-exception',
+  endemicsDairyFollowUpDateException: 'endemics/dairy-follow-up-date-exception'
 }

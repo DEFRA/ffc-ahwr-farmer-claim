@@ -32,7 +32,8 @@ const {
   endemicsSpeciesNumbers,
   endemicsWhichTypeOfReview,
   endemicsVetVisitsReviewTestResults,
-  endemicsMultipleSpeciesDateException
+  endemicsMultipleSpeciesDateException,
+  endemicsDairyFollowUpDateException
 } = routes
 
 const { claimType, livestockTypes } = claimConstants
@@ -218,28 +219,32 @@ const postHandler = {
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
 
       if (isDairy && isEndemicsFollowUp && isDateOfVisitBeforeDairyFollowUpRelease(dateOfVisit)) {
-        
+        raiseInvalidDataEvent(
+          request,
+          dateOfVisitKey,
+          `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
+        )
+
+        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
+
+        return h
+          .view(endemicsDairyFollowUpDateException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
+          .code(400)
+          .takeover()
       }
 
       if (previousClaims.length > 0) {
-        const previousClaimsIncludesAnotherSpecies = Boolean(previousClaims.find((claim) => claim.data.typeOfLivestock !== typeOfLivestock))
-        
-        const oldWorldClaimExistsForAnotherSpecies = Boolean(oldWorldApplication) && oldWorldApplication.data.whichReview !== typeOfLivestock
+        const speciesChanged = Boolean(previousClaims.find(claim => claim.data.typeOfLivestock !== typeOfLivestock))
 
-        const isMakingOldWorldSpeciesChange = !previousClaimsIncludesAnotherSpecies && oldWorldClaimExistsForAnotherSpecies
-
-        if (!isMakingOldWorldSpeciesChange 
-          && (previousClaimsIncludesAnotherSpecies || oldWorldClaimExistsForAnotherSpecies) 
-          && isDateOfVisitBeforeMSRelease(dateOfVisit)) {
-
+        if (speciesChanged && isDateOfVisitBeforeMSRelease(dateOfVisit)) {
           raiseInvalidDataEvent(
             request,
             dateOfVisitKey,
             `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
           )
-  
+
           setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-  
+
           return h
             .view(endemicsMultipleSpeciesDateException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
             .code(400)
