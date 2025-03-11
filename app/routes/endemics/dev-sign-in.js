@@ -41,8 +41,7 @@ const getHandler = {
   options: {
     auth: false,
     handler: async (request, h) => {
-      return h.view('endemics/dev-sign-in', {
-      })
+      return h.view('endemics/dev-sign-in', { backLink: '/claim/endemics' })
     }
   }
 }
