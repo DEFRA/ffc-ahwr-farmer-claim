@@ -41,9 +41,9 @@ const { labels } = visitDate
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
-export const isDateOfVisitBeforeMSRelease = (dateOfVisit) => dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE
+const isBeforeMSRelease = (date) => date < MULTIPLE_SPECIES_RELEASE_DATE
 
-export const isDateOfVisitBeforeDairyFollowUpRelease = (dateOfVisit) => dateOfVisit < DAIRY_FOLLOW_UP_RELEASE_DATE
+const isBeforeDairyFollowUpRelease = (date) => date < DAIRY_FOLLOW_UP_RELEASE_DATE
 
 export const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
   const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
@@ -218,7 +218,7 @@ const postHandler = {
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
 
-      if (isDairy && isEndemicsFollowUp && isDateOfVisitBeforeDairyFollowUpRelease(dateOfVisit)) {
+      if (isDairy && isEndemicsFollowUp && isBeforeDairyFollowUpRelease(dateOfVisit)) {
         raiseInvalidDataEvent(
           request,
           dateOfVisitKey,
@@ -236,7 +236,7 @@ const postHandler = {
       if (previousClaims.length > 0) {
         const speciesChanged = Boolean(previousClaims.find(claim => claim.data.typeOfLivestock !== typeOfLivestock))
 
-        if (speciesChanged && isDateOfVisitBeforeMSRelease(dateOfVisit)) {
+        if (speciesChanged && isBeforeMSRelease(dateOfVisit)) {
           raiseInvalidDataEvent(
             request,
             dateOfVisitKey,
