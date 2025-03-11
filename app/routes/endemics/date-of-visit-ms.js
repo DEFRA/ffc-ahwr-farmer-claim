@@ -41,6 +41,8 @@ const { labels } = visitDate
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
 
+const isMSClaimBeforeMSRelease = (previousClaims, typeOfLivestock, dateOfVisit) => previousClaims?.some(claim => claim.data.typeOfLivestock !== typeOfLivestock) && dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE
+
 export const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
   const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
@@ -214,30 +216,27 @@ const postHandler = {
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
 
+      let exception
+      let exceptionView
+
       if (isDairy && isEndemicsFollowUp && dateOfVisit < DAIRY_FOLLOW_UP_RELEASE_DATE) {
-        const exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
+        exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
+        exceptionView = endemicsDairyFollowUpDateException
+      }
+
+      if (isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
+        exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
+        exceptionView = endemicsMultipleSpeciesDateException
+      }
+
+      if (exception) {
         raiseInvalidDataEvent(request, dateOfVisitKey, exception)
         setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
-          .view(endemicsDairyFollowUpDateException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
+          .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
           .code(400)
           .takeover()
-      }
-
-      if (previousClaims.length > 0) {
-        const speciesChanged = Boolean(previousClaims.find(claim => claim.data.typeOfLivestock !== typeOfLivestock))
-
-        if (speciesChanged && dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE) {
-          const exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
-          raiseInvalidDataEvent(request, dateOfVisitKey, exception)
-          setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-
-          return h
-            .view(endemicsMultipleSpeciesDateException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
-            .code(400)
-            .takeover()
-        }
       }
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
