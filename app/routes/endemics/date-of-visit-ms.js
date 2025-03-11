@@ -222,9 +222,7 @@ const postHandler = {
       if (isDairy && isEndemicsFollowUp && dateOfVisit < DAIRY_FOLLOW_UP_RELEASE_DATE) {
         exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
         exceptionView = endemicsDairyFollowUpDateException
-      }
-
-      if (isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
+      } else if (isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
         exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
         exceptionView = endemicsMultipleSpeciesDateException
       }
