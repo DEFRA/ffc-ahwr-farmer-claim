@@ -4,7 +4,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { config } from '../../config/index.js'
 import { claimConstants } from '../../constants/claim.js'
 import { visitDate } from '../../config/visit-date.js'
-import links from '../../config/routes.js'
+import routes from '../../config/routes.js'
 import { isValidDate } from '../../lib/date-utils.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
@@ -16,6 +16,7 @@ import {
   getReviewWithinLast10Months
 } from '../../api-requests/claim-service-api.js'
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
+import { DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
 
 const {
   endemicsClaim: {
@@ -30,13 +31,17 @@ const {
   endemicsDateOfTesting,
   endemicsSpeciesNumbers,
   endemicsWhichTypeOfReview,
-  endemicsVetVisitsReviewTestResults
-} = links
+  endemicsVetVisitsReviewTestResults,
+  endemicsMultipleSpeciesDateException,
+  endemicsDairyFollowUpDateException
+} = routes
 
 const { claimType, livestockTypes } = claimConstants
 const { labels } = visitDate
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
+
+const isMSClaimBeforeMSRelease = (previousClaims, typeOfLivestock, dateOfVisit) => previousClaims?.some(claim => claim.data.typeOfLivestock !== typeOfLivestock) && dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE
 
 export const previousPageUrl = (latestVetVisitApplication, typeOfReview, previousClaims, typeOfLivestock) => {
   const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
@@ -210,6 +215,27 @@ const postHandler = {
       const formattedTypeOfLivestock = isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
+
+      let exception
+      let exceptionView
+
+      if (isDairy && isEndemicsFollowUp && dateOfVisit < DAIRY_FOLLOW_UP_RELEASE_DATE) {
+        exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
+        exceptionView = endemicsDairyFollowUpDateException
+      } else if (isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
+        exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
+        exceptionView = endemicsMultipleSpeciesDateException
+      }
+
+      if (exception) {
+        raiseInvalidDataEvent(request, dateOfVisitKey, exception)
+        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
+
+        return h
+          .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
+          .code(400)
+          .takeover()
+      }
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
       const prevReviewClaim = prevLivestockClaims.find(claim => claim.type === claimType.review) || getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)

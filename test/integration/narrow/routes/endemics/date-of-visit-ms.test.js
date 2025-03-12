@@ -579,7 +579,54 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
-  test('user makes a review claim and has a previous review claim for a different species, and no others for same species', async () => { // happy path
+  test('user makes a review claim and has a previous review claim for a different species, no others for same species and is after MS was enabled', async () => { // happy path
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'R',
+        previousClaims: [{
+          reference: 'REBC-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 1,
+          type: 'R',
+          createdAt: '2024-12-12T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'dairy',
+            dateOfVisit: '2024-12-12'
+          }
+        }],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '26',
+        [labels.month]: '02',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 1, 26))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test(`user makes a review claim and has a previous review claim for a different species, 
+    no others for same species and is before MS was enabled`, async () => { // unhappy path
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
@@ -618,9 +665,12 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     }
 
     const res = await server.inject(options)
+    const $ = cheerio.load(res.payload)
 
-    expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(res.statusCode).toBe(400)
+    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `User is attempting to claim for MS with a date of visit of ${new Date(2025, 0, 1).toString()} which is before MS was enabled.`)
+
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
@@ -837,6 +887,105 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
+  test('user makes an endemics dairy claim after dairy follow up release', async () => { // happy path
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'dairy',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '21',
+        [labels.month]: '01',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 21))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('user makes an endemics dairy claim before dairy follow up release', async () => { // unhappy path
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'dairy',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '20',
+        [labels.month]: '01',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+    const $ = cheerio.load(res.payload)
+
+    expect(res.statusCode).toBe(400)
+    expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
+    expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', `User is attempting to claim for dairy follow-up with a date of visit of ${new Date(2025, 0, 20).toString()} which is before dairy follow-ups was enabled.`)
+
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 20))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
   test('user makes an endemics claim within 10 months of a previous endemics claim of the same species', async () => { // unhappy path
     getEndemicsClaim.mockImplementation(() => {
       return {
@@ -956,8 +1105,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       url,
       payload: {
         crumb,
-        [labels.day]: '01',
-        [labels.month]: '01',
+        [labels.day]: '27',
+        [labels.month]: '02',
         [labels.year]: '2025'
       },
       auth,
@@ -968,7 +1117,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
-    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 1))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 1, 27))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 
@@ -1269,8 +1418,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       url,
       payload: {
         crumb,
-        [labels.day]: '01',
-        [labels.month]: '01',
+        [labels.day]: '27',
+        [labels.month]: '02',
         [labels.year]: '2025'
       },
       auth,
@@ -1293,7 +1442,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         testResults: 'positive'
       }
     })
-    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/01/01'))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/02/27'))
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
