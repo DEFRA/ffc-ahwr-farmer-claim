@@ -7,8 +7,9 @@ import { claimConstants } from '../../constants/claim.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../constants/constants.js'
 
-const { biosecurity: biosecurityKey } = sessionKeys.endemicsClaim
+const { biosecurity: biosecurityKey, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 const {
   urlPrefix,
   ruralPaymentsAgency,
@@ -28,6 +29,11 @@ const {
 const { livestockTypes: { pigs } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
+
+const isPIHuntEnabledAndVisitDateAfterGoLive = (request) => {
+  return optionalPIHunt.enabled && new Date(getEndemicsClaim(request, dateOfVisitKey)) >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+}
+
 export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
 const isPIHuntValidNegative = (
   isNegative,
@@ -86,7 +92,7 @@ export const previousPageUrl = (request) => {
     session?.typeOfLivestock
   )
 
-  if ((isBeef || isDairy) && optionalPIHunt.enabled) {
+  if ((isBeef || isDairy) && isPIHuntEnabledAndVisitDateAfterGoLive(request)) {
     return getBeefOrDairyPage(session, isNegative, isPositive)
   } else {
     if ((isBeef || isDairy) && isNegative) {

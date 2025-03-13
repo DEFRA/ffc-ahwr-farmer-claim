@@ -8,6 +8,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../constants/constants.js'
 
 const { optionalPIHunt, urlPrefix } = config
 const { rcvs: rcvsErrorMessages } = errorMessages
@@ -24,7 +25,7 @@ const {
   endemicsVetVisitsReviewTestResults
 } = links
 const {
-  endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
+  endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey, dateOfVisit: dateOfVisitKey },
 } = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
@@ -43,6 +44,10 @@ const nextPageURL = (request) => {
   }
 
   return `${urlPrefix}/${endemicsTestUrn}`
+}
+
+const isPIHuntEnabledAndVisitDateAfterGoLive = (request) => {
+  return optionalPIHunt.enabled && new Date(getEndemicsClaim(request, dateOfVisitKey)) >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
 }
 
 const getHandler = {
@@ -97,7 +102,7 @@ const postHandler = {
 
       setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
-      if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+      if (isPIHuntEnabledAndVisitDateAfterGoLive(request) && isEndemicsFollowUp && (isBeef || isDairy)) {
         return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
       }
 
