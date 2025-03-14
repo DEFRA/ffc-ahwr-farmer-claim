@@ -5,9 +5,11 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('../../../../../app/lib/context-helper.js')
 
 describe('Number of species tested test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -35,6 +37,7 @@ describe('Number of species tested test', () => {
 
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {
@@ -227,6 +230,7 @@ describe('Number of species tested test', () => {
 
     test('error page shows 3 bullet points when PI Hunt env variable is false', async () => {
       getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'R' } })
+      isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
 
       config.optionalPIHunt.enabled = false
 

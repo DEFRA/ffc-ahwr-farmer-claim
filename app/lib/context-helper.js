@@ -5,6 +5,8 @@ import { getAllApplicationsBySbi } from '../api-requests/application-service-api
 import { getClaimsByApplicationReference } from '../api-requests/claim-service-api.js'
 import { createTempClaimReference } from './create-temp-claim-reference.js'
 import { claimConstants } from '../constants/claim.js'
+import { config } from '../config/index.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../constants/constants.js'
 
 const {
   endemicsClaim: {
@@ -82,4 +84,14 @@ export function canChangeSpecies (request, typeOfReview) {
 const lockedToSpecies = (previousEndemicClaims) => {
   // any endemic (new-world) claims means they have missed their opportunity to switch species
   return (previousEndemicClaims && previousEndemicClaims.length > 0)
+}
+
+export const isPIHuntEnabled = () => {
+  return config.optionalPIHunt.enabled
+}
+export const isPIHuntEnabledAndVisitDateAfterGoLive = (dateOfVisitString) => {
+  if (!dateOfVisitString) {
+    throw new Error('dateOfVisitString must be provided')
+  }
+  return isPIHuntEnabled() && new Date(dateOfVisitString) >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
 }

@@ -8,9 +8,11 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
 import { claimConstants } from '../../../../../app/constants/claim.js'
 import { getSpeciesEligibleNumberForDisplay } from '../../../../../app/lib/display-helpers.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('../../../../../app/lib/context-helper.js')
 
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/species-numbers'
@@ -25,6 +27,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -211,6 +214,7 @@ describe('Species numbers test when Optional PI Hunt is ON', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {

@@ -6,9 +6,10 @@ import links from '../../config/routes.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
 
-const { urlPrefix, optionalPIHunt } = config
-const { endemicsClaim: { piHunt: piHuntKey } } = sessionKeys
+const { urlPrefix } = config
+const { endemicsClaim: { piHunt: piHuntKey, dateOfVisit: dateOfVisitKey } } = sessionKeys
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = links
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
@@ -21,7 +22,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { piHunt: previousAnswer } = getEndemicsClaim(request)
-      const titleText = optionalPIHunt.enabled ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+      const titleText = isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
       return h.view(endemicsPIHunt, { titleText, backLink, previousAnswer })
     }
   }
@@ -38,7 +39,7 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         const { piHunt: previousAnswer } = getEndemicsClaim(request)
-        const titleText = optionalPIHunt.enabled ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+        const titleText = isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
         return h.view(
           endemicsPIHunt,
           {
@@ -56,6 +57,7 @@ const postHandler = {
       const { reviewTestResults, piHunt: previousAnswer } = getEndemicsClaim(request)
       const { isNegative, isPositive } = getTestResult(reviewTestResults)
       const answer = request.payload.piHunt
+      const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey))
 
       setEndemicsClaim(request, piHuntKey, answer)
 
@@ -66,13 +68,13 @@ const postHandler = {
           clearPiHuntSessionOnChange(request, 'piHunt')
         }
 
-        if (optionalPIHunt.enabled && isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+        if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
 
         return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
 
-      if (optionalPIHunt.enabled && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
-      if (optionalPIHunt.enabled && isNegative) return h.redirect(`${urlPrefix}/${endemicsPIHuntRecommended}`)
+      if (piHuntEnabledAndVisitDateAfterGoLive && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
+      if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsPIHuntRecommended}`)
 
       return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
     }

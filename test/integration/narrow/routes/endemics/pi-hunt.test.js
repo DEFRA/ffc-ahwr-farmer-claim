@@ -5,9 +5,11 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('../../../../../app/lib/context-helper.js')
 
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/pi-hunt'
@@ -22,6 +24,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -146,6 +149,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {
