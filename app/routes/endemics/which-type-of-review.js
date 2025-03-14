@@ -4,13 +4,13 @@ import { claimConstants } from '../../constants/claim.js'
 import links from '../../config/routes.js'
 import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { canChangeSpecies, getTypeOfLivestockFromLatestClaim } from '../../lib/context-helper.js'
+import { canChangeSpecies, getTypeOfLivestockFromLatestClaim, isPIHuntEnabled } from '../../lib/context-helper.js'
 import { isCattleEndemicsClaimForOldWorldReview } from '../../api-requests/claim-service-api.js'
 
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = sessionKeys
 const { livestockTypes, claimType } = claimConstants
 const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = links
-const { urlPrefix, ruralPaymentsAgency, optionalPIHunt } = config
+const { urlPrefix, ruralPaymentsAgency } = config
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
@@ -78,7 +78,7 @@ const postHandler = {
 
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-      if (!optionalPIHunt.enabled) {
+      if (!isPIHuntEnabled()) {
         // Dairy follow up claim
         if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
           return h

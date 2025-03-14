@@ -7,12 +7,12 @@ import { claimConstants } from '../../constants/claim.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
 
-const { biosecurity: biosecurityKey } = sessionKeys.endemicsClaim
+const { biosecurity: biosecurityKey, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 const {
   urlPrefix,
-  ruralPaymentsAgency,
-  optionalPIHunt
+  ruralPaymentsAgency
 } = config
 const {
   endemicsTestResults,
@@ -28,7 +28,8 @@ const {
 const { livestockTypes: { pigs } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
-export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals) => isPositive && piHuntDone && (optionalPIHunt.enabled ? piHuntAllAnimals : true)
+
+export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals, dateOfVisitString) => isPositive && piHuntDone && (isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisitString) ? piHuntAllAnimals : true)
 const isPIHuntValidNegative = (
   isNegative,
   piHuntDone,
@@ -40,9 +41,10 @@ const isPIHuntValid = (
   piHuntDone,
   piHuntAllAnimals,
   piHuntRecommended,
-  isNegative
+  isNegative,
+  dateOfVisitString
 ) =>
-  isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals) ||
+  isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals, dateOfVisitString) ||
   isPIHuntValidNegative(
     isNegative,
     piHuntDone,
@@ -71,7 +73,8 @@ export const getBeefOrDairyPage = (session, isNegative, isPositive) => {
       piHuntDone,
       piHuntAllAnimals,
       piHuntRecommended,
-      isNegative
+      isNegative,
+      session.dateOfVisit
     )
   ) {
     return `${urlPrefix}/${endemicsTestResults}`
@@ -86,7 +89,7 @@ export const previousPageUrl = (request) => {
     session?.typeOfLivestock
   )
 
-  if ((isBeef || isDairy) && optionalPIHunt.enabled) {
+  if ((isBeef || isDairy) && isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey))) {
     return getBeefOrDairyPage(session, isNegative, isPositive)
   } else {
     if ((isBeef || isDairy) && isNegative) {

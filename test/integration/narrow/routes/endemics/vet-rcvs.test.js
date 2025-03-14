@@ -5,10 +5,12 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { errorMessages } from '../../../../../app/lib/error-messages.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { rcvs: rcvsErrorMessages } = errorMessages
 
 jest.mock('../../../../../app/session')
+jest.mock('../../../../../app/lib/context-helper.js')
 
 describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -21,6 +23,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -167,6 +170,7 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {

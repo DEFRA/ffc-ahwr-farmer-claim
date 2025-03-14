@@ -10,8 +10,9 @@ import { getYesNoRadios } from '../models/form-component/yes-no-radios.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getTestResult } from '../../lib/get-test-result.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
 
-const { optionalPIHunt, urlPrefix } = config
+const { urlPrefix } = config
 
 const {
   endemicsSpeciesNumbers,
@@ -21,7 +22,7 @@ const {
   endemicsDateOfTesting,
   endemicsDateOfVisit
 } = links
-const { speciesNumbers } = sessionKeys.endemicsClaim
+const { speciesNumbers, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
@@ -29,7 +30,7 @@ const backLink = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
 
-  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+  if (isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsDateOfVisit}`
   }
   if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`

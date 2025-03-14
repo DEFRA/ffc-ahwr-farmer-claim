@@ -10,6 +10,7 @@ import {
 } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { labels } = visitDate
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
@@ -27,6 +28,8 @@ function expectPageContentOk ($) {
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
+jest.mock('../../../../../app/lib/context-helper.js')
+
 const latestVetVisitApplication = {
   reference: 'AHWR-2470-6BA9',
   createdAt: Date.now(),
@@ -51,6 +54,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -398,6 +402,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
     server = await createServer()
     await server.initialize()
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {
