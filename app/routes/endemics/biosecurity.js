@@ -88,8 +88,9 @@ export const previousPageUrl = (request) => {
   const { isBeef, isDairy, isPigs } = getLivestockTypes(
     session?.typeOfLivestock
   )
+  const dateOfVisit = getEndemicsClaim(request, dateOfVisitKey)
 
-  if ((isBeef || isDairy) && isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey))) {
+  if ((isBeef || isDairy) && isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)) {
     return getBeefOrDairyPage(session, isNegative, isPositive)
   } else {
     if ((isBeef || isDairy) && isNegative) {

@@ -90,11 +90,7 @@ export const isPIHuntEnabled = () => {
   return config.optionalPIHunt.enabled
 }
 export const isPIHuntEnabledAndVisitDateAfterGoLive = (dateOfVisit) => {
-  if (!dateOfVisit) {
-    throw new Error('dateOfVisit must be provided')
-  }
-
-  const dateOfVisitParsed = (dateOfVisit instanceof Date) ? dateOfVisit : new Date(dateOfVisit)
+  const dateOfVisitParsed = new Date(dateOfVisit)
   if (Number.isNaN(dateOfVisitParsed.getTime())) {
     throw new Error(`dateOfVisit must be parsable as a date, value provided: ${dateOfVisit}`)
   }
