@@ -18,6 +18,7 @@ import {
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
 import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 
 const {
   endemicsClaim: {
@@ -282,6 +283,12 @@ const postHandler = {
       setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
+        const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)
+
+        if (!piHuntEnabledAndVisitDateAfterGoLive) {
+          clearPiHuntSessionOnChange(request, 'dateOfVisit')
+        }
+
         const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
 
         setEndemicsClaim(
@@ -290,7 +297,7 @@ const postHandler = {
           reviewTestResultsValue
         )
 
-        if ((isBeef || isDairy) && (isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit) || reviewTestResultsValue === 'negative')) {
+        if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
           return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
         }
       }
