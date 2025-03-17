@@ -29,7 +29,7 @@ const { livestockTypes: { pigs } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 
-export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals, dateOfVisitString) => isPositive && piHuntDone && (isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisitString) ? piHuntAllAnimals : true)
+export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals, dateOfVisit) => isPositive && piHuntDone && (isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit) ? piHuntAllAnimals : true)
 const isPIHuntValidNegative = (
   isNegative,
   piHuntDone,
@@ -42,9 +42,9 @@ const isPIHuntValid = (
   piHuntAllAnimals,
   piHuntRecommended,
   isNegative,
-  dateOfVisitString
+  dateOfVisit
 ) =>
-  isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals, dateOfVisitString) ||
+  isPIHuntValidPositive(isPositive, piHuntDone, piHuntAllAnimals, dateOfVisit) ||
   isPIHuntValidNegative(
     isNegative,
     piHuntDone,

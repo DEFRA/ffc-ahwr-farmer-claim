@@ -65,14 +65,14 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntAllAnimals: previousAnswer } = getEndemicsClaim(request)
+      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntAllAnimals: previousAnswer, dateOfVisit } = getEndemicsClaim(request)
       const { piHuntAllAnimals } = request.payload
 
       setEndemicsClaim(request, piHuntAllAnimalsKey, piHuntAllAnimals)
 
       if (piHuntAllAnimals === 'no') {
         const livestockText = getLivestockText(typeOfLivestock)
-        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no' }, request.logger)
+        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no', dateOfVisit }, request.logger)
         raiseInvalidDataEvent(request, piHuntAllAnimalsKey, `Value ${piHuntAllAnimalsKey} should be yes for PI hunt all cattle tested`)
 
         if (piHuntAllAnimals !== previousAnswer) {

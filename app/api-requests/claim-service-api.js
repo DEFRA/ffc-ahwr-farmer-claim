@@ -42,12 +42,12 @@ export async function isURNUnique (data, logger) {
 }
 
 export async function getAmount (data, logger) {
-  const { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals } = data
+  const { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals, dateOfVisit } = data
   const endpoint = `${config.applicationApiUri}/claim/get-amount`
 
   try {
     const { payload } = await wreck.post(endpoint, {
-      payload: { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals },
+      payload: { type, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals, dateOfVisit },
       json: true
     })
 
