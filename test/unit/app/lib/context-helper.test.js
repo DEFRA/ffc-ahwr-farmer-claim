@@ -2,18 +2,25 @@ import {
   canChangeSpecies,
   getTypeOfLivestockFromLatestClaim,
   refreshApplications,
-  refreshClaims
+  refreshClaims,
+  isPIHuntEnabledAndVisitDateAfterGoLive
 } from '../../../../app/lib/context-helper.js'
 import { getClaimsByApplicationReference } from '../../../../app/api-requests/claim-service-api.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
 import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
 import { isWithin10Months } from '../../../../app/lib/date-utils.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../../../app/constants/constants.js'
+import { setEndemicsAndOptionalPIHunt } from '../../../mocks/config.js'
 
 jest.mock('../../../../app/session/index')
 jest.mock('../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../app/api-requests/application-service-api')
 jest.mock('../../../../app/lib/date-utils')
 describe('context-helper', () => {
+  beforeEach(() => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+  })
+
   test('canChangeSpecies should return false when there are previous endemic (new-world) claims', () => {
     getEndemicsClaim.mockReturnValueOnce({
       previousClaims: [{ data: { typeOfReview: 'R' } }]
@@ -189,5 +196,30 @@ describe('context-helper', () => {
     expect(returnedApplication.latestVetVisitApplication).toBeUndefined()
     expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestEndemicsApplication', returnedApplication.latestEndemicsApplication)
     expect(setEndemicsClaim).toBeCalledWith(expect.anything(), 'latestVetVisitApplication', returnedApplication.latestVetVisitApplication)
+  })
+
+  test('isPIHuntEnabledAndVisitDateAfterGoLive throws error when no visit date provided', () => {
+    expect(() => { isPIHuntEnabledAndVisitDateAfterGoLive(undefined) }).toThrow('dateOfVisit must be parsable as a date, value provided: undefined')
+  })
+  test('isPIHuntEnabledAndVisitDateAfterGoLive throws error when visit date provided is not parsable as a date', () => {
+    expect(() => { isPIHuntEnabledAndVisitDateAfterGoLive('abc123') }).toThrow('dateOfVisit must be parsable as a date, value provided: abc123')
+  })
+  test('isPIHuntEnabledAndVisitDateAfterGoLive returns false when feature disabled even when visit date post go live', () => {
+    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    const dayOfGoLive = PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE.toISOString()
+    expect(isPIHuntEnabledAndVisitDateAfterGoLive(dayOfGoLive)).toBe(false)
+  })
+  test('isPIHuntEnabledAndVisitDateAfterGoLive returns false when feature enabled but visit date pre go live', () => {
+    const dayBeforeGoLive = new Date(PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE)
+    dayBeforeGoLive.setDate(dayBeforeGoLive.getDate() - 1)
+    expect(isPIHuntEnabledAndVisitDateAfterGoLive(dayBeforeGoLive.toISOString())).toBe(false)
+  })
+  test('isPIHuntEnabledAndVisitDateAfterGoLive returns true when feature enabled and visit date post go live and value provided is a string', () => {
+    const dayOfGoLive = PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE.toISOString()
+    expect(isPIHuntEnabledAndVisitDateAfterGoLive(dayOfGoLive)).toBe(true)
+  })
+  test('isPIHuntEnabledAndVisitDateAfterGoLive returns true when feature enabled and visit date post go live and value provided is a date', () => {
+    const dayOfGoLive = PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+    expect(isPIHuntEnabledAndVisitDateAfterGoLive(dayOfGoLive)).toBe(true)
   })
 })

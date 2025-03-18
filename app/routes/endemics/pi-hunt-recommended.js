@@ -51,12 +51,12 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntRecommended: previousAnswer } = getEndemicsClaim(request)
+      const { typeOfReview, reviewTestResults, typeOfLivestock, piHunt, piHuntRecommended: previousAnswer, dateOfVisit } = getEndemicsClaim(request)
       const { piHuntRecommended } = request.payload
       setEndemicsClaim(request, piHuntRecommendedKey, piHuntRecommended)
 
       if (piHuntRecommended === 'no') {
-        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no' }, request.logger)
+        const claimPaymentNoPiHunt = await getAmount({ type: typeOfReview, typeOfLivestock, reviewTestResults, piHunt, piHuntAllAnimals: 'no', dateOfVisit }, request.logger)
         raiseInvalidDataEvent(request, piHuntRecommendedKey, `Value ${piHuntRecommended} should be yes for PI hunt vet recommendation`)
         if (piHuntRecommended !== previousAnswer) {
           clearPiHuntSessionOnChange(request, 'piHuntRecommended')

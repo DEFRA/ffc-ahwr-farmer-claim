@@ -12,6 +12,7 @@ describe('clearPiHuntSessionOnChange', () => {
   beforeEach(() => {
     request = {}
     getEndemicsClaim.mockReturnValue({
+      piHunt: 'yes',
       piHuntRecommended: 'yes',
       piHuntAllAnimals: 'yes',
       dateOfTesting: 'someDate',
@@ -22,6 +23,30 @@ describe('clearPiHuntSessionOnChange', () => {
 
   afterEach(() => {
     jest.clearAllMocks()
+  })
+
+  it('should only clear when value to clear', () => {
+    getEndemicsClaim.mockReturnValue({ dummy: 'value' })
+
+    clearPiHuntSessionOnChange(request, 'dateOfVisit')
+
+    expect(setEndemicsClaim).not.toHaveBeenCalledWith(request, 'piHunt', undefined)
+    expect(setEndemicsClaim).not.toHaveBeenCalledWith(request, 'piHuntRecommended', undefined)
+    expect(setEndemicsClaim).not.toHaveBeenCalledWith(request, 'piHuntAllAnimals', undefined)
+    expect(setEndemicsClaim).not.toHaveBeenCalledWith(request, 'dateOfTesting', undefined)
+    expect(setEndemicsClaim).not.toHaveBeenCalledWith(request, 'laboratoryURN', undefined)
+    expect(setEndemicsClaim).not.toHaveBeenCalledWith(request, 'testResults', undefined)
+  })
+
+  it('should clear piHunt, piHuntRecommended, piHuntAllAnimals, dateOfTesting, laboratoryURN, testResults for dateOfVisit stage', () => {
+    clearPiHuntSessionOnChange(request, 'dateOfVisit')
+
+    expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'piHunt', undefined)
+    expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'piHuntRecommended', undefined)
+    expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'piHuntAllAnimals', undefined)
+    expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'dateOfTesting', undefined)
+    expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'laboratoryURN', undefined)
+    expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'testResults', undefined)
   })
 
   it('should clear piHuntRecommended, piHuntAllAnimals, dateOfTesting, laboratoryURN, testResults for piHunt stage', () => {

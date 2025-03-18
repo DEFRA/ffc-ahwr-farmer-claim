@@ -8,8 +8,9 @@ import { sessionKeys } from '../../session/keys.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
 
-const { optionalPIHunt, urlPrefix } = config
+const { urlPrefix } = config
 const { rcvs: rcvsErrorMessages } = errorMessages
 const { claimType, livestockTypes } = claimConstants
 
@@ -24,7 +25,7 @@ const {
   endemicsVetVisitsReviewTestResults
 } = links
 const {
-  endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey }
+  endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey, dateOfVisit: dateOfVisitKey }
 } = sessionKeys
 
 const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
@@ -97,7 +98,7 @@ const postHandler = {
 
       setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
-      if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+      if (isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
         return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
       }
 

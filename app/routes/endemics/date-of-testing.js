@@ -17,10 +17,11 @@ import {
   isWithIn4MonthsBeforeOrAfterDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
 
-const { ruralPaymentsAgency, optionalPIHunt, urlPrefix } = config
+const { ruralPaymentsAgency, urlPrefix } = config
 const {
-  endemicsClaim: { dateOfTesting: dateOfTestingKey }
+  endemicsClaim: { dateOfTesting: dateOfTestingKey, dateOfVisit: dateOfVisitKey }
 } = sessionKeys
 const { claimType } = claimConstants
 const {
@@ -38,7 +39,7 @@ const backLink = (request) => {
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+  if (isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
   }
 
@@ -436,7 +437,7 @@ const postHandler = {
 
       setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
 
-      if (optionalPIHunt.enabled && isEndemicsFollowUp && (isBeef || isDairy)) {
+      if (isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
         return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
       }
 

@@ -1496,7 +1496,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
         is for beef or dairy, and the previous review test results are positive 
-        BUT optional PI hunt is enabled`, async () => {
+        BUT optional PI hunt is enabled and visit date post go live`, async () => {
     config.optionalPIHunt.enabled = true
     getEndemicsClaim.mockImplementation(() => {
       return {
@@ -1529,7 +1529,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       url,
       payload: {
         crumb,
-        [labels.day]: '01',
+        /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
+        [labels.day]: '21',
         [labels.month]: '01',
         [labels.year]: '2025'
       },
@@ -1541,6 +1542,57 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test(`for an endemics claim, it redirects to endemics date of testing page when claim 
+    is for beef or dairy, and the previous review test results are positive 
+    AND optional PI hunt is enabled BUT visit date pre go live`, async () => {
+    config.optionalPIHunt.enabled = true
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        /* see PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE */
+        [labels.day]: '20',
+        [labels.month]: '01',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
 })

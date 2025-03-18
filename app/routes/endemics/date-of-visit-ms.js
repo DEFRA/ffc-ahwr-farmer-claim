@@ -16,7 +16,9 @@ import {
   getReviewWithinLast10Months
 } from '../../api-requests/claim-service-api.js'
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
-import { DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 
 const {
   endemicsClaim: {
@@ -219,7 +221,7 @@ const postHandler = {
       let exception
       let exceptionView
 
-      if (isDairy && isEndemicsFollowUp && dateOfVisit < DAIRY_FOLLOW_UP_RELEASE_DATE) {
+      if (isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE) {
         exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
         exceptionView = endemicsDairyFollowUpDateException
       } else if (isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
@@ -281,6 +283,12 @@ const postHandler = {
       setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
+        const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)
+
+        if (!piHuntEnabledAndVisitDateAfterGoLive) {
+          clearPiHuntSessionOnChange(request, 'dateOfVisit')
+        }
+
         const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
 
         setEndemicsClaim(
@@ -289,7 +297,7 @@ const postHandler = {
           reviewTestResultsValue
         )
 
-        if ((isBeef || isDairy) && (config.optionalPIHunt.enabled || reviewTestResultsValue === 'negative')) {
+        if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
           return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
         }
       }
