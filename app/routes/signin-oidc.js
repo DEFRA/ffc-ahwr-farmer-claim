@@ -82,8 +82,7 @@ export const signInHandler = {
           name: 'login',
           properties: {
             sbi: organisationSummary.organisation.sbi,
-            crn: getCustomer(request, sessionKeys.customer.crn),
-            email: personSummary.email
+            crn: getCustomer(request, sessionKeys.customer.crn)
           }
         })
 

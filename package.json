@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-farmer-claim",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Web frontend for farmer claim journey",
   "homepage": "https://github.com/DEFRA/ffc-ahwr-farmer-claim",
   "main": "app/index.js",
@@ -37,7 +37,7 @@
     "@hapi/wreck": "^18.0.0",
     "@hapi/yar": "^10.1.1",
     "applicationinsights": "^2.9.6",
-    "ffc-ahwr-event-publisher": "1.0.3",
+    "ffc-ahwr-event-publisher": "2.0.0",
     "ffc-messaging": "^2.10.2",
     "form-data": "^4.0.1",
     "govuk-frontend": "^5.8.0",
