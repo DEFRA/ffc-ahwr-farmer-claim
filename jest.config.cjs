@@ -42,7 +42,7 @@ module.exports = {
     '^.+\\.[j]sx?$': 'babel-jest'
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(ffc-ahwr-event-publisher)/)'
+    '/node_modules/(?!(ffc-ahwr-common-library)/)'
   ],
   workerIdleMemoryLimit: '500MB'
 }
