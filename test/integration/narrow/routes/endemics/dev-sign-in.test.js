@@ -2,6 +2,8 @@ import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config/index.js'
+import { setCustomer, setEndemicsClaim } from '../../../../../app/session/index.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/routes/models/latest-application')
@@ -77,6 +79,29 @@ describe(`${url} route page`, () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toMatch('dev-sign-in?sbi=12345678&cameFrom=claim')
+    })
+
+    test('returns 302 and redirected to dashboard sign in handler including setting session values', async () => {
+      const baseUrl = `${url}`
+      const options = {
+        method: 'POST',
+        url: baseUrl,
+        payload: {
+          crumb,
+          sbi: '12345678'
+        },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      config.env = 'development'
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toMatch('dev-sign-in?sbi=12345678&cameFrom=claim')
+
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
+      expect(setCustomer).toHaveBeenCalledTimes(2)
     })
   })
 })
