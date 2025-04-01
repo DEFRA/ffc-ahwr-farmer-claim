@@ -71,8 +71,9 @@ container:
   apimScope:
   dateOfTestingEnabled:
   endemicsEnabled: 'true'
-  optionalPIHuntEnabled: 'false'
-  multiSpeciesEnabled: 'false'
+  optionalPIHuntEnabled: 'true'
+  multiSpeciesEnabled: 'true'
+  multiHerdsEnabled: 'false'
   devLoginEnabled: 'false'
   customerSurveyClaimUri: https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u
 
