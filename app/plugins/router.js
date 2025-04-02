@@ -33,6 +33,7 @@ import { dateOfVisitMSHandlers } from '../routes/endemics/date-of-visit-ms.js'
 import { whichSpeciesMsHandlers } from '../routes/endemics/which-species-ms.js'
 import { whichReviewMSHandlers } from '../routes/endemics/which-type-of-review-ms.js'
 import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
+import { multiHerdsPocPagesHandlers } from '../routes/endemics/multi-herds-poc-handler.js'
 
 const alwaysOnRouteHandlers = [
   assetsRouteHandlers,
@@ -93,6 +94,7 @@ const mapRoutes = () => {
 
   if (config.devLogin.enabled) {
     routes = routes.concat(devSignInHandlers)
+    routes = routes.concat(multiHerdsPocPagesHandlers)
   }
 }
 
