@@ -16,14 +16,14 @@ const pageHandler = {
 }
 
 const getHandler = {
-    method: 'GET',
-    path: `${urlPrefix}/multipleHerds`,
-    options: {
-      auth: false
-    },
-    handler: async (request, h) => {
-      return h.view('multipleHerds/index')
-    }
+  method: 'GET',
+  path: `${urlPrefix}/multipleHerds`,
+  options: {
+    auth: false
+  },
+  handler: async (request, h) => {
+    return h.view('multipleHerds/index')
   }
+}
 
 export const multiHerdsPocPagesHandlers = [pageHandler, getHandler]
