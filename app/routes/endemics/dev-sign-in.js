@@ -1,3 +1,4 @@
+import { setAuthCookie } from '../../auth/cookie-auth/cookie-auth.js'
 import { config } from '../../config/index.js'
 import { setCustomer, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
@@ -44,6 +45,7 @@ const postHandler = {
 
         setCustomer(request, sessionKeys.customer.id, '1')
         setCustomer(request, sessionKeys.customer.crn, '2054561445')
+        setAuthCookie(request, 'farmer@farm.com', 'farmerApply')
       }
 
       return h.redirect(`${sendTo}/dev-sign-in?sbi=${sbi}&cameFrom=claim`)
