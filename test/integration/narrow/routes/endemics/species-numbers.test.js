@@ -9,6 +9,7 @@ import { getReviewType } from '../../../../../app/lib/get-review-type.js'
 import { claimConstants } from '../../../../../app/constants/claim.js'
 import { getSpeciesEligibleNumberForDisplay } from '../../../../../app/lib/display-helpers.js'
 import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -28,6 +29,10 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
+  })
+
+  beforeEach(async () => {
+    config.multiHerds.enabled = false
   })
 
   afterAll(async () => {
@@ -52,6 +57,29 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
+      expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
+      expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
+      expect($('.govuk-radios__item').length).toEqual(2)
+      expectPhaseBanner.ok($)
+    })
+
+    test.each([
+      { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
+      { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
+    ])('returns 200 when multi herds is enabled', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
+      config.multiHerds.enabled = true
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+
+      const res = await server.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(200)
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  in this herd on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
       expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
@@ -95,6 +123,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
     beforeEach(async () => {
       crumb = await getCrumbs(server)
+      config.multiHerds.enabled = false
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -188,6 +217,27 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}?`)
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}.`)
     })
+
+    test('shows error when payload is invalid and multi herds is enabled', async () => {
+      config.multiHerds.enabled = true
+      const { isReview } = getReviewType('E')
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, speciesNumbers: undefined },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} in this herd on the date of the ${isReview ? 'review' : 'follow-up'}?`)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} in this herd on the date of the ${isReview ? 'review' : 'follow-up'}.`)
+    })
+
     test('redirect the user to 404 page in fail action and no claim object', async () => {
       const options = {
         method: 'POST',
