@@ -68,7 +68,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
     ])('returns 200 when multi herds is enabled', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
       config.multiHerds.enabled = true
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' }))
       const options = {
         method: 'GET',
         auth,
@@ -221,7 +221,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     test('shows error when payload is invalid and multi herds is enabled', async () => {
       config.multiHerds.enabled = true
       const { isReview } = getReviewType('E')
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'beef', reviewTestResults: 'positive' }))
       const options = {
         method: 'POST',
         url,
