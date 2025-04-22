@@ -48,15 +48,18 @@ const sheepNumbersExceptionsText = {
 }
 const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay) => {
   const { isReview } = getReviewType(typeOfReview)
+  const claimTypeText = isReview ? 'review' : 'follow-up'
+
   return config.multiHerds.enabled
-    ? `Select yes if you had ${speciesEligbileNumberForDisplay} in this herd on the date of the ${isReview ? 'review' : 'follow-up'}.`
-    : `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}.`
+    ? `Select yes if you had ${speciesEligbileNumberForDisplay} in this herd on the date of the ${claimTypeText}.`
+    : `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${claimTypeText}.`
 }
 const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
-  return config.multiHerds.enabled
-    ? `Did you have ${speciesEligbileNumberForDisplay} in this herd on the date of the ${isReview ? 'review' : 'follow-up'}?`
-    : `Did you have ${speciesEligbileNumberForDisplay} on the date of the ${isReview ? 'review' : 'follow-up'}?`
+  const claimTypeText = isReview ? 'review' : 'follow-up'
+  const herdText = config.multiHerds.enabled ? ' in this herd' : ''
+  
+  return `Did you have ${speciesEligbileNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
 }
 
 const getHandler = {
