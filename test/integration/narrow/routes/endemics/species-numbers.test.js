@@ -18,6 +18,10 @@ jest.mock('../../../../../app/lib/context-helper.js')
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/species-numbers'
 
+beforeEach(async () => {
+  config.multiHerds.enabled = false
+})
+
 describe('Species numbers test when Optional PI Hunt is OFF', () => {
   let server
 
@@ -29,10 +33,6 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
-  })
-
-  beforeEach(async () => {
-    config.multiHerds.enabled = false
   })
 
   afterAll(async () => {
