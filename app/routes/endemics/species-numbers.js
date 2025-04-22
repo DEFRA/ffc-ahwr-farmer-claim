@@ -58,7 +58,7 @@ const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
   const herdText = config.multiHerds.enabled ? ' in this herd' : ''
-  
+
   return `Did you have ${speciesEligbileNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
 }
 
