@@ -123,7 +123,6 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
     beforeEach(async () => {
       crumb = await getCrumbs(server)
-      config.multiHerds.enabled = false
     })
 
     test('when not logged in redirects to defra id', async () => {
