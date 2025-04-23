@@ -5,8 +5,8 @@ export function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims 
   return {
     beef: isEndemicsClaims ? '11 or more beef cattle ' : '11 or more cattle ',
     dairy: isEndemicsClaims ? '11 or more dairy cattle ' : '11 or more cattle ',
-    pigs: '51 or more pigs',
-    sheep: '21 or more sheep'
+    pigs: '51 or more pigs ',
+    sheep: '21 or more sheep '
   }[getClaimType(claimData, isEndemicsClaims)]
 }
 
