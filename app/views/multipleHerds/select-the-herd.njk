@@ -1,6 +1,33 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Is this the same herd you have previously claimed for? - {{ serviceName }} - GOV.UK{% endblock %}
+{% if queryParams.herds is string %}
+  {% set herds = [{ herdId: queryParams.herds, name: 'Show Herd/Flock' }] %}
+{% else %}
+  {% set herds = queryParams.herds %}
+{% endif %}
+{% set isSingleHerd = herds.length == 1 %}
+{% set species = queryParams.species %}
+{% set claimType = queryParams.claimType %}
+{% set lastVisitDate = queryParams.lastVisitDate %}
+{% set claimedDate = queryParams.claimedDate %}
+
+{% if species == 'sheep' %}
+  {% set herdOrFlock = 'flock' %}
+{% else %}
+  {% set herdOrFlock = 'herd' %}
+{% endif %}
+{% if isSingleHerd %}
+  {% set pageTitleText = "Is this the same "+herdOrFlock+" you have previously claimed for?" %}
+{% else %}
+  {% set pageTitleText = "Select the "+herdOrFlock+" you are claiming for" %}
+{% endif %}
+
+{% set errorMessage = {
+  text: "Select the " + herdOrFlock + " you are claiming for",
+  href: "#selectHerdOrFlock"
+} %}
+
+{% block pageTitle %}{{pageTitleText}} - {{serviceName}} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -25,48 +52,102 @@
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        {{ 
-            govukRadios({
-              id: "selectHerd",
-              name: "selectHerd",
-              fieldset: {
-                legend: {
-                  isPageHeading: true,
-                  classes: "govuk-fieldset__legend--l",
-                  text: "Select the herd you are claiming for"
+        {% if isSingleHerd %}
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Is this the same {{herdOrFlock}} you have previously claimed for?</h1>
+          <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one {{herdOrFlock}}.</p>
+          <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
+          {{ 
+            govukSummaryList({
+              rows: [
+                {
+                  key: {
+                    text: "Species"
+                  },
+                  value: {
+                    text: species | title 
+                  }
+                },
+                {
+                  key: {
+                    text: herdOrFlock | title + " name"
+                  },
+                  value: {
+                    text: herds[0].name
+                  }
+                },
+                {
+                  key: {
+                    text: "Type"
+                  },
+                  value: {
+                    text: claimType
+                  }
+                },
+                {
+                  key: {
+                    text: "Last Visit Date"
+                  },
+                  value: {
+                    text: lastVisitDate
+                  }
+                },
+                {
+                  key: {
+                    text: "Claimed"
+                  },
+                  value: {
+                    text: claimedDate
+                  }
                 }
-              }, 
-              hint: {
-                text: "You can also choose to claim for a different herd"
-              }, 
+              ]
+            }) 
+          }}
+          {{ 
+            govukRadios({
+              id: "selectHerdOrFlock",
+              name: "selectHerdOrFlock",
               errorMessage: errorMessage,
               items: [
                 {
-                  value:"herd0",
-                  text: "Pedigree cattle",
-                  checked: previousAnswer == "herd0"
+                  value: herds[0].herdId,
+                  text: "Yes, it's the same",
+                  checked: previousAnswer == herds[0].herdId
                 },
                 {
-                  value: "herd1",
-                  text: "Fattening herd",
-                  checked: previousAnswer == "herd1"
-                },
-                {
-                    value: "unnamed0",
-                    text: "Unnamed herd (Last claim: review visit 12 March 2025)",
-                    checked: previousAnswer == "unnamed0"
-                },
-                {
-                    divider: "or"
-                },
-                {
-                    value: "newHerd",
-                    text: "I am claiming for a different herd",
-                    checked: previousAnswer == "newHerd"
+                  value: "newHerdOrFlock",
+                  text: "No, it's a different " + herdOrFlock,
+                  checked: previousAnswer == "newHerdOrFlock"
                 }
               ]
             })
           }}
+        {% else %}
+          {% set herdOrFlockItems = [] %}
+          {% for item in herds %}
+            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item, text: item, checked: previousAnswer == item }]) %}
+          {% endfor %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value:"newHerdOrFlock", text: "I am claiming for a different " + herdOrFlock, checked: previousAnswer == "newHerdOrFlock" }]) %}
+          {{ 
+            govukRadios({
+              id: "selectHerdOrFlock",
+              name: "selectHerdOrFlock",
+              fieldset: {
+                legend: {
+                  isPageHeading: true,
+                  classes: "govuk-fieldset__legend--l",
+                  text: pageTitleText
+                }
+              }, 
+              hint: {
+                text: "You can also choose to claim for a different " + herdOrFlock
+              }, 
+              errorMessage: errorMessage,
+              items: herdOrFlockItems
+            })
+          }}
+        {% endif %}
+
         {{ govukButton({
           text: "Continue",
           attributes: { id: "btnContinue" },

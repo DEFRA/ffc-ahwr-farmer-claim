@@ -32,8 +32,13 @@
             classes: "govuk-button--secondary"}) 
         }}
         {{ govukButton({
-            text: "Select the herd",
-            href: "multipleHerds/select-the-herd",
+            text: "Select the flock (one stored)",
+            href: "multipleHerds/select-the-herd?herds=SHOW_HERD_ID1&species=sheep&claimType=Review&lastVisitDate=11 December 2024&claimedDate=12 March 2025",
+            classes: "govuk-button--secondary"}) 
+        }}
+        {{ govukButton({
+            text: "Select the herd (multiple stored)",
+            href: "multipleHerds/select-the-herd?herds=SHOW_HERD_ID1&herds=SHOW_HERD_ID2&herds=SHOW_HERD_ID3&species=pigs",
             classes: "govuk-button--secondary"}) 
         }}
     </div>
