@@ -46,18 +46,20 @@ const sheepNumbersExceptionsText = {
   R: 'review',
   E: 'follow-up'
 }
-const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay) => {
+const getHerdText = (typeOfLivestock) => typeOfLivestock !== 'sheep' ? 'in this herd' : 'in this flock'
+const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay, typeOfLivestock) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
+  const herdText = getHerdText(typeOfLivestock)
 
   return config.multiHerds.enabled
-    ? `Select yes if you had ${speciesEligbileNumberForDisplay} in this herd on the date of the ${claimTypeText}.`
+    ? `Select yes if you had ${speciesEligbileNumberForDisplay}${herdText} on the date of the ${claimTypeText}.`
     : `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${claimTypeText}.`
 }
-const legendText = (speciesEligbileNumberForDisplay, typeOfReview) => {
+const legendText = (speciesEligbileNumberForDisplay, typeOfReview, typeOfLivestock) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
-  const herdText = config.multiHerds.enabled ? ' in this herd' : ''
+  const herdText = config.multiHerds.enabled ? getHerdText(typeOfLivestock) : ''
 
   return `Did you have ${speciesEligbileNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
 }
@@ -76,7 +78,7 @@ const getHandler = {
       return h.view(endemicsSpeciesNumbers, {
         backLink: backLink(request),
         ...getYesNoRadios(
-          legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
+          legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
           speciesNumbers,
           getEndemicsClaim(request, speciesNumbers),
           undefined,
@@ -104,12 +106,12 @@ const postHandler = {
         const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
-          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay) },
+          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay, claim?.typeOfLivestock) },
           ...getYesNoRadios(
-            legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview),
+            legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
             speciesNumbers,
             getEndemicsClaim(request, speciesNumbers),
-            errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay),
+            errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay, claim?.typeOfLivestock),
             radioOptions
           )
         })

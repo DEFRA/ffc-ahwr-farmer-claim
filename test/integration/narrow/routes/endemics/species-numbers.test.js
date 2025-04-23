@@ -79,7 +79,27 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  in this herd on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle in this herd on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
+      expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
+      expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
+      expect($('.govuk-radios__item').length).toEqual(2)
+      expectPhaseBanner.ok($)
+    })
+
+    test('returns 200 when multi herds is enabled and species is sheep', async () => {
+      config.multiHerds.enabled = true
+      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'sheep', typeOfReview: 'R', reviewTestResults: 'negative', reference: 'TEMP-6GSE-PIR8' }))
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+
+      const res = await server.inject(options)
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(200)
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 21 or more sheep in this flock on the date of the review?')
       expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
       expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
@@ -233,8 +253,8 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} in this herd on the date of the ${isReview ? 'review' : 'follow-up'}?`)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} in this herd on the date of the ${isReview ? 'review' : 'follow-up'}.`)
+      expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)}in this herd on the date of the ${isReview ? 'review' : 'follow-up'}?`)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)}in this herd on the date of the ${isReview ? 'review' : 'follow-up'}.`)
     })
 
     test('redirect the user to 404 page in fail action and no claim object', async () => {
