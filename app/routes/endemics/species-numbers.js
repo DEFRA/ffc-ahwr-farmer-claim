@@ -47,21 +47,21 @@ const sheepNumbersExceptionsText = {
   E: 'follow-up'
 }
 const getHerdText = (typeOfLivestock) => typeOfLivestock !== 'sheep' ? 'in this herd' : 'in this flock'
-const errorMessageText = (typeOfReview, speciesEligbileNumberForDisplay, typeOfLivestock) => {
+const errorMessageText = (typeOfReview, speciesEligibleNumberForDisplay, typeOfLivestock) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
   const herdText = getHerdText(typeOfLivestock)
 
   return config.multiHerds.enabled
-    ? `Select yes if you had ${speciesEligbileNumberForDisplay}${herdText} on the date of the ${claimTypeText}.`
-    : `Select if you had ${speciesEligbileNumberForDisplay} on the date of the ${claimTypeText}.`
+    ? `Select yes if you had ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}.`
+    : `Select if you had ${speciesEligibleNumberForDisplay} on the date of the ${claimTypeText}.`
 }
-const legendText = (speciesEligbileNumberForDisplay, typeOfReview, typeOfLivestock) => {
+const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivestock) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
   const herdText = config.multiHerds.enabled ? getHerdText(typeOfLivestock) : ''
 
-  return `Did you have ${speciesEligbileNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
+  return `Did you have ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
 }
 
 const getHandler = {
@@ -73,12 +73,12 @@ const getHandler = {
       if (!claim) {
         return boom.notFound()
       }
-      const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
+      const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
 
       return h.view(endemicsSpeciesNumbers, {
         backLink: backLink(request),
         ...getYesNoRadios(
-          legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
+          legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
           speciesNumbers,
           getEndemicsClaim(request, speciesNumbers),
           undefined,
@@ -103,15 +103,15 @@ const postHandler = {
         if (!claim) {
           return boom.notFound()
         }
-        const speciesEligbileNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
+        const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
-          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay, claim?.typeOfLivestock) },
+          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock) },
           ...getYesNoRadios(
-            legendText(speciesEligbileNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
+            legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
             speciesNumbers,
             getEndemicsClaim(request, speciesNumbers),
-            errorMessageText(claim?.typeOfReview, speciesEligbileNumberForDisplay, claim?.typeOfLivestock),
+            errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock),
             radioOptions
           )
         })
