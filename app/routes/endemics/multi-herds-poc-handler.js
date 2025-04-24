@@ -10,8 +10,7 @@ const pageHandler = {
   },
   handler: async (request, h) => {
     const { page } = request.params
-
-    return h.view(`multipleHerds/${page}`)
+    return h.view(`multipleHerds/${page}`, { queryParams: request.query })
   }
 }
 
