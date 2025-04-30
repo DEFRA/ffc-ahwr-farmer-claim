@@ -12,6 +12,7 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { sheepPackages, sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
 import { submitNewClaim } from '../../api-requests/claim-service-api.js'
+import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 
 const urlPrefix = config.urlPrefix
 
@@ -520,7 +521,11 @@ const postHandler = {
         sheepEndemicsPackage,
         numberOfSamplesTested,
         reference: tempClaimReference,
-        reviewTestResults
+        reviewTestResults,
+        herdId,
+        herdName,
+        herdCph,
+        herdReasons,
       } = getEndemicsClaim(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
@@ -557,7 +562,15 @@ const postHandler = {
               diseaseType: sheepTest.diseaseType,
               result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
             }))
-          })
+          }),
+          ...(isMultipleHerdsUserJourney(dateOfVisit) && {
+            herd: {
+              herdId,
+              herdName,
+              cph: herdCph,
+              herdReasons,
+            }
+          }),
         }
       }, request.logger)
 

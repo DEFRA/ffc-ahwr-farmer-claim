@@ -34,3 +34,7 @@ export const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEn
 export const setMultiSpecies = (enabled) => {
   multiSpecies.enabled = enabled
 }
+
+export const setMultiHerds = (enabled) => {
+  multiHerds.enabled = enabled
+}

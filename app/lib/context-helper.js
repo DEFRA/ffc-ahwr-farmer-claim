@@ -6,14 +6,19 @@ import { getClaimsByApplicationReference } from '../api-requests/claim-service-a
 import { createTempClaimReference } from './create-temp-claim-reference.js'
 import { claimConstants } from '../constants/claim.js'
 import { config } from '../config/index.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../constants/constants.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE } from '../constants/constants.js'
 
 const {
   endemicsClaim: {
     latestEndemicsApplication: latestEndemicsApplicationKey,
     latestVetVisitApplication: latestVetVisitApplicationKey,
     previousClaims: previousClaimsKey,
-    reference: referenceKey
+    reference: referenceKey,
+    herdId: herdIdKey,
+    herdName: herdNameKey,
+    herdCph: herdCphKey,
+    herdOthersOnSbi: herdOthersOnSbiKey,
+    herdReasons: herdReasonsKey,
   }
 } = sessionKeys
 
@@ -96,4 +101,18 @@ export const isPIHuntEnabledAndVisitDateAfterGoLive = (dateOfVisit) => {
   }
 
   return isPIHuntEnabled() && dateOfVisitParsed >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+}
+
+export const isMultipleHerdsUserJourney = (dateOfVisit) => {
+  let userAcceptedMultiHerdTCs = true; // TODO BH an user accepted T&Cs
+  return config.multiHerds.enabled && userAcceptedMultiHerdTCs && new Date(dateOfVisit) >= MULTIPLE_HERDS_RELEASE_DATE
+}
+
+export const removeMultipleHerdsSessionData = (request) => {
+  const sessionEndemicsClaim = getEndemicsClaim(request)
+  // sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined)
+  // sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined)
+  // sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined)
+  // sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined)
+  // sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined)
 }

@@ -16,6 +16,7 @@ import { vetRCVSHandlers } from '../routes/endemics/vet-rcvs.js'
 import { checkAnswersHandlers } from '../routes/endemics/check-answers.js'
 import { confirmationHandlers } from '../routes/endemics/confirmation.js'
 import { dateOfTestingHandlers } from '../routes/endemics/date-of-testing.js'
+import { dateOfTestingMhHandlers } from '../routes/endemics/date-of-testing-mh.js'
 import { vaccinationHandlers } from '../routes/endemics/vaccination.js'
 import { diseaseStatusHandlers } from '../routes/endemics/disease-status.js'
 import { sheepEndemicsPackageHandlers } from '../routes/endemics/sheep-endemics-package.js'
@@ -32,6 +33,13 @@ import { dateOfVisitHandlers } from '../routes/endemics/date-of-visit.js'
 import { dateOfVisitMSHandlers } from '../routes/endemics/date-of-visit-ms.js'
 import { whichSpeciesMsHandlers } from '../routes/endemics/which-species-ms.js'
 import { whichReviewMSHandlers } from '../routes/endemics/which-type-of-review-ms.js'
+import { dateOfVisitMhHandlers } from '../routes/endemics/date-of-visit-mh.js'
+import { selectTheHerd } from '../routes/endemics/select-the-herd.js'
+import { enterHerdName } from '../routes/endemics/enter-herd-name.js'
+import { enterCphNumber } from '../routes/endemics/enter-cph-number.js'
+import { herdOthersOnSbi } from '../routes/endemics/herd-others-on-sbi.js'
+import { enterHerdDetails } from '../routes/endemics/enter-herd-details.js'
+import { checkHerdDetails } from '../routes/endemics/check-herd-details.js'
 import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
 import { multiHerdsPocPagesHandlers } from '../routes/endemics/multi-herds-poc-handler.js'
 
@@ -54,7 +62,6 @@ const endemicsSpecificRouteHandlers = [
   vetRCVSHandlers,
   checkAnswersHandlers,
   confirmationHandlers,
-  dateOfTestingHandlers,
   vaccinationHandlers,
   diseaseStatusHandlers,
   sheepEndemicsPackageHandlers,
@@ -70,13 +77,28 @@ const endemicsSpecificRouteHandlers = [
 const endemicsWithMsOffHandlers = [
   whichReviewHandlers,
   whichSpeciesHandlers,
-  dateOfVisitHandlers
+  dateOfVisitHandlers,
+  dateOfTestingHandlers
 ].flat()
 
 const endemicsWithMsOnHandlers = [
   whichReviewMSHandlers,
   whichSpeciesMsHandlers,
-  dateOfVisitMSHandlers
+  dateOfVisitMSHandlers,
+  dateOfTestingHandlers
+].flat()
+
+const endemicsWithMhOnHandlers = [
+  whichReviewMSHandlers,
+  whichSpeciesMsHandlers,
+  dateOfVisitMhHandlers,
+  dateOfTestingMhHandlers,
+  selectTheHerd,
+  enterHerdName,
+  enterCphNumber,
+  herdOthersOnSbi,
+  enterHerdDetails,
+  checkHerdDetails,
 ].flat()
 
 let routes
@@ -85,10 +107,12 @@ const mapRoutes = () => {
   if (config.endemics.enabled) {
     routes = routes.concat(endemicsSpecificRouteHandlers)
 
-    if (!config.multiSpecies.enabled) {
-      routes = routes.concat(endemicsWithMsOffHandlers)
-    } else {
+    if (config.multiHerds.enabled) {
+      routes = routes.concat(endemicsWithMhOnHandlers)
+    } else if (config.multiSpecies.enabled) {
       routes = routes.concat(endemicsWithMsOnHandlers)
+    } else {
+      routes = routes.concat(endemicsWithMsOffHandlers)
     }
   }
 
