@@ -104,15 +104,15 @@ export const isPIHuntEnabledAndVisitDateAfterGoLive = (dateOfVisit) => {
 }
 
 export const isMultipleHerdsUserJourney = (dateOfVisit) => {
-  let userAcceptedMultiHerdTCs = true; // TODO BH an user accepted T&Cs
+  let userAcceptedMultiHerdTCs = true; // TODO BH impl user rejects T&Cs check
   return config.multiHerds.enabled && userAcceptedMultiHerdTCs && new Date(dateOfVisit) >= MULTIPLE_HERDS_RELEASE_DATE
 }
 
 export const removeMultipleHerdsSessionData = (request) => {
   const sessionEndemicsClaim = getEndemicsClaim(request)
-  // sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined)
-  // sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined)
-  // sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined)
-  // sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined)
-  // sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined)
+  sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined)
+  sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined)
+  sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined)
+  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined)
+  sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined)
 }

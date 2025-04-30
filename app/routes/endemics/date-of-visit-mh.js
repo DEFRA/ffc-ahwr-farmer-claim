@@ -17,7 +17,7 @@ import {
 } from '../../api-requests/claim-service-api.js'
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE } from '../../constants/constants.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney, removeMultipleHerdsSessionData } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 
 const {
@@ -245,7 +245,8 @@ const postHandler = {
         return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
       }
 
-      // TODO BH all of below only applies when reject TCs
+      // all of below only applies when user rejects T&Cs
+      removeMultipleHerdsSessionData(request)
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
       const prevReviewClaim = prevLivestockClaims.find(claim => claim.type === claimType.review) || getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)

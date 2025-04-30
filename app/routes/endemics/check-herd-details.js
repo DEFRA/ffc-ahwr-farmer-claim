@@ -54,7 +54,6 @@ const postHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      removeMultipleHerdsSessionData(request) // TODO BH remove when API ready
       return h.redirect(nextPageUrl)
     }
   }

@@ -1,4 +1,5 @@
 import { sendSessionEvent } from '../event/send-session-event.js'
+import { removeMultipleHerdsSessionData } from '../lib/context-helper.js'
 
 const entries = {
   application: 'application',
@@ -66,6 +67,7 @@ export function clearEndemicsClaim (request) {
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
   setEndemicsClaim(request, 'latestVetVisitApplication', endemicsClaim?.latestVetVisitApplication)
   setEndemicsClaim(request, 'latestEndemicsApplication', endemicsClaim?.latestEndemicsApplication)
+  removeMultipleHerdsSessionData(request)
 }
 
 export function setTempClaimReference (request, key, value, status) {
