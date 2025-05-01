@@ -16,7 +16,7 @@ const pageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
 const previousPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
 
-const { endemicsClaim: { tempHerdId: tempHerdIdKey, herdId: herdIdKey } } = sessionKeys
+const { endemicsClaim: { tempHerdId: tempHerdIdKey, herdId: herdIdKey, herdVersion: herdVersionKey } } = sessionKeys
 
 const getTempHerdId = (request, tempHerdIdFromSession) => {
   let tempHerdId
@@ -111,6 +111,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { herdId } = request.payload
       setEndemicsClaim(request, herdIdKey, herdId)
+      setEndemicsClaim(request, herdVersionKey, 1)
       // TODO MultiHerds set all herd info existing herd selected!
       // NOTE Don't save herd name as herdName in session, set as herdNameExisting, so the server knows it's a update not insert.
       return h.redirect(nextPageUrl)

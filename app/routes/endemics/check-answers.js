@@ -523,6 +523,7 @@ const postHandler = {
         reference: tempClaimReference,
         reviewTestResults,
         herdId,
+        herdVersion,
         herdName,
         herdCph,
         herdReasons
@@ -566,6 +567,7 @@ const postHandler = {
           ...(isMultipleHerdsUserJourney(dateOfVisit) && {
             herd: {
               herdId,
+              herdVersion,
               herdName,
               cph: herdCph,
               herdReasons

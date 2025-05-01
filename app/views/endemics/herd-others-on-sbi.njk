@@ -15,12 +15,13 @@
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      {% if errorSummary.length %}
+      {% if errorMessage %}
         {{ govukErrorSummary({
-          titleText: "There is a problem",
-          errorList: errorSummary
-        }) }}
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
       {% endif %}
+      
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         {{ 

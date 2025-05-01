@@ -52,7 +52,8 @@ const postHandler = {
             text: 'Select the reasons for this seperate herd',
             href: '#herdReasons'
           },
-          backLink: previousPageUrl
+          backLink: previousPageUrl,
+          herdReasons: [].concat(request.payload.herdReasons)
         }).code(400).takeover()
       }
     },

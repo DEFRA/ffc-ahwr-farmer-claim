@@ -8,13 +8,13 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import { setEndemicsAndOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 
 const { urlPrefix } = config
-const { endemicsSelectTheHerd } = links
+const { endemicsSelectTheHerd: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 
 describe('select-the-herd tests', () => {
-  const url = `${urlPrefix}/${endemicsSelectTheHerd}`
+  const url = `${urlPrefix}/${pageUnderTest}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'

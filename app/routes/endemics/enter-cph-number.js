@@ -46,7 +46,7 @@ const postHandler = {
         return h.view(endemicsEnterCphNumber, {
           ...request.payload,
           errorMessage: {
-            text: 'Eneter the CPH for this herd, format should be nn/nnn/nnnn',
+            text: 'Enter the CPH for this herd, format should be nn/nnn/nnnn',
             href: '#herdCph'
           },
           backLink: previousPageUrl
