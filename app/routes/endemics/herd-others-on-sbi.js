@@ -23,7 +23,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { herdOthersOnSbi } = getEndemicsClaim(request)
-      return h.view(endemicsHerdOthersOnSbi, { 
+      return h.view(endemicsHerdOthersOnSbi, {
         backLink: previousPageUrl,
         herdOthersOnSbi
       })
@@ -48,7 +48,7 @@ const postHandler = {
             href: '#herdOthersOnSbi'
           },
           backLink: previousPageUrl,
-          herdOthersOnSbi,
+          herdOthersOnSbi
         }).code(400).takeover()
       }
     },

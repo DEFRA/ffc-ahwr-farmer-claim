@@ -23,7 +23,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { herdName } = getEndemicsClaim(request)
-      return h.view(endemicsEnterHerdName, { 
+      return h.view(endemicsEnterHerdName, {
         backLink: previousPageUrl,
         herdName
       })
@@ -48,7 +48,7 @@ const postHandler = {
             text: 'Select the herd name',
             href: '#herdName'
           },
-          backLink: previousPageUrl,
+          backLink: previousPageUrl
         }).code(400).takeover()
       }
     },

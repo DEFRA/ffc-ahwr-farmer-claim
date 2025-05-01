@@ -50,5 +50,5 @@ export default {
   endemicsEnterCphNumber: 'endemics/enter-cph-number',
   endemicsHerdOthersOnSbi: 'endemics/herd-others-on-sbi',
   endemicsEnterHerdDetails: 'endemics/enter-herd-details',
-  endemicsCheckHerdDetails: 'endemics/check-herd-details',
+  endemicsCheckHerdDetails: 'endemics/check-herd-details'
 }

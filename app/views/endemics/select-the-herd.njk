@@ -74,10 +74,10 @@
                 },
                 {
                   key: {
-                    text: "Claimed"
+                    text: "Claim Date"
                   },
                   value: {
-                    text: claimedDate
+                    text: claimDate
                   }
                 }
               ]
@@ -95,21 +95,21 @@
                   checked: herdId == herds[0].herdId
                 },
                 {
-                  value: "909bb722-3de1-443e-8304-0bba8f922049",
+                  value: tempHerdId,
                   text: "No, it's a different " + herdOrFlock,
-                  checked: herdId == "909bb722-3de1-443e-8304-0bba8f922049"
+                  checked: herdId == tempHerdId
                 }
               ]
             })
           }}
         {% else %}
-          {# TODO BH impl map herds to radios properly #}
+          {# TODO MultiHerds impl map herds to radios properly #}
           {% set herdOrFlockItems = [] %}
           {% for item in herds %}
             {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item, text: item, checked: herdId == item }]) %}
           {% endfor %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
-          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value:"909bb722-3de1-443e-8304-0bba8f922049", text: "I am claiming for a different " + herdOrFlock, checked: herdId == "909bb722-3de1-443e-8304-0bba8f922049" }]) %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: tempHerdId, text: "I am claiming for a different " + herdOrFlock, checked: herdId === tempHerdId }]) %}
           {{ 
             govukRadios({
               id: "herdId",

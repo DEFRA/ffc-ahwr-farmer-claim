@@ -1,14 +1,13 @@
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { getEndemicsClaim } from '../../session/index.js'
-import { removeMultipleHerdsSessionData } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
   endemicsDateOfTesting,
-  endemicsEnterCphNumber,
+  endemicsEnterCphNumber
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
@@ -25,9 +24,9 @@ const getHerdReasonsText = (herdReasons) => {
     differentBreed: 'They are a different breed',
     differentPurpose: 'They are used for another purpose than the other herd(s) (e.g. milking cattle)',
     keptSeparate: 'They have been kept completely separate from any other herds',
-    other: 'Other',
-  };
-  return herdReasons?.map(key => herdReasonDescriptions[key]).join(',<br>');
+    other: 'Other'
+  }
+  return herdReasons?.map(key => herdReasonDescriptions[key]).join(',<br>')
 }
 
 const getHandler = {
@@ -37,13 +36,13 @@ const getHandler = {
     handler: async (request, h) => {
       const { herdName, herdCph, herdReasons } = getEndemicsClaim(request)
       const herdReasonsText = getHerdReasonsText(herdReasons)
-      return h.view(endemicsCheckHerdDetails, { 
+      return h.view(endemicsCheckHerdDetails, {
         backLink: previousPageUrl,
-        herdName, 
-        herdCph, 
+        herdName,
+        herdCph,
         herdReasons: herdReasonsText,
         herdCphLink,
-        herdReasonsLink,
+        herdReasonsLink
       })
     }
   }

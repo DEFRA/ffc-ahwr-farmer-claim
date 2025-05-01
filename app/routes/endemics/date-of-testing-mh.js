@@ -31,7 +31,7 @@ const {
   endemicsDateOfTestingException,
   endemicsTestUrn,
   endemicsPIHuntAllAnimals,
-  endemicsCheckHerdDetails,
+  endemicsCheckHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`

@@ -9,7 +9,7 @@
 {% set species = queryParams.species %}
 {% set claimType = queryParams.claimType %}
 {% set lastVisitDate = queryParams.lastVisitDate %}
-{% set claimedDate = queryParams.claimedDate %}
+{% set claimDate = queryParams.claimDate %}
 
 {% if species == 'sheep' %}
   {% set herdOrFlock = 'flock' %}
@@ -96,7 +96,7 @@
                     text: "Claimed"
                   },
                   value: {
-                    text: claimedDate
+                    text: claimDate
                   }
                 }
               ]

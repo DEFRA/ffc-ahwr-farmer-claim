@@ -98,7 +98,7 @@ const endemicsWithMhOnHandlers = [
   enterCphNumber,
   herdOthersOnSbi,
   enterHerdDetails,
-  checkHerdDetails,
+  checkHerdDetails
 ].flat()
 
 let routes

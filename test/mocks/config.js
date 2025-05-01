@@ -6,7 +6,8 @@ jest.mock('../../app/config', () => ({
 }))
 const {
   endemics, optionalPIHunt,
-  multiSpecies
+  multiSpecies,
+  multiHerds
 } = config
 
 const defraId = {

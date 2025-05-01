@@ -51,11 +51,12 @@ export const sessionKeys = {
     piHuntAllAnimals: 'piHuntAllAnimals',
     piHuntRecommended: 'piHuntRecommended',
     amount: 'amount',
+    tempHerdId: 'tempHerdId',
     herdId: 'herdId',
     herdName: 'herdName',
     herdCph: 'herdCph',
     herdOthersOnSbi: 'herdOthersOnSbi',
-    herdReasons: 'herdReasons',
+    herdReasons: 'herdReasons'
   },
   claim: {
     animalsTested: 'animalsTested',

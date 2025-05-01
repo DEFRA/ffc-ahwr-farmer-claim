@@ -3,7 +3,6 @@ import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { getLatestClaimForContext } from '../../lib/context-helper.js'
 import { v4 as uuidv4 } from 'uuid'
 
 const { urlPrefix } = config
@@ -17,26 +16,43 @@ const pageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
 const previousPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
 
-const { endemicsClaim: { herdId: herdIdKey } } = sessionKeys
+const { endemicsClaim: { tempHerdId: tempHerdIdKey, herdId: herdIdKey } } = sessionKeys
+
+const getTempHerdId = (request, tempHerdIdFromSession) => {
+  let tempHerdId
+  if (tempHerdIdFromSession) {
+    tempHerdId = tempHerdIdFromSession
+  } else {
+    tempHerdId = uuidv4()
+    setEndemicsClaim(request, tempHerdIdKey, tempHerdId)
+  }
+  return tempHerdId
+}
 
 const getClaimInfo = (request) => {
-  const { data: { typeOfLivestock, claimType, dateOfVisit, claimedDate } } = getLatestClaimForContext(request)
+  const { previousClaims, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
+  let dateOfVisitText
+  let claimDateText
 
-  const claimTypeText = claimType === 'R' ? 'Review' : 'Endemics'
+  const previousClaimsForSpecies = previousClaims?.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
+  if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
+    const { createdAt, data: { dateOfVisit } } =
+      previousClaimsForSpecies.reduce((latest, claim) => { return claim.createdAt > latest.createdAt ? claim : latest })
 
-  const dateOfVisitAsDate = new Date(dateOfVisit);
-  const dateOfVisitCorrectFormat = dateOfVisitAsDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    dateOfVisitText = new Date(dateOfVisit).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+    claimDateText = new Date(createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  }
 
-  // TODO BH claimedDate where from?
-  return { species: typeOfLivestock, claimType: claimTypeText, lastVisitDate: dateOfVisitCorrectFormat, claimedDate: undefined }
+  return { species: typeOfLivestock, claimType: claimTypeText, lastVisitDate: dateOfVisitText, claimDate: claimDateText }
 }
 const getHerds = (species) => {
   // TODO BH getHerds for call to API
-  const name = species == 'sheep' ? 'Breeding Flock' : 'Commercial Herd'
+  const name = species === 'sheep' ? 'Breeding Flock' : 'Commercial Herd'
   return [{ herdId: '909bb722-3de1-443e-8304-0bba8f922048', name: name }]
 }
 const getGroupOfSpeciesName = (typeOfLivestock) => {
-  return typeOfLivestock == 'sheep' ? 'flock' : 'herd'
+  return typeOfLivestock === 'sheep' ? 'flock' : 'herd'
 }
 
 const getHandler = {
@@ -44,14 +60,15 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { typeOfLivestock, herdId } = getEndemicsClaim(request)
+      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession } = getEndemicsClaim(request)
+      const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
+      const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
       const claimInfo = getClaimInfo(request)
       const herds = getHerds(typeOfLivestock)
-      const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-      // TODO BH impl temp herd id
 
-      return h.view(endemicsSelectTheHerd, { 
+      return h.view(endemicsSelectTheHerd, {
         backLink: previousPageUrl,
+        tempHerdId,
         ...claimInfo,
         herds,
         herdOrFlock,
@@ -71,28 +88,30 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock } = getEndemicsClaim(request)
-        const claimInfo = getClaimInfo(typeOfLivestock)
-        const herds = getHerds(typeOfLivestock)
+        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession } = getEndemicsClaim(request)
+        const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
         const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
+        const claimInfo = getClaimInfo(request)
+        const herds = getHerds(typeOfLivestock)
 
         return h.view(endemicsSelectTheHerd, {
           ...request.payload,
           errorMessage: {
-            text: 'Select the '+herdOrFlock+' you are claiming for',
+            text: 'Select the ' + herdOrFlock + ' you are claiming for',
             href: '#herdId'
           },
           backLink: previousPageUrl,
+          tempHerdId,
           ...claimInfo,
           herds,
-          herdOrFlock,
+          herdOrFlock
         }).code(400).takeover()
       }
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
       setEndemicsClaim(request, herdIdKey, herdId)
-      // TODO BH set all herd info existing herd selected! 
+      // TODO MultiHerds set all herd info existing herd selected!
       // NOTE Don't save herd name as herdName in session, set as herdNameExisting, so the server knows it's a update not insert.
       return h.redirect(nextPageUrl)
     }

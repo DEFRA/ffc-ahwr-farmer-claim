@@ -8,14 +8,14 @@ const { urlPrefix } = config
 const {
   endemicsEnterHerdDetails,
   endemicsHerdOthersOnSbi,
-  endemicsCheckHerdDetails,
+  endemicsCheckHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const previousPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const nextPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
-const { endemicsClaim: { herdReasons: herdReasonsKey  } } = sessionKeys
+const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 
 const getHandler = {
   method: 'GET',
@@ -23,7 +23,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { herdReasons } = getEndemicsClaim(request)
-      return h.view(endemicsEnterHerdDetails, { 
+      return h.view(endemicsEnterHerdDetails, {
         backLink: previousPageUrl,
         herdReasons: [].concat(herdReasons)
       })
@@ -51,7 +51,7 @@ const postHandler = {
             text: 'Select the reasons for this seperate herd',
             href: '#herdReasons'
           },
-          backLink: previousPageUrl,
+          backLink: previousPageUrl
         }).code(400).takeover()
       }
     },

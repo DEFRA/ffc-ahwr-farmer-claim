@@ -525,7 +525,7 @@ const postHandler = {
         herdId,
         herdName,
         herdCph,
-        herdReasons,
+        herdReasons
       } = getEndemicsClaim(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
@@ -568,9 +568,9 @@ const postHandler = {
               herdId,
               herdName,
               cph: herdCph,
-              herdReasons,
+              herdReasons
             }
-          }),
+          })
         }
       }, request.logger)
 

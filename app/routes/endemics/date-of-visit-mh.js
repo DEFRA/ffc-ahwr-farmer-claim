@@ -16,7 +16,7 @@ import {
   getReviewWithinLast10Months
 } from '../../api-requests/claim-service-api.js'
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE } from '../../constants/constants.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
 import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney, removeMultipleHerdsSessionData } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 
@@ -36,7 +36,7 @@ const {
   endemicsVetVisitsReviewTestResults,
   endemicsMultipleSpeciesDateException,
   endemicsDairyFollowUpDateException,
-  endemicsSelectTheHerd,
+  endemicsSelectTheHerd
 } = routes
 
 const { claimType, livestockTypes } = claimConstants
@@ -240,7 +240,7 @@ const postHandler = {
           .takeover()
       }
 
-      if(isMultipleHerdsUserJourney(dateOfVisit)) {
+      if (isMultipleHerdsUserJourney(dateOfVisit)) {
         setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
       }

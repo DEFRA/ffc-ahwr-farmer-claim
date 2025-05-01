@@ -8,7 +8,7 @@ const { urlPrefix } = config
 const {
   endemicsEnterCphNumber,
   endemicsEnterHerdName,
-  endemicsHerdOthersOnSbi,
+  endemicsHerdOthersOnSbi
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
@@ -23,7 +23,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { herdCph } = getEndemicsClaim(request)
-      return h.view(endemicsEnterCphNumber, { 
+      return h.view(endemicsEnterCphNumber, {
         backLink: previousPageUrl,
         herdCph
       })
@@ -48,7 +48,7 @@ const postHandler = {
             text: 'Eneter the CPH for this herd, format should be nn/nnn/nnnn',
             href: '#herdCph'
           },
-          backLink: previousPageUrl,
+          backLink: previousPageUrl
         }).code(400).takeover()
       }
     },
