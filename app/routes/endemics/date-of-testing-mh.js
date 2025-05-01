@@ -69,7 +69,7 @@ const getTheQuestionAndHintText = (typeOfReview, typeOfLivestock) => {
   }
 
   return {
-    questionText: 'MH When were samples taken?',
+    questionText: 'When were samples taken?',
     questionHintText: `This is the date samples were last taken for this ${reviewOrFollowUpText}. You can find it on the summary the vet gave you.`
   }
 }
@@ -78,6 +78,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    tags: ['mh'],
     handler: async (request, h) => {
       const {
         dateOfVisit,

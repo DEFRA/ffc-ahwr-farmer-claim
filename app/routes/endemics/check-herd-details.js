@@ -33,6 +33,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    tags: ['mh'],
     handler: async (request, h) => {
       const { herdName, herdCph, herdReasons } = getEndemicsClaim(request)
       const herdReasonsText = getHerdReasonsText(herdReasons)

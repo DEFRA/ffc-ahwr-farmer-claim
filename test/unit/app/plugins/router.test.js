@@ -121,6 +121,29 @@ describe('routes plugin test', () => {
     expect(routePaths).toContain('/claim/endemics/which-species')
   })
 
+  test('when multi-herds is enabled, include correct routes', async () => {
+    config.endemics.enabled = true
+    config.multiSpecies.enabled = true
+    config.multiHerds.enabled = true
+
+    const server = await createServer()
+    const routePaths = []
+    server.table()
+      .filter(x => x.settings.tags?.includes('mh'))
+      .forEach((element) => {
+        routePaths.push(element.path)
+      })
+
+    expect(routePaths).toContain('/claim/endemics/date-of-visit')
+    expect(routePaths).toContain('/claim/endemics/select-the-herd')
+    expect(routePaths).toContain('/claim/endemics/enter-herd-name')
+    expect(routePaths).toContain('/claim/endemics/enter-cph-number')
+    expect(routePaths).toContain('/claim/endemics/herd-others-on-sbi')
+    expect(routePaths).toContain('/claim/endemics/enter-herd-details')
+    expect(routePaths).toContain('/claim/endemics/check-herd-details')
+    expect(routePaths).toContain('/claim/endemics/date-of-testing')
+  })
+
   test('when isDev is true, dev-sign-in included in routes', async () => {
     config.devLogin.enabled = true
 

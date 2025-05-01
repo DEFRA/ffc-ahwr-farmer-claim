@@ -1,9 +1,9 @@
 import Joi from 'joi'
+import { v4 as uuidv4 } from 'uuid'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { v4 as uuidv4 } from 'uuid'
 
 const { urlPrefix } = config
 const {
@@ -29,8 +29,7 @@ const getTempHerdId = (request, tempHerdIdFromSession) => {
   return tempHerdId
 }
 
-const getClaimInfo = (request) => {
-  const { previousClaims, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
   const claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
   let dateOfVisitText
   let claimDateText
@@ -59,11 +58,12 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    tags: ['mh'],
     handler: async (request, h) => {
-      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession } = getEndemicsClaim(request)
+      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview } = getEndemicsClaim(request)
       const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
       const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-      const claimInfo = getClaimInfo(request)
+      const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
       const herds = getHerds(typeOfLivestock)
 
       return h.view(endemicsSelectTheHerd, {
@@ -88,10 +88,10 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession } = getEndemicsClaim(request)
+        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
         const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-        const claimInfo = getClaimInfo(request)
+        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
         const herds = getHerds(typeOfLivestock)
 
         return h.view(endemicsSelectTheHerd, {

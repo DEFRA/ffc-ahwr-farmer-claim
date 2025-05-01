@@ -21,6 +21,7 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
+    tags: ['mh'],
     handler: async (request, h) => {
       const { herdName } = getEndemicsClaim(request)
       return h.view(endemicsEnterHerdName, {
