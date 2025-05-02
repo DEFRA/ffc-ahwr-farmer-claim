@@ -107,7 +107,7 @@ describe('enter-cph-number tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn') 
+      expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
     })
   })
 })

@@ -6,7 +6,6 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setEndemicsAndOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
-import { herdOthersOnSbi } from '../../../../../app/routes/endemics/herd-others-on-sbi.js'
 
 const { urlPrefix } = config
 const { endemicsHerdOthersOnSbi: pageUnderTest } = links
@@ -108,7 +107,7 @@ describe('herd-others-on-sbi tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdOthersOnSbi"]').text()).toContain('Select yes if this is the only sheep flock associated with this SBI') 
+      expect($('a[href="#herdOthersOnSbi"]').text()).toContain('Select yes if this is the only sheep flock associated with this SBI')
     })
   })
 })

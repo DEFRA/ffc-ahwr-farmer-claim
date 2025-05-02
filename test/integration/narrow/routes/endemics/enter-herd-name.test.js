@@ -107,7 +107,7 @@ describe('enter-herd-name tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdName"]').text()).toContain('Select the herd name') 
+      expect($('a[href="#herdName"]').text()).toContain('Select the herd name')
     })
   })
 })

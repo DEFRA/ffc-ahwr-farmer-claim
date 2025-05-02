@@ -62,7 +62,7 @@ describe('enter-herd-details tests', () => {
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
-        herdReasons: ['differentBreed','other']
+        herdReasons: ['differentBreed', 'other']
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -110,7 +110,7 @@ describe('enter-herd-details tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this seperate herd') 
+      expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this seperate herd')
     })
   })
 })
