@@ -16,6 +16,9 @@ describe('routes plugin test', () => {
 
   test('routes included', async () => {
     config.endemics.enabled = false
+    config.multiSpecies.enabled = false
+    config.multiHerds.enabled = false
+    config.devLogin.enabled = false
     const server = await createServer()
     const routePaths = []
     server.table().forEach((element) => {
@@ -36,6 +39,7 @@ describe('routes plugin test', () => {
     config.endemics.enabled = true
     config.multiSpecies.enabled = false
     config.multiHerds.enabled = false
+    config.devLogin.enabled = false
 
     const server = await createServer()
     const routePaths = []

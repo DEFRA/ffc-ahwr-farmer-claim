@@ -17,12 +17,16 @@ jest.mock('../../../../../app/config', () => {
     },
     multiSpecies: {
       enabled: false
+    },
+    multiHerds: {
+      enabled: false
     }
   }
 })
 
 describe('Endemics which species test', () => {
   config.multiSpecies.enabled = false
+  config.multiHerds.enabled = false
   setEndemicsClaim.mockImplementation(() => { })
 
   jest.mock('../../../../../app/config/auth', () => {
