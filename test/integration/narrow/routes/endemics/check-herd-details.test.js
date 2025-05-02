@@ -15,7 +15,6 @@ jest.mock('../../../../../app/api-requests/claim-service-api')
 
 const assertLinkExistsFor = ($, spanText) => {
   const link = $('a.govuk-link').filter((_, el) => {
-    console.log($(el).text().trim())
     return $(el).text().trim() === 'Change ' + spanText
   })
   return link.length > 0
