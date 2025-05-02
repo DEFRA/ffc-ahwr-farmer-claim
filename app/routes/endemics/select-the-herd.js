@@ -46,7 +46,7 @@ const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
   return { species: typeOfLivestock, claimType: claimTypeText, lastVisitDate: dateOfVisitText, claimDate: claimDateText }
 }
 const getHerds = (species) => {
-  // TODO BH getHerds for call to API
+  // TODO MultiHerds getHerds for call to API
   const name = species === 'sheep' ? 'Breeding Flock' : 'Commercial Herd'
   return [{ herdId: '909bb722-3de1-443e-8304-0bba8f922048', name: name }]
 }
