@@ -35,6 +35,7 @@ describe('routes plugin test', () => {
   test('routes included - endemics enabled', async () => {
     config.endemics.enabled = true
     config.multiSpecies.enabled = false
+    config.multiHerds.enabled = false
 
     const server = await createServer()
     const routePaths = []
@@ -108,6 +109,7 @@ describe('routes plugin test', () => {
   test('when multi-species is enabled, include correct routes', async () => {
     config.endemics.enabled = true
     config.multiSpecies.enabled = true
+    config.multiHerds.enabled = false
 
     const server = await createServer()
     const routePaths = []
