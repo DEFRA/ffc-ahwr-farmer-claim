@@ -267,7 +267,7 @@ const postHandler = {
         setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
-          .view(`${endemicsDateOfVisitException}-mh`, {
+          .view(`${endemicsDateOfVisitException}-ms`, {
             backLink: pageUrl,
             errorMessage,
             ruralPaymentsAgency: config.ruralPaymentsAgency,

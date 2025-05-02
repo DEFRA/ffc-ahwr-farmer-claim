@@ -47,7 +47,7 @@ describe('check-herd-details tests', () => {
   })
 
   describe('GET', () => {
-    // TODO MultiHerd duplicate test to check flock when sheep
+    // TODO MultiHerds duplicate test to check flock when sheep
     test('returns 200 with herd labels when species beef, also change links are correct', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',

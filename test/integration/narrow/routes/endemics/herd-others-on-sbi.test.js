@@ -41,7 +41,7 @@ describe('herd-others-on-sbi tests', () => {
 
   describe('GET', () => {
     test('returns 200 with herd labels when species beef', async () => {
-      // TODO MultiHerd change test to check flock when sheep
+      // TODO MultiHerds change test to check flock when sheep
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
