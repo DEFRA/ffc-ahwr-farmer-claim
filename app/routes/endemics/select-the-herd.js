@@ -19,13 +19,12 @@ const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
 const { endemicsClaim: { tempHerdId: tempHerdIdKey, herdId: herdIdKey, herdVersion: herdVersionKey } } = sessionKeys
 
 const getTempHerdId = (request, tempHerdIdFromSession) => {
-  let tempHerdId
   if (tempHerdIdFromSession) {
-    tempHerdId = tempHerdIdFromSession
-  } else {
-    tempHerdId = uuidv4()
-    setEndemicsClaim(request, tempHerdIdKey, tempHerdId)
+    return tempHerdIdFromSession
   }
+
+  const tempHerdId = uuidv4()
+  setEndemicsClaim(request, tempHerdIdKey, tempHerdId)
   return tempHerdId
 }
 
@@ -68,6 +67,7 @@ const getHandler = {
 
       return h.view(endemicsSelectTheHerd, {
         backLink: previousPageUrl,
+        pageTitleText: herds.length > 1 ? `Select the ${herdOrFlock} you are claiming for` : `Is this the same ${herdOrFlock} you have previously claimed for?`,
         tempHerdId,
         ...claimInfo,
         herds,
@@ -97,10 +97,11 @@ const postHandler = {
         return h.view(endemicsSelectTheHerd, {
           ...request.payload,
           errorMessage: {
-            text: 'Select the ' + herdOrFlock + ' you are claiming for',
+            text: `Select the ${herdOrFlock} you are claiming for`,
             href: '#herdId'
           },
           backLink: previousPageUrl,
+          pageTitleText: herds.length > 1 ? `Select the ${herdOrFlock} you are claiming for` : `Is this the same ${herdOrFlock} you have previously claimed for?`,
           tempHerdId,
           ...claimInfo,
           herds,

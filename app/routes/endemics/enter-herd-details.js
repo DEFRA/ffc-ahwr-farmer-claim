@@ -49,7 +49,7 @@ const postHandler = {
         return h.view(endemicsEnterHerdDetails, {
           ...request.payload,
           errorMessage: {
-            text: 'Select the reasons for this seperate herd',
+            text: 'Select the reasons for this separate herd',
             href: '#herdReasons'
           },
           backLink: previousPageUrl,

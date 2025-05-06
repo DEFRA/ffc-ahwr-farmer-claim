@@ -110,7 +110,7 @@ describe('enter-herd-details tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this seperate herd')
+      expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this separate herd')
     })
   })
 })

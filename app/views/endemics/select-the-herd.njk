@@ -1,13 +1,5 @@
 {% extends './layouts/layout.njk' %}
 
-{% set isSingleHerd = herds.length == 1 %}
-
-{% if isSingleHerd %}
-  {% set pageTitleText = "Is this the same "+herdOrFlock+" you have previously claimed for?" %}
-{% else %}
-  {% set pageTitleText = "Select the "+herdOrFlock+" you are claiming for" %}
-{% endif %}
-
 {% block pageTitle %}{{pageTitleText}} - {{serviceName}} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
@@ -33,8 +25,8 @@
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        {% if isSingleHerd %}
-          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Is this the same {{herdOrFlock}} you have previously claimed for?</h1>
+        {% if herds.length == 1 %}
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">{{ pageTitleText }}</h1>
           <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one {{herdOrFlock}}.</p>
           <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
           {{ 
