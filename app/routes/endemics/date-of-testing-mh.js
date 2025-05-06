@@ -75,6 +75,7 @@ const getTheQuestionAndHintText = (typeOfReview, typeOfLivestock) => {
 }
 
 const onAnotherDateInputId = 'on-another-date'
+const dateOfSamplingText = 'Date of sampling'
 
 const getHandler = {
   method: 'GET',
@@ -150,7 +151,7 @@ const postHandler = {
               is: 'onAnotherDate',
               then: validateDateInputDay(
                 onAnotherDateInputId,
-                'Date of sampling'
+                dateOfSamplingText
               ).messages({
                 'dateInputDay.ifNothingIsEntered':
                   'Enter the date samples were taken'
@@ -170,7 +171,7 @@ const postHandler = {
               is: 'onAnotherDate',
               then: validateDateInputMonth(
                 onAnotherDateInputId,
-                'Date of sampling'
+                dateOfSamplingText
               )
             },
             {
@@ -187,7 +188,7 @@ const postHandler = {
               is: 'onAnotherDate',
               then: validateDateInputYear(
                 onAnotherDateInputId,
-                'Date of sampling',
+                dateOfSamplingText,
                 (value, helpers) => {
                   if (value > 9999 || value < 1000) {
                     return value
@@ -367,33 +368,10 @@ const postHandler = {
             request.payload[`${onAnotherDateInputId}-day`]
           )
 
-      if (
-        !isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) &&
-        typeOfReview === claimType.review
-      ) {
-        const errorMessage =
-          'Samples should have been taken no more than 4 months before or after the date of review.'
-        raiseInvalidDataEvent(
-          request,
-          dateOfTestingKey,
-          `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`
-        )
-        return h
-          .view(endemicsDateOfTestingException, {
-            backLink: pageUrl,
-            ruralPaymentsAgency,
-            errorMessage
-          })
-          .code(400)
-          .takeover()
-      }
+      if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
+        const claimTypeText = typeOfReview === claimType.review ? 'review' : 'follow-up'
+        const errorMessage = `Samples should have been taken no more than 4 months before or after the date of ${claimTypeText}.`
 
-      if (
-        !isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) &&
-        typeOfReview === claimType.endemics
-      ) {
-        const errorMessage =
-          'Samples should have been taken no more than 4 months before or after the date of follow-up.'
         raiseInvalidDataEvent(
           request,
           dateOfTestingKey,
@@ -415,11 +393,12 @@ const postHandler = {
         latestVetVisitApplication,
         typeOfLivestock
       )
+
       if (
         typeOfReview === claimType.endemics &&
         previousReviewClaim &&
         isDateOfTestingLessThanDateOfVisit(
-          previousReviewClaim?.data?.dateOfVisit,
+          previousReviewClaim.data.dateOfVisit,
           dateOfTesting
         )
       ) {

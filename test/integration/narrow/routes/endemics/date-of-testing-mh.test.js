@@ -249,36 +249,6 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
 
     test.each([
       {
-        description: 'When vet visited the farm',
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth() + 1,
-        onAnotherDateYear: today.getFullYear(),
-        dateOfVisit: yesterday
-      }
-    ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
-        .mockImplementationOnce(() => { return { dateOfVisit } })
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    })
-
-    test.each([
-      {
         whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
         dateOfVisit: today
       }

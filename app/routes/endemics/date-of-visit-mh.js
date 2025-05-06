@@ -98,12 +98,13 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
 
   const [day, month, year] = Object.values(request.payload)
   const dateEnteredIsValid = isValidDate(Number(year), Number(month), Number(day))
+  const visitDateDayHref = '#visit-date-day'
 
   if (!dateEnteredIsValid) {
     return {
       errorSummary: [{
         text: 'Error: The date of review must be a real date',
-        href: '#visit-date-day'
+        href: visitDateDayHref
       }],
       inputsInError: { day: true, month: true, year: true }
     }
@@ -116,7 +117,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} must be in the past`,
-        href: '#visit-date-day'
+        href: visitDateDayHref
       }],
       inputsInError: { day: true, month: true, year: true }
     }
@@ -128,7 +129,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     return {
       errorSummary: [{
         text: `Error: The date of ${reviewOrFollowUpText} cannot be before the date your agreement began`,
-        href: '#visit-date-day'
+        href: visitDateDayHref
       }],
       inputsInError: { day: true, month: true, year: true }
     }
@@ -223,10 +224,14 @@ const postHandler = {
       let exception
       let exceptionView
 
-      if (isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE) {
+      const claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased = isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+
+      if (claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased) {
         exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
         exceptionView = endemicsDairyFollowUpDateException
-      } else if (isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
+      }
+
+      if (!claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased && isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
         exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
         exceptionView = endemicsMultipleSpeciesDateException
       }
