@@ -7,7 +7,7 @@ import { visitDate } from '../../config/visit-date.js'
 import routes from '../../config/routes.js'
 import { isValidDate } from '../../lib/date-utils.js'
 import { getReviewType } from '../../lib/get-review-type.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getEndemicsClaim, setEndemicsClaim, removeMultipleHerdsSessionData } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
@@ -17,7 +17,7 @@ import {
 } from '../../api-requests/claim-service-api.js'
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney, removeMultipleHerdsSessionData } from '../../lib/context-helper.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 
 const {
