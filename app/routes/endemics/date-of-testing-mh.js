@@ -74,6 +74,8 @@ const getTheQuestionAndHintText = (typeOfReview, typeOfLivestock) => {
   }
 }
 
+const onAnotherDateInputId = 'on-another-date'
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
@@ -142,12 +144,12 @@ const postHandler = {
             'any.required': 'Enter the date samples were taken'
           }),
 
-        'on-another-date-day': Joi.when('whenTestingWasCarriedOut', {
+        [`${onAnotherDateInputId}-day`]: Joi.when('whenTestingWasCarriedOut', {
           switch: [
             {
               is: 'onAnotherDate',
               then: validateDateInputDay(
-                'on-another-date',
+                onAnotherDateInputId,
                 'Date of sampling'
               ).messages({
                 'dateInputDay.ifNothingIsEntered':
@@ -162,12 +164,12 @@ const postHandler = {
           otherwise: Joi.allow('')
         }),
 
-        'on-another-date-month': Joi.when('whenTestingWasCarriedOut', {
+        [`${onAnotherDateInputId}-month`]: Joi.when('whenTestingWasCarriedOut', {
           switch: [
             {
               is: 'onAnotherDate',
               then: validateDateInputMonth(
-                'on-another-date',
+                onAnotherDateInputId,
                 'Date of sampling'
               )
             },
@@ -179,12 +181,12 @@ const postHandler = {
           otherwise: Joi.allow('')
         }),
 
-        'on-another-date-year': Joi.when('whenTestingWasCarriedOut', {
+        [`${onAnotherDateInputId}-year`]: Joi.when('whenTestingWasCarriedOut', {
           switch: [
             {
               is: 'onAnotherDate',
               then: validateDateInputYear(
-                'on-another-date',
+                onAnotherDateInputId,
                 'Date of sampling',
                 (value, helpers) => {
                   if (value > 9999 || value < 1000) {
@@ -200,18 +202,18 @@ const postHandler = {
 
                   if (
                     !isValidDate(
-                      +helpers.state.ancestors[0]['on-another-date-year'],
-                      +helpers.state.ancestors[0]['on-another-date-month'],
-                      +helpers.state.ancestors[0]['on-another-date-day']
+                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
+                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-month`],
+                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-day`]
                     )
                   ) {
                     return value
                   }
 
                   const dateOfTesting = new Date(
-                    helpers.state.ancestors[0]['on-another-date-year'],
-                    helpers.state.ancestors[0]['on-another-date-month'] - 1,
-                    helpers.state.ancestors[0]['on-another-date-day']
+                    helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
+                    helpers.state.ancestors[0][`${onAnotherDateInputId}-month`] - 1,
+                    helpers.state.ancestors[0][`${onAnotherDateInputId}-day`]
                   )
 
                   const currentDate = new Date()
@@ -276,7 +278,7 @@ const postHandler = {
 
         const newError = addError(
           error,
-          'on-another-date',
+          onAnotherDateInputId,
           'ifTheDateIsIncomplete',
           '#when-was-endemic-disease-or-condition-testing-carried-out'
         )
@@ -304,35 +306,35 @@ const postHandler = {
                 : undefined,
               onAnotherDate: {
                 day: {
-                  value: request.payload['on-another-date-day'],
+                  value: request.payload[`${onAnotherDateInputId}-day`],
                   error: error.details.find(
                     (e) =>
-                      e.context.label === 'on-another-date-day' ||
+                      e.context.label === `${onAnotherDateInputId}-day` ||
                       e.type.startsWith('dateOfTesting')
                   )
                 },
                 month: {
-                  value: request.payload['on-another-date-month'],
+                  value: request.payload[`${onAnotherDateInputId}-month`],
                   error: error.details.find(
                     (e) =>
-                      e.context.label === 'on-another-date-month' ||
+                      e.context.label === `${onAnotherDateInputId}-month` ||
                       e.type.startsWith('dateOfTesting')
                   )
                 },
                 year: {
-                  value: request.payload['on-another-date-year'],
+                  value: request.payload[`${onAnotherDateInputId}-year`],
                   error: error.details.find(
                     (e) =>
-                      e.context.label === 'on-another-date-year' ||
+                      e.context.label === `${onAnotherDateInputId}-year` ||
                       e.type.startsWith('dateOfTesting')
                   )
                 },
                 errorMessage: error.details.find((e) =>
-                  e.context.label.startsWith('on-another-date')
+                  e.context.label.startsWith(onAnotherDateInputId)
                 )
                   ? {
                       text: error.details.find((e) =>
-                        e.context.label.startsWith('on-another-date')
+                        e.context.label.startsWith(onAnotherDateInputId)
                       ).message
                     }
                   : undefined
@@ -360,9 +362,9 @@ const postHandler = {
         'whenTheVetVisitedTheFarmToCarryOutTheReview'
           ? dateOfVisit
           : new Date(
-            request.payload['on-another-date-year'],
-            request.payload['on-another-date-month'] - 1,
-            request.payload['on-another-date-day']
+            request.payload[`${onAnotherDateInputId}-year`],
+            request.payload[`${onAnotherDateInputId}-month`] - 1,
+            request.payload[`${onAnotherDateInputId}-day`]
           )
 
       if (
