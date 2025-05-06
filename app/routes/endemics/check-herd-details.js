@@ -53,10 +53,10 @@ const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       return h.redirect(nextPageUrl)
     }
   }
 }
 
-export const checkHerdDetails = [getHandler, postHandler]
+export const checkHerdDetailsHandlers = [getHandler, postHandler]

@@ -38,7 +38,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        herdName: Joi.string().required()
+        herdName: Joi.string().trim().min(2).max(35).required()
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
@@ -46,7 +46,7 @@ const postHandler = {
         return h.view(endemicsEnterHerdName, {
           ...request.payload,
           errorMessage: {
-            text: 'Select the herd name',
+            text: 'Name must be between 2 and 35 characters',
             href: '#herdName'
           },
           backLink: previousPageUrl
@@ -61,4 +61,4 @@ const postHandler = {
   }
 }
 
-export const enterHerdName = [getHandler, postHandler]
+export const enterHerdNameHandlers = [getHandler, postHandler]

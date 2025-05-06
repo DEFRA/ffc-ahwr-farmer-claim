@@ -119,4 +119,4 @@ const postHandler = {
   }
 }
 
-export const selectTheHerd = [getHandler, postHandler]
+export const selectTheHerdHandlers = [getHandler, postHandler]

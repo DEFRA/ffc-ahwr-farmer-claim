@@ -48,8 +48,7 @@ const postHandler = {
             text: 'Select yes if this is the only sheep flock associated with this SBI',
             href: '#herdOthersOnSbi'
           },
-          backLink: previousPageUrl,
-          herdOthersOnSbi
+          backLink: previousPageUrl
         }).code(400).takeover()
       }
     },
@@ -61,4 +60,4 @@ const postHandler = {
   }
 }
 
-export const herdOthersOnSbi = [getHandler, postHandler]
+export const herdOthersOnSbiHandlers = [getHandler, postHandler]

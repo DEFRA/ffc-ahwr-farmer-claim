@@ -34,12 +34,12 @@ import { dateOfVisitMSHandlers } from '../routes/endemics/date-of-visit-ms.js'
 import { whichSpeciesMsHandlers } from '../routes/endemics/which-species-ms.js'
 import { whichReviewMSHandlers } from '../routes/endemics/which-type-of-review-ms.js'
 import { dateOfVisitMhHandlers } from '../routes/endemics/date-of-visit-mh.js'
-import { selectTheHerd } from '../routes/endemics/select-the-herd.js'
-import { enterHerdName } from '../routes/endemics/enter-herd-name.js'
-import { enterCphNumber } from '../routes/endemics/enter-cph-number.js'
-import { herdOthersOnSbi } from '../routes/endemics/herd-others-on-sbi.js'
-import { enterHerdDetails } from '../routes/endemics/enter-herd-details.js'
-import { checkHerdDetails } from '../routes/endemics/check-herd-details.js'
+import { selectTheHerdHandlers } from '../routes/endemics/select-the-herd.js'
+import { enterHerdNameHandlers } from '../routes/endemics/enter-herd-name.js'
+import { enterCphNumberHandlers } from '../routes/endemics/enter-cph-number.js'
+import { herdOthersOnSbiHandlers } from '../routes/endemics/herd-others-on-sbi.js'
+import { enterHerdDetailsHandlers } from '../routes/endemics/enter-herd-details.js'
+import { checkHerdDetailsHandlers } from '../routes/endemics/check-herd-details.js'
 import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
 import { multiHerdsPocPagesHandlers } from '../routes/endemics/multi-herds-poc-handler.js'
 
@@ -93,12 +93,12 @@ const endemicsWithMhOnHandlers = [
   whichSpeciesMsHandlers,
   dateOfVisitMhHandlers,
   dateOfTestingMhHandlers,
-  selectTheHerd,
-  enterHerdName,
-  enterCphNumber,
-  herdOthersOnSbi,
-  enterHerdDetails,
-  checkHerdDetails
+  selectTheHerdHandlers,
+  enterHerdNameHandlers,
+  enterCphNumberHandlers,
+  herdOthersOnSbiHandlers,
+  enterHerdDetailsHandlers,
+  checkHerdDetailsHandlers
 ].flat()
 
 let routes

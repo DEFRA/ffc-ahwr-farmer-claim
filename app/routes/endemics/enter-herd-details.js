@@ -65,4 +65,4 @@ const postHandler = {
   }
 }
 
-export const enterHerdDetails = [getHandler, postHandler]
+export const enterHerdDetailsHandlers = [getHandler, postHandler]

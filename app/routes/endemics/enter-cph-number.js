@@ -61,4 +61,4 @@ const postHandler = {
   }
 }
 
-export const enterCphNumber = [getHandler, postHandler]
+export const enterCphNumberHandlers = [getHandler, postHandler]
