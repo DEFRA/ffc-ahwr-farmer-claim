@@ -41,7 +41,6 @@ import { herdOthersOnSbiHandlers } from '../routes/endemics/herd-others-on-sbi.j
 import { enterHerdDetailsHandlers } from '../routes/endemics/enter-herd-details.js'
 import { checkHerdDetailsHandlers } from '../routes/endemics/check-herd-details.js'
 import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
-import { multiHerdsPocPagesHandlers } from '../routes/endemics/multi-herds-poc-handler.js'
 
 const alwaysOnRouteHandlers = [
   assetsRouteHandlers,
@@ -118,7 +117,6 @@ const mapRoutes = () => {
 
   if (config.devLogin.enabled) {
     routes = routes.concat(devSignInHandlers)
-    routes = routes.concat(multiHerdsPocPagesHandlers)
   }
 }
 
