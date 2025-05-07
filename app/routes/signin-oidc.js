@@ -44,7 +44,7 @@ export const signInHandler = {
       try {
         const { referer } = request.headers
         const { code, state } = request.query
-    
+
         request.logger.info('Claim signin-oidc handler invoked', {
           source: 'claim/signin-oidc',
           referer,
