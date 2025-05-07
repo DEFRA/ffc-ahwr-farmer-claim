@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Check herd details - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}Check {{ herdOrFlock }} details - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -10,56 +10,81 @@
   }) }}
 {% endblock %}
 
+{% set rows = [
+  {
+    key: {
+      text: herdOrFlock | capitalize ~ " name"
+    },
+    value: {
+      text: herdName
+    }
+  },
+  {
+    key: {
+      text: "CPH number for " ~ herdOrFlock
+    },
+    value: {
+      text: herdCph
+    },
+    actions: {
+      items: [
+        {
+          href: herdCphLink,
+          text: "Change",
+          visuallyHiddenText: "CPH number"
+        }
+      ]
+    }
+  },
+  {
+    key: {
+      text: "Only " ~ herdOrFlock ~ " associated with SBI"
+    },
+    value: {
+      text: herdOthersOnSbi | capitalize
+    },
+    actions: {
+      items: [
+        {
+          href: herdOthersOnSbiLink,
+          text: "Change",
+          visuallyHiddenText: "Only " ~ herdOrFlock ~ " associated with SBI"
+        }
+      ]
+    }
+  }
+] %}
+
+{% if herdReasons %}
+  {% set rows = rows.concat([
+    {
+      key: {
+        text: herdOrFlock | capitalize ~ " details"
+      },
+      value: {
+        html: herdReasons
+      },
+      actions: {
+        items: [
+          {
+            href: herdReasonsLink,
+            text: "Change",
+            visuallyHiddenText: herdOrFlock | capitalize ~ " details"
+          }
+        ]
+      }
+    }
+  ]) %}
+{% endif %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-l">Check herd details</h1>
+      <h1 class="govuk-heading-l">Check {{ herdOrFlock }} details</h1>
 
       {{ govukSummaryList({
       classes: "govuk-!-margin-bottom-9",
-      rows: [
-      {
-        key: {
-          text: "Herd name"
-        },
-        value: {
-          text: herdName
-        }
-      },
-      {
-        key: {
-          text: "CPH number for herd"
-        },
-        value: {
-          text: herdCph
-        },
-        actions: {
-          items: [
-            {
-              href: herdCphLink,
-              text: "Change",
-              visuallyHiddenText: "CPH number"
-            }
-          ]
-        }
-      },
-      {
-        key: {
-          text: "Herd details"
-        },
-        value: {
-          html: herdReasons
-        },
-        actions: {
-          items: [
-            {
-              href: herdReasonsLink,
-              text: "Change",
-              visuallyHiddenText: "herd details"
-            }
-          ]
-        }
-      }]
+      rows: rows
     }) }}
 
       <form method="POST">

@@ -1,5 +1,5 @@
 import wreck from '@hapi/wreck'
-import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
+import { getAllApplicationsBySbi, getHerds } from '../../../../app/api-requests/application-service-api.js'
 
 const mockApplicationApiUri = 'http://internal:3333/api'
 jest.mock('@hapi/wreck')
@@ -127,8 +127,8 @@ describe('Application API', () => {
       expect(response).not.toBeNull()
       expect(wreck.get).toHaveBeenCalledTimes(1)
       expect(wreck.get).toHaveBeenCalledWith(
-          `${mockApplicationApiUri}/applications/latest?sbi=${SBI}`,
-          options
+        `${mockApplicationApiUri}/applications/latest?sbi=${SBI}`,
+        options
       )
     })
 
@@ -174,5 +174,54 @@ describe('Application API', () => {
         options
       )
     })
+  })
+})
+
+describe('getHerds', () => {
+  const applicationReference = 'IAHW-EC3S-HC67'
+  const typeOfLivestock = 'cattle'
+  const logger = { setBindings: jest.fn() }
+
+  const endpoint = `${mockApplicationApiUri}/application/${applicationReference}/herds?typeOfLivestock=${typeOfLivestock}`
+
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
+  it('should return herds when herds exists for applicationRef and typeOfLivestock', async () => {
+    const mockPayload = [
+      {
+        herdId: '766821c6-731c-402e-a24d-6a16b2921769',
+        herdName: 'Sample herd one',
+        cph: '22/222/2222',
+        herdReasons: ['separateManagementNeeds', 'differentBreed'],
+        herdVersion: 1
+      }
+    ]
+    wreck.get.mockResolvedValueOnce({ payload: mockPayload })
+
+    const result = await getHerds(applicationReference, typeOfLivestock, logger)
+
+    expect(wreck.get).toHaveBeenCalledWith(endpoint, { json: true })
+    expect(result).toEqual(mockPayload)
+  })
+
+  it('should return empty array when herd does not exist', async () => {
+    const error = new Error('Not found')
+    error.output = { statusCode: 404 }
+    wreck.get.mockRejectedValueOnce(error)
+
+    const result = await getHerds(applicationReference, typeOfLivestock, logger)
+
+    expect(result).toEqual([])
+  })
+
+  it('should throw and log error for non-404 errors', async () => {
+    const error = new Error('Server error')
+    error.output = { statusCode: 500 }
+    wreck.get.mockRejectedValue(error)
+
+    await expect(getHerds(applicationReference, typeOfLivestock, logger)).rejects.toThrow('Server error')
+    expect(logger.setBindings).toHaveBeenCalledWith({ err: error })
   })
 })

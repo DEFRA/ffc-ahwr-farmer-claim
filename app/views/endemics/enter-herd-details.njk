@@ -22,8 +22,8 @@
           }) }}
       {% endif %}
 
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the herd details</h1>
-      <p class="govuk-hint govuk-!-margin-bottom-7">You can find this information on the ‘Tell us about a herd or flock’ section of the form that the vet filled in for you.</p>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the {{ herdOrFlock }} details</h1>
+      <p class="govuk-hint govuk-!-margin-bottom-7">You can find this information on the ‘Tell us about this {{ herdOrFlock }}' section of the form that the vet filled in for you.</p>
 
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -35,7 +35,7 @@
               errorMessage: errorMessage,
               fieldset: {
                   legend: {
-                    text: "The herd or flock is a separate herd or flock (epidemiologically distinct unit) because:",
+                    text: "The " ~ herdOrFlock ~ " is a separate " ~ herdOrFlock ~ " (epidemiologically distinct unit) of this species because:",
                     classes: "govuk-fieldset__legend--m"
                   }
                 },
@@ -50,7 +50,7 @@
               },
               {
                   value: "uniqueHealthNeeds",
-                  text: "They have unique health needs to other herds on the farm (if present)",
+                  text: "They have unique health needs",
                   checked: herdReasons.includes('uniqueHealthNeeds')
               },
               {
@@ -60,17 +60,17 @@
               },
               {
                   value: "differentPurpose",
-                  text: "They are used for another purpose than the other herd(s) (e.g. milking cattle)",
+                  text: "They are used for another purpose (e.g. breeding)",
                   checked: herdReasons.includes('differentPurpose')
               },
               {
                   value: "keptSeparate",
-                  text: "They have been kept completely separate from any other herds",
+                  text: "They have been kept completely separate",
                   checked: herdReasons.includes('keptSeparate')
               },
               {
                   value: "other",
-                  text: "Other",
+                  text: "Other reasons based on my vet's judgement",
                   checked: herdReasons.includes('other')
               }]
             }) 

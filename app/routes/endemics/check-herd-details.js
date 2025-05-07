@@ -1,5 +1,6 @@
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 
 const { urlPrefix } = config
@@ -7,24 +8,25 @@ const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
   endemicsDateOfTesting,
-  endemicsEnterCphNumber
+  endemicsEnterCphNumber,
+  endemicsHerdOthersOnSbi
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const previousPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const nextPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
-const herdReasonsLink = previousPageUrl
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const getHerdReasonsText = (herdReasons) => {
   const herdReasonDescriptions = {
     separateManagementNeeds: 'They have separate management needs',
-    uniqueHealthNeeds: 'They have unique health needs to other herds on the farm (if present)',
+    uniqueHealthNeeds: 'They have unique health needs',
     differentBreed: 'They are a different breed',
-    differentPurpose: 'They are used for another purpose than the other herd(s) (e.g. milking cattle)',
-    keptSeparate: 'They have been kept completely separate from any other herds',
-    other: 'Other'
+    differentPurpose: 'They are used for another purpose (e.g. breeding)',
+    keptSeparate: 'They have been kept completely separate',
+    other: 'Other reasons based on my vet\'s judgement'
   }
   return herdReasons?.map(key => herdReasonDescriptions[key]).join(',<br>')
 }
@@ -35,15 +37,19 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdName, herdCph, herdReasons } = getEndemicsClaim(request)
+      const { herdName, herdCph, herdReasons, herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
       const herdReasonsText = getHerdReasonsText(herdReasons)
+
       return h.view(endemicsCheckHerdDetails, {
-        backLink: previousPageUrl,
+        backLink: herdOthersOnSbi === 'yes' ? herdOthersOnSbiPageUrl : enterHerdDetailsPageUrl,
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
+        herdOthersOnSbi,
         herdCphLink,
-        herdReasonsLink
+        herdReasonsLink: enterHerdDetailsPageUrl,
+        herdOthersOnSbiLink: herdOthersOnSbiPageUrl,
+        herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
   }

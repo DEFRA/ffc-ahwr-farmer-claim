@@ -19,11 +19,12 @@ import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-cla
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
 import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney, removeMultipleHerdsSessionData } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
+import { getHerds } from '../../api-requests/application-service-api.js'
 
 const {
   endemicsClaim: {
     reviewTestResults: reviewTestResultsKey, dateOfVisit: dateOfVisitKey,
-    relevantReviewForEndemics: relevantReviewForEndemicsKey
+    relevantReviewForEndemics: relevantReviewForEndemicsKey, herds: herdsKey
   }
 } = sessionKeys
 
@@ -36,7 +37,8 @@ const {
   endemicsVetVisitsReviewTestResults,
   endemicsMultipleSpeciesDateException,
   endemicsDairyFollowUpDateException,
-  endemicsSelectTheHerd
+  endemicsSelectTheHerd,
+  endemicsEnterHerdName
 } = routes
 
 const { claimType, livestockTypes } = claimConstants
@@ -243,7 +245,14 @@ const postHandler = {
 
       if (isMultipleHerdsUserJourney(dateOfVisit)) {
         setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-        return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
+        const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
+        setEndemicsClaim(request, herdsKey, herds)
+
+        if (herds.length) {
+          return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
+        } else {
+          return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
+        }
       }
 
       // all of below only applies when user rejects T&Cs

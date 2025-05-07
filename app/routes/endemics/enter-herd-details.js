@@ -3,6 +3,7 @@ import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
@@ -23,10 +24,11 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdReasons } = getEndemicsClaim(request)
+      const { herdReasons, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsEnterHerdDetails, {
         backLink: previousPageUrl,
-        herdReasons: [].concat(herdReasons)
+        herdReasons: [].concat(herdReasons),
+        herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
   }

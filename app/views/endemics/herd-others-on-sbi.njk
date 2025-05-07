@@ -12,6 +12,16 @@
   }) }}
 {% endblock %}
 
+{% set titleSpeciesText = '' %}
+
+{% if typeOfLivestock == 'beef' or typeOfLivestock == 'dairy' %}
+  {% set titleSpeciesText = typeOfLivestock ~ ' cattle herd' %}
+{% elif typeOfLivestock == 'pigs' %}
+  {% set titleSpeciesText = 'pigs herd' %}
+{% elif typeOfLivestock == 'sheep' %}
+  {% set titleSpeciesText = 'flock of sheep' %}
+{% endif %}
+
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -33,11 +43,11 @@
               legend:{
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--l",
-                text: 'Is this the only sheep flock associated with this Single Business Identifier (SBI)?'
+                text: 'Is this the only ' ~ titleSpeciesText ~ ' associated with this Single Business Identifier (SBI)?'
               }
             }, 
             hint: {
-              text: "You can find this information on the ‘Tell us about this herd’ section of the form that the vet filled in for you."
+              text: "You can find this information on the ‘Tell us about this " ~ herdOrFlock ~ "’ section of the form that the vet filled in for you."
             }, 
             errorMessage: errorMessage,
             items: [

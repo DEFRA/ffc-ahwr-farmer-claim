@@ -3,19 +3,23 @@ import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { HERD_REASONS, OTHERS_ON_SBI } from '../../constants/herd.js'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
   endemicsHerdOthersOnSbi,
   endemicsEnterCphNumber,
-  endemicsEnterHerdDetails
+  endemicsEnterHerdDetails,
+  endemicsCheckHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
-const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const enterEnterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
-const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey } } = sessionKeys
+const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey, herdReasons: herdReasonsKey } } = sessionKeys
 
 const getHandler = {
   method: 'GET',
@@ -23,10 +27,12 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdOthersOnSbi } = getEndemicsClaim(request)
+      const { herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsHerdOthersOnSbi, {
         backLink: previousPageUrl,
-        herdOthersOnSbi
+        herdOthersOnSbi,
+        herdOrFlock: getHerdOrFlock(typeOfLivestock),
+        typeOfLivestock
       })
     }
   }
@@ -56,7 +62,11 @@ const postHandler = {
     handler: async (request, h) => {
       const { herdOthersOnSbi } = request.payload
       setEndemicsClaim(request, herdOthersOnSbiKey, herdOthersOnSbi)
-      return h.redirect(nextPageUrl)
+      if (herdOthersOnSbi === OTHERS_ON_SBI.YES) {
+        setEndemicsClaim(request, herdReasonsKey, [HERD_REASONS.ONLY_HERD])
+      }
+
+      return h.redirect(herdOthersOnSbi === OTHERS_ON_SBI.YES ? checkHerdDetailsPageUrl : enterEnterHerdDetailsPageUrl)
     }
   }
 }
