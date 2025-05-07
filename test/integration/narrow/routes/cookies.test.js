@@ -1,5 +1,4 @@
 import { createServer } from '../../../../app/server.js'
-import { config } from '../../../../app/config/index.js'
 import expectPhaseBanner from 'assert'
 
 import cheerio from 'cheerio'
@@ -18,8 +17,6 @@ jest.mock('../../../../app/config', () => {
     }
   }
 })
-
-const { serviceName } = config
 
 describe('cookies route', () => {
   let server
@@ -117,7 +114,7 @@ describe('cookies route', () => {
     const response = await server.inject(options)
     expect(response.statusCode).toBe(200)
     const $ = cheerio.load(response.payload)
-    expect($('.govuk-cookie-banner h2').text()).toContain(serviceName)
+    expect($('.govuk-cookie-banner h2').text()).toContain('Get funding to improve animal health and welfare')
     expect($('.js-cookies-button-accept').text()).toContain('Accept analytics cookies')
     expect($('.js-cookies-button-reject').text()).toContain('Reject analytics cookies')
     expectPhaseBanner.ok($)

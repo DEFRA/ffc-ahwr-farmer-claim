@@ -14,7 +14,6 @@ describe('Endemics package test', () => {
 
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
-    process.env.ENDEMICS_ENABLED = 'true'
 
     jest.mock('../../../../../app/config', () => {
       const originalModule = jest.requireActual('../../../../../app/config')

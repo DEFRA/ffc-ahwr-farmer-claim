@@ -82,14 +82,12 @@ const endemicsWithMsOnHandlers = [
 let routes
 const mapRoutes = () => {
   routes = alwaysOnRouteHandlers
-  if (config.endemics.enabled) {
-    routes = routes.concat(endemicsSpecificRouteHandlers)
+  routes = routes.concat(endemicsSpecificRouteHandlers)
 
-    if (!config.multiSpecies.enabled) {
-      routes = routes.concat(endemicsWithMsOffHandlers)
-    } else {
-      routes = routes.concat(endemicsWithMsOnHandlers)
-    }
+  if (!config.multiSpecies.enabled) {
+    routes = routes.concat(endemicsWithMsOffHandlers)
+  } else {
+    routes = routes.concat(endemicsWithMsOnHandlers)
   }
 
   if (config.devLogin.enabled) {

@@ -5,7 +5,7 @@ jest.mock('../../app/config', () => ({
   ...jest.requireActual('../../app/config')
 }))
 const {
-  endemics, optionalPIHunt,
+  optionalPIHunt,
   multiSpecies
 } = config
 
@@ -26,7 +26,6 @@ const ruralPaymentsAgency = {
 }
 
 export const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEnabled }) => {
-  endemics.enabled = endemicsEnabled
   optionalPIHunt.enabled = optionalPIHuntEnabled
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency
