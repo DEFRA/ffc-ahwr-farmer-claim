@@ -1,6 +1,7 @@
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { getEndemicsClaim } from '../../session/index.js'
+import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 
 const { urlPrefix } = config
 const {
@@ -18,15 +19,7 @@ const herdReasonsLink = previousPageUrl
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const getHerdReasonsText = (herdReasons) => {
-  const herdReasonDescriptions = {
-    separateManagementNeeds: 'They have separate management needs',
-    uniqueHealthNeeds: 'They have unique health needs to other herds on the farm (if present)',
-    differentBreed: 'They are a different breed',
-    differentPurpose: 'They are used for another purpose than the other herd(s) (e.g. milking cattle)',
-    keptSeparate: 'They have been kept completely separate from any other herds',
-    other: 'Other'
-  }
-  return herdReasons?.map(key => herdReasonDescriptions[key]).join(',<br>')
+  return herdReasons?.map(key => MULTIPLE_HERD_REASONS[key]).join(',<br>')
 }
 
 const getHandler = {
