@@ -9,12 +9,12 @@ const { urlPrefix } = config
 const {
   endemicsEnterCphNumber,
   endemicsEnterHerdName,
-  endemicsHerdOthersOnSbi
+  endemicsEnterHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 const previousPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
-const nextPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
+const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 
 const { endemicsClaim: { herdCph: herdCphKey } } = sessionKeys
 

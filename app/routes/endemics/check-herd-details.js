@@ -19,7 +19,7 @@ const herdReasonsLink = previousPageUrl
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const getHerdReasonsText = (herdReasons) => {
-  return herdReasons?.map(key => MULTIPLE_HERD_REASONS[key]).join(',<br>')
+  return herdReasons?.map(key => MULTIPLE_HERD_REASONS[key]).join('<br>')
 }
 
 const getHandler = {

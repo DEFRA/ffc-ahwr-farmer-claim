@@ -53,7 +53,7 @@ describe('enter-herd-details tests', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
-      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
       expectPhaseBanner.ok($)
     })
 
@@ -70,7 +70,7 @@ describe('enter-herd-details tests', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
-      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(':checked')).toBeTruthy()
       expect($('.govuk-checkboxes__input[value="other"]').is(':checked')).toBeTruthy()
       expectPhaseBanner.ok($)

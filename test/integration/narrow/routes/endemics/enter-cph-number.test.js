@@ -91,7 +91,7 @@ describe('enter-cph-number tests', () => {
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdCph: '22/333/4444' }, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/herd-others-on-sbi')
+      expect(res.headers.location).toEqual('/claim/endemics/enter-herd-details')
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
 

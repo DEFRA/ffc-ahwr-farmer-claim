@@ -4,16 +4,18 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+// TODO MultiHerds use this to create checkboxes:
+// import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 
 const { urlPrefix } = config
 const {
   endemicsEnterHerdDetails,
-  endemicsHerdOthersOnSbi,
+  endemicsEnterCphNumber,
   endemicsCheckHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
-const previousPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
+const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 const nextPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
 const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
