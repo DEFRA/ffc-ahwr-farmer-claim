@@ -3,6 +3,7 @@ import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const {
@@ -32,13 +33,16 @@ const getHandler = {
   }
 }
 
+const minHerdNameLength = 2
+const maxHerdNameLength = 35
+
 const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
     validate: {
       payload: Joi.object({
-        herdName: Joi.string().trim().min(2).max(35).required()
+        herdName: Joi.string().trim().min(minHerdNameLength).max(maxHerdNameLength).required()
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
@@ -46,11 +50,11 @@ const postHandler = {
         return h.view(endemicsEnterHerdName, {
           ...request.payload,
           errorMessage: {
-            text: 'Name must be between 2 and 35 characters',
+            text: `Name must be between ${minHerdNameLength} and ${maxHerdNameLength} characters`,
             href: '#herdName'
           },
           backLink: previousPageUrl
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {

@@ -3,6 +3,7 @@ import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const {
@@ -50,7 +51,7 @@ const postHandler = {
             href: '#herdCph'
           },
           backLink: previousPageUrl
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
