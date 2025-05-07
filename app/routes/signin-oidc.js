@@ -42,6 +42,18 @@ export const signInHandler = {
     },
     handler: async (request, h) => {
       try {
+        const { referer } = request.headers
+        const { code, state } = request.query
+
+        request.logger.info('Claim signin-oidc handler invoked', {
+          source: 'claim/signin-oidc',
+          referer,
+          code,
+          state,
+          remoteAddress: request.info.remoteAddress,
+          userAgent: request.headers['user-agent']
+        })
+
         await authenticate(request)
 
         const apimAccessToken = await retrieveApimAccessToken(request)
