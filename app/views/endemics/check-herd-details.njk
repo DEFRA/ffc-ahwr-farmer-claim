@@ -5,7 +5,7 @@
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "",
+    href: backLink,
 	attributes: { id: "back" }
   }) }}
 {% endblock %}
@@ -23,16 +23,7 @@
           text: "Herd name"
         },
         value: {
-          text: "Pedigree sheep"
-        },
-        actions: {
-          items: [
-            {
-              href: "#",
-              text: "Change",
-              visuallyHiddenText: "herd name"
-            }
-          ]
+          text: herdName
         }
       },
       {
@@ -40,31 +31,14 @@
           text: "CPH number for herd"
         },
         value: {
-          text: "23/344/5624"
+          text: herdCph
         },
         actions: {
           items: [
             {
-              href: "#",
+              href: herdCphLink,
               text: "Change",
               visuallyHiddenText: "CPH number"
-            }
-          ]
-        }
-      },
-      {
-        key: {
-          text: "Other herds on CPH"
-        },
-        value: {
-          text: "No"
-        },
-        actions: {
-          items: [
-            {
-              href: "#",
-              text: "Change",
-              visuallyHiddenText: "other herds on CPH"
             }
           ]
         }
@@ -74,44 +48,29 @@
           text: "Herd details"
         },
         value: {
-          html: "They have separate management needs<br>They are a different breed<br>Other"
+          html: herdReasons
         },
         actions: {
           items: [
             {
-              href: "#",
+              href: herdReasonsLink,
               text: "Change",
               visuallyHiddenText: "herd details"
-            }
-          ]
-        }
-      },
-      {
-        key: {
-          text: "Tell us why"
-        },
-        value: {
-          text: "These are very distinct because of these reasons. Here is a paragraph about why we are testing them separately."
-        },
-        actions: {
-          items: [
-            {
-              href: "#",
-              text: "Change",
-              visuallyHiddenText: "tell us why they are different"
             }
           ]
         }
       }]
     }) }}
 
+      <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-    
         {{ govukButton({
             text: "Continue",
             attributes: { id: "continue" },
-            preventDoubleClick: true }) 
+            preventDoubleClick: true
+            }) 
         }}
+      </form>
     </div>
   </div>
 {% endblock %}

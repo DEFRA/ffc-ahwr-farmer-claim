@@ -1,6 +1,6 @@
 {
   "name": "ffc-ahwr-farmer-claim",
-  "version": "2.2.8",
+  "version": "2.3.0",
   "description": "Web frontend for farmer claim journey",
   "homepage": "https://github.com/DEFRA/ffc-ahwr-farmer-claim",
   "main": "app/index.js",
@@ -37,11 +37,12 @@
     "@hapi/wreck": "^18.0.0",
     "@hapi/yar": "^10.1.1",
     "applicationinsights": "^2.9.6",
-    "ffc-ahwr-common-library": "2.0.3",
+    "ffc-ahwr-common-library": "2.0.5",
     "ffc-messaging": "^2.10.2",
     "form-data": "^4.0.1",
     "govuk-frontend": "^5.8.0",
     "hapi-pino": "^9.1.2",
+    "http-status-codes": "^2.3.0",
     "joi": "^17.6.0",
     "jsonwebtoken": "^9.0.0",
     "jwk-to-pem": "^2.0.7",
@@ -55,9 +56,9 @@
     "semver": "7.5.2"
   },
   "devDependencies": {
-    "@hapi/catbox-memory": "^5.0.1",
     "@babel/core": "^7.26.0",
     "@babel/plugin-transform-modules-commonjs": "^7.26.3",
+    "@hapi/catbox-memory": "^5.0.1",
     "@types/cheerio": "^0.22.31",
     "@types/hapi__hapi": "^20.0.10",
     "@types/jest": "^27.4.0",

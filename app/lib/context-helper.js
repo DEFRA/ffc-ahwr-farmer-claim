@@ -6,7 +6,7 @@ import { getClaimsByApplicationReference } from '../api-requests/claim-service-a
 import { createTempClaimReference } from './create-temp-claim-reference.js'
 import { claimConstants } from '../constants/claim.js'
 import { config } from '../config/index.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../constants/constants.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE } from '../constants/constants.js'
 
 const {
   endemicsClaim: {
@@ -96,4 +96,9 @@ export const isPIHuntEnabledAndVisitDateAfterGoLive = (dateOfVisit) => {
   }
 
   return isPIHuntEnabled() && dateOfVisitParsed >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+}
+
+export const isMultipleHerdsUserJourney = (dateOfVisit) => {
+  const userAcceptedMultiHerdTCs = true // TODO MultiHerds impl user rejects T&Cs check
+  return config.multiHerds.enabled && userAcceptedMultiHerdTCs && new Date(dateOfVisit) >= MULTIPLE_HERDS_RELEASE_DATE
 }

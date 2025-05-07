@@ -1,38 +1,11 @@
 {% extends './layouts/layout.njk' %}
 
-{% if queryParams.herds is string %}
-  {% set herds = [{ herdId: queryParams.herds, name: 'Show Herd/Flock' }] %}
-{% else %}
-  {% set herds = queryParams.herds %}
-{% endif %}
-{% set isSingleHerd = herds.length == 1 %}
-{% set species = queryParams.species %}
-{% set claimType = queryParams.claimType %}
-{% set lastVisitDate = queryParams.lastVisitDate %}
-{% set claimedDate = queryParams.claimedDate %}
-
-{% if species == 'sheep' %}
-  {% set herdOrFlock = 'flock' %}
-{% else %}
-  {% set herdOrFlock = 'herd' %}
-{% endif %}
-{% if isSingleHerd %}
-  {% set pageTitleText = "Is this the same "+herdOrFlock+" you have previously claimed for?" %}
-{% else %}
-  {% set pageTitleText = "Select the "+herdOrFlock+" you are claiming for" %}
-{% endif %}
-
-{% set errorMessage = {
-  text: "Select the " + herdOrFlock + " you are claiming for",
-  href: "#selectHerdOrFlock"
-} %}
-
 {% block pageTitle %}{{pageTitleText}} - {{serviceName}} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
     text: "Back",
-    href: "",
+    href: backLink,
     attributes: {
       id: "back"
     }
@@ -52,8 +25,8 @@
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
 
-        {% if isSingleHerd %}
-          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Is this the same {{herdOrFlock}} you have previously claimed for?</h1>
+        {% if herds.length == 1 %}
+          <h1 class="govuk-heading-l govuk-!-margin-bottom-2">{{ pageTitleText }}</h1>
           <p class="govuk-hint govuk-!-margin-bottom-7">You can now have reviews and follow-ups on more than one {{herdOrFlock}}.</p>
           <p class="govuk-body govuk-!-font-weight-bold govuk-!-margin-bottom-2">Your last claim for this species:</p>
           {{ 
@@ -85,7 +58,7 @@
                 },
                 {
                   key: {
-                    text: "Last Visit Date"
+                    text: "Last visit date"
                   },
                   value: {
                     text: lastVisitDate
@@ -93,10 +66,10 @@
                 },
                 {
                   key: {
-                    text: "Claimed"
+                    text: "Claim date"
                   },
                   value: {
-                    text: claimedDate
+                    text: claimDate
                   }
                 }
               ]
@@ -104,34 +77,35 @@
           }}
           {{ 
             govukRadios({
-              id: "selectHerdOrFlock",
-              name: "selectHerdOrFlock",
+              id: "herdId",
+              name: "herdId",
               errorMessage: errorMessage,
               items: [
                 {
                   value: herds[0].herdId,
                   text: "Yes, it's the same",
-                  checked: previousAnswer == herds[0].herdId
+                  checked: herdId == herds[0].herdId
                 },
                 {
-                  value: "newHerdOrFlock",
+                  value: tempHerdId,
                   text: "No, it's a different " + herdOrFlock,
-                  checked: previousAnswer == "newHerdOrFlock"
+                  checked: herdId == tempHerdId
                 }
               ]
             })
           }}
         {% else %}
+          {# TODO MultiHerds impl map herds to radios properly #}
           {% set herdOrFlockItems = [] %}
           {% for item in herds %}
-            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item, text: item, checked: previousAnswer == item }]) %}
+            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item, text: item, checked: herdId == item }]) %}
           {% endfor %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
-          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value:"newHerdOrFlock", text: "I am claiming for a different " + herdOrFlock, checked: previousAnswer == "newHerdOrFlock" }]) %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: tempHerdId, text: "I am claiming for a different " + herdOrFlock, checked: herdId === tempHerdId }]) %}
           {{ 
             govukRadios({
-              id: "selectHerdOrFlock",
-              name: "selectHerdOrFlock",
+              id: "herdId",
+              name: "herdId",
               fieldset: {
                 legend: {
                   isPageHeading: true,

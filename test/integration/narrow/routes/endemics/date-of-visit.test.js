@@ -68,6 +68,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     config.multiSpecies.enabled = false
+    config.multiHerds.enabled = false
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })

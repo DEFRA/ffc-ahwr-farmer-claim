@@ -1,4 +1,5 @@
 import { sendSessionEvent } from '../event/send-session-event.js'
+import { sessionKeys } from '../session/keys.js'
 
 const entries = {
   application: 'application',
@@ -10,6 +11,17 @@ const entries = {
   customer: 'customer',
   tempClaimReference: 'tempClaimReference'
 }
+
+const {
+  endemicsClaim: {
+    tempHerdId: tempHerdIdKey,
+    herdId: herdIdKey,
+    herdName: herdNameKey,
+    herdCph: herdCphKey,
+    herdOthersOnSbi: herdOthersOnSbiKey,
+    herdReasons: herdReasonsKey
+  }
+} = sessionKeys
 
 function set (request, entryKey, key, value, status) {
   const entryValue = request.yar?.get(entryKey) || {}
@@ -66,6 +78,17 @@ export function clearEndemicsClaim (request) {
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
   setEndemicsClaim(request, 'latestVetVisitApplication', endemicsClaim?.latestVetVisitApplication)
   setEndemicsClaim(request, 'latestEndemicsApplication', endemicsClaim?.latestEndemicsApplication)
+  removeMultipleHerdsSessionData(request)
+}
+
+export const removeMultipleHerdsSessionData = (request) => {
+  const sessionEndemicsClaim = getEndemicsClaim(request)
+  sessionEndemicsClaim.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined)
+  sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined)
+  sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined)
+  sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined)
+  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined)
+  sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined)
 }
 
 export function setTempClaimReference (request, key, value, status) {

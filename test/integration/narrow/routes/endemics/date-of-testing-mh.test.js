@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setEndemicsAndOptionalPIHunt, setMultiHerds } from '../../../../mocks/config.js'
+import { setEndemicsAndOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
@@ -50,7 +50,8 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(false)
+    setMultiSpecies(true)
+    setMultiHerds(true)
     getEndemicsClaim.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
@@ -248,36 +249,6 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
 
     test.each([
       {
-        description: 'When vet visited the farm',
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth() + 1,
-        onAnotherDateYear: today.getFullYear(),
-        dateOfVisit: yesterday
-      }
-    ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
-        .mockImplementationOnce(() => { return { dateOfVisit } })
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    })
-
-    test.each([
-      {
         whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
         dateOfVisit: today
       }
@@ -400,7 +371,8 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(false)
+    setMultiSpecies(true)
+    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
     setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
