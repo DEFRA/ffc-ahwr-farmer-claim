@@ -19,7 +19,7 @@ export const redeemAuthorizationCodeForAccessToken = async (request) => {
     // Must be authorization_code for the authorization code flow.
     data.append('grant_type', 'authorization_code')
     // The same redirect_uri value that was used to acquire the authorization_code.
-    data.append('redirect_uri', authConfig.defraId.redirectUri)
+    data.append('redirect_uri', authConfig.defraId.dashboardRedirectUri)
     // The same code_verifier that was used to obtain the authorization_code.
     data.append('code_verifier', getPkcecodes(request, sessionKeys.pkcecodes.verifier))
     const { payload } = await wreck.post(
