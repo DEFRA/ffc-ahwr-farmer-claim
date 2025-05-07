@@ -13,7 +13,7 @@ describe('Auth config', () => {
       processEnv: {
         tenant: 'testtenant',
         policy: 'testpolicy',
-        redirectUri: 'http://localhost:3000/apply/signin-oidc',
+        dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
         clientId: 'dummyclientid',
         clientSecret: 'dummyclientsecret',
         jwtIssuerId: 'dummyissuer',
@@ -34,7 +34,6 @@ describe('Auth config', () => {
           hostname: 'https://testtenant.b2clogin.com/testtenant.onmicrosoft.com',
           oAuthAuthorisePath: '/oauth2/v2.0/authorize',
           policy: 'testpolicy',
-          redirectUri: 'http://localhost:3000/apply/signin-oidc',
           dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
           clientId: 'dummyclientid',
           clientSecret: 'dummyclientsecret',
@@ -62,7 +61,6 @@ describe('Auth config', () => {
   ])('GIVEN $processEnv EXPECT $config', (testCase) => {
     process.env.DEFRA_ID_TENANT = testCase.processEnv.tenant
     process.env.DEFRA_ID_POLICY = testCase.processEnv.policy
-    process.env.DEFRA_ID_REDIRECT_URI = testCase.processEnv.redirectUri
     process.env.DEFRA_ID_DASHBOARD_REDIRECT_URI = testCase.config.defraId.dashboardRedirectUri
     process.env.DEFRA_ID_CLIENT_ID = testCase.processEnv.clientId
     process.env.DEFRA_ID_CLIENT_SECRET = testCase.processEnv.clientSecret
@@ -82,20 +80,6 @@ describe('Auth config', () => {
     const config = getAuthConfig()
 
     expect(config).toEqual(testCase.config)
-  })
-
-  test.each([
-    {
-      processEnv: {
-        redirectUri: 'not a uri'
-      },
-      errorMessage: 'The auth config is invalid. "defraId.redirectUri" must be a valid uri'
-    }
-  ])('GIVEN $processEnv EXPECT $errorMessage', (testCase) => {
-    process.env.DEFRA_ID_REDIRECT_URI = testCase.processEnv.redirectUri
-    expect(
-      () => getAuthConfig()
-    ).toThrow(testCase.errorMessage)
   })
 
   afterEach(() => {
