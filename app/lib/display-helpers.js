@@ -21,3 +21,5 @@ export function upperFirstLetter (str) {
 }
 
 export const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
+
+export const getHerdOrFlock = (typeOfLivestock) => typeOfLivestock === 'sheep' ? 'flock' : 'herd'
