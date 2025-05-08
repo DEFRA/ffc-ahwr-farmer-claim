@@ -29,7 +29,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
@@ -280,7 +280,7 @@ describe('Species numbers test when Optional PI Hunt is ON', () => {
   let server
 
   beforeAll(async () => {
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })

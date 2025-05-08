@@ -23,7 +23,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
 
@@ -146,7 +146,7 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })

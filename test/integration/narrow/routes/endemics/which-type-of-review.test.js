@@ -188,7 +188,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
-      setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+      setOptionalPIHunt({ optionalPIHuntEnabled: true })
       getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {

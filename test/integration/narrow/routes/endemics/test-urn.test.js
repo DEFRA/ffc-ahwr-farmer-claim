@@ -22,7 +22,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
@@ -188,7 +188,7 @@ describe('Test URN test when Optional PI Hunt is on', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })

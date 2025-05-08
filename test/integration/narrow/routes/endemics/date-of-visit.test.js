@@ -66,7 +66,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     config.multiSpecies.enabled = false
     config.multiHerds.enabled = false
     server = await createServer()
@@ -712,7 +712,7 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
   })
 
   afterAll(async () => {

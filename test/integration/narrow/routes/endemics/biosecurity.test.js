@@ -37,7 +37,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
   afterAll(async () => {
@@ -268,7 +268,7 @@ describe('Biosecurity test when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 

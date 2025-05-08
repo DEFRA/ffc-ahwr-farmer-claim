@@ -31,7 +31,7 @@ describe('Which type of review test', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     setMultiSpecies(true)
     server = await createServer()
     await server.initialize()
@@ -317,7 +317,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
-      setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+      setOptionalPIHunt({ optionalPIHuntEnabled: true })
       getEndemicsClaim.mockReturnValueOnce({
         typeOfLivestock: 'dairy',
         previousClaims: [{
