@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 
-import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import expectPhaseBanner from 'assert'
@@ -24,7 +24,7 @@ describe('PI Hunt recommended tests', () => {
     getEndemicsClaim.mockImplementation(() => { return { reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
 
   afterAll(async () => {

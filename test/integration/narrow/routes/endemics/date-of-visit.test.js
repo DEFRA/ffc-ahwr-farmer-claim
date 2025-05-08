@@ -3,7 +3,7 @@ import appInsights from 'applicationinsights'
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
-import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import { config } from '../../../../../app/config/index.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
@@ -66,7 +66,7 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     config.multiSpecies.enabled = false
     server = await createServer()
     await server.initialize()
@@ -711,7 +711,7 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
   })
 
   afterAll(async () => {

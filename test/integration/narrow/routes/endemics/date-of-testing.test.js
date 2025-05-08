@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
@@ -51,7 +51,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
 
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
@@ -401,7 +401,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 

@@ -8,9 +8,6 @@ jest.mock('../../../../app/config', () => {
   return {
     config: {
       ...originalModule.config,
-      endemics: {
-        enabled: false
-      },
       dateOfTesting: {
         enabled: false
       }

@@ -25,7 +25,7 @@ const ruralPaymentsAgency = {
   getOrganisationUrl: 'dummy-get-organisation-url'
 }
 
-export const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEnabled }) => {
+export const setOptionalPIHunt = ({ optionalPIHuntEnabled }) => {
   optionalPIHunt.enabled = optionalPIHuntEnabled
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency
