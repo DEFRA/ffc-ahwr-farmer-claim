@@ -67,9 +67,6 @@ describe('Check answers test', () => {
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
         },
-        endemics: {
-          enabled: true
-        },
         optionalPIHunt: {
           enabled: true
         }

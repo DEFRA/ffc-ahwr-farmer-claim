@@ -5,7 +5,7 @@ import links from '../../../../../app/config/routes.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { urlPrefix } = config
@@ -37,7 +37,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
   })
   afterAll(async () => {
@@ -268,7 +268,7 @@ describe('Biosecurity test when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
   })
 

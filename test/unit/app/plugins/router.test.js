@@ -1,12 +1,7 @@
 import { createServer } from '../../../../app/server.js'
 import { config } from '../../../../app/config/index.js'
 
-jest.mock('../../../../app/config', () => ({
-  ...jest.requireActual('../../../../app/config'),
-  endemics: {
-    enabled: false
-  }
-}))
+jest.mock('../../../../app/config')
 
 describe('routes plugin test', () => {
   beforeEach(() => {
@@ -15,32 +10,9 @@ describe('routes plugin test', () => {
   })
 
   test('routes included', async () => {
-    config.endemics.enabled = false
     config.multiSpecies.enabled = false
     config.multiHerds.enabled = false
     config.devLogin.enabled = false
-    const server = await createServer()
-    const routePaths = []
-    server.table().forEach((element) => {
-      routePaths.push(element.path)
-    })
-    expect(routePaths).toEqual([
-      '/claim',
-      '/healthy',
-      '/healthz',
-      '/claim/cookies',
-      '/claim/signin-oidc',
-      '/claim/assets/{path*}',
-      '/claim/cookies'
-    ])
-  })
-
-  test('routes included - endemics enabled', async () => {
-    config.endemics.enabled = true
-    config.multiSpecies.enabled = false
-    config.multiHerds.enabled = false
-    config.devLogin.enabled = false
-
     const server = await createServer()
     const routePaths = []
     server.table()
@@ -105,13 +77,9 @@ describe('routes plugin test', () => {
       '/claim/endemics/which-species',
       '/claim/endemics/which-type-of-review'
     ])
-
-    expect(routePaths).not.toContain('/claim/endemics/which-type-of-review-ms')
-    expect(routePaths).not.toContain('/claim/endemics/which-species-ms')
   })
 
   test('when multi-species is enabled, include correct routes', async () => {
-    config.endemics.enabled = true
     config.multiSpecies.enabled = true
     config.multiHerds.enabled = false
 
@@ -128,7 +96,6 @@ describe('routes plugin test', () => {
   })
 
   test('when multi-herds is enabled, include correct routes', async () => {
-    config.endemics.enabled = true
     config.multiSpecies.enabled = true
     config.multiHerds.enabled = true
 

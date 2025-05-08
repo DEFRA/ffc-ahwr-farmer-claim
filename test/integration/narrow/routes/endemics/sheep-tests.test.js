@@ -38,9 +38,6 @@ describe('Test Results test', () => {
             getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
-        },
-        endemics: {
-          enabled: true
         }
       }
     })

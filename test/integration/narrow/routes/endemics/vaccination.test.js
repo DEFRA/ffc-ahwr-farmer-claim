@@ -15,15 +15,6 @@ describe('Vaccination test', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaim.mockImplementation(() => { })
 
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        endemics: {
-          enabled: true
-        }
-      }
-    })
     server = await createServer()
     await server.initialize()
   })

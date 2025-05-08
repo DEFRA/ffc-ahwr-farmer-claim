@@ -64,9 +64,6 @@ export const getConfig = () => {
     dateOfTesting: {
       enabled: Joi.bool().required()
     },
-    endemics: {
-      enabled: Joi.bool().required()
-    },
     optionalPIHunt: {
       enabled: Joi.bool().required()
     },
@@ -140,9 +137,6 @@ export const getConfig = () => {
     endemicsClaimExpiryTimeMonths: 10,
     dateOfTesting: {
       enabled: process.env.DATE_OF_TESTING_ENABLED === 'true'
-    },
-    endemics: {
-      enabled: process.env.ENDEMICS_ENABLED === 'true'
     },
     optionalPIHunt: {
       enabled: process.env.OPTIONAL_PIHUNT_ENABLED === 'true'

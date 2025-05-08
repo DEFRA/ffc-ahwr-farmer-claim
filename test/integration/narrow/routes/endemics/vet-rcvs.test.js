@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -20,7 +20,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
@@ -167,7 +167,7 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })

@@ -5,7 +5,7 @@ jest.mock('../../app/config', () => ({
   ...jest.requireActual('../../app/config')
 }))
 const {
-  endemics, optionalPIHunt,
+  optionalPIHunt,
   multiSpecies,
   multiHerds
 } = config
@@ -26,8 +26,7 @@ const ruralPaymentsAgency = {
   getOrganisationUrl: 'dummy-get-organisation-url'
 }
 
-export const setEndemicsAndOptionalPIHunt = ({ endemicsEnabled, optionalPIHuntEnabled }) => {
-  endemics.enabled = endemicsEnabled
+export const setOptionalPIHunt = ({ optionalPIHuntEnabled }) => {
   optionalPIHunt.enabled = optionalPIHuntEnabled
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency

@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setEndemicsAndOptionalPIHunt } from '../../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isURNUnique } from '../../../../../app/api-requests/claim-service-api.js'
@@ -22,7 +22,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
@@ -188,7 +188,7 @@ describe('Test URN test when Optional PI Hunt is on', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
     server = await createServer()
     await server.initialize()
     isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })

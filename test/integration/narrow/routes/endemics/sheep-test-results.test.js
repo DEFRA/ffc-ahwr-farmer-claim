@@ -38,9 +38,6 @@ describe('Sheep test result tests', () => {
             getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
             getOrganisationUrl: 'dummy-get-organisation-url'
           }
-        },
-        endemics: {
-          enabled: true
         }
       }
     })

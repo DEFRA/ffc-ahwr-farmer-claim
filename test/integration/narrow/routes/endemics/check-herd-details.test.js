@@ -5,7 +5,7 @@ import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setEndemicsAndOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 
 const { urlPrefix } = config
 const { endemicsCheckHerdDetails: pageUnderTest } = links
@@ -31,7 +31,7 @@ describe('check-herd-details tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()

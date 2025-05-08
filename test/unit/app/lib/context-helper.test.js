@@ -10,7 +10,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/inde
 import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
 import { isWithin10Months } from '../../../../app/lib/date-utils.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../../../app/constants/constants.js'
-import { setEndemicsAndOptionalPIHunt } from '../../../mocks/config.js'
+import { setOptionalPIHunt } from '../../../mocks/config.js'
 
 jest.mock('../../../../app/session/index')
 jest.mock('../../../../app/api-requests/claim-service-api')
@@ -18,7 +18,7 @@ jest.mock('../../../../app/api-requests/application-service-api')
 jest.mock('../../../../app/lib/date-utils')
 describe('context-helper', () => {
   beforeEach(() => {
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
   })
 
   test('canChangeSpecies should return false when there are previous endemic (new-world) claims', () => {
@@ -205,7 +205,7 @@ describe('context-helper', () => {
     expect(() => { isPIHuntEnabledAndVisitDateAfterGoLive('abc123') }).toThrow('dateOfVisit must be parsable as a date, value provided: abc123')
   })
   test('isPIHuntEnabledAndVisitDateAfterGoLive returns false when feature disabled even when visit date post go live', () => {
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     const dayOfGoLive = PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE.toISOString()
     expect(isPIHuntEnabledAndVisitDateAfterGoLive(dayOfGoLive)).toBe(false)
   })

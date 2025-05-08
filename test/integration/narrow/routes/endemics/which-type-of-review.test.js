@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { config } from '../../../../../app/config/index.js'
-import { setEndemicsAndOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -26,7 +26,7 @@ describe('Which type of review test', () => {
     setEndemicsClaim.mockImplementation(() => { })
     setMultiSpecies(false)
     setMultiHerds(false)
-    setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: false })
+    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     server = await createServer()
     await server.initialize()
   })
@@ -188,7 +188,7 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
-      setEndemicsAndOptionalPIHunt({ endemicsEnabled: true, optionalPIHuntEnabled: true })
+      setOptionalPIHunt({ optionalPIHuntEnabled: true })
       getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {

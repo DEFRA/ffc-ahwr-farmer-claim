@@ -70,7 +70,6 @@ container:
   apimClientSecret:
   apimScope:
   dateOfTestingEnabled:
-  endemicsEnabled: 'true'
   optionalPIHuntEnabled: 'true'
   multiSpeciesEnabled: 'true'
   multiHerdsEnabled: 'false'
