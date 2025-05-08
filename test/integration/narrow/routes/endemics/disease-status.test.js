@@ -23,16 +23,6 @@ describe('Disease status test', () => {
   let server
 
   beforeAll(async () => {
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        endemics: {
-          enabled: true
-        }
-      }
-    })
-
     server = await createServer()
     await server.initialize()
   })

@@ -16,9 +16,6 @@ describe('Endemics which species test', () => {
     const originalModule = jest.requireActual('../../../../../app/config')
     return {
       ...originalModule,
-      endemics: {
-        enabled: true
-      },
       multiSpecies: {
         enabled: true
       }

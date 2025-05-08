@@ -26,9 +26,6 @@ describe('Number of species tested test', () => {
       const originalModule = jest.requireActual('../../../../../app/config')
       return {
         ...originalModule,
-        endemics: {
-          enabled: true
-        },
         optionalPIHunt: {
           enabled: true
         }

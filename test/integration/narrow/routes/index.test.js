@@ -29,9 +29,6 @@ describe('Farmer claim home page test', () => {
         ruralPaymentsAgency: {
           hostname: 'rpaHostname'
         }
-      },
-      endemics: {
-        enabled: false
       }
     }))
     server = await createServer()
