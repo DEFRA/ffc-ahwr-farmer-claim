@@ -44,5 +44,11 @@ export default {
   endemicsPIHuntAllAnimals: 'endemics/pi-hunt-all-animals',
   endemicsPIHuntAllAnimalsException: 'endemics/pi-hunt-all-animals-exception',
   endemicsMultipleSpeciesDateException: 'endemics/multiple-species-date-exception',
-  endemicsDairyFollowUpDateException: 'endemics/dairy-follow-up-date-exception'
+  endemicsDairyFollowUpDateException: 'endemics/dairy-follow-up-date-exception',
+  endemicsSelectTheHerd: 'endemics/select-the-herd',
+  endemicsEnterHerdName: 'endemics/enter-herd-name',
+  endemicsEnterCphNumber: 'endemics/enter-cph-number',
+  endemicsHerdOthersOnSbi: 'endemics/herd-others-on-sbi',
+  endemicsEnterHerdDetails: 'endemics/enter-herd-details',
+  endemicsCheckHerdDetails: 'endemics/check-herd-details'
 }

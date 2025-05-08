@@ -7,8 +7,9 @@ import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-da
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
-import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-ms.js'
+import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-mh.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 
 const { labels } = visitDate
 
@@ -25,7 +26,7 @@ jest.mock('../../../../../app/config/auth', () => {
         hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
         oAuthAuthorisePath: '/oauth2/v2.0/authorize',
         policy: 'b2c_1a_signupsigninsfi',
-        dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
+        redirectUri: 'http://localhost:3000/apply/signin-oidc',
         clientId: 'dummy_client_id',
         serviceId: 'dummy_service_id',
         scope: 'openid dummy_client_id offline_access'
@@ -84,6 +85,8 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
+    setMultiSpecies(true)
+    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockResolvedValue({})
@@ -209,6 +212,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
+    setMultiSpecies(true)
+    setMultiHerds(true)
     config.optionalPIHunt.enabled = false
     server = await createServer()
     await server.initialize()
@@ -1598,6 +1603,11 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 })
 
 describe('previousPageUrl', () => {
+  beforeAll(async () => {
+    setMultiSpecies(true)
+    setMultiHerds(true)
+  })
+
   test('should return url of endemicsVetVisitsReviewTestResults if endemics, old world claim is species of current user journey, and no relevant new world claims', () => {
     const latestVetVisitApplication = {
       data: {

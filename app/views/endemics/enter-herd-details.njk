@@ -1,0 +1,87 @@
+{% extends './layouts/layout.njk' %}
+
+{% block pageTitle %}Enter the herd details - {{ serviceName }} - GOV.UK{% endblock %}
+
+{% block beforeContent %}
+  {{ govukBackLink({
+    text: "Back",
+    href: backLink,
+    attributes: {
+      id: "back"
+    }
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if errorMessage %}
+        {{ govukErrorSummary({
+            titleText: "There is a problem",
+            errorList: [errorMessage]
+          }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the herd details</h1>
+      <p class="govuk-hint govuk-!-margin-bottom-7">You can find this information on the ‘Tell us about a herd or flock’ section of the form that the vet filled in for you.</p>
+
+      <form method="POST" autocomplete="off" novalidate="novalidate">
+        <input type="hidden" name="crumb" value="{{crumb}}"/>
+
+        {{ govukCheckboxes({
+              id: "herdReasons",
+              idPrefix: "herdReasons",
+              name: "herdReasons",
+              errorMessage: errorMessage,
+              fieldset: {
+                  legend: {
+                    text: "The herd or flock is a separate herd or flock (epidemiologically distinct unit) because:",
+                    classes: "govuk-fieldset__legend--m"
+                  }
+                },
+              hint: {
+                text: "Select all that apply"
+              },
+              items: [
+              {
+                  value: "separateManagementNeeds",
+                  text: "They have separate management needs",
+                  checked: herdReasons.includes('separateManagementNeeds')
+              },
+              {
+                  value: "uniqueHealthNeeds",
+                  text: "They have unique health needs",
+                  checked: herdReasons.includes('uniqueHealthNeeds')
+              },
+              {
+                  value: "differentBreed",
+                  text: "They are a different breed",
+                  checked: herdReasons.includes('differentBreed')
+              },
+              {
+                  value: "differentPurpose",
+                  text: "They are used for another purpose (e.g. breeding)",
+                  checked: herdReasons.includes('differentPurpose')
+              },
+              {
+                  value: "keptSeparate",
+                  text: "They have been kept completely separate",
+                  checked: herdReasons.includes('keptSeparate')
+              },
+              {
+                  value: "other",
+                  text: "Other reasons based on my vet's judgement",
+                  checked: herdReasons.includes('other')
+              }]
+            }) 
+          }}
+          {{ govukButton({
+              text: "Continue",
+              attributes: { id: "btnContinue" },
+              preventDoubleClick: true
+            }) 
+          }}
+      </form>
+    </div>
+  </div>
+{% endblock %}

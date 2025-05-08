@@ -1,12 +1,7 @@
 import { createServer } from '../../../../app/server.js'
 import { config } from '../../../../app/config/index.js'
 
-jest.mock('../../../../app/config', () => ({
-  ...jest.requireActual('../../../../app/config'),
-  endemics: {
-    enabled: false
-  }
-}))
+jest.mock('../../../../app/config')
 
 describe('routes plugin test', () => {
   beforeEach(() => {
@@ -15,11 +10,16 @@ describe('routes plugin test', () => {
   })
 
   test('routes included', async () => {
+    config.multiSpecies.enabled = false
+    config.multiHerds.enabled = false
+    config.devLogin.enabled = false
     const server = await createServer()
     const routePaths = []
-    server.table().forEach((element) => {
-      routePaths.push(element.path)
-    })
+    server.table()
+      .filter(x => !x.settings.tags?.includes('ms'))
+      .forEach((element) => {
+        routePaths.push(element.path)
+      })
     expect(routePaths).toEqual([
       '/claim',
       '/healthy',
@@ -81,6 +81,7 @@ describe('routes plugin test', () => {
 
   test('when multi-species is enabled, include correct routes', async () => {
     config.multiSpecies.enabled = true
+    config.multiHerds.enabled = false
 
     const server = await createServer()
     const routePaths = []
@@ -92,6 +93,28 @@ describe('routes plugin test', () => {
 
     expect(routePaths).toContain('/claim/endemics/which-type-of-review')
     expect(routePaths).toContain('/claim/endemics/which-species')
+  })
+
+  test('when multi-herds is enabled, include correct routes', async () => {
+    config.multiSpecies.enabled = true
+    config.multiHerds.enabled = true
+
+    const server = await createServer()
+    const routePaths = []
+    server.table()
+      .filter(x => x.settings.tags?.includes('mh'))
+      .forEach((element) => {
+        routePaths.push(element.path)
+      })
+
+    expect(routePaths).toContain('/claim/endemics/date-of-visit')
+    expect(routePaths).toContain('/claim/endemics/select-the-herd')
+    expect(routePaths).toContain('/claim/endemics/enter-herd-name')
+    expect(routePaths).toContain('/claim/endemics/enter-cph-number')
+    expect(routePaths).toContain('/claim/endemics/herd-others-on-sbi')
+    expect(routePaths).toContain('/claim/endemics/enter-herd-details')
+    expect(routePaths).toContain('/claim/endemics/check-herd-details')
+    expect(routePaths).toContain('/claim/endemics/date-of-testing')
   })
 
   test('when isDev is true, dev-sign-in included in routes', async () => {
