@@ -255,9 +255,9 @@ const postHandler = {
 
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
-        } else {
-          return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
         }
+
+        return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
 
       // all of below only applies when user rejects T&Cs

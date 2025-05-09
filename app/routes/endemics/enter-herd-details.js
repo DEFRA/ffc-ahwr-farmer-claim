@@ -35,7 +35,7 @@ const getHandler = {
       const { herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
       return h.view(endemicsEnterHerdDetails, {
         backLink: getPreviousPageUrl(herds),
-        herdReasons: [].concat(herdReasons),
+        herdReasons: herdReasons ?? [],
         herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }

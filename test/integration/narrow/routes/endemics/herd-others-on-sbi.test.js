@@ -143,6 +143,22 @@ describe('herd-others-on-sbi tests', () => {
     })
   })
 
+  test('returns 500 when typeOfLivestock is unknown', async () => {
+    getEndemicsClaim.mockReturnValue({
+      reference: 'TEMP-6GSE-PIR8',
+      typeOfReview: 'R',
+      typeOfLivestock: 'goat'
+    })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(500)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-heading-l').text().trim()).toContain('Sorry, there is a problem with the service')
+    expect($('p').text()).toContain('Please try again later.')
+    expectPhaseBanner.ok($)
+  })
+
   describe('POST', () => {
     beforeAll(async () => {
       crumb = await getCrumbs(server)
