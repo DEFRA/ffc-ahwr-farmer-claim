@@ -30,11 +30,7 @@ const getSpeciesGroupText = (typeOfLivestock) => {
     pigs: 'pigs herd',
     sheep: 'flock of sheep'
   }
-  const text = textByLivestock[typeOfLivestock]
-  if (!text) {
-    throw Error(`Unknown typeOfLivestock: ${typeOfLivestock}`)
-  }
-  return text
+  return textByLivestock[typeOfLivestock]
 }
 
 const getHandler = {
