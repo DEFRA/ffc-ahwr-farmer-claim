@@ -1,5 +1,6 @@
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
+import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
@@ -34,7 +35,7 @@ const getHandler = {
       const herdReasonsText = getHerdReasonsText(herdReasons)
 
       return h.view(endemicsCheckHerdDetails, {
-        backLink: herdOthersOnSbi === 'yes' ? herdOthersOnSbiPageUrl : enterHerdDetailsPageUrl,
+        backLink: herdOthersOnSbi === OTHERS_ON_SBI.YES ? herdOthersOnSbiPageUrl : enterHerdDetailsPageUrl,
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
