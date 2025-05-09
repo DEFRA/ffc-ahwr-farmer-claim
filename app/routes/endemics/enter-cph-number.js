@@ -4,17 +4,21 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
   endemicsEnterCphNumber,
   endemicsEnterHerdName,
+  endemicsHerdOthersOnSbi,
   endemicsEnterHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 const previousPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
-const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+
+const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
+const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 
 const { endemicsClaim: { herdCph: herdCphKey } } = sessionKeys
 
@@ -24,10 +28,11 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdCph } = getEndemicsClaim(request)
+      const { herdCph, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsEnterCphNumber, {
         backLink: previousPageUrl,
-        herdCph
+        herdCph,
+        herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
   }
@@ -43,21 +48,26 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
+        const { typeOfLivestock } = getEndemicsClaim(request)
 
         return h.view(endemicsEnterCphNumber, {
           ...request.payload,
           errorMessage: {
-            text: 'Enter the CPH for this herd, format should be nn/nnn/nnnn',
+            text: `Enter the CPH for this ${getHerdOrFlock(typeOfLivestock)}, format should be nn/nnn/nnnn`,
             href: '#herdCph'
           },
-          backLink: previousPageUrl
+          backLink: previousPageUrl,
+          herdOrFlock: getHerdOrFlock(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload
+      const { herds } = getEndemicsClaim(request)
+
       setEndemicsClaim(request, herdCphKey, herdCph)
-      return h.redirect(nextPageUrl)
+
+      return h.redirect(herds?.length ? enterHerdDetailsPageUrl : herdOthersOnSbiPageUrl)
     }
   }
 }

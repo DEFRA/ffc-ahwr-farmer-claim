@@ -6,19 +6,25 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 // TODO MultiHerds use this to create checkboxes:
 // import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
   endemicsEnterHerdDetails,
-  endemicsEnterCphNumber,
-  endemicsCheckHerdDetails
+  endemicsHerdOthersOnSbi,
+  endemicsCheckHerdDetails,
+  endemicsEnterCphNumber
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
-const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
+const herdOtherOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
+const enterCphNumberPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
+
 const nextPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
 const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
+
+const getPreviousPageUrl = (herds) => herds?.length ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
 
 const getHandler = {
   method: 'GET',
@@ -26,10 +32,11 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdReasons } = getEndemicsClaim(request)
+      const { herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
       return h.view(endemicsEnterHerdDetails, {
-        backLink: previousPageUrl,
-        herdReasons: [].concat(herdReasons)
+        backLink: getPreviousPageUrl(herds),
+        herdReasons: herdReasons ?? [],
+        herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
   }
@@ -48,15 +55,17 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
+        const { typeOfLivestock, herds } = getEndemicsClaim(request)
 
         return h.view(endemicsEnterHerdDetails, {
           ...request.payload,
           errorMessage: {
-            text: 'Select the reasons for this separate herd',
+            text: `Select the reasons for this separate ${getHerdOrFlock(typeOfLivestock)}`,
             href: '#herdReasons'
           },
-          backLink: previousPageUrl,
-          herdReasons: [].concat(request.payload.herdReasons)
+          backLink: getPreviousPageUrl(herds),
+          herdReasons: [].concat(request.payload.herdReasons),
+          herdOrFlock: getHerdOrFlock(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },

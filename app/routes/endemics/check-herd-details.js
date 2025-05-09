@@ -1,5 +1,7 @@
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
+import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 
@@ -8,14 +10,15 @@ const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
   endemicsDateOfTesting,
-  endemicsEnterCphNumber
+  endemicsEnterCphNumber,
+  endemicsHerdOthersOnSbi
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const previousPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const nextPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
-const herdReasonsLink = previousPageUrl
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const getHerdReasonsText = (herdReasons) => {
@@ -28,15 +31,19 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdName, herdCph, herdReasons } = getEndemicsClaim(request)
+      const { herdName, herdCph, herdReasons, herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
       const herdReasonsText = getHerdReasonsText(herdReasons)
+
       return h.view(endemicsCheckHerdDetails, {
-        backLink: previousPageUrl,
+        backLink: herdOthersOnSbi === OTHERS_ON_SBI.YES ? herdOthersOnSbiPageUrl : enterHerdDetailsPageUrl,
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
+        herdOthersOnSbi,
         herdCphLink,
-        herdReasonsLink
+        herdReasonsLink: enterHerdDetailsPageUrl,
+        herdOthersOnSbiLink: herdOthersOnSbiPageUrl,
+        herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
   }

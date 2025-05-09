@@ -57,7 +57,8 @@ export const sessionKeys = {
     herdName: 'herdName',
     herdCph: 'herdCph',
     herdOthersOnSbi: 'herdOthersOnSbi',
-    herdReasons: 'herdReasons'
+    herdReasons: 'herdReasons',
+    herds: 'herds'
   },
   claim: {
     animalsTested: 'animalsTested',

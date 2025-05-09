@@ -4,19 +4,24 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
   endemicsEnterHerdName,
   endemicsSelectTheHerd,
-  endemicsEnterCphNumber
+  endemicsEnterCphNumber,
+  endemicsDateOfVisit
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
-const previousPageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
+const selectTheHerdPageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
+const dateOfVisitPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const nextPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const { endemicsClaim: { herdName: herdNameKey } } = sessionKeys
+
+const getBackLink = (herds) => !herds?.length ? dateOfVisitPageUrl : selectTheHerdPageUrl
 
 const getHandler = {
   method: 'GET',
@@ -24,17 +29,18 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdName } = getEndemicsClaim(request)
+      const { herdName, herds, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsEnterHerdName, {
-        backLink: previousPageUrl,
-        herdName
+        backLink: getBackLink(herds),
+        herdName,
+        herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
   }
 }
 
 const minHerdNameLength = 2
-const maxHerdNameLength = 35
+const maxHerdNameLength = 30
 
 const postHandler = {
   method: 'POST',
@@ -46,6 +52,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
+        const { herds, typeOfLivestock } = getEndemicsClaim(request)
 
         return h.view(endemicsEnterHerdName, {
           ...request.payload,
@@ -53,13 +60,14 @@ const postHandler = {
             text: `Name must be between ${minHerdNameLength} and ${maxHerdNameLength} characters`,
             href: '#herdName'
           },
-          backLink: previousPageUrl
+          backLink: getBackLink(herds),
+          herdOrFlock: getHerdOrFlock(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
       const { herdName } = request.payload
-      setEndemicsClaim(request, herdNameKey, herdName)
+      setEndemicsClaim(request, herdNameKey, herdName.trim())
       return h.redirect(nextPageUrl)
     }
   }

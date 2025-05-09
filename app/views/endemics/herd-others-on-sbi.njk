@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Is this the only sheep flock associated with this Single Business Identifier (SBI)? - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}Is this the only {{ speciesGroupText }} associated with this Single Business Identifier (SBI)? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -33,11 +33,11 @@
               legend:{
                 isPageHeading: true,
                 classes: "govuk-fieldset__legend--l",
-                text: 'Is this the only sheep flock associated with this Single Business Identifier (SBI)?'
+                text: 'Is this the only ' ~ speciesGroupText ~ ' associated with this Single Business Identifier (SBI)?'
               }
             }, 
             hint: {
-              text: "You can find this information on the ‘Tell us about this herd’ section of the form that the vet filled in for you."
+              text: "You can find this information on the ‘Tell us about this " ~ herdOrFlock ~ "’ section of the form that the vet filled in for you."
             }, 
             errorMessage: errorMessage,
             items: [

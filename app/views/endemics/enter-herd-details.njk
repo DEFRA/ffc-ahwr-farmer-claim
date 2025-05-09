@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Enter the herd details - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}Enter the {{ herdOrFlock }} details - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -22,8 +22,8 @@
           }) }}
       {% endif %}
 
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the herd details</h1>
-      <p class="govuk-hint govuk-!-margin-bottom-7">You can find this information on the ‘Tell us about a herd or flock’ section of the form that the vet filled in for you.</p>
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the {{ herdOrFlock }} details</h1>
+      <p class="govuk-hint govuk-!-margin-bottom-7">You can find this information on the ‘Tell us about this {{ herdOrFlock }}' section of the form that the vet filled in for you.</p>
 
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -35,13 +35,10 @@
               errorMessage: errorMessage,
               fieldset: {
                   legend: {
-                    text: "The herd or flock is a separate herd or flock (epidemiologically distinct unit) because:",
+                    text: "The " ~ herdOrFlock ~ " is a separate " ~ herdOrFlock ~ " (epidemiologically distinct unit) of this species because:",
                     classes: "govuk-fieldset__legend--m"
                   }
                 },
-              hint: {
-                text: "Select all that apply"
-              },
               items: [
               {
                   value: "separateManagementNeeds",
