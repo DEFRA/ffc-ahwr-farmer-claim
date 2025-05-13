@@ -36,28 +36,28 @@ const getNoChangeRows = (
   organisationName,
   herdName
 ) => [
-  {
-    key: { text: 'Business name' },
-    value: { html: upperFirstLetter(organisationName) }
-  },
-  {
-    key: { text: config.multiHerds.enabled ? 'Species' : 'Livestock' },
-    value: {
-      html: upperFirstLetter(
-        isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
-      )
+    {
+      key: { text: 'Business name' },
+      value: { html: upperFirstLetter(organisationName) }
+    },
+    {
+      key: { text: config.multiHerds.enabled ? 'Species' : 'Livestock' },
+      value: {
+        html: upperFirstLetter(
+          isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
+        )
+      }
+    },
+    ...(config.multiHerds.enabled ? [getHerdNameRow(herdName, typeOfLivestock)] : []),
+    {
+      key: { text: 'Review or follow-up' },
+      value: {
+        html: isReview
+          ? 'Animal health and welfare review'
+          : 'Endemic disease follow-up'
+      }
     }
-  },
-  ...(config.multiHerds.enabled ? [getHerdNameRow(herdName)] : []),
-  {
-    key: { text: 'Review or follow-up' },
-    value: {
-      html: isReview
-        ? 'Animal health and welfare review'
-        : 'Endemic disease follow-up'
-    }
-  }
-]
+  ]
 const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
   return {
     key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
@@ -66,7 +66,7 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
         isPigs && sessionData?.biosecurity
           ? upperFirstLetter(
             `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
-            )
+          )
           : upperFirstLetter(sessionData?.biosecurity)
     },
     actions: {
@@ -137,9 +137,9 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
   }
   return {}
 }
-const getHerdNameRow = (herdName) => {
+const getHerdNameRow = (herdName, typeOfLivestock) => {
   return {
-    key: { text: 'Herd name' },
+    key: { text: `${typeOfLivestock === 'sheep' ? 'Flock' : 'Herd'} name` },
     value: { html: herdName }
   }
 }
@@ -443,25 +443,25 @@ const getHandler = {
         sheepDiseasesTestedRow,
         ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length
           ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => (
-              {
-                key: {
-                  text: index === 0 ? 'Disease or condition test result' : ''
-                },
-                value: {
-                  html: typeof sheepTest.result === 'object'
-                    ? sheepTest.result.map((testResult) => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
-                    : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(({ value }) => value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find((resultType) => resultType.value === sheepTest.result).text})`
-                },
-                actions: {
-                  items: [
-                    {
-                      href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
-                      text: 'Change',
-                      visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
-                    }
-                  ]
-                }
-              }))
+            {
+              key: {
+                text: index === 0 ? 'Disease or condition test result' : ''
+              },
+              value: {
+                html: typeof sheepTest.result === 'object'
+                  ? sheepTest.result.map((testResult) => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
+                  : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(({ value }) => value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find((resultType) => resultType.value === sheepTest.result).text})`
+              },
+              actions: {
+                items: [
+                  {
+                    href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
+                    text: 'Change',
+                    visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
+                  }
+                ]
+              }
+            }))
           : []
         )
       ]
