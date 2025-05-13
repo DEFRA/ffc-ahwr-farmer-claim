@@ -30,6 +30,7 @@ import {
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config/index.js'
 
 const { livestockTypes } = claimConstants
 
@@ -75,6 +76,10 @@ describe('Check answers test', () => {
 
     server = await createServer()
     await server.initialize()
+  })
+
+  beforeEach(async () => {
+    config.multiHerds.enabled = false
   })
 
   afterAll(async () => {
@@ -204,6 +209,45 @@ describe('Check answers test', () => {
 
         expect(rowKeys).toEqual(expectedReviewSheep.rowKeys)
         expect(rowContents).toEqual(expectedReviewSheep.rowContents)
+        expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
+        expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
+
+        expectPhaseBanner.ok($)
+      })
+
+      test('when multi herds is enabled and species is sheep', async () => {
+        getEndemicsClaim.mockImplementation(() => {
+          return {
+            ...sheepReviewClaim,
+            herdName: 'Flock one'
+          }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+        config.multiHerds.enabled = true
+
+        const res = await server.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        const multiHerdsRowKeys = [...expectedReviewSheep.rowKeys]
+        multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
+        multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Flock name')
+
+        const multiHerdsRowContents = [...expectedReviewSheep.rowContents]
+        multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Sheep') + 1, 0, 'Flock one')
+
+        expect(rowKeys).toEqual(multiHerdsRowKeys)
+        expect(rowContents).toEqual(multiHerdsRowContents)
         expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
         expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
 
@@ -342,6 +386,46 @@ describe('Check answers test', () => {
         const rowContents = getRowContents($)
 
         expect(rowContents).toContain('Unknown cattle')
+        expectPhaseBanner.ok($)
+      })
+
+      test('when multi herds is enabled', async () => {
+        getEndemicsClaim.mockImplementation(() => {
+          return {
+            ...dairyEndemicsFollowUpClaim,
+            herdName: 'Herd one'
+          }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+        config.multiHerds.enabled = true
+
+        const res = await server.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        const multiHerdsRowKeys = [...expectedEndemicsFollowUpDairy.rowKeys]
+        multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
+        multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Herd name')
+
+        const multiHerdsRowContents = [...expectedEndemicsFollowUpDairy.rowContents]
+        multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Dairy cattle') + 1, 0, 'Herd one')
+
+        expect(rowKeys).toEqual(multiHerdsRowKeys)
+        expect(rowContents).toEqual(multiHerdsRowContents)
+        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairy.rowActionTexts)
+        expect(rowLinks).toEqual(expectedEndemicsFollowUpDairy.rowLinks)
+
         expectPhaseBanner.ok($)
       })
     })

@@ -10,13 +10,13 @@ import { config } from '../../../../../app/config/index.js'
 import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-mh.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { getHerds } from '../../../../../app/api-requests/application-service-api.js'
 
 const { labels } = visitDate
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
-
 jest.mock('../../../../../app/config/auth', () => {
   const originalModule = jest.requireActual('../../../../../app/config/auth')
   return {
@@ -40,6 +40,7 @@ jest.mock('../../../../../app/config/auth', () => {
     }
   }
 })
+jest.mock('../../../../../app/api-requests/application-service-api.js')
 
 function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
@@ -1599,6 +1600,100 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('should redirect to select the herd page when there are previous herds and is multi herds journey', async () => {
+    getHerds.mockResolvedValueOnce([{ id: '1', herdName: 'herd one' }])
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '13',
+        [labels.month]: '05',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/select-the-herd')
+  })
+
+  test('should redirect to enter herd name page when there are not previous herds and is multi herds journey', async () => {
+    getHerds.mockResolvedValueOnce([])
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '13',
+        [labels.month]: '05',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
   })
 })
 

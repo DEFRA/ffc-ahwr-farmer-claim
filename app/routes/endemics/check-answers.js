@@ -33,20 +33,22 @@ const getNoChangeRows = (
   isPigs,
   isSheep,
   typeOfLivestock,
-  organisationName
+  organisationName,
+  herdName
 ) => [
   {
     key: { text: 'Business name' },
     value: { html: upperFirstLetter(organisationName) }
   },
   {
-    key: { text: 'Livestock' },
+    key: { text: config.multiHerds.enabled ? 'Species' : 'Livestock' },
     value: {
       html: upperFirstLetter(
         isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
       )
     }
   },
+  ...(config.multiHerds.enabled ? [getHerdNameRow(herdName, typeOfLivestock)] : []),
   {
     key: { text: 'Review or follow-up' },
     value: {
@@ -135,6 +137,12 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
   }
   return {}
 }
+const getHerdNameRow = (herdName, typeOfLivestock) => {
+  return {
+    key: { text: `${typeOfLivestock === 'sheep' ? 'Flock' : 'Herd'} name` },
+    value: { html: herdName }
+  }
+}
 
 const getHandler = {
   method: 'GET',
@@ -153,7 +161,8 @@ const getHandler = {
         vetRCVSNumber,
         laboratoryURN,
         numberAnimalsTested,
-        testResults
+        testResults,
+        herdName
       } = sessionData
 
       const { isBeef, isDairy, isPigs, isSheep } =
@@ -478,7 +487,8 @@ const getHandler = {
           isPigs,
           isSheep,
           typeOfLivestock,
-          organisation?.name
+          organisation?.name,
+          herdName
         ),
         ...speciesRows()
       ]
