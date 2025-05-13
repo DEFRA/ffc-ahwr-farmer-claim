@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Enter the CPH number for this herd - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}Enter the CPH number for this {{ herdOrFlock }} - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -22,13 +22,14 @@
           }) }}
       {% endif %}
 
-      <h1 class="govuk-heading-l govuk-!-margin-bottom-9">Enter the County Parish Holding (CPH) number for this herd</h1>
-      
+      <h1 class="govuk-heading-l govuk-!-margin-bottom-2">Enter the County Parish Holding (CPH) number for this {{ herdOrFlock }}</h1>
+      <p class="govuk-hint govuk-!-margin-bottom-7">Tell us the CPH for where this {{ herdOrFlock }} is kept.</p>
+
       <form method="POST" autocomplete="off" novalidate="novalidate">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
         {{ govukInput({
             label: {
-                text: "CPH number for this herd",
+                text: "CPH number for this " ~  herdOrFlock,
                 classes: "govuk-label--m "
             },
             hint: {

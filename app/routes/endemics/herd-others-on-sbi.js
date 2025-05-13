@@ -4,19 +4,34 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
   endemicsHerdOthersOnSbi,
   endemicsEnterCphNumber,
-  endemicsEnterHerdDetails
+  endemicsEnterHerdDetails,
+  endemicsCheckHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
-const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const enterEnterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
+const ONLY_HERD = 'onlyHerd'
 
-const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey } } = sessionKeys
+const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey, herdReasons: herdReasonsKey } } = sessionKeys
+
+const getSpeciesGroupText = (typeOfLivestock) => {
+  const textByLivestock = {
+    beef: 'beef cattle herd',
+    dairy: 'dairy cattle herd',
+    pigs: 'pigs herd',
+    sheep: 'flock of sheep'
+  }
+  return textByLivestock[typeOfLivestock]
+}
 
 const getHandler = {
   method: 'GET',
@@ -24,10 +39,12 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdOthersOnSbi } = getEndemicsClaim(request)
+      const { herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsHerdOthersOnSbi, {
         backLink: previousPageUrl,
-        herdOthersOnSbi
+        herdOthersOnSbi,
+        herdOrFlock: getHerdOrFlock(typeOfLivestock),
+        speciesGroupText: getSpeciesGroupText(typeOfLivestock)
       })
     }
   }
@@ -43,20 +60,28 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
+        const { typeOfLivestock } = getEndemicsClaim(request)
+
         return h.view(endemicsHerdOthersOnSbi, {
           ...request.payload,
           errorMessage: {
-            text: 'Select yes if this is the only sheep flock associated with this SBI',
+            text: `Select yes if this is the only ${getSpeciesGroupText(typeOfLivestock)} associated with this SBI`,
             href: '#herdOthersOnSbi'
           },
-          backLink: previousPageUrl
+          backLink: previousPageUrl,
+          herdOrFlock: getHerdOrFlock(typeOfLivestock),
+          speciesGroupText: getSpeciesGroupText(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
       const { herdOthersOnSbi } = request.payload
       setEndemicsClaim(request, herdOthersOnSbiKey, herdOthersOnSbi)
-      return h.redirect(nextPageUrl)
+      if (herdOthersOnSbi === OTHERS_ON_SBI.YES) {
+        setEndemicsClaim(request, herdReasonsKey, [ONLY_HERD])
+      }
+
+      return h.redirect(herdOthersOnSbi === OTHERS_ON_SBI.YES ? checkHerdDetailsPageUrl : enterEnterHerdDetailsPageUrl)
     }
   }
 }

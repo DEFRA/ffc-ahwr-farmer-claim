@@ -41,7 +41,6 @@ describe('enter-herd-details tests', () => {
 
   describe('GET', () => {
     test('returns 200 with herd labels when species beef', async () => {
-      // TODO MultiHerds change test to check flock when sheep
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -53,7 +52,11 @@ describe('enter-herd-details tests', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
-      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
+      expect($('.govuk-heading-l').text().trim()).toBe('Enter the herd details')
+      expect($('.govuk-hint').text().trim()).toContain('Tell us about this herd')
+      const legendText = $('.govuk-fieldset__legend--m').text().trim()
+      expect(legendText).toBe('The herd is a separate herd (epidemiologically distinct unit) of this species because:')
       expectPhaseBanner.ok($)
     })
 
@@ -70,9 +73,50 @@ describe('enter-herd-details tests', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
-      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(':checked')).toBeTruthy()
       expect($('.govuk-checkboxes__input[value="other"]').is(':checked')).toBeTruthy()
+      expectPhaseBanner.ok($)
+    })
+
+    test('returns 200 with flock labels when species sheep', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep'
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Enter the flock details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
+      expect($('.govuk-heading-l').text().trim()).toBe('Enter the flock details')
+      expect($('.govuk-hint').text().trim()).toContain('Tell us about this flock')
+      const legendText = $('.govuk-fieldset__legend--m').text().trim()
+      expect(legendText).toBe('The flock is a separate flock (epidemiologically distinct unit) of this species because:')
+      expectPhaseBanner.ok($)
+    })
+
+    test('returns 200 with back link to enter cph number when previous herds', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herds: [{ id: 'herd one' }]
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
+      expect($('.govuk-heading-l').text().trim()).toBe('Enter the herd details')
+      expect($('.govuk-hint').text().trim()).toContain('Tell us about this herd')
+      const legendText = $('.govuk-fieldset__legend--m').text().trim()
+      expect(legendText).toBe('The herd is a separate herd (epidemiologically distinct unit) of this species because:')
       expectPhaseBanner.ok($)
     })
   })
@@ -101,7 +145,7 @@ describe('enter-herd-details tests', () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
-        typeOfLivestock: 'sheep',
+        typeOfLivestock: 'beef',
         herdReasons: []
       })
 
@@ -111,6 +155,41 @@ describe('enter-herd-details tests', () => {
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
       expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this separate herd')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
     })
+
+    test('display errors with flock labels when payload invalid', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        herdReasons: []
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this separate flock')
+    })
+  })
+
+  test('display errors with back link to enter cph number when previous herds', async () => {
+    getEndemicsClaim.mockReturnValue({
+      reference: 'TEMP-6GSE-PIR8',
+      typeOfReview: 'R',
+      typeOfLivestock: 'sheep',
+      herdReasons: [],
+      herds: [{ id: 'herdOne' }]
+    })
+
+    const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
+
+    const $ = cheerio.load(res.payload)
+    expect(res.statusCode).toBe(400)
+    expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+    expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this separate flock')
+    expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
   })
 })
