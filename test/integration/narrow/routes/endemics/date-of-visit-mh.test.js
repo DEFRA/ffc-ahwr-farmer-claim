@@ -1733,6 +1733,7 @@ describe('previousPageUrl', () => {
 
   test('should return url of endemicsWhichTypeOfReview if old world review type of livestock is not beef or dairy', () => {
     const latestVetVisitApplication = {
+
       data: {
         whichReview: 'pigs'
       }
