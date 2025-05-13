@@ -9,13 +9,12 @@ import { isValidDate } from '../../lib/date-utils.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getEndemicsClaim, setEndemicsClaim, removeMultipleHerdsSessionData } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
-import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import {
   getReviewTestResultWithinLast10Months,
   getReviewWithinLast10Months
 } from '../../api-requests/claim-service-api.js'
-import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
+import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
@@ -187,7 +186,7 @@ const postHandler = {
         herdVersion
       } = getEndemicsClaim(request)
 
-      const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
+      const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -223,8 +222,6 @@ const postHandler = {
         return h.view(`${endemicsDateOfVisit}-mh`, data).code(400).takeover()
       }
 
-      const formattedTypeOfLivestock = isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
-
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
 
       let exception
@@ -257,7 +254,7 @@ const postHandler = {
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds)
 
-        console.log({herds})
+        console.log({ herds })
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
@@ -273,12 +270,7 @@ const postHandler = {
       removeMultipleHerdsSessionData(request)
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
-      const prevReviewClaim = prevLivestockClaims.find(claim => claim.type === claimType.review) || getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
-      const prevEndemicsClaim = prevLivestockClaims.find(claim => claim.type === claimType.endemics)
-
-      const errorMessage = isReview
-        ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
-        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim?.data.dateOfVisit, organisation, formattedTypeOfLivestock)
+      const errorMessage = canMakeClaim({ prevClaims: prevLivestockClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
       if (errorMessage) {
         raiseInvalidDataEvent(

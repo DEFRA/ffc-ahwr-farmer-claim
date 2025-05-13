@@ -51,5 +51,7 @@ export default {
   endemicsHerdOthersOnSbi: 'endemics/herd-others-on-sbi',
   endemicsEnterHerdDetails: 'endemics/enter-herd-details',
   endemicsCheckHerdDetails: 'endemics/check-herd-details',
-  endemicsSameHerd: 'endemics/same-herd'
+  endemicsSameHerd: 'endemics/same-herd',
+  endemicsSelectTheHerdException: 'endemics/select-the-herd-exception',
+  endemicsSelectTheHerdDateException: 'endemics/select-the-herd-date-exception'
 }
