@@ -25,7 +25,7 @@ import { v4 as uuidv4 } from 'uuid'
 const {
   endemicsClaim: {
     reviewTestResults: reviewTestResultsKey, dateOfVisit: dateOfVisitKey,
-    relevantReviewForEndemics: relevantReviewForEndemicsKey, herds: herdsKey, 
+    relevantReviewForEndemics: relevantReviewForEndemicsKey, herds: herdsKey,
     herdId: herdIdKey, herdVersion: herdVersionKey
   }
 } = sessionKeys
@@ -183,7 +183,7 @@ const postHandler = {
         reviewTestResults,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication,
-        herdId,
+        herdId
       } = getEndemicsClaim(request)
 
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
