@@ -1,10 +1,10 @@
 import Joi from 'joi'
-import { v4 as uuidv4 } from 'uuid'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 
 const { urlPrefix } = config
 const {
@@ -17,17 +17,7 @@ const pageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
 const previousPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const nextPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
 
-const { endemicsClaim: { tempHerdId: tempHerdIdKey, herdId: herdIdKey, herdVersion: herdVersionKey } } = sessionKeys
-
-const getTempHerdId = (request, tempHerdIdFromSession) => {
-  if (tempHerdIdFromSession) {
-    return tempHerdIdFromSession
-  }
-
-  const tempHerdId = uuidv4()
-  setEndemicsClaim(request, tempHerdIdKey, tempHerdId)
-  return tempHerdId
-}
+const { endemicsClaim: { herdId: herdIdKey, herdVersion: herdVersionKey } } = sessionKeys
 
 const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
   const claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'

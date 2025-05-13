@@ -20,13 +20,13 @@ import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE
 import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
-import { v4 as uuidv4 } from 'uuid'
+import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 
 const {
   endemicsClaim: {
     reviewTestResults: reviewTestResultsKey, dateOfVisit: dateOfVisitKey,
     relevantReviewForEndemics: relevantReviewForEndemicsKey, herds: herdsKey,
-    herdId: herdIdKey, herdVersion: herdVersionKey
+    herdVersion: herdVersionKey, herdId: herdIdKey
   }
 } = sessionKeys
 
@@ -256,11 +256,12 @@ const postHandler = {
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds)
 
+        console.log({herds})
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
 
-        setEndemicsClaim(request, herdIdKey, herdId ?? uuidv4())
+        setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId))
         setEndemicsClaim(request, herdVersionKey, 1)
         return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
