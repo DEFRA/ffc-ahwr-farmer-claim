@@ -256,7 +256,7 @@ const postHandler = {
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds)
 
-        console.log({herds})
+        console.log({ herds })
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
