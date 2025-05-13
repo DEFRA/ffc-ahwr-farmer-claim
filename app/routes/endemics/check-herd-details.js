@@ -5,6 +5,7 @@ import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { hasPreviousClaimsWithNoHerdAssigned } from '../../lib/context-helper.js'
+import { ONLY_HERD } from './herd-others-on-sbi.js'
 
 const { urlPrefix } = config
 const {
@@ -42,7 +43,7 @@ const getHandler = {
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
-        herdOthersOnSbi,
+        herdOthersOnSbi: herdOthersOnSbi ?? herdReasons == [ONLY_HERD] ? OTHERS_ON_SBI.NO : OTHERS_ON_SBI.YES,
         herdCphLink,
         herdReasonsLink: enterHerdDetailsPageUrl,
         herdOthersOnSbiLink: herdOthersOnSbiPageUrl,

@@ -5,13 +5,15 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
+import { ONLY_HERD } from './herd-others-on-sbi.js'
 
 const { urlPrefix } = config
 const {
   endemicsEnterCphNumber,
   endemicsEnterHerdName,
   endemicsHerdOthersOnSbi,
-  endemicsEnterHerdDetails
+  endemicsEnterHerdDetails,
+  endemicsCheckHerdDetails
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
@@ -19,6 +21,7 @@ const previousPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
 
 const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
+const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
 const { endemicsClaim: { herdCph: herdCphKey } } = sessionKeys
 
@@ -63,11 +66,18 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload
-      const { herds } = getEndemicsClaim(request)
+      const { herds, herdOthersOnSbi, herdReasons } = getEndemicsClaim(request)
 
       setEndemicsClaim(request, herdCphKey, herdCph)
 
-      return h.redirect(herds?.length ? enterHerdDetailsPageUrl : herdOthersOnSbiPageUrl)
+      let nextPageUrl
+      if(herds?.length) {
+        nextPageUrl = herdReasons == [ONLY_HERD] ? enterHerdDetailsPageUrl : checkHerdDetailsPageUrl
+      } else {
+        nextPageUrl = herdOthersOnSbiPageUrl
+      }
+
+      return h.redirect(nextPageUrl)
     }
   }
 }
