@@ -5,6 +5,7 @@ import { getTempHerdId } from '../../../../app/lib/get-temp-herd-id.js'
 
 jest.mock('uuid')
 jest.mock('../../../../app/session/keys.js')
+jest.mock('../../../../app/session/index.js')
 
 describe('getTempHerdId', () => {
   beforeEach(() => {

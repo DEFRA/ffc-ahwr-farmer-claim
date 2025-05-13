@@ -183,7 +183,8 @@ const postHandler = {
         reviewTestResults,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication,
-        herdId
+        herdId,
+        herdVersion
       } = getEndemicsClaim(request)
 
       const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
@@ -256,13 +257,14 @@ const postHandler = {
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds)
 
-        console.log({ herds })
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
 
         setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId))
-        setEndemicsClaim(request, herdVersionKey, 1)
+        if (!herdVersion) {
+          setEndemicsClaim(request, herdVersionKey, 1)
+        }
         return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
 

@@ -215,11 +215,11 @@ describe('Check answers test', () => {
         expectPhaseBanner.ok($)
       })
 
-      test('when multi herds is enabled', async () => {
+      test('when multi herds is enabled and species is sheep', async () => {
         getEndemicsClaim.mockImplementation(() => {
           return {
             ...sheepReviewClaim,
-            herdName: 'Herd one'
+            herdName: 'Flock one'
           }
         })
         const options = {
@@ -241,10 +241,10 @@ describe('Check answers test', () => {
 
         const multiHerdsRowKeys = [...expectedReviewSheep.rowKeys]
         multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
-        multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Herd name')
+        multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Flock name')
 
         const multiHerdsRowContents = [...expectedReviewSheep.rowContents]
-        multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Sheep') + 1, 0, 'Herd one')
+        multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Sheep') + 1, 0, 'Flock one')
 
         expect(rowKeys).toEqual(multiHerdsRowKeys)
         expect(rowContents).toEqual(multiHerdsRowContents)
