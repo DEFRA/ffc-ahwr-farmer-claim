@@ -35,25 +35,30 @@
         }
       ]
     }
-  },
-  {
-    key: {
-      text: "Only " ~ herdOrFlock ~ " associated with SBI"
-    },
-    value: {
-      text: herdOthersOnSbi | capitalize
-    },
-    actions: {
-      items: [
-        {
-          href: herdOthersOnSbiLink,
-          text: "Change",
-          visuallyHiddenText: "Only " ~ herdOrFlock ~ " associated with SBI"
-        }
-      ]
-    }
   }
 ] %}
+
+{% if herdOthersOnSbi %}
+  {% set rows = rows.concat([
+    {
+      key: {
+        text: "Only " ~ herdOrFlock ~ " associated with SBI"
+      },
+      value: {
+        text: herdOthersOnSbi | capitalize
+      },
+      actions: {
+        items: [
+          {
+            href: herdOthersOnSbiLink,
+            text: "Change",
+            visuallyHiddenText: "Only " ~ herdOrFlock ~ " associated with SBI"
+          }
+        ]
+      }
+    }
+  ]) %}
+{% endif %}
 
 {% if herdReasons %}
   {% set rows = rows.concat([

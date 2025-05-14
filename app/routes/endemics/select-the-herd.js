@@ -35,11 +35,7 @@ const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
 
   return { species: typeOfLivestock, claimType: claimTypeText, lastVisitDate: dateOfVisitText, claimDate: claimDateText }
 }
-const getHerds = (species) => {
-  // TODO MultiHerds getHerds for call to API
-  const name = species === 'sheep' ? 'Breeding Flock' : 'Commercial Herd'
-  return [{ herdId: '909bb722-3de1-443e-8304-0bba8f922048', name: name }]
-}
+
 const getGroupOfSpeciesName = (typeOfLivestock) => {
   return typeOfLivestock === 'sheep' ? 'flock' : 'herd'
 }
@@ -50,11 +46,10 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview } = getEndemicsClaim(request)
+      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
       const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
       const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
       const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
-      const herds = getHerds(typeOfLivestock)
 
       return h.view(endemicsSelectTheHerd, {
         backLink: previousPageUrl,
@@ -79,11 +74,10 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview } = getEndemicsClaim(request)
+        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
         const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
         const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
-        const herds = getHerds(typeOfLivestock)
 
         return h.view(endemicsSelectTheHerd, {
           ...request.payload,
