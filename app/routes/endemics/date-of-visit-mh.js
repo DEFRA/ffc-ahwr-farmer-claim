@@ -144,6 +144,57 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   }
 }
 
+export const getNextPage = (request) => {
+  const {
+    typeOfReview: typeOfClaim,
+    previousClaims,
+    latestVetVisitApplication: oldWorldApplication,
+    typeOfLivestock,
+    reviewTestResults,
+    dateOfVisit
+  } = getEndemicsClaim(request)
+
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+  const { isEndemicsFollowUp } = getReviewType(typeOfClaim)
+
+  if (isEndemicsFollowUp) {
+    setEndemicsClaim(
+      request,
+      relevantReviewForEndemicsKey,
+      getReviewWithinLast10Months(
+        dateOfVisit,
+        previousClaims,
+        oldWorldApplication,
+        typeOfLivestock
+      )
+    )
+  }
+
+  setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
+
+  if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
+    const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)
+
+    if (!piHuntEnabledAndVisitDateAfterGoLive) {
+      clearPiHuntSessionOnChange(request, 'dateOfVisit')
+    }
+
+    const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
+
+    setEndemicsClaim(
+      request,
+      reviewTestResultsKey,
+      reviewTestResultsValue
+    )
+
+    if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
+      return `${config.urlPrefix}/${endemicsSpeciesNumbers}`
+    }
+  }
+
+  return `${config.urlPrefix}/${endemicsDateOfTesting}`
+}
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
@@ -179,14 +230,13 @@ const postHandler = {
         latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
         organisation,
-        reviewTestResults,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication,
         herdId,
         herdVersion
       } = getEndemicsClaim(request)
 
-      const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+      const { isDairy } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -269,7 +319,7 @@ const postHandler = {
       removeMultipleHerdsSessionData(request)
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
-      const errorMessage = canMakeClaim({ prevClaims: prevLivestockClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
+      const errorMessage = canMakeClaim({ prevClaims: prevLivestockClaims, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
       if (errorMessage) {
         raiseInvalidDataEvent(
@@ -291,41 +341,7 @@ const postHandler = {
           .takeover()
       }
 
-      if (isEndemicsFollowUp) {
-        setEndemicsClaim(
-          request,
-          relevantReviewForEndemicsKey,
-          getReviewWithinLast10Months(
-            dateOfVisit,
-            previousClaims,
-            oldWorldApplication,
-            typeOfLivestock
-          )
-        )
-      }
-
-      setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-
-      if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
-        const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
-
-        if (!piHuntEnabledAndVisitDateAfterGoLive) {
-          clearPiHuntSessionOnChange(request, 'dateOfVisit')
-        }
-
-        const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
-
-        setEndemicsClaim(
-          request,
-          reviewTestResultsKey,
-          reviewTestResultsValue
-        )
-
-        if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
-          return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
-        }
-      }
-      return h.redirect(`${config.urlPrefix}/${endemicsDateOfTesting}`)
+      return h.redirect(getNextPage())
     }
   }
 }

@@ -9,6 +9,8 @@ import { claimConstants } from '../../constants/claim.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewType } from '../../lib/get-review-type.js'
+import { ONLY_HERD } from './herd-others-on-sbi.js'
+import { OTHERS_ON_SBI } from '../../constants/herd.js'
 
 const { endemics } = claimConstants.claimType
 
@@ -38,7 +40,8 @@ const {
     herdCph: herdCphKey,
     herdReasons: herdReasonsKey,
     herdExists: herdExistsKey,
-    dateOfVisit: dateOfVisitKey
+    dateOfVisit: dateOfVisitKey,
+    herdOthersOnSbi: herdOthersOnSbiKey
   }
 } = sessionKeys
 
@@ -119,9 +122,6 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
-      console.log({
-        herdId
-      })
       setEndemicsClaim(request, herdIdKey, herdId)
 
       const {
@@ -176,7 +176,11 @@ const postHandler = {
         setEndemicsClaim(request, herdNameKey, existingHerd.herdName)
         setEndemicsClaim(request, herdCphKey, existingHerd.cph)
         setEndemicsClaim(request, herdReasonsKey, existingHerd.herdReasons)
+        setEndemicsClaim(request, herdOthersOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO)
       } else {
+        if(herds.length) {
+          setEndemicsClaim(request, herdOthersOnSbiKey, OTHERS_ON_SBI.NO)
+        }
         setEndemicsClaim(request, herdVersionKey, 1)
       }
 

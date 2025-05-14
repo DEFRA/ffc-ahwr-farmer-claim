@@ -6,6 +6,7 @@ import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { hasPreviousClaimsWithNoHerdAssigned } from '../../lib/context-helper.js'
 import { ONLY_HERD } from './herd-others-on-sbi.js'
+import { getNextPage } from './date-of-visit-mh.js'
 
 const { urlPrefix } = config
 const {
@@ -43,7 +44,7 @@ const getHandler = {
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
-        herdOthersOnSbi: herdOthersOnSbi ?? herdReasons == [ONLY_HERD] ? OTHERS_ON_SBI.NO : OTHERS_ON_SBI.YES,
+        herdOthersOnSbi,
         herdCphLink,
         herdReasonsLink: enterHerdDetailsPageUrl,
         herdOthersOnSbiLink: herdOthersOnSbiPageUrl,
@@ -59,7 +60,7 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const { previousClaims, typeOfLivestock } = getEndemicsClaim(request)
-      const nextPageUrl = hasPreviousClaimsWithNoHerdAssigned(previousClaims, typeOfLivestock) ? sameHerdPageUrl : dateOfTestingPageUrl
+      const nextPageUrl = hasPreviousClaimsWithNoHerdAssigned(previousClaims, typeOfLivestock) ? sameHerdPageUrl : getNextPage(request)
       return h.redirect(nextPageUrl)
     }
   }
