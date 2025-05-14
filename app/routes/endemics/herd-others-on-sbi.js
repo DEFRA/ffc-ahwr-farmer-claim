@@ -34,24 +34,16 @@ const getSpeciesGroupText = (typeOfLivestock) => {
   return textByLivestock[typeOfLivestock]
 }
 
-export const getOthersOnSbiByReasons = (herdReasons) => {
-  if(!herdReasons) {
-    return undefined
-  }
-  return herdReasons == [ONLY_HERD] ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO
-}
-
-
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdOthersOnSbi, typeOfLivestock, herdReasons } = getEndemicsClaim(request)
+      const { herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsHerdOthersOnSbi, {
         backLink: previousPageUrl,
-        herdOthersOnSbi: herdOthersOnSbi ?? getOthersOnSbiByReasons(herdReasons),
+        herdOthersOnSbi,
         herdOrFlock: getHerdOrFlock(typeOfLivestock),
         speciesGroupText: getSpeciesGroupText(typeOfLivestock)
       })

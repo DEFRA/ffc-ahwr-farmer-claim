@@ -5,7 +5,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
-import { ONLY_HERD } from './herd-others-on-sbi.js'
+import { OTHERS_ON_SBI } from '../../constants/herd.js'
 
 const { urlPrefix } = config
 const {
@@ -66,13 +66,13 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload
-      const { herds, herdOthersOnSbi, herdReasons } = getEndemicsClaim(request)
+      const { herds, herdOthersOnSbi } = getEndemicsClaim(request)
 
       setEndemicsClaim(request, herdCphKey, herdCph)
 
       let nextPageUrl
-      if(herds?.length) {
-        nextPageUrl = herdReasons == [ONLY_HERD] ? enterHerdDetailsPageUrl : checkHerdDetailsPageUrl
+      if (herds?.length) {
+        nextPageUrl = herdOthersOnSbi === OTHERS_ON_SBI.NO ? enterHerdDetailsPageUrl : checkHerdDetailsPageUrl
       } else {
         nextPageUrl = herdOthersOnSbiPageUrl
       }
