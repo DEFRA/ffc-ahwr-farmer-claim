@@ -102,3 +102,7 @@ export const isMultipleHerdsUserJourney = (dateOfVisit) => {
   const userAcceptedMultiHerdTCs = true // TODO MultiHerds impl user rejects T&Cs check
   return config.multiHerds.enabled && userAcceptedMultiHerdTCs && new Date(dateOfVisit) >= MULTIPLE_HERDS_RELEASE_DATE
 }
+
+export const isPreviousClaimsWithoutHerdAssigned = (previousClaims) => {
+  return !previousClaims?.find((claim) => { return claim.data?.herdId })
+}

@@ -17,7 +17,7 @@ import {
   isWithIn4MonthsBeforeOrAfterDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney, isPreviousClaimsWithoutHerdAssigned } from '../../lib/context-helper.js'
 
 const { ruralPaymentsAgency, urlPrefix } = config
 const {
@@ -31,16 +31,20 @@ const {
   endemicsDateOfTestingException,
   endemicsTestUrn,
   endemicsPIHuntAllAnimals,
-  endemicsCheckHerdDetails
+  endemicsCheckHerdDetails,
+  endemicsSameHerd
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {
-  const { typeOfLivestock, typeOfReview, dateOfVisit } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, dateOfVisit, previousClaims } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isMultipleHerdsUserJourney(dateOfVisit)) {
+    if (isPreviousClaimsWithoutHerdAssigned(previousClaims)) {
+      return `${urlPrefix}/${endemicsSameHerd}`
+    }
     return `${urlPrefix}/${endemicsCheckHerdDetails}`
   }
 

@@ -4,11 +4,13 @@ import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
+import { isPreviousClaimsWithoutHerdAssigned } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
+  endemicsSameHerd,
   endemicsDateOfTesting,
   endemicsEnterCphNumber,
   endemicsHerdOthersOnSbi
@@ -17,7 +19,8 @@ const {
 const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
-const nextPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
+const sameHerdPageUrl = `${urlPrefix}/${endemicsSameHerd}`
+const dateOfTestingPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
@@ -53,7 +56,9 @@ const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
-    handler: async (_request, h) => {
+    handler: async (request, h) => {
+      const { previousClaims } = getEndemicsClaim(request)
+      const nextPageUrl = isPreviousClaimsWithoutHerdAssigned(previousClaims) ? sameHerdPageUrl : dateOfTestingPageUrl
       return h.redirect(nextPageUrl)
     }
   }

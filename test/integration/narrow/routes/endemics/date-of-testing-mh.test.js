@@ -10,7 +10,7 @@ import {
 } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney, isPreviousClaimsWithoutHerdAssigned } from '../../../../../app/lib/context-helper.js'
 
 const { labels } = visitDate
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
@@ -522,5 +522,46 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
       expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
+  })
+})
+
+describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
+  let server
+
+  beforeAll(async () => {
+    setMultiSpecies(true)
+    setMultiHerds(true)
+    server = await createServer()
+    await server.initialize()
+    setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    isMultipleHerdsUserJourney.mockImplementation(() => { return true })
+  })
+
+  afterAll(async () => {
+    await server.stop()
+    jest.resetAllMocks()
+  })
+
+  test('returns 200 and correct backlink when isPreviousClaimsWithoutHerdAssigned=false', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+    isPreviousClaimsWithoutHerdAssigned.mockImplementation(() => { return false })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/check-herd-details')
+  })
+
+  test('returns 200 and correct backlink when isPreviousClaimsWithoutHerdAssigned=false', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+    isPreviousClaimsWithoutHerdAssigned.mockImplementation(() => { return true })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/same-herd')
   })
 })
