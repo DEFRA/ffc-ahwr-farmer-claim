@@ -122,12 +122,29 @@ describe('enter-cph-number tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
-    test('navigates to enter herd details when there are previous herds and payload is valid', async () => {
+    test('navigates to check herd details when there are previous herds and othersOnSbi is yes', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
-        herds: [{ id: 'herd one' }]
+        herds: [{ id: 'herd one' }],
+        herdOthersOnSbi: 'yes'
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdCph: '22/333/4444' }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
+      expect(setEndemicsClaim).toHaveBeenCalled()
+    })
+
+    test('navigates to enter herd details when there are previous herds and othersOnSbi is no', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        herds: [{ id: 'herd one' }],
+        herdOthersOnSbi: 'no'
       })
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdCph: '22/333/4444' }, headers: { cookie: `crumb=${crumb}` } })

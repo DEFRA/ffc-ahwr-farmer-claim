@@ -228,6 +228,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   beforeEach(async () => {
     crumb = await getCrumbs(server)
     jest.clearAllMocks()
+    setMultiHerds(true)
   })
 
   test('redirect back to page with errors if the entered date is of an incorrect format', async () => { // unhappy path
@@ -413,6 +414,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes a review claim and has zero previous claims', async () => { // happy path
+    setMultiHerds(false)
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
@@ -424,7 +426,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -463,7 +466,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         latestEndemicsApplication: {
           ...latestEndemicsApplication,
           createdAt: new Date('2025/01/01 14:30:00')
-        }
+        },
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -509,7 +513,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -559,7 +564,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -605,7 +611,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-02-26'
       }
     })
     const options = {
@@ -652,7 +659,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -692,7 +700,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestVetVisitApplication,
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -729,7 +738,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestVetVisitApplication,
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -772,7 +782,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'beef'
           }
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-02'
       }
     })
     const options = {
@@ -819,7 +830,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'pigs'
           }
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-02'
       }
     })
     const options = {
@@ -867,7 +879,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -915,7 +928,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-21'
       }
     })
     const options = {
@@ -963,7 +977,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-20'
       }
     })
     const options = {
@@ -1025,7 +1040,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1101,7 +1117,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-02-27'
       }
     })
     const options = {
@@ -1149,7 +1166,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1202,7 +1220,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1255,7 +1274,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1304,7 +1324,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           },
           statusId: 9
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1352,7 +1373,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1474,7 +1496,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'negative',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1523,7 +1546,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-21'
       }
     })
     const options = {
@@ -1573,7 +1597,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-20'
       }
     })
     const options = {
@@ -1622,7 +1647,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-05-13'
       }
     })
     const options = {
@@ -1669,7 +1695,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-05-13'
       }
     })
     const options = {
