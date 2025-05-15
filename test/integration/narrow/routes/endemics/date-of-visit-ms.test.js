@@ -928,7 +928,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(res.headers.location).toBe('/claim/endemics/species-numbers')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 21))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
@@ -1416,7 +1416,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       payload: {
         crumb,
         [labels.day]: '27',
-        [labels.month]: '03',
+        [labels.month]: '3',
         [labels.year]: '2025'
       },
       auth,
@@ -1426,7 +1426,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', {
       reference: 'AHWR-C2EA-C718',
       applicationReference: 'AHWR-2470-6BA9',
@@ -1439,7 +1439,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         testResults: 'positive'
       }
     })
-    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/02/27'))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/03/27'))
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })

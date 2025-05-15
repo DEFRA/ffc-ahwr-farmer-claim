@@ -934,7 +934,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(res.headers.location).toBe('/claim/endemics/species-numbers')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 21))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
@@ -1432,7 +1432,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', {
       reference: 'AHWR-C2EA-C718',
       applicationReference: 'AHWR-2470-6BA9',
