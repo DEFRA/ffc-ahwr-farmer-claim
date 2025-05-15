@@ -39,7 +39,6 @@ const {
     herdName: herdNameKey,
     herdCph: herdCphKey,
     herdReasons: herdReasonsKey,
-    herdExists: herdExistsKey,
     dateOfVisit: dateOfVisitKey,
     herdOthersOnSbi: herdOthersOnSbiKey
   }
@@ -90,6 +89,21 @@ const getHandler = {
   }
 }
 
+const addHerdToSession = (request, existingHerd, herds) => {
+  if (existingHerd) {
+    setEndemicsClaim(request, herdVersionKey, existingHerd.herdVersion + 1)
+    setEndemicsClaim(request, herdNameKey, existingHerd.herdName)
+    setEndemicsClaim(request, herdCphKey, existingHerd.cph)
+    setEndemicsClaim(request, herdReasonsKey, existingHerd.herdReasons)
+    setEndemicsClaim(request, herdOthersOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO)
+  } else {
+    if (herds.length) {
+      setEndemicsClaim(request, herdOthersOnSbiKey, OTHERS_ON_SBI.NO)
+    }
+    setEndemicsClaim(request, herdVersionKey, 1)
+  }
+}
+
 const postHandler = {
   method: 'POST',
   path: pageUrl,
@@ -134,7 +148,6 @@ const postHandler = {
         latestVetVisitApplication: oldWorldApplication
       } = getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
-
       const existingHerd = herds.find((herd) => herd.herdId === herdId)
 
       if (!existingHerd && typeOfReview === endemics) {
@@ -155,8 +168,6 @@ const postHandler = {
           `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
         )
 
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-
         return h
           .view(`${endemicsSelectTheHerdDateException}`, {
             backLink: pageUrl,
@@ -169,20 +180,7 @@ const postHandler = {
           .takeover()
       }
 
-      setEndemicsClaim(request, herdExistsKey, !!existingHerd)
-
-      if (existingHerd) {
-        setEndemicsClaim(request, herdVersionKey, existingHerd.herdVersion + 1)
-        setEndemicsClaim(request, herdNameKey, existingHerd.herdName)
-        setEndemicsClaim(request, herdCphKey, existingHerd.cph)
-        setEndemicsClaim(request, herdReasonsKey, existingHerd.herdReasons)
-        setEndemicsClaim(request, herdOthersOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO)
-      } else {
-        if(herds.length) {
-          setEndemicsClaim(request, herdOthersOnSbiKey, OTHERS_ON_SBI.NO)
-        }
-        setEndemicsClaim(request, herdVersionKey, 1)
-      }
+      addHerdToSession(request, existingHerd, herds)
 
       const nextPageUrl = existingHerd ? checkHerdDetailsPageUrl : enterHerdNamePageUrl
 

@@ -170,8 +170,6 @@ export const getNextPage = (request) => {
     )
   }
 
-  setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-
   if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
     const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)
 
@@ -273,6 +271,7 @@ const postHandler = {
       }
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
+      setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       let exception
       let exceptionView
@@ -291,7 +290,6 @@ const postHandler = {
 
       if (exception) {
         raiseInvalidDataEvent(request, dateOfVisitKey, exception)
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
           .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
@@ -300,15 +298,14 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit)) {
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds)
 
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
-
         setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId))
+
         if (!herdVersion) {
           setEndemicsClaim(request, herdVersionKey, 1)
         }
@@ -328,8 +325,6 @@ const postHandler = {
           `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
         )
 
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-
         return h
           .view(`${endemicsDateOfVisitException}-ms`, {
             backLink: pageUrl,
@@ -341,7 +336,7 @@ const postHandler = {
           .takeover()
       }
 
-      return h.redirect(getNextPage())
+      return h.redirect(getNextPage(request))
     }
   }
 }

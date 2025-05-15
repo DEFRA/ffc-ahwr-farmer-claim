@@ -6,12 +6,14 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { getNextPage } from '../../../../../app/routes/endemics/date-of-visit-mh.js'
 
 const { urlPrefix } = config
 const { endemicsCheckHerdDetails: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/routes/endemics/date-of-visit-mh.js')
 
 const assertLinkExistsFor = ($, spanText) => {
   const link = $('a.govuk-link').filter((_, el) => {
@@ -165,6 +167,7 @@ describe('check-herd-details tests', () => {
         herdOthersOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
+      getNextPage.mockReturnValue('/claim/endemics/date-of-testing')
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
 
