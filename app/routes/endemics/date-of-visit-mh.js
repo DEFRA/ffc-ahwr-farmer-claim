@@ -304,8 +304,8 @@ const postHandler = {
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
+        
         setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId))
-
         if (!herdVersion) {
           setEndemicsClaim(request, herdVersionKey, 1)
         }
