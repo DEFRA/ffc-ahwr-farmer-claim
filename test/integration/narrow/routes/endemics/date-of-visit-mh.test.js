@@ -228,7 +228,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   beforeEach(async () => {
     crumb = await getCrumbs(server)
     jest.clearAllMocks()
-    setMultiHerds(true)
   })
 
   test('redirect back to page with errors if the entered date is of an incorrect format', async () => { // unhappy path
@@ -414,7 +413,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('user makes a review claim and has zero previous claims', async () => { // happy path
-    setMultiHerds(false)
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'R',
