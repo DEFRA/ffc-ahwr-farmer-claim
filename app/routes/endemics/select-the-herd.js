@@ -155,7 +155,7 @@ const postHandler = {
           backLink: pageUrl,
           claimForAReviewLink: whichSpeciesPageUrl
         })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
@@ -176,7 +176,7 @@ const postHandler = {
             backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
             backToPageLink: dateOfVisitPageUrl
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
