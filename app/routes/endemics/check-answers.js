@@ -34,21 +34,22 @@ const getNoChangeRows = (
   isSheep,
   typeOfLivestock,
   organisationName,
-  herdName
+  herdName,
+  dateOfVisit
 ) => [
   {
     key: { text: 'Business name' },
     value: { html: upperFirstLetter(organisationName) }
   },
   {
-    key: { text: config.multiHerds.enabled ? 'Species' : 'Livestock' },
+    key: { text: isMultipleHerdsUserJourney(dateOfVisit) ? 'Species' : 'Livestock' },
     value: {
       html: upperFirstLetter(
         isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
       )
     }
   },
-  ...(config.multiHerds.enabled ? [getHerdNameRow(herdName, typeOfLivestock)] : []),
+  ...(isMultipleHerdsUserJourney(dateOfVisit) ? [getHerdNameRow(herdName, typeOfLivestock)] : []),
   {
     key: { text: 'Review or follow-up' },
     value: {
@@ -488,7 +489,8 @@ const getHandler = {
           isSheep,
           typeOfLivestock,
           organisation?.name,
-          herdName
+          herdName,
+          dateOfVisit
         ),
         ...speciesRows()
       ]
