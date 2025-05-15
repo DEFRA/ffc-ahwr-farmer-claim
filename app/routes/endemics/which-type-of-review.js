@@ -78,18 +78,6 @@ const postHandler = {
 
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-      // // Dairy follow up claim
-      // if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-      //   return h
-      //     .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-      //       backLink: pageUrl,
-      //       claimDashboard,
-      //       ruralPaymentsAgency
-      //     })
-      //     .code(400)
-      //     .takeover()
-      // }
-
       // If user has an old world application within last 10 months
       if (isCattleEndemicsClaimForOldWorldReview(request)) {
         return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)

@@ -71,20 +71,6 @@ export const whichReviewMSHandlers = [
 
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-        // if (!isPIHuntEnabled()) {
-        //   // Dairy follow up claim
-        //   if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-        //     return h
-        //       .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-        //         backLink: pageUrl,
-        //         claimDashboard,
-        //         ruralPaymentsAgency
-        //       })
-        //       .code(400)
-        //       .takeover()
-        //   }
-        // }
-
         const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
         const oldWorldClaimTypeOfLivestock = oldWorldApplication?.data?.whichReview
