@@ -10,7 +10,7 @@ import { getYesNoRadios } from '../models/form-component/yes-no-radios.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getTestResult } from '../../lib/get-test-result.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 
@@ -30,7 +30,7 @@ const backLink = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
 
-  if (isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
+  if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsDateOfVisit}`
   }
   if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`

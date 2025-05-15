@@ -17,7 +17,7 @@ import {
 } from '../../api-requests/claim-service-api.js'
 import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
@@ -315,7 +315,7 @@ const postHandler = {
       setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
-        const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)
+        const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
 
         if (!piHuntEnabledAndVisitDateAfterGoLive) {
           clearPiHuntSessionOnChange(request, 'dateOfVisit')

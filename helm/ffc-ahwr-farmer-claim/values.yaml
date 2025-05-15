@@ -70,7 +70,6 @@ container:
   apimClientSecret:
   apimScope:
   dateOfTestingEnabled:
-  optionalPIHuntEnabled: 'true'
   multiSpeciesEnabled: 'true'
   multiHerdsEnabled: 'false'
   devLoginEnabled: 'false'

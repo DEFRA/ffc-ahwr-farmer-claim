@@ -8,7 +8,7 @@ import { getReviewType } from '../../lib/get-review-type.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isURNUnique } from '../../api-requests/claim-service-api.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const { urlPrefix, ruralPaymentsAgency } = config
 const {
@@ -47,7 +47,7 @@ const previousPageUrl = (request) => {
   const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isPositive } = getTestResult(reviewTestResults)
 
-  if (isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) return `${urlPrefix}/${endemicsDateOfTesting}`
+  if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) return `${urlPrefix}/${endemicsDateOfTesting}`
   if (isReview) return `${urlPrefix}/${endemicsVetRCVS}`
   if (isEndemicsFollowUp && isPigs) return `${urlPrefix}/${endemicsVaccination}`
   if ((isBeef || isDairy) && isPositive) return `${urlPrefix}/${endemicsPIHunt}`

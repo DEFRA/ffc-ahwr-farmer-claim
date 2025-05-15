@@ -6,11 +6,10 @@ import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isPIHuntEnabled } from '../../lib/context-helper.js'
 
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = sessionKeys
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies, endemicsWhichTypeOfReviewException } = links
-const { urlPrefix, ruralPaymentsAgency } = config
+const { endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichSpecies, endemicsWhichTypeOfReviewException } = links
+const { urlPrefix } = config
 const { livestockTypes, claimType } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
@@ -72,19 +71,19 @@ export const whichReviewMSHandlers = [
 
         setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-        if (!isPIHuntEnabled()) {
-          // Dairy follow up claim
-          if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-            return h
-              .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-                backLink: pageUrl,
-                claimDashboard,
-                ruralPaymentsAgency
-              })
-              .code(400)
-              .takeover()
-          }
-        }
+        // if (!isPIHuntEnabled()) {
+        //   // Dairy follow up claim
+        //   if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
+        //     return h
+        //       .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+        //         backLink: pageUrl,
+        //         claimDashboard,
+        //         ruralPaymentsAgency
+        //       })
+        //       .code(400)
+        //       .takeover()
+        //   }
+        // }
 
         const relevantClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 

@@ -22,7 +22,7 @@ describe('PI Hunt recommended tests', () => {
     await server.initialize()
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(async () => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    setOptionalPIHunt()
   })
 
   afterAll(async () => {

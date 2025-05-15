@@ -24,7 +24,7 @@ describe('herd-others-on-sbi tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setOptionalPIHunt()
     setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()

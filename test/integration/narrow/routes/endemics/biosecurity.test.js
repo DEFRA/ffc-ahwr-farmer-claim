@@ -6,7 +6,7 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setOptionalPIHunt } from '../../../../mocks/config.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { urlPrefix } = config
 const {
@@ -37,8 +37,8 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
     await server.initialize()
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
+    setOptionalPIHunt()
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
   })
   afterAll(async () => {
     jest.resetAllMocks()
@@ -268,8 +268,8 @@ describe('Biosecurity test when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    setOptionalPIHunt()
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {

@@ -3,7 +3,6 @@ import appInsights from 'applicationinsights'
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
-import { setOptionalPIHunt } from '../../../../mocks/config.js'
 import { config } from '../../../../../app/config/index.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
@@ -66,7 +65,6 @@ describe('Date of vet visit when Optional PI Hunt is OFF', () => {
   let server
 
   beforeAll(async () => {
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     config.multiSpecies.enabled = false
     config.multiHerds.enabled = false
     server = await createServer()
@@ -712,7 +710,6 @@ describe('Date of vet visit when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
   })
 
   afterAll(async () => {

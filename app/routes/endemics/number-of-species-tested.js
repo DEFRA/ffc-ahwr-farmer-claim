@@ -7,7 +7,7 @@ import links from '../../config/routes.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -172,7 +172,7 @@ const postHandler = {
       return h
         .view(endemicsNumberOfSpeciesException, {
           backLink: pageUrl,
-          piHuntEnabled: isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)),
+          piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)),
           ruralPaymentsAgency: config.ruralPaymentsAgency
         })
         .code(400)

@@ -5,7 +5,6 @@ jest.mock('../../app/config', () => ({
   ...jest.requireActual('../../app/config')
 }))
 const {
-  optionalPIHunt,
   multiSpecies,
   multiHerds
 } = config
@@ -26,11 +25,11 @@ const ruralPaymentsAgency = {
   getOrganisationUrl: 'dummy-get-organisation-url'
 }
 
-export const setOptionalPIHunt = ({ optionalPIHuntEnabled }) => {
-  optionalPIHunt.enabled = optionalPIHuntEnabled
+export const setOptionalPIHunt = () => {
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency
 }
+
 export const setMultiSpecies = (enabled) => {
   multiSpecies.enabled = enabled
 }

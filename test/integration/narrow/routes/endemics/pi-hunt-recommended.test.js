@@ -24,7 +24,7 @@ describe('PI Hunt recommended tests', () => {
     getEndemicsClaim.mockImplementation(() => { return { reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    setOptionalPIHunt()
   })
 
   afterAll(async () => {

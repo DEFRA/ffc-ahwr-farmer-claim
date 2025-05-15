@@ -6,7 +6,7 @@ import links from '../../config/routes.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 const { endemicsClaim: { piHunt: piHuntKey, dateOfVisit: dateOfVisitKey } } = sessionKeys
@@ -22,7 +22,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { piHunt: previousAnswer } = getEndemicsClaim(request)
-      const titleText = isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+      const titleText = isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
       return h.view(endemicsPIHunt, { titleText, backLink, previousAnswer })
     }
   }
@@ -39,7 +39,7 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         const { piHunt: previousAnswer } = getEndemicsClaim(request)
-        const titleText = isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey)) ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
+        const titleText = isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) ? 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done?' : 'Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?'
         return h.view(
           endemicsPIHunt,
           {
@@ -57,7 +57,7 @@ const postHandler = {
       const { reviewTestResults, piHunt: previousAnswer } = getEndemicsClaim(request)
       const { isNegative, isPositive } = getTestResult(reviewTestResults)
       const answer = request.payload.piHunt
-      const piHuntEnabledAndVisitDateAfterGoLive = isPIHuntEnabledAndVisitDateAfterGoLive(getEndemicsClaim(request, dateOfVisitKey))
+      const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey))
 
       setEndemicsClaim(request, piHuntKey, answer)
 

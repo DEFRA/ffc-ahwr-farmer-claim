@@ -4,13 +4,13 @@ import { claimConstants } from '../../constants/claim.js'
 import links from '../../config/routes.js'
 import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { canChangeSpecies, getTypeOfLivestockFromLatestClaim, isPIHuntEnabled } from '../../lib/context-helper.js'
+import { canChangeSpecies, getTypeOfLivestockFromLatestClaim } from '../../lib/context-helper.js'
 import { isCattleEndemicsClaimForOldWorldReview } from '../../api-requests/claim-service-api.js'
 
 const { endemicsClaim: { typeOfReview: typeOfReviewKey, typeOfLivestock: typeOfLivestockKey } } = sessionKeys
-const { livestockTypes, claimType } = claimConstants
-const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichTypeOfReviewDairyFollowUpException, endemicsWhichSpecies } = links
-const { urlPrefix, ruralPaymentsAgency } = config
+const { claimType } = claimConstants
+const { claimDashboard, endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichSpecies } = links
+const { urlPrefix } = config
 
 const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const backLink = claimDashboard
@@ -69,7 +69,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfReview } = request.payload
-      const { typeOfLivestock } = getEndemicsClaim(request)
+      // const { typeOfLivestock } = getEndemicsClaim(request)
 
       // if doing a review and currently locked (to disappear with MS introduced)
       if (canChangeSpecies(request, typeOfReview)) {
@@ -78,19 +78,17 @@ const postHandler = {
 
       setEndemicsClaim(request, typeOfReviewKey, claimType[typeOfReview])
 
-      if (!isPIHuntEnabled()) {
-        // Dairy follow up claim
-        if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
-          return h
-            .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
-              backLink: pageUrl,
-              claimDashboard,
-              ruralPaymentsAgency
-            })
-            .code(400)
-            .takeover()
-        }
-      }
+      // // Dairy follow up claim
+      // if (claimType[typeOfReview] === claimType.endemics && typeOfLivestock === livestockTypes.dairy) {
+      //   return h
+      //     .view(endemicsWhichTypeOfReviewDairyFollowUpException, {
+      //       backLink: pageUrl,
+      //       claimDashboard,
+      //       ruralPaymentsAgency
+      //     })
+      //     .code(400)
+      //     .takeover()
+      // }
 
       // If user has an old world application within last 10 months
       if (isCattleEndemicsClaimForOldWorldReview(request)) {

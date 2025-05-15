@@ -24,7 +24,7 @@ describe('enter-cph-number tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setOptionalPIHunt()
     setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()

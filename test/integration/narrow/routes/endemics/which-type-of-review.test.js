@@ -26,7 +26,7 @@ describe('Which type of review test', () => {
     setEndemicsClaim.mockImplementation(() => { })
     setMultiSpecies(false)
     setMultiHerds(false)
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setOptionalPIHunt()
     server = await createServer()
     await server.initialize()
   })
@@ -165,30 +165,7 @@ describe('Which type of review test', () => {
       expect(setEndemicsClaim).toBeCalledTimes(expectSetEndemicsCalls)
     })
 
-    test('Returns 400 and redirects to error page for dairy follow-up when optionalPiHunt flag is false', async () => {
-      getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
-        .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: {
-          crumb,
-          typeOfReview: 'endemics'
-        },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(400)
-      const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('You cannot continue with your claim')
-      expectPhaseBanner.ok($)
-    })
-
-    test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
-      setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    test('Returns 302 and redirects to next page for dairy follow-up', async () => {
       getEndemicsClaim.mockReturnValueOnce({ typeOfLivestock: 'dairy' })
         .mockReturnValueOnce({ typeOfLivestock: 'dairy' })
       const options = {
