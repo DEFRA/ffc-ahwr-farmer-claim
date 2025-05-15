@@ -10,7 +10,7 @@ import { getYesNoRadios } from '../models/form-component/yes-no-radios.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getTestResult } from '../../lib/get-test-result.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 
@@ -47,19 +47,19 @@ const sheepNumbersExceptionsText = {
   E: 'follow-up'
 }
 const getHerdText = (typeOfLivestock) => typeOfLivestock !== 'sheep' ? 'in this herd' : 'in this flock'
-const errorMessageText = (typeOfReview, speciesEligibleNumberForDisplay, typeOfLivestock) => {
+const errorMessageText = (typeOfReview, speciesEligibleNumberForDisplay, typeOfLivestock, dateOfVisit) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
   const herdText = getHerdText(typeOfLivestock)
 
-  return config.multiHerds.enabled
+  return isMultipleHerdsUserJourney(dateOfVisit)
     ? `Select yes if you had ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}.`
     : `Select if you had ${speciesEligibleNumberForDisplay} on the date of the ${claimTypeText}.`
 }
-const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivestock) => {
+const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivestock, dateOfVisit) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
-  const herdText = config.multiHerds.enabled ? getHerdText(typeOfLivestock) : ''
+  const herdText = isMultipleHerdsUserJourney(dateOfVisit) ? getHerdText(typeOfLivestock) : ''
 
   return `Did you have ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
 }
@@ -78,7 +78,7 @@ const getHandler = {
       return h.view(endemicsSpeciesNumbers, {
         backLink: backLink(request),
         ...getYesNoRadios(
-          legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
+          legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit),
           speciesNumbers,
           getEndemicsClaim(request, speciesNumbers),
           undefined,
@@ -106,12 +106,12 @@ const postHandler = {
         const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
-          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock) },
+          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit) },
           ...getYesNoRadios(
-            legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock),
+            legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit),
             speciesNumbers,
             getEndemicsClaim(request, speciesNumbers),
-            errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock),
+            errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit),
             radioOptions
           )
         })
