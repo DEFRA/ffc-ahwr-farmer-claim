@@ -31,12 +31,14 @@ import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { config } from '../../../../../app/config/index.js'
+import { isMultipleHerdsUserJourney } from '../../../../../app/lib/context-helper.js'
 
 const { livestockTypes } = claimConstants
 
 jest.mock('../../../../../app/session')
 jest.mock('@hapi/wreck')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
+jest.mock('../../../../../app/lib/context-helper.js')
 
 describe('Check answers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -227,7 +229,8 @@ describe('Check answers test', () => {
           url,
           auth
         }
-        config.multiHerds.enabled = true
+        isMultipleHerdsUserJourney.mockReturnValueOnce(true)
+          .mockReturnValueOnce(true)
 
         const res = await server.inject(options)
 
@@ -401,7 +404,9 @@ describe('Check answers test', () => {
           url,
           auth
         }
-        config.multiHerds.enabled = true
+        isMultipleHerdsUserJourney
+          .mockReturnValueOnce(true)
+          .mockReturnValueOnce(true)
 
         const res = await server.inject(options)
 

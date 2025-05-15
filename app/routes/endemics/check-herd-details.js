@@ -4,12 +4,12 @@ import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
+import { getNextPage } from './date-of-visit-mh.js'
 
 const { urlPrefix } = config
 const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
-  endemicsDateOfTesting,
   endemicsEnterCphNumber,
   endemicsHerdOthersOnSbi
 } = links
@@ -17,7 +17,6 @@ const {
 const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
-const nextPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
@@ -53,8 +52,8 @@ const postHandler = {
   method: 'POST',
   path: pageUrl,
   options: {
-    handler: async (_request, h) => {
-      return h.redirect(nextPageUrl)
+    handler: async (request, h) => {
+      return h.redirect(getNextPage(request))
     }
   }
 }
