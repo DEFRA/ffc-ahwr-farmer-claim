@@ -73,6 +73,7 @@ container:
   optionalPIHuntEnabled: 'true'
   multiSpeciesEnabled: 'true'
   multiHerdsEnabled: 'false'
+  multiHerdsReleaseDate: '2025-05-01'
   devLoginEnabled: 'false'
   customerSurveyClaimUri: https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u
 

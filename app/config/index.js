@@ -71,7 +71,8 @@ export const getConfig = () => {
       enabled: Joi.bool().required()
     },
     multiHerds: {
-      enabled: Joi.bool().required()
+      enabled: Joi.bool().required(),
+      releaseDate: Joi.string().required()
     },
     devLogin: {
       enabled: Joi.bool().required()
@@ -145,7 +146,8 @@ export const getConfig = () => {
       enabled: process.env.MULTI_SPECIES_ENABLED === 'true'
     },
     multiHerds: {
-      enabled: process.env.MULTI_HERDS_ENABLED === 'true'
+      enabled: process.env.MULTI_HERDS_ENABLED === 'true',
+      releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || '2025-05-01'
     },
     devLogin: {
       enabled: process.env.DEV_LOGIN_ENABLED === 'true'
