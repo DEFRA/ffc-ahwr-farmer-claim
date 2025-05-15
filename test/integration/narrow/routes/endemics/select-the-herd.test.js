@@ -52,7 +52,8 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
           { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
-        ]
+        ],
+        herds: []
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -71,7 +72,8 @@ describe('select-the-herd tests', () => {
         typeOfLivestock: 'beef',
         previousClaims: [],
         herdId: fakeHerdId,
-        tempHerdId: fakeHerdId
+        tempHerdId: fakeHerdId,
+        herds: []
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -120,7 +122,8 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
           { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
-        ]
+        ],
+        herds: []
       })
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
