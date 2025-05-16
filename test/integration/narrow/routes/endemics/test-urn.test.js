@@ -1,12 +1,12 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setOptionalPIHunt } from '../../../../mocks/config.js'
+import { setAuthConfig } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isURNUnique } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -22,10 +22,10 @@ describe('Test URN test when Optional PI Hunt is off', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -188,10 +188,10 @@ describe('Test URN test when Optional PI Hunt is on', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {

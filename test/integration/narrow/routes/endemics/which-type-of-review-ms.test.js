@@ -4,7 +4,7 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setOptionalPIHunt, setMultiSpecies } from '../../../../mocks/config.js'
+import { setAuthConfig, setMultiSpecies } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { isCattleEndemicsClaimForOldWorldReview } from '../../../../../app/api-requests/claim-service-api.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -31,7 +31,7 @@ describe('Which type of review test', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setAuthConfig()
     setMultiSpecies(true)
     server = await createServer()
     await server.initialize()
@@ -317,7 +317,6 @@ describe('Which type of review test', () => {
     })
 
     test('Returns 302 and redirects to next page for dairy follow-up when optionalPiHunt flag is TRUE', async () => {
-      setOptionalPIHunt({ optionalPIHuntEnabled: true })
       getEndemicsClaim.mockReturnValueOnce({
         typeOfLivestock: 'dairy',
         previousClaims: [{

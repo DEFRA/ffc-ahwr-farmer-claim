@@ -6,7 +6,6 @@ import { visitDate } from '../../../../../app/config/visit-date.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
-import { config } from '../../../../../app/config/index.js'
 import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-ms.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 
@@ -209,7 +208,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
-    config.optionalPIHunt.enabled = false
     server = await createServer()
     await server.initialize()
   })
@@ -930,7 +928,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toBe('/claim/endemics/date-of-testing')
+    expect(res.headers.location).toBe('/claim/endemics/species-numbers')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 0, 21))
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
@@ -1373,7 +1371,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   })
 
   test('should redirect to endemics date of testing page when endemics claim is for beef or dairy, the previous review test results has not been set and there are multiple previous reviews of different species with different test results', async () => {
-    config.optionalPIHunt.enabled = false
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
@@ -1419,7 +1416,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       payload: {
         crumb,
         [labels.day]: '27',
-        [labels.month]: '02',
+        [labels.month]: '3',
         [labels.year]: '2025'
       },
       auth,
@@ -1429,7 +1426,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', {
       reference: 'AHWR-C2EA-C718',
       applicationReference: 'AHWR-2470-6BA9',
@@ -1442,7 +1439,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         testResults: 'positive'
       }
     })
-    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/02/27'))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/03/27'))
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
@@ -1496,8 +1493,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   test(`for an endemics claim, it redirects to endemics species numbers page when claim 
         is for beef or dairy, and the previous review test results are positive 
-        BUT optional PI hunt is enabled and visit date post go live`, async () => {
-    config.optionalPIHunt.enabled = true
+        BUT visit date post go live`, async () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
@@ -1547,8 +1543,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   test(`for an endemics claim, it redirects to endemics date of testing page when claim 
     is for beef or dairy, and the previous review test results are positive 
-    AND optional PI hunt is enabled BUT visit date pre go live`, async () => {
-    config.optionalPIHunt.enabled = true
+    AND visit date pre go live`, async () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',

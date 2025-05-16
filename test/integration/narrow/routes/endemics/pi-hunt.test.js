@@ -2,10 +2,10 @@ import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setOptionalPIHunt } from '../../../../mocks/config.js'
+import { setAuthConfig } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -23,8 +23,8 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
+    setAuthConfig()
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -146,10 +146,10 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {
