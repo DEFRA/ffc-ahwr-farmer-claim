@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setAuthConfig, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
@@ -10,7 +10,7 @@ import {
 } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { labels } = visitDate
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
@@ -53,10 +53,10 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     setMultiSpecies(true)
     setMultiHerds(true)
     getEndemicsClaim.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -375,8 +375,8 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
     setMultiHerds(true)
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    setAuthConfig()
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {

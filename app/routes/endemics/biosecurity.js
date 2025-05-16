@@ -7,7 +7,7 @@ import { claimConstants } from '../../constants/claim.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const { biosecurity: biosecurityKey, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 const {
@@ -29,7 +29,7 @@ const { livestockTypes: { pigs } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 
-export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals, dateOfVisit) => isPositive && piHuntDone && (isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit) ? piHuntAllAnimals : true)
+export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals, dateOfVisit) => isPositive && piHuntDone && (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) ? piHuntAllAnimals : true)
 const isPIHuntValidNegative = (
   isNegative,
   piHuntDone,
@@ -90,7 +90,7 @@ export const previousPageUrl = (request) => {
   )
   const dateOfVisit = getEndemicsClaim(request, dateOfVisitKey)
 
-  if ((isBeef || isDairy) && isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit)) {
+  if ((isBeef || isDairy) && isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)) {
     return getBeefOrDairyPage(session, isNegative, isPositive)
   } else {
     if ((isBeef || isDairy) && isNegative) {

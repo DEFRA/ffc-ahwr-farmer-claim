@@ -1,11 +1,11 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setOptionalPIHunt } from '../../../../mocks/config.js'
+import { setAuthConfig } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { errorMessages } from '../../../../../app/lib/error-messages.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { rcvs: rcvsErrorMessages } = errorMessages
 
@@ -20,10 +20,10 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -167,10 +167,10 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {

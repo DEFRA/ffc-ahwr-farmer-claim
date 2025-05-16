@@ -3,9 +3,8 @@ import { createServer } from '../../../../../app/server.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
-import { config } from '../../../../../app/config/index.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -34,7 +33,7 @@ describe('Number of species tested test', () => {
 
     server = await createServer()
     await server.initialize()
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
   afterAll(async () => {
@@ -227,9 +226,7 @@ describe('Number of species tested test', () => {
 
     test('error page shows 3 bullet points when PI Hunt env variable is false', async () => {
       getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', typeOfReview: 'R' } })
-      isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return false })
-
-      config.optionalPIHunt.enabled = false
+      isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
 
       const options = {
         method: 'POST',

@@ -86,16 +86,13 @@ const lockedToSpecies = (previousEndemicClaims) => {
   return (previousEndemicClaims && previousEndemicClaims.length > 0)
 }
 
-export const isPIHuntEnabled = () => {
-  return config.optionalPIHunt.enabled
-}
-export const isPIHuntEnabledAndVisitDateAfterGoLive = (dateOfVisit) => {
+export const isVisitDateAfterPIHuntAndDairyGoLive = (dateOfVisit) => {
   const dateOfVisitParsed = new Date(dateOfVisit)
   if (Number.isNaN(dateOfVisitParsed.getTime())) {
     throw new Error(`dateOfVisit must be parsable as a date, value provided: ${dateOfVisit}`)
   }
 
-  return isPIHuntEnabled() && dateOfVisitParsed >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+  return dateOfVisitParsed >= PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
 }
 
 export const isMultipleHerdsUserJourney = (dateOfVisit) => {

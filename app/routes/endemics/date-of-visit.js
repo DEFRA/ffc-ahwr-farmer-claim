@@ -19,7 +19,7 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { addError } from '../utils/validations.js'
-import { isPIHuntEnabledAndVisitDateAfterGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 
 const { dateOfVetVisitExceptions } = claimConstants
 const {
@@ -383,7 +383,7 @@ const postHandler = {
 
         if (
           (isBeef || isDairy) &&
-          (isPIHuntEnabledAndVisitDateAfterGoLive(dateOfVisit) || reviewTestResultsValue === 'negative')
+          (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) || reviewTestResultsValue === 'negative')
         ) { return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`) }
       }
       return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
