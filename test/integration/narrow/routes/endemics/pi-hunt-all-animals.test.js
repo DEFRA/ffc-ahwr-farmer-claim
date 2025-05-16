@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
-import { setOptionalPIHunt } from '../../../../mocks/config.js'
+import { setAuthConfig } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { getAmount } from '../../../../../app/api-requests/claim-service-api.js'
 import expectPhaseBanner from 'assert'
@@ -22,7 +22,7 @@ describe('PI Hunt recommended tests', () => {
     await server.initialize()
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(async () => { })
-    setOptionalPIHunt()
+    setAuthConfig()
   })
 
   afterAll(async () => {

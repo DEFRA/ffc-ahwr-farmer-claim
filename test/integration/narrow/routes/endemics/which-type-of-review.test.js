@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { config } from '../../../../../app/config/index.js'
-import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setAuthConfig, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -26,7 +26,7 @@ describe('Which type of review test', () => {
     setEndemicsClaim.mockImplementation(() => { })
     setMultiSpecies(false)
     setMultiHerds(false)
-    setOptionalPIHunt()
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
   })

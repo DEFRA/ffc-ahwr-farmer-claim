@@ -1,6 +1,6 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setOptionalPIHunt, setMultiHerds } from '../../../../mocks/config.js'
+import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
@@ -52,7 +52,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     setMultiHerds(false)
     getEndemicsClaim.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
-    setOptionalPIHunt()
+    setAuthConfig()
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
@@ -403,7 +403,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
     setMultiHerds(false)
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt()
+    setAuthConfig()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 

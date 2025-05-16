@@ -69,7 +69,6 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { typeOfReview } = request.payload
-      // const { typeOfLivestock } = getEndemicsClaim(request)
 
       // if doing a review and currently locked (to disappear with MS introduced)
       if (canChangeSpecies(request, typeOfReview)) {

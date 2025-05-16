@@ -5,7 +5,7 @@ import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setAuthConfig, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 
 const { urlPrefix } = config
 const { endemicsHerdOthersOnSbi: pageUnderTest } = links
@@ -24,7 +24,7 @@ describe('herd-others-on-sbi tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt()
+    setAuthConfig()
     setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()
