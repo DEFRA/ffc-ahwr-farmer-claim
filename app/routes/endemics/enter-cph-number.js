@@ -13,11 +13,13 @@ const {
   endemicsEnterHerdName,
   endemicsHerdOthersOnSbi,
   endemicsEnterHerdDetails,
-  endemicsCheckHerdDetails
+  endemicsCheckHerdDetails,
+  endemicsSelectTheHerd
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
-const previousPageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
+const enterHerdNamePageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
+const selectTheHerdPageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
 
 const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
@@ -25,15 +27,17 @@ const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
 const { endemicsClaim: { herdCph: herdCphKey } } = sessionKeys
 
+const getBackLink = (herdVersion) => !herdVersion || herdVersion === 1 ? enterHerdNamePageUrl : selectTheHerdPageUrl
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdCph, typeOfLivestock } = getEndemicsClaim(request)
+      const { herdCph, typeOfLivestock, herdVersion } = getEndemicsClaim(request)
       return h.view(endemicsEnterCphNumber, {
-        backLink: previousPageUrl,
+        backLink: getBackLink(herdVersion),
         herdCph,
         herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
@@ -51,7 +55,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock } = getEndemicsClaim(request)
+        const { typeOfLivestock, herdVersion } = getEndemicsClaim(request)
 
         return h.view(endemicsEnterCphNumber, {
           ...request.payload,
@@ -59,7 +63,7 @@ const postHandler = {
             text: `Enter the CPH for this ${getHerdOrFlock(typeOfLivestock)}, format should be nn/nnn/nnnn`,
             href: '#herdCph'
           },
-          backLink: previousPageUrl,
+          backLink: getBackLink(herdVersion),
           herdOrFlock: getHerdOrFlock(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
