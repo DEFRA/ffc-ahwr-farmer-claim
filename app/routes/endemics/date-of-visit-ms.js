@@ -283,9 +283,9 @@ const postHandler = {
       setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
-        const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
+        const visiDateAfterPiHuntAndDairyGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
 
-        if (!piHuntEnabledAndVisitDateAfterGoLive) {
+        if (!visiDateAfterPiHuntAndDairyGoLive) {
           clearPiHuntSessionOnChange(request, 'dateOfVisit')
         }
 
@@ -297,7 +297,7 @@ const postHandler = {
           reviewTestResultsValue
         )
 
-        if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
+        if ((isBeef || isDairy) && (visiDateAfterPiHuntAndDairyGoLive || reviewTestResultsValue === 'negative')) {
           return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
         }
       }
