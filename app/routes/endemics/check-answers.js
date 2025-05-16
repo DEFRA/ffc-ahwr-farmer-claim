@@ -536,7 +536,8 @@ const postHandler = {
         herdVersion,
         herdName,
         herdCph,
-        herdReasons
+        herdReasons,
+        herdSame
       } = getEndemicsClaim(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
@@ -580,7 +581,8 @@ const postHandler = {
               herdVersion,
               herdName,
               cph: herdCph,
-              herdReasons
+              herdReasons,
+              herdSame
             }
           })
         }
