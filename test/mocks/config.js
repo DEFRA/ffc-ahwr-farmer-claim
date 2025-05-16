@@ -5,7 +5,6 @@ jest.mock('../../app/config', () => ({
   ...jest.requireActual('../../app/config')
 }))
 const {
-  multiSpecies,
   multiHerds
 } = config
 
@@ -28,10 +27,6 @@ const ruralPaymentsAgency = {
 export const setAuthConfig = () => {
   authConfig.defraId = defraId
   authConfig.ruralPaymentsAgency = ruralPaymentsAgency
-}
-
-export const setMultiSpecies = (enabled) => {
-  multiSpecies.enabled = enabled
 }
 
 export const setMultiHerds = (enabled) => {

@@ -1,7 +1,6 @@
 import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { config } from '../../../../../app/config/index.js'
-import { setMultiSpecies } from '../../../../mocks/config.js'
 import { refreshApplications, resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'
 import expectPhaseBanner from 'assert'
 
@@ -20,7 +19,6 @@ describe('Claim endemics home page test', () => {
   let server
 
   beforeAll(async () => {
-    setMultiSpecies(false)
     server = await createServer()
     await server.initialize()
   })
@@ -32,35 +30,6 @@ describe('Claim endemics home page test', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks()
-  })
-
-  test('Redirects us to endemicsWhichTypeOfReviewURI if latest VV application is within 10 months', async () => {
-    refreshApplications.mockReturnValue({
-      latestEndemicsApplication: {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 1,
-        type: 'EE'
-      },
-      latestVetVisitApplication: {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 9,
-        type: 'VV'
-      }
-    })
-    resetEndemicsClaimSession.mockReturnValue([])
-
-    const options = {
-      method: 'GET',
-      url,
-      auth
-    }
-
-    const res = await server.inject(options)
-
-    expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
   })
 
   test('Redirects us to endemicsWhichSpeciesURI if latest VV application is NOT within 10 months', async () => {
@@ -86,35 +55,6 @@ describe('Claim endemics home page test', () => {
 
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/which-species')
-  })
-
-  test('Redirects to endemicsWhichTypeOfReviewURI if EE claim is already made', async () => {
-    refreshApplications.mockReturnValue({
-      latestEndemicsApplication: {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 1,
-        type: 'EE'
-      },
-      latestVetVisitApplication: undefined
-    })
-
-    resetEndemicsClaimSession.mockReturnValue([
-      {
-        info: 'some claim'
-      }
-    ])
-
-    const options = {
-      method: 'GET',
-      url,
-      auth
-    }
-
-    const res = await server.inject(options)
-
-    expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/which-type-of-review')
   })
 
   test('Renders index page if no url parameters', async () => {

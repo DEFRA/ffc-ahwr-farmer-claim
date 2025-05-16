@@ -10,7 +10,6 @@ describe('routes plugin test', () => {
   })
 
   test('routes included', async () => {
-    config.multiSpecies.enabled = false
     config.multiHerds.enabled = false
     config.devLogin.enabled = false
     const server = await createServer()
@@ -50,8 +49,6 @@ describe('routes plugin test', () => {
       '/claim/endemics/vet-name',
       '/claim/endemics/vet-rcvs',
       '/claim/endemics/vet-visits-review-test-results',
-      '/claim/endemics/which-species',
-      '/claim/endemics/which-type-of-review',
       '/claim/cookies',
       '/claim/endemics/biosecurity',
       '/claim/endemics/check-answers',
@@ -79,24 +76,7 @@ describe('routes plugin test', () => {
     ])
   })
 
-  test('when multi-species is enabled, include correct routes', async () => {
-    config.multiSpecies.enabled = true
-    config.multiHerds.enabled = false
-
-    const server = await createServer()
-    const routePaths = []
-    server.table()
-      .filter(x => x.settings.tags?.includes('ms'))
-      .forEach((element) => {
-        routePaths.push(element.path)
-      })
-
-    expect(routePaths).toContain('/claim/endemics/which-type-of-review')
-    expect(routePaths).toContain('/claim/endemics/which-species')
-  })
-
   test('when multi-herds is enabled, include correct routes', async () => {
-    config.multiSpecies.enabled = true
     config.multiHerds.enabled = true
 
     const server = await createServer()

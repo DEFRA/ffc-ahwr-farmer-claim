@@ -4,6 +4,7 @@ import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'
+import { setMultiHerds } from '../../../../mocks/config.js'
 
 const { endemicsWhichSpecies } = links
 
@@ -12,15 +13,7 @@ jest.mock('../../../../../app/lib/context-helper')
 
 describe('Endemics which species test', () => {
   setEndemicsClaim.mockImplementation(() => { })
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
-    return {
-      ...originalModule,
-      multiSpecies: {
-        enabled: true
-      }
-    }
-  })
+  setMultiHerds(false)
   const url = `/claim/${endemicsWhichSpecies}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
