@@ -4,7 +4,7 @@ import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
-import { isPreviousClaimsWithoutHerdAssigned } from '../../lib/context-helper.js'
+import { hasPreviousClaimsWithNoHerdAssigned } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 const {
@@ -58,7 +58,7 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const { previousClaims } = getEndemicsClaim(request)
-      const nextPageUrl = isPreviousClaimsWithoutHerdAssigned(previousClaims) ? sameHerdPageUrl : dateOfTestingPageUrl
+      const nextPageUrl = hasPreviousClaimsWithNoHerdAssigned(previousClaims) ? sameHerdPageUrl : dateOfTestingPageUrl
       return h.redirect(nextPageUrl)
     }
   }

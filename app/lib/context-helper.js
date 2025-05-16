@@ -103,6 +103,6 @@ export const isMultipleHerdsUserJourney = (dateOfVisit) => {
   return config.multiHerds.enabled && userAcceptedMultiHerdTCs && new Date(dateOfVisit) >= MULTIPLE_HERDS_RELEASE_DATE
 }
 
-export const isPreviousClaimsWithoutHerdAssigned = (previousClaims) => {
-  return !previousClaims?.find((claim) => { return claim.data?.herdId })
+export const hasPreviousClaimsWithNoHerdAssigned = (previousClaims) => {
+  return !previousClaims?.find((claim) => { return claim.data.herdId })
 }
