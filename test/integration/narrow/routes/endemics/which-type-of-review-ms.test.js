@@ -4,7 +4,7 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setAuthConfig, setMultiSpecies } from '../../../../mocks/config.js'
+import { setAuthConfig } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { isCattleEndemicsClaimForOldWorldReview } from '../../../../../app/api-requests/claim-service-api.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -32,7 +32,6 @@ describe('Which type of review test', () => {
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
     setAuthConfig()
-    setMultiSpecies(true)
     server = await createServer()
     await server.initialize()
   })

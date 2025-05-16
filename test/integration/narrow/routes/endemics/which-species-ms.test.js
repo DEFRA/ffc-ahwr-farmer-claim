@@ -12,15 +12,6 @@ jest.mock('../../../../../app/lib/context-helper')
 
 describe('Endemics which species test', () => {
   setEndemicsClaim.mockImplementation(() => { })
-  jest.mock('../../../../../app/config', () => {
-    const originalModule = jest.requireActual('../../../../../app/config')
-    return {
-      ...originalModule,
-      multiSpecies: {
-        enabled: true
-      }
-    }
-  })
   const url = `/claim/${endemicsWhichSpecies}`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
