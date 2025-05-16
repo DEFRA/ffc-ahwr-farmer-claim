@@ -533,8 +533,6 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
     setMultiHerds(true)
     server = await createServer()
     await server.initialize()
-    setOptionalPIHunt({ optionalPIHuntEnabled: true })
-    isPIHuntEnabledAndVisitDateAfterGoLive.mockImplementation(() => { return true })
     isMultipleHerdsUserJourney.mockImplementation(() => { return true })
   })
 

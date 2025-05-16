@@ -3,7 +3,7 @@ import { createServer } from '../../../../../app/server.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import expectPhaseBanner from 'assert'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setOptionalPIHunt, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
@@ -19,7 +19,6 @@ describe('select-the-herd tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setOptionalPIHunt({ optionalPIHuntEnabled: false })
     setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()
