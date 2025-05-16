@@ -101,6 +101,24 @@ describe('enter-cph-number tests', () => {
       expectFlockText($)
       expectPhaseBanner.ok($)
     })
+
+    test('returns 200 with back link to select herd when updating an existing herd', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        herdVersion: 2,
+        herdCph: '22/333/4444'
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
+      expectFlockText($)
+      expectPhaseBanner.ok($)
+    })
   })
 
   describe('POST', () => {
@@ -183,6 +201,24 @@ describe('enter-cph-number tests', () => {
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
       expectFlockText($)
+    })
+
+    test('display errors with back link to select herd when payload invalid and updating an existing herd', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herdVersion: 2
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
+      expectHerdText($)
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
     })
   })
 })
