@@ -8,7 +8,7 @@ import {
   isWithIn4MonthsBeforeOrAfterDateOfVisit
 } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, hasPreviousClaimsWithNoHerdAssigned } from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
   ...jest.requireActual('../../../../../app/api-requests/claim-service-api'),
@@ -182,5 +182,43 @@ describe('Date of testing', () => {
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
       expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
+  })
+})
+
+describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
+  let server
+
+  beforeAll(async () => {
+    setMultiHerds(true)
+    server = await createServer()
+    await server.initialize()
+    isMultipleHerdsUserJourney.mockImplementation(() => { return true })
+  })
+
+  afterAll(async () => {
+    await server.stop()
+    jest.resetAllMocks()
+  })
+
+  test('returns 200 and correct backlink when hasPreviousClaimsWithNoHerdAssigned=false', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+    hasPreviousClaimsWithNoHerdAssigned.mockImplementation(() => { return false })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/check-herd-details')
+  })
+
+  test('returns 200 and correct backlink when hasPreviousClaimsWithNoHerdAssigned=false', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+    hasPreviousClaimsWithNoHerdAssigned.mockImplementation(() => { return true })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/same-herd')
   })
 })

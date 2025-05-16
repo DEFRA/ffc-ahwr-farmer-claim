@@ -37,6 +37,7 @@ import { enterCphNumberHandlers } from '../routes/endemics/enter-cph-number.js'
 import { herdOthersOnSbiHandlers } from '../routes/endemics/herd-others-on-sbi.js'
 import { enterHerdDetailsHandlers } from '../routes/endemics/enter-herd-details.js'
 import { checkHerdDetailsHandlers } from '../routes/endemics/check-herd-details.js'
+import { sameHerdHandlers } from '../routes/endemics/same-herd.js'
 import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
 
 const alwaysOnRouteHandlers = [
@@ -85,7 +86,8 @@ const endemicsWithMhOnHandlers = [
   enterCphNumberHandlers,
   herdOthersOnSbiHandlers,
   enterHerdDetailsHandlers,
-  checkHerdDetailsHandlers
+  checkHerdDetailsHandlers,
+  sameHerdHandlers
 ].flat()
 
 const mapRoutes = () => {
