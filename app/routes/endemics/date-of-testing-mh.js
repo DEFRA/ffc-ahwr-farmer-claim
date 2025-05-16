@@ -42,7 +42,7 @@ const backLink = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isMultipleHerdsUserJourney(dateOfVisit)) {
-    if (hasPreviousClaimsWithNoHerdAssigned(previousClaims)) {
+    if (hasPreviousClaimsWithNoHerdAssigned(previousClaims, typeOfLivestock)) {
       return `${urlPrefix}/${endemicsSameHerd}`
     }
     return `${urlPrefix}/${endemicsCheckHerdDetails}`

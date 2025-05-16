@@ -57,8 +57,8 @@ const postHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { previousClaims } = getEndemicsClaim(request)
-      const nextPageUrl = hasPreviousClaimsWithNoHerdAssigned(previousClaims) ? sameHerdPageUrl : dateOfTestingPageUrl
+      const { previousClaims, typeOfLivestock } = getEndemicsClaim(request)
+      const nextPageUrl = hasPreviousClaimsWithNoHerdAssigned(previousClaims, typeOfLivestock) ? sameHerdPageUrl : dateOfTestingPageUrl
       return h.redirect(nextPageUrl)
     }
   }
