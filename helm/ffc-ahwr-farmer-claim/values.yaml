@@ -69,7 +69,6 @@ container:
   apimClientId:
   apimClientSecret:
   apimScope:
-  dateOfTestingEnabled:
   multiHerdsEnabled: 'false'
   multiHerdsReleaseDate: '2025-05-01'
   devLoginEnabled: 'false'
