@@ -40,6 +40,10 @@ export const canMakeEndemicsClaim = (dateOfVisit, prevReviewClaim, prevEndemicsC
     return 'There must be at least 10 months between your follow-ups.'
   }
 
+  if (new Date(dateOfVisit) < new Date(prevReviewClaim.data.dateOfVisit)) {
+    return 'The follow-up must be after your review'
+  }
+
   return ''
 }
 

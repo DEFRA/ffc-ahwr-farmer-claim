@@ -85,9 +85,15 @@ describe('canMakeEndemicsClaim', () => {
   })
 
   test('should not be able to make endemics claim when the previous endemics claim is within 10 months', () => {
-    const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createClaim(review, new Date(2024, 3, 25), PAID), new Date(2024, 1, 25), prevEndemicsClaimDate, organisation, typeOfLivestock)
+    const result = canMakeEndemicsClaim(new Date(2024, 3, 25), createClaim(review, new Date(2024, 3, 25), PAID), prevEndemicsClaimDate, organisation, typeOfLivestock)
 
     expect(result).toEqual('There must be at least 10 months between your follow-ups.')
+  })
+
+  test('should not be able to make endemics claim when the previouew review claim is after the endemics claim', () => {
+    const result = canMakeEndemicsClaim(new Date(2024, 2, 25), createClaim(review, new Date(2024, 3, 25), PAID), new Date(2023, 1, 2), organisation, typeOfLivestock)
+
+    expect(result).toEqual('The follow-up must be after your review')
   })
 })
 
