@@ -114,6 +114,7 @@ describe('routes plugin test', () => {
     expect(routePaths).toContain('/claim/endemics/herd-others-on-sbi')
     expect(routePaths).toContain('/claim/endemics/enter-herd-details')
     expect(routePaths).toContain('/claim/endemics/check-herd-details')
+    expect(routePaths).toContain('/claim/endemics/same-herd')
     expect(routePaths).toContain('/claim/endemics/date-of-testing')
   })
 

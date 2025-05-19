@@ -8,6 +8,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-ms.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { setMultiHerds } from '../../../../mocks/config.js'
 
 const { labels } = visitDate
 
@@ -93,6 +94,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
         landingPage
       }
     })
+    setMultiHerds(false)
   })
 
   afterAll(async () => {

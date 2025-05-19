@@ -20,7 +20,8 @@ const {
     herdName: herdNameKey,
     herdCph: herdCphKey,
     herdOthersOnSbi: herdOthersOnSbiKey,
-    herdReasons: herdReasonsKey
+    herdReasons: herdReasonsKey,
+    herdSame: herdSameKey
   }
 } = sessionKeys
 
@@ -87,6 +88,7 @@ export const removeMultipleHerdsSessionData = (request) => {
   sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined)
   sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined)
   sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined)
+  sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined)
 }
 
 export function setTempClaimReference (request, key, value, status) {
