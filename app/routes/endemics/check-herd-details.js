@@ -5,7 +5,6 @@ import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { hasPreviousClaimsWithNoHerdAssigned } from '../../lib/context-helper.js'
-import { ONLY_HERD } from './herd-others-on-sbi.js'
 import { getNextPage } from './date-of-visit-mh.js'
 
 const { urlPrefix } = config
@@ -13,7 +12,6 @@ const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
   endemicsSameHerd,
-  endemicsDateOfTesting,
   endemicsEnterCphNumber,
   endemicsHerdOthersOnSbi
 } = links
@@ -22,7 +20,6 @@ const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const sameHerdPageUrl = `${urlPrefix}/${endemicsSameHerd}`
-const dateOfTestingPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
