@@ -422,7 +422,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -461,7 +462,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         latestEndemicsApplication: {
           ...latestEndemicsApplication,
           createdAt: new Date('2025/01/01 14:30:00')
-        }
+        },
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -507,7 +509,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -557,7 +560,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -603,7 +607,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-02-26'
       }
     })
     const options = {
@@ -650,7 +655,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -690,7 +696,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestVetVisitApplication,
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -727,7 +734,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestVetVisitApplication,
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -770,7 +778,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'beef'
           }
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-02'
       }
     })
     const options = {
@@ -817,7 +826,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'pigs'
           }
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-02'
       }
     })
     const options = {
@@ -865,7 +875,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -913,7 +924,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-21'
       }
     })
     const options = {
@@ -961,7 +973,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-20'
       }
     })
     const options = {
@@ -1023,7 +1036,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1099,7 +1113,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-02-27'
       }
     })
     const options = {
@@ -1147,7 +1162,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1200,7 +1216,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1253,7 +1270,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1302,7 +1320,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           },
           statusId: 9
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1350,7 +1369,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1430,7 +1450,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', {
       reference: 'AHWR-C2EA-C718',
       applicationReference: 'AHWR-2470-6BA9',
@@ -1472,7 +1492,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'negative',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1521,7 +1542,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-21'
       }
     })
     const options = {
@@ -1571,7 +1593,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-20'
       }
     })
     const options = {
@@ -1620,7 +1643,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-05-13'
       }
     })
     const options = {
@@ -1667,7 +1691,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-05-13'
       }
     })
     const options = {
@@ -1725,6 +1750,7 @@ describe('previousPageUrl', () => {
 
   test('should return url of endemicsWhichTypeOfReview if old world review type of livestock is not beef or dairy', () => {
     const latestVetVisitApplication = {
+
       data: {
         whichReview: 'pigs'
       }
