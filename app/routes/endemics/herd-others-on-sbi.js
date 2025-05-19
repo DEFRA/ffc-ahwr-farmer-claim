@@ -6,7 +6,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
-import { sendHerdEvent } from '../../event/sent-herd-event.js'
+import { sendHerdEvent } from '../../event/send-herd-event.js'
 
 const { urlPrefix } = config
 const {

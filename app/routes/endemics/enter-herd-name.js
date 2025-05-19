@@ -5,7 +5,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
-import { sendHerdEvent } from '../../event/sent-herd-event.js'
+import { sendHerdEvent } from '../../event/send-herd-event.js'
 
 const { urlPrefix } = config
 const {

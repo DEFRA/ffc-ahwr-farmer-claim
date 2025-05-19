@@ -7,7 +7,7 @@ import HttpStatus from 'http-status-codes'
 // TODO MultiHerds use this to create checkboxes:
 // import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
-import { sendHerdEvent } from '../../event/sent-herd-event.js'
+import { sendHerdEvent } from '../../event/send-herd-event.js'
 
 const { urlPrefix } = config
 const {

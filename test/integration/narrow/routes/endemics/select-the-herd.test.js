@@ -114,8 +114,8 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
     })
 
     test('navigates to enter herd name when multiple herds exists and does not match herd id', async () => {
@@ -145,9 +145,9 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no')
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
     })
 
     test('navigates to check herd details when herd exists and matches herd id', async () => {
@@ -175,12 +175,12 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['onlyHerd'])
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'yes')
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['onlyHerd'], { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'yes', { shouldEmitEvent: false })
     })
 
     test('navigates to check herd details when multiple herds exists and matches herd id', async () => {
@@ -210,12 +210,12 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['reasonOne'])
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no')
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['reasonOne'], { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
     })
 
     test('display errors when payload invalid', async () => {
