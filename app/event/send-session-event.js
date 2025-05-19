@@ -50,7 +50,7 @@ export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, i
       reference,
       email: organisation.email,
       name: 'send-session-event',
-      type: `${entryKey}-${key}`, // herd-cph
+      type: `${entryKey}-${key}`,
       message: `Session set for ${entryKey} and ${key}.`,
       data: { reference, applicationReference, [key]: value },
       ip
