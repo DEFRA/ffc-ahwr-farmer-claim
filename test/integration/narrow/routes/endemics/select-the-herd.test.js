@@ -6,12 +6,16 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
+import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 
 const { urlPrefix } = config
 const { endemicsSelectTheHerd: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/lib/can-make-claim.js')
+jest.mock('../../../../../app/event/raise-invalid-data-event.js')
 
 describe('select-the-herd tests', () => {
   const url = `${urlPrefix}/${pageUnderTest}`
@@ -258,6 +262,42 @@ describe('select-the-herd tests', () => {
       expect(externalLink).toContain('You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.')
       expect($('a.govuk-link[href*="claim"]').text()).toContain('Claim for a review')
       expect($('.govuk-warning-text__text').text()).toContain('Your claim will be checked by our team.')
+    })
+
+    test('display date errors when canMakeClaim returns false', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+        ],
+        herds: [],
+        dateOfVisit: '2025-05-01'
+      })
+      canMakeClaim.mockReturnValue('Invalid claim message')
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdId: fakeHerdId }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+
+      expect(raiseInvalidDataEvent).toBeCalledWith(expect.any(Object), 'dateOfVisit', 'Value 2025-05-01 is invalid. Error: Invalid claim message')
+      expect($('h1.govuk-heading-l').text().trim()).toBe('You cannot continue with your claim')
+      const link = $('h1.govuk-heading-l').nextAll('p.govuk-body').first().find('a.govuk-link')
+      expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
+      expect(link.text().trim()).toBe('Invalid claim message')
+      expect($('p.govuk-body').eq(2).text().trim()).toBe(
+        'Enter the date the vet last visited your farm for this review.'
+      )
+      expect($('p.govuk-body').eq(2).find('a.govuk-link').attr('href')).toBe(
+        '/claim/endemics/date-of-visit'
+      )
+      expect($('.govuk-warning-text__text').text()).toContain('Your claim will be checked by our team.')
+      expect($('#back').attr('href')).toEqual('/claim/endemics/select-the-herd')
     })
   })
 })
