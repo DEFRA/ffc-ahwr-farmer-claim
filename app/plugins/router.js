@@ -68,12 +68,12 @@ const endemicsSpecificRouteHandlers = [
   sheepTestResultsHandlers,
   piHuntHandlers,
   piHuntAllAnimalsHandlers,
-  piHuntRecommendedHandlers
+  piHuntRecommendedHandlers,
+  whichReviewMSHandlers,
+  whichSpeciesMsHandlers
 ].flat()
 
 const endemicsWithMsOnHandlers = [
-  whichReviewMSHandlers,
-  whichSpeciesMsHandlers,
   dateOfVisitMSHandlers,
   dateOfTestingHandlers
 ].flat()
