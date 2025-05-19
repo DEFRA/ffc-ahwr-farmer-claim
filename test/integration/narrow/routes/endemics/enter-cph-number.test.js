@@ -12,6 +12,9 @@ const { endemicsEnterCphNumber: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/event/sent-herd-event.js', () => ({
+  sendHerdEvent: jest.fn()
+}))
 
 describe('enter-cph-number tests', () => {
   const url = `${urlPrefix}/${pageUnderTest}`

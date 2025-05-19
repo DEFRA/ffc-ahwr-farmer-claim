@@ -1,3 +1,4 @@
+import { getIpFromRequest } from '../event/get-ip-from-request.js'
 import { sendSessionEvent } from '../event/send-session-event.js'
 import { sessionKeys } from '../session/keys.js'
 
@@ -23,16 +24,13 @@ const {
   }
 } = sessionKeys
 
-function set (request, entryKey, key, value, status) {
+function set (request, entryKey, key, value, status, shouldEmitEvent) {
   const entryValue = request.yar?.get(entryKey) || {}
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
   const claim = getEndemicsClaim(request)
-  const xForwardedForHeader = request.headers['x-forwarded-for']
-  const ip = xForwardedForHeader
-    ? xForwardedForHeader.split(',')[0]
-    : request.info.remoteAddress
-  claim &&
+  const ip = getIpFromRequest(request)
+  claim && shouldEmitEvent &&
     sendSessionEvent(
       claim,
       request.yar.id,
@@ -64,8 +62,8 @@ export function getClaim (request, key) {
   return get(request, entries.claim, key)
 }
 
-export function setEndemicsClaim (request, key, value, status) {
-  set(request, entries.endemicsClaim, key, value, status)
+export function setEndemicsClaim (request, key, value, status, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.endemicsClaim, key, value, status, shouldEmitEvent)
 }
 
 export function getEndemicsClaim (request, key) {

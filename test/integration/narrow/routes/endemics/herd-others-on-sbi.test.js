@@ -12,6 +12,9 @@ const { endemicsHerdOthersOnSbi: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/event/sent-herd-event.js', () => ({
+  sendHerdEvent: jest.fn()
+}))
 
 describe('herd-others-on-sbi tests', () => {
   const url = `${urlPrefix}/${pageUnderTest}`

@@ -96,8 +96,8 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
-      setEndemicsClaim(request, herdIdKey, herdId)
-      setEndemicsClaim(request, herdVersionKey, 1)
+      setEndemicsClaim(request, herdIdKey, herdId, { shouldEmitEvent: false })
+      setEndemicsClaim(request, herdVersionKey, 1, { shouldEmitEvent: false })
       // TODO MultiHerds set all herd info existing herd selected!
       // NOTE Don't save herd name as herdName in session, set as herdNameExisting, so the server knows it's a update not insert.
       return h.redirect(nextPageUrl)

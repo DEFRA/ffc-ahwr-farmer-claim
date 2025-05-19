@@ -31,7 +31,8 @@ describe('getTempHerdId', () => {
     expect(setEndemicsClaim).toHaveBeenCalledWith(
       {},
       sessionKeys.endemicsClaim.tempHerdId,
-      generatedId
+      generatedId,
+      { shouldEmitEvent: false }
     )
     expect(result).toBe(generatedId)
   })

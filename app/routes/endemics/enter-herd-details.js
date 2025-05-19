@@ -7,6 +7,7 @@ import HttpStatus from 'http-status-codes'
 // TODO MultiHerds use this to create checkboxes:
 // import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
+import { sendHerdEvent } from '../../event/sent-herd-event.js'
 
 const { urlPrefix } = config
 const {
@@ -71,7 +72,26 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdReasons } = request.payload
-      setEndemicsClaim(request, herdReasonsKey, [].concat(herdReasons))
+      const { herdId, herdVersion } = getEndemicsClaim(request)
+      setEndemicsClaim(request, herdReasonsKey, [].concat(herdReasons), { shouldEmitEvent: false })
+
+      sendHerdEvent({
+        request,
+        type: 'herd-reasons',
+        message: 'Herd reasons collected from user',
+        data: {
+          herdId,
+          herdVersion,
+          herdReasonManagementNeeds: herdReasons.includes('separateManagementNeeds'),
+          herdReasonUniqueHealth: herdReasons.includes('uniqueHealthNeeds'),
+          herdReasonDifferentBreed: herdReasons.includes('differentBreed'),
+          herdReasonOtherPurpose: herdReasons.includes('differentPurpose'),
+          herdReasonKeptSeparate: herdReasons.includes('keptSeparate'),
+          herdReasonOnlyHerd: false,
+          herdReasonOther: herdReasons.includes('other')
+        }
+      })
+
       return h.redirect(nextPageUrl)
     }
   }

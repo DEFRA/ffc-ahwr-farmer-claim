@@ -14,6 +14,6 @@ export const getTempHerdId = (request, tempHerdIdFromSession) => {
   }
 
   const tempHerdId = uuidv4()
-  setEndemicsClaim(request, tempHerdIdKey, tempHerdId)
+  setEndemicsClaim(request, tempHerdIdKey, tempHerdId, { shouldEmitEvent: false })
   return tempHerdId
 }

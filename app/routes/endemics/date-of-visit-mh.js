@@ -255,15 +255,15 @@ const postHandler = {
       if (isMultipleHerdsUserJourney(dateOfVisit)) {
         setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
-        setEndemicsClaim(request, herdsKey, herds)
+        setEndemicsClaim(request, herdsKey, herds, { shouldEmitEvent: false })
 
         if (herds.length) {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
 
-        setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId))
+        setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId), { shouldEmitEvent: false })
         if (!herdVersion) {
-          setEndemicsClaim(request, herdVersionKey, 1)
+          setEndemicsClaim(request, herdVersionKey, 1, { shouldEmitEvent: false })
         }
         return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
@@ -315,9 +315,9 @@ const postHandler = {
       setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
-        const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
+        const visitDateAfterPIHuntAndDairyGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
 
-        if (!piHuntEnabledAndVisitDateAfterGoLive) {
+        if (!visitDateAfterPIHuntAndDairyGoLive) {
           clearPiHuntSessionOnChange(request, 'dateOfVisit')
         }
 
@@ -329,7 +329,7 @@ const postHandler = {
           reviewTestResultsValue
         )
 
-        if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
+        if ((isBeef || isDairy) && (visitDateAfterPIHuntAndDairyGoLive || reviewTestResultsValue === 'negative')) {
           return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
         }
       }

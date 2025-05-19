@@ -27,7 +27,14 @@ const renameSessionKeysForEventReporting = (key) => {
   }
   return key
 }
-const renameClaimEntryKeyForEventReporting = (entryKey) => entryKey === 'endemicsClaim' ? 'claim' : entryKey
+
+const renameClaimEntryKeyForEventReporting = (entryKey) => {
+  if (entryKey === 'endemicsClaim') {
+    return 'claim'
+  }
+
+  return entryKey
+}
 
 export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, status = 'success') => {
   key = renameSessionKeysForEventReporting(key)
@@ -43,7 +50,7 @@ export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, i
       reference,
       email: organisation.email,
       name: 'send-session-event',
-      type: `${entryKey}-${key}`,
+      type: `${entryKey}-${key}`, // herd-cph
       message: `Session set for ${entryKey} and ${key}.`,
       data: { reference, applicationReference, [key]: value },
       ip
