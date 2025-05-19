@@ -6,12 +6,14 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { getNextPage } from '../../../../../app/routes/endemics/date-of-visit-mh.js'
 
 const { urlPrefix } = config
 const { endemicsCheckHerdDetails: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/routes/endemics/date-of-visit-mh.js')
 
 const assertLinkExistsFor = ($, spanText) => {
   const link = $('a.govuk-link').filter((_, el) => {
@@ -190,6 +192,7 @@ describe('check-herd-details tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', herdId: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } }
         ]
       })
+      getNextPage.mockReturnValue('/claim/endemics/date-of-testing')
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
 

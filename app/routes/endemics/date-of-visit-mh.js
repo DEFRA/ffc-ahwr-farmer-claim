@@ -9,15 +9,14 @@ import { isValidDate } from '../../lib/date-utils.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getEndemicsClaim, setEndemicsClaim, removeMultipleHerdsSessionData } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
-import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import {
   getReviewTestResultWithinLast10Months,
   getReviewWithinLast10Months
 } from '../../api-requests/claim-service-api.js'
-import { canMakeEndemicsClaim, canMakeReviewClaim } from '../../lib/can-make-claim.js'
+import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
@@ -145,6 +144,55 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   }
 }
 
+export const getNextPage = (request) => {
+  const {
+    typeOfReview: typeOfClaim,
+    previousClaims,
+    latestVetVisitApplication: oldWorldApplication,
+    typeOfLivestock,
+    reviewTestResults,
+    dateOfVisit
+  } = getEndemicsClaim(request)
+
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+  const { isEndemicsFollowUp } = getReviewType(typeOfClaim)
+
+  if (isEndemicsFollowUp) {
+    setEndemicsClaim(
+      request,
+      relevantReviewForEndemicsKey,
+      getReviewWithinLast10Months(
+        dateOfVisit,
+        previousClaims,
+        oldWorldApplication,
+        typeOfLivestock
+      )
+    )
+  }
+
+  if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
+    const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
+
+    if (!piHuntEnabledAndVisitDateAfterGoLive) {
+      clearPiHuntSessionOnChange(request, 'dateOfVisit')
+    }
+
+    const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
+
+    setEndemicsClaim(
+      request,
+      reviewTestResultsKey,
+      reviewTestResultsValue
+    )
+
+    if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
+      return `${config.urlPrefix}/${endemicsSpeciesNumbers}`
+    }
+  }
+
+  return `${config.urlPrefix}/${endemicsDateOfTesting}`
+}
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
@@ -180,14 +228,13 @@ const postHandler = {
         latestVetVisitApplication: oldWorldApplication,
         typeOfLivestock,
         organisation,
-        reviewTestResults,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication,
         herdId,
         herdVersion
       } = getEndemicsClaim(request)
 
-      const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
+      const { isDairy } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -223,9 +270,8 @@ const postHandler = {
         return h.view(`${endemicsDateOfVisit}-mh`, data).code(400).takeover()
       }
 
-      const formattedTypeOfLivestock = isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
-
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
+      setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
       let exception
       let exceptionView
@@ -244,7 +290,6 @@ const postHandler = {
 
       if (exception) {
         raiseInvalidDataEvent(request, dateOfVisitKey, exception)
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
           .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
@@ -253,7 +298,6 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit)) {
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds)
 
@@ -272,12 +316,7 @@ const postHandler = {
       removeMultipleHerdsSessionData(request)
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
-      const prevReviewClaim = prevLivestockClaims.find(claim => claim.type === claimType.review) || getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
-      const prevEndemicsClaim = prevLivestockClaims.find(claim => claim.type === claimType.endemics)
-
-      const errorMessage = isReview
-        ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
-        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim?.data.dateOfVisit, organisation, formattedTypeOfLivestock)
+      const errorMessage = canMakeClaim({ prevClaims: prevLivestockClaims, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
       if (errorMessage) {
         raiseInvalidDataEvent(
@@ -285,8 +324,6 @@ const postHandler = {
           dateOfVisitKey,
           `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
         )
-
-        setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
         return h
           .view(`${endemicsDateOfVisitException}-ms`, {
@@ -299,41 +336,7 @@ const postHandler = {
           .takeover()
       }
 
-      if (isEndemicsFollowUp) {
-        setEndemicsClaim(
-          request,
-          relevantReviewForEndemicsKey,
-          getReviewWithinLast10Months(
-            dateOfVisit,
-            previousClaims,
-            oldWorldApplication,
-            typeOfLivestock
-          )
-        )
-      }
-
-      setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
-
-      if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
-        const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
-
-        if (!piHuntEnabledAndVisitDateAfterGoLive) {
-          clearPiHuntSessionOnChange(request, 'dateOfVisit')
-        }
-
-        const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
-
-        setEndemicsClaim(
-          request,
-          reviewTestResultsKey,
-          reviewTestResultsValue
-        )
-
-        if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
-          return h.redirect(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
-        }
-      }
-      return h.redirect(`${config.urlPrefix}/${endemicsDateOfTesting}`)
+      return h.redirect(getNextPage(request))
     }
   }
 }

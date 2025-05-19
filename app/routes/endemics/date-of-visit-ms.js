@@ -178,7 +178,7 @@ const postHandler = {
         latestEndemicsApplication: newWorldApplication
       } = getEndemicsClaim(request)
 
-      const { isBeef, isDairy, isPigs, isSheep } = getLivestockTypes(typeOfLivestock)
+      const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -214,8 +214,6 @@ const postHandler = {
         return h.view(`${endemicsDateOfVisit}-ms`, data).code(400).takeover()
       }
 
-      const formattedTypeOfLivestock = isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
-
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
 
       let exception
@@ -245,7 +243,7 @@ const postHandler = {
 
       const errorMessage = isReview
         ? canMakeReviewClaim(dateOfVisit, prevReviewClaim?.data.dateOfVisit)
-        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim?.data.dateOfVisit, organisation, formattedTypeOfLivestock)
+        : canMakeEndemicsClaim(dateOfVisit, prevReviewClaim, prevEndemicsClaim?.data.dateOfVisit, organisation, typeOfLivestock)
 
       if (errorMessage) {
         raiseInvalidDataEvent(

@@ -19,7 +19,8 @@ const pageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 const enterEnterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const ONLY_HERD = 'onlyHerd'
+
+export const ONLY_HERD = 'onlyHerd'
 
 const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey, herdReasons: herdReasonsKey } } = sessionKeys
 

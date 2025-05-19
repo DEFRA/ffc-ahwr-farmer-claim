@@ -8,7 +8,7 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
 import { claimConstants } from '../../../../../app/constants/claim.js'
 import { getSpeciesEligibleNumberForDisplay } from '../../../../../app/lib/display-helpers.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
+import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
@@ -67,7 +67,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
     ])('returns 200 when multi herds is enabled', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
-      config.multiHerds.enabled = true
+      isMultipleHerdsUserJourney.mockReturnValueOnce(true)
       getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' }))
       const options = {
         method: 'GET',
@@ -87,7 +87,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     })
 
     test('returns 200 when multi herds is enabled and species is sheep', async () => {
-      config.multiHerds.enabled = true
+      isMultipleHerdsUserJourney.mockReturnValueOnce(true)
       getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'sheep', typeOfReview: 'R', reviewTestResults: 'negative', reference: 'TEMP-6GSE-PIR8' }))
       const options = {
         method: 'GET',
@@ -238,7 +238,9 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     })
 
     test('shows error when payload is invalid and multi herds is enabled', async () => {
-      config.multiHerds.enabled = true
+      isMultipleHerdsUserJourney
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
       const { isReview } = getReviewType('E')
       getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'beef', reviewTestResults: 'positive' }))
       const options = {
