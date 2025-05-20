@@ -149,26 +149,24 @@ const postHandler = {
             .code(HttpStatus.BAD_REQUEST)
             .takeover()
         }
-      } else {
-        if (isEndemicsFollowUp) {
-          raiseInvalidDataEvent(
-            request,
-            typeOfReviewKey,
-            'Cannot claim for endemics without a previous review.'
-          )
+      } else if (isEndemicsFollowUp) {
+        raiseInvalidDataEvent(
+          request,
+          typeOfReviewKey,
+          'Cannot claim for endemics without a previous review.'
+        )
 
-          return h
-            .view(`${endemicsSameHerdException}`, {
-              backLink: pageUrl,
-              errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
-              ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
-              backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
-              backToPageLink: whichTypeOfReviewPageUrl
-            })
-            .code(400)
-            .takeover()
-        }
+        return h
+          .view(`${endemicsSameHerdException}`, {
+            backLink: pageUrl,
+            errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
+            ruralPaymentsAgency: config.ruralPaymentsAgency,
+            backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
+            backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
+            backToPageLink: whichTypeOfReviewPageUrl
+          })
+          .code(HttpStatus.BAD_REQUEST)
+          .takeover()
       }
 
       return h.redirect(nextPageUrl)
