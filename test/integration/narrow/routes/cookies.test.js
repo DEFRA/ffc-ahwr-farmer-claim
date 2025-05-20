@@ -3,18 +3,6 @@ import expectPhaseBanner from 'assert'
 
 import cheerio from 'cheerio'
 
-jest.mock('../../../../app/config', () => {
-  const originalModule = jest.requireActual('../../../../app/config')
-  return {
-    config: {
-      ...originalModule.config,
-      dateOfTesting: {
-        enabled: false
-      }
-    }
-  }
-})
-
 describe('cookies route', () => {
   let server
 

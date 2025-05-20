@@ -27,9 +27,6 @@ import { vetVisitsReviewTestResultsHandlers } from '../routes/endemics/vet-visit
 import { piHuntHandlers } from '../routes/endemics/pi-hunt.js'
 import { piHuntAllAnimalsHandlers } from '../routes/endemics/pi-hunt-all-animals.js'
 import { piHuntRecommendedHandlers } from '../routes/endemics/pi-hunt-recommended.js'
-import { whichReviewHandlers } from '../routes/endemics/which-type-of-review.js'
-import { whichSpeciesHandlers } from '../routes/endemics/which-species.js'
-import { dateOfVisitHandlers } from '../routes/endemics/date-of-visit.js'
 import { dateOfVisitMSHandlers } from '../routes/endemics/date-of-visit-ms.js'
 import { whichSpeciesMsHandlers } from '../routes/endemics/which-species-ms.js'
 import { whichReviewMSHandlers } from '../routes/endemics/which-type-of-review-ms.js'
@@ -71,26 +68,17 @@ const endemicsSpecificRouteHandlers = [
   sheepTestResultsHandlers,
   piHuntHandlers,
   piHuntAllAnimalsHandlers,
-  piHuntRecommendedHandlers
-].flat()
-
-const endemicsWithMsOffHandlers = [
-  whichReviewHandlers,
-  whichSpeciesHandlers,
-  dateOfVisitHandlers,
-  dateOfTestingHandlers
+  piHuntRecommendedHandlers,
+  whichReviewMSHandlers,
+  whichSpeciesMsHandlers
 ].flat()
 
 const endemicsWithMsOnHandlers = [
-  whichReviewMSHandlers,
-  whichSpeciesMsHandlers,
   dateOfVisitMSHandlers,
   dateOfTestingHandlers
 ].flat()
 
 const endemicsWithMhOnHandlers = [
-  whichReviewMSHandlers,
-  whichSpeciesMsHandlers,
   dateOfVisitMhHandlers,
   dateOfTestingMhHandlers,
   selectTheHerdHandlers,
@@ -102,30 +90,27 @@ const endemicsWithMhOnHandlers = [
   sameHerdHandlers
 ].flat()
 
-let routes
 const mapRoutes = () => {
-  routes = alwaysOnRouteHandlers
+  let routes = alwaysOnRouteHandlers
   routes = routes.concat(endemicsSpecificRouteHandlers)
 
   if (config.multiHerds.enabled) {
     routes = routes.concat(endemicsWithMhOnHandlers)
-  } else if (config.multiSpecies.enabled) {
-    routes = routes.concat(endemicsWithMsOnHandlers)
   } else {
-    routes = routes.concat(endemicsWithMsOffHandlers)
+    routes = routes.concat(endemicsWithMsOnHandlers)
   }
 
   if (config.devLogin.enabled) {
     routes = routes.concat(devSignInHandlers)
   }
+  return routes
 }
 
 export const routerPlugin = {
   plugin: {
     name: 'router',
     register: (server, _) => {
-      mapRoutes()
-      server.route(routes)
+      server.route(mapRoutes())
     }
   }
 }

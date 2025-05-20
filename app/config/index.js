@@ -61,12 +61,6 @@ export const getConfig = () => {
     },
     claimExpiryTimeMonths: Joi.number(),
     endemicsClaimExpiryTimeMonths: Joi.number(),
-    dateOfTesting: {
-      enabled: Joi.bool().required()
-    },
-    multiSpecies: {
-      enabled: Joi.bool().required()
-    },
     multiHerds: {
       enabled: Joi.bool().required(),
       releaseDate: Joi.string().required()
@@ -133,12 +127,6 @@ export const getConfig = () => {
     },
     claimExpiryTimeMonths: 6,
     endemicsClaimExpiryTimeMonths: 10,
-    dateOfTesting: {
-      enabled: process.env.DATE_OF_TESTING_ENABLED === 'true'
-    },
-    multiSpecies: {
-      enabled: process.env.MULTI_SPECIES_ENABLED === 'true'
-    },
     multiHerds: {
       enabled: process.env.MULTI_HERDS_ENABLED === 'true',
       releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || '2025-05-01'
