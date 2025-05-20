@@ -116,6 +116,7 @@ const postHandler = {
         latestVetVisitApplication: oldWorldApplication
       } = getEndemicsClaim(request)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
+
       if (herdSame === 'yes') {
         const prevClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
