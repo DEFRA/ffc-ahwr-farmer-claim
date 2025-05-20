@@ -130,6 +130,7 @@ const postHandler = {
         }
 
         const errorMessage = canMakeClaim({ prevClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
+
         if (errorMessage) {
           raiseInvalidDataEvent(
             request, dateOfVisitKey,
