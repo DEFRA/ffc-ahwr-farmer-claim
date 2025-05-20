@@ -100,6 +100,7 @@ export const isMultipleHerdsUserJourney = (dateOfVisit) => {
   return config.multiHerds.enabled && userAcceptedMultiHerdTCs && new Date(dateOfVisit) >= MULTIPLE_HERDS_RELEASE_DATE
 }
 
-export const hasPreviousClaimsWithNoHerdAssigned = (previousClaims, typeOfLivestock) => {
-  return !previousClaims?.find(claim => { return claim.data.typeOfLivestock === typeOfLivestock && claim.data.herdId })
+export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
+  if (!previousClaims.length) { return true }
+  return previousClaims.some(claim => claim.data.typeOfLivestock === typeOfLivestock && claim.data.herdId)
 }
