@@ -101,8 +101,6 @@ export const isMultipleHerdsUserJourney = (dateOfVisit) => {
 }
 
 export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
-  if (previousClaims.length === 0) {
-    return true
-  }
-  return previousClaims?.find(claim => { return claim.data.typeOfLivestock === typeOfLivestock && claim.data.herdId }) ?? false
+  if (!previousClaims.length) return true
+  return previousClaims.some(claim => claim.data.typeOfLivestock === typeOfLivestock && claim.data.herdId)
 }
