@@ -148,7 +148,9 @@ const postHandler = {
             .code(HttpStatus.BAD_REQUEST)
             .takeover()
         }
-      } else if (isEndemicsFollowUp) {
+      }
+
+      if (herdSame === 'no' && isEndemicsFollowUp) {
         raiseInvalidDataEvent(
           request,
           typeOfReviewKey,
