@@ -5,7 +5,7 @@ import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setAuthConfig, setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 
@@ -31,7 +31,6 @@ describe('select-the-herd tests', () => {
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
     setAuthConfig()
-    setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()
     await server.initialize()

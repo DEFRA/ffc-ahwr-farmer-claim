@@ -8,7 +8,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-mh.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import { setMultiSpecies, setMultiHerds } from '../../../../mocks/config.js'
+import { setMultiHerds } from '../../../../mocks/config.js'
 import { getHerds } from '../../../../../app/api-requests/application-service-api.js'
 
 const { labels } = visitDate
@@ -85,7 +85,6 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
-    setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()
     await server.initialize()
@@ -212,7 +211,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
-    setMultiSpecies(true)
     setMultiHerds(true)
     server = await createServer()
     await server.initialize()
@@ -1719,7 +1717,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
 describe('previousPageUrl', () => {
   beforeAll(async () => {
-    setMultiSpecies(true)
     setMultiHerds(true)
   })
 
