@@ -155,21 +155,23 @@ describe('check-herd-details tests', () => {
       crumb = await getCrumbs(server)
     })
 
-    test('navigates to the correct page when payload valid and previous claims without herd assigned', async () => {
-      getEndemicsClaim.mockReturnValue({
-        reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
-        typeOfLivestock: 'beef',
-        herdId: '909bb722-3de1-443e-8304-0bba8f922050',
-        herdVersion: 1,
-        herdName: 'Commercial Herd',
-        herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
-        herdReasons: ['differentBreed'],
-        previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
-        ]
-      })
+    const validPayloadWithPreviousClaimsWithoutHerd = {
+      reference: 'TEMP-6GSE-PIR8',
+      typeOfReview: 'R',
+      typeOfLivestock: 'beef',
+      herdId: '909bb722-3de1-443e-8304-0bba8f922050',
+      herdVersion: 1,
+      herdName: 'Commercial Herd',
+      herdCph: '22/333/4444',
+      herdOthersOnSbi: 'no',
+      herdReasons: ['differentBreed'],
+      previousClaims: [
+        { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+      ]
+    }
+
+    test('navigates to same-herd page when there are previous claims but none have a herd', async () => {
+      getEndemicsClaim.mockReturnValue(validPayloadWithPreviousClaimsWithoutHerd)
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
 
@@ -177,19 +179,26 @@ describe('check-herd-details tests', () => {
       expect(res.headers.location).toEqual('/claim/endemics/same-herd')
     })
 
-    test('navigates to the correct page when payload valid and previous claims have herd assigned', async () => {
+    test('navigates to date-of-testing page when no previous claims', async () => {
       getEndemicsClaim.mockReturnValue({
-        reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
-        typeOfLivestock: 'beef',
-        herdId: '909bb722-3de1-443e-8304-0bba8f922050',
-        herdVersion: 1,
-        herdName: 'Commercial Herd',
-        herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
-        herdReasons: ['differentBreed'],
+        ...validPayloadWithPreviousClaimsWithoutHerd,
+        previousClaims: []
+      })
+      getNextPage.mockReturnValue('/claim/endemics/date-of-testing')
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+    })
+
+    test('navigates to date-of-testing page when at least one previous claim has herd', async () => {
+      getEndemicsClaim.mockReturnValue({
+        ...validPayloadWithPreviousClaimsWithoutHerd,
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', herdId: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } }
+          { createdAt: '2025-03-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', herdId: 'abaf864a-bda6-49b0-a17f-4a170fedd9c1' } },
+          { createdAt: '2025-03-10T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
         ]
       })
       getNextPage.mockReturnValue('/claim/endemics/date-of-testing')

@@ -53,5 +53,6 @@ export default {
   endemicsCheckHerdDetails: 'endemics/check-herd-details',
   endemicsSameHerd: 'endemics/same-herd',
   endemicsSelectTheHerdException: 'endemics/select-the-herd-exception',
-  endemicsSelectTheHerdDateException: 'endemics/select-the-herd-date-exception'
+  endemicsSelectTheHerdDateException: 'endemics/select-the-herd-date-exception',
+  endemicsSameHerdException: 'endemics/same-herd-exception'
 }
