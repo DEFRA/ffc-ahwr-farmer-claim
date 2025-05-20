@@ -8,12 +8,12 @@ import { getReviewType } from '../../lib/get-review-type.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewWithinLast10Months } from '../../api-requests/claim-service-api.js'
+import { getNextPage } from './date-of-visit-mh.js'
 
 const { urlPrefix } = config
 const {
   endemicsSameHerd,
   endemicsCheckHerdDetails,
-  endemicsDateOfTesting,
   endemicsDateOfVisit,
   endemicsWhichTypeOfReview,
   endemicsSameHerdException
@@ -24,7 +24,6 @@ const whichTypeOfReviewPageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 
 const pageUrl = `${urlPrefix}/${endemicsSameHerd}`
 const previousPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const nextPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
 const {
   endemicsClaim: {
@@ -169,7 +168,7 @@ const postHandler = {
           .takeover()
       }
 
-      return h.redirect(nextPageUrl)
+      return h.redirect(getNextPage(request))
     }
   }
 }
