@@ -120,7 +120,6 @@ const postHandler = {
         const prevClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
         if (isEndemicsFollowUp) {
-          // TODO BH 735 getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock)
           const prevReviewClaim = getReviewWithinLast10Months(
             dateOfVisit,
             previousClaims,
