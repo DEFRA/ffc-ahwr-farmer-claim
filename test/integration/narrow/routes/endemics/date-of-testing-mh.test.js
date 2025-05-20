@@ -10,7 +10,7 @@ import {
 } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, hasPreviousClaimsWithNoHerdAssigned } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, skipSameHerdPage } from '../../../../../app/lib/context-helper.js'
 
 const { labels } = visitDate
 jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
@@ -541,9 +541,9 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
     jest.resetAllMocks()
   })
 
-  test('returns 200 and correct backlink when hasPreviousClaimsWithNoHerdAssigned=false', async () => {
+  test('returns 200 and correct backlink when skipSameHerdPage=true', async () => {
     getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
-    hasPreviousClaimsWithNoHerdAssigned.mockImplementation(() => { return false })
+    skipSameHerdPage.mockImplementation(() => { return true })
 
     const res = await server.inject({ method: 'GET', url, auth })
 
@@ -552,9 +552,9 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
     expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/check-herd-details')
   })
 
-  test('returns 200 and correct backlink when hasPreviousClaimsWithNoHerdAssigned=false', async () => {
+  test('returns 200 and correct backlink when skipSameHerdPage=false', async () => {
     getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
-    hasPreviousClaimsWithNoHerdAssigned.mockImplementation(() => { return true })
+    skipSameHerdPage.mockImplementation(() => { return false })
 
     const res = await server.inject({ method: 'GET', url, auth })
 

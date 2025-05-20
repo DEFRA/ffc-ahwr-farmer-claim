@@ -95,10 +95,9 @@
             })
           }}
         {% else %}
-          {# TODO MultiHerds impl map herds to radios properly #}
           {% set herdOrFlockItems = [] %}
           {% for item in herds %}
-            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item, text: item, checked: herdId == item }]) %}
+            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.herdId, text: item.herdName, checked: herdId == item.herdId }]) %}
           {% endfor %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: tempHerdId, text: "I am claiming for a different " + herdOrFlock, checked: herdId === tempHerdId }]) %}

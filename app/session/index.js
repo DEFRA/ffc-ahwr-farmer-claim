@@ -82,13 +82,13 @@ export function clearEndemicsClaim (request) {
 
 export const removeMultipleHerdsSessionData = (request) => {
   const sessionEndemicsClaim = getEndemicsClaim(request)
-  sessionEndemicsClaim.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined)
-  sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined)
-  sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined)
-  sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined)
-  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined)
-  sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined)
-  sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined)
+  sessionEndemicsClaim.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined, 'success', { shouldEmitEvent: false })
 }
 
 export function setTempClaimReference (request, key, value, status) {

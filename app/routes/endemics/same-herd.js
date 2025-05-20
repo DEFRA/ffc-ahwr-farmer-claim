@@ -4,19 +4,35 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+import { getReviewType } from '../../lib/get-review-type.js'
+import { canMakeClaim } from '../../lib/can-make-claim.js'
+import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { getReviewWithinLast10Months } from '../../api-requests/claim-service-api.js'
+import { getNextPage } from './date-of-visit-mh.js'
 
 const { urlPrefix } = config
 const {
   endemicsSameHerd,
   endemicsCheckHerdDetails,
-  endemicsDateOfTesting
+  endemicsDateOfVisit,
+  endemicsWhichTypeOfReview,
+  endemicsSameHerdException
 } = links
+
+const dateOfVisitPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
+const whichTypeOfReviewPageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 
 const pageUrl = `${urlPrefix}/${endemicsSameHerd}`
 const previousPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const nextPageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 
-const { endemicsClaim: { herdSame: herdSameKey } } = sessionKeys
+const {
+  endemicsClaim: {
+    herdSame: herdSameKey,
+    dateOfVisit: dateOfVisitKey,
+    typeOfReview: typeOfReviewKey,
+    relevantReviewForEndemics: relevantReviewForEndemicsKey
+  }
+} = sessionKeys
 
 const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
   const claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
@@ -88,8 +104,74 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdSame } = request.payload
-      setEndemicsClaim(request, herdSameKey, herdSame)
-      return h.redirect(nextPageUrl)
+      setEndemicsClaim(request, herdSameKey, herdSame, { shouldEmitEvent: false })
+
+      const {
+        previousClaims,
+        typeOfReview,
+        dateOfVisit,
+        organisation,
+        typeOfLivestock,
+        latestVetVisitApplication: oldWorldApplication
+      } = getEndemicsClaim(request)
+      const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
+
+      if (herdSame === 'yes') {
+        const prevClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
+
+        if (isEndemicsFollowUp) {
+          const prevReviewClaim = getReviewWithinLast10Months(
+            dateOfVisit,
+            previousClaims,
+            oldWorldApplication,
+            typeOfLivestock
+          )
+          setEndemicsClaim(request, relevantReviewForEndemicsKey, prevReviewClaim)
+        }
+
+        const errorMessage = canMakeClaim({ prevClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
+
+        if (errorMessage) {
+          raiseInvalidDataEvent(
+            request, dateOfVisitKey,
+          `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
+          )
+
+          return h
+            .view(`${endemicsSameHerdException}`, {
+              backLink: pageUrl,
+              errorMessage,
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              backToPageText: 'If you entered the wrong date, you\'ll need to go back and enter the correct date.',
+              backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
+              backToPageLink: dateOfVisitPageUrl
+            })
+            .code(HttpStatus.BAD_REQUEST)
+            .takeover()
+        }
+      }
+
+      if (herdSame === 'no' && isEndemicsFollowUp) {
+        raiseInvalidDataEvent(
+          request,
+          typeOfReviewKey,
+          'Cannot claim for endemics without a previous review.'
+        )
+
+        return h
+          .view(`${endemicsSameHerdException}`, {
+            backLink: pageUrl,
+            errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
+            ruralPaymentsAgency: config.ruralPaymentsAgency,
+            backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
+            backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
+            backToPageLink: whichTypeOfReviewPageUrl
+          })
+          .code(HttpStatus.BAD_REQUEST)
+          .takeover()
+      }
+
+      return h.redirect(getNextPage(request))
     }
   }
 }

@@ -89,6 +89,55 @@ describe('select-the-herd tests', () => {
       expect($('.govuk-radios__input[value="' + fakeHerdId + '"]').is(':checked')).toBeTruthy()
       expectPhaseBanner.ok($)
     })
+
+    test('returns 200 and displays multiple herds as radios when multiple herds exist', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        previousClaims: [],
+        herdId: fakeHerdId,
+        tempHerdId: fakeHerdId,
+        herds: [
+          {
+            herdId: '100bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Barn animals'
+          },
+          {
+            herdId: '200bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Hilltop'
+          },
+          {
+            herdId: '300bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Field animals'
+          }
+        ]
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Select the herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expectPhaseBanner.ok($)
+
+      const radios = $('.govuk-radios__item')
+
+      expect(radios.length).toBe(4)
+
+      expect(radios.eq(0).find('input').val()).toBe('100bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(0).text()).toContain('Barn animals')
+
+      expect(radios.eq(1).find('input').val()).toBe('200bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(1).text()).toContain('Hilltop')
+
+      expect(radios.eq(2).find('input').val()).toBe('300bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(2).text()).toContain('Field animals')
+
+      expect(radios.eq(3).find('input').val()).toBe(fakeHerdId)
+      expect(radios.eq(3).text()).toContain('I am claiming for a different herd')
+      expect(radios.eq(3).find('input').is(':checked')).toBeTruthy()
+    })
   })
 
   describe('POST', () => {
