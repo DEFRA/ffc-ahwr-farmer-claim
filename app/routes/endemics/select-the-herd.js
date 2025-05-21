@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getEndemicsClaim, setEndemicsClaim, removeHerdSessionData } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { claimConstants } from '../../constants/claim.js'
@@ -44,16 +44,17 @@ const {
   }
 } = sessionKeys
 
-const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
-  const claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
+const getClaimInfo = (previousClaims, typeOfLivestock) => {
+  let claimTypeText
   let dateOfVisitText
   let claimDateText
 
   const previousClaimsForSpecies = previousClaims?.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
   if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
-    const { createdAt, data: { dateOfVisit } } =
+    const { createdAt, data: { typeOfReview, dateOfVisit } } =
       previousClaimsForSpecies.reduce((latest, claim) => { return claim.createdAt > latest.createdAt ? claim : latest })
 
+    claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
     dateOfVisitText = new Date(dateOfVisit).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     claimDateText = new Date(createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   }
@@ -71,10 +72,10 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
+      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, previousClaims, herds } = getEndemicsClaim(request)
       const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
       const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-      const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
+      const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
       return h.view(endemicsSelectTheHerd, {
         backLink: previousPageUrl,
@@ -114,10 +115,10 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
+        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
         const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
+        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
         return h.view(endemicsSelectTheHerd, {
           ...request.payload,
@@ -136,8 +137,6 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
-      setEndemicsClaim(request, herdIdKey, herdId, { shouldEmitEvent: false })
-
       const {
         herds,
         typeOfReview,
@@ -145,8 +144,16 @@ const postHandler = {
         typeOfLivestock,
         dateOfVisit,
         organisation,
-        latestVetVisitApplication: oldWorldApplication
+        latestVetVisitApplication: oldWorldApplication,
+        herdId: herdIdFromSession
       } = getEndemicsClaim(request)
+
+      if (herdId !== herdIdFromSession) {
+        removeHerdSessionData(request, undefined)
+      }
+
+      setEndemicsClaim(request, herdIdKey, herdId, { shouldEmitEvent: false })
+
       const { isReview } = getReviewType(typeOfReview)
       const existingHerd = herds.find((herd) => herd.herdId === herdId)
 
