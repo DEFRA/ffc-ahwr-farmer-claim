@@ -36,7 +36,7 @@ const renameClaimEntryKeyForEventReporting = (entryKey) => {
   return entryKey
 }
 
-export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip, status = 'success') => {
+export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, ip) => {
   key = renameSessionKeysForEventReporting(key)
   entryKey = renameClaimEntryKeyForEventReporting(entryKey)
 
@@ -55,6 +55,6 @@ export const sendSessionEvent = async (claim, sessionId, entryKey, key, value, i
       data: { reference, applicationReference, [key]: value },
       ip
     }
-    await raiseEvent(event, status)
+    await raiseEvent(event, 'success')
   }
 }

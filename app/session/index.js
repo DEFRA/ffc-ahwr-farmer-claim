@@ -25,7 +25,7 @@ const {
   }
 } = sessionKeys
 
-function set (request, entryKey, key, value, status, shouldEmitEvent) {
+function set (request, entryKey, key, value, shouldEmitEvent) {
   const entryValue = request.yar?.get(entryKey) || {}
   entryValue[key] = typeof value === 'string' ? value.trim() : value
   request.yar.set(entryKey, entryValue)
@@ -38,8 +38,7 @@ function set (request, entryKey, key, value, status, shouldEmitEvent) {
       entryKey,
       key,
       value,
-      ip,
-      status
+      ip
     )
 }
 
@@ -55,16 +54,16 @@ export function clear (request) {
   request.yar.clear(entries.tempClaimReference)
 }
 
-export function setClaim (request, key, value, status) {
-  set(request, entries.claim, key, value, status)
+export function setClaim (request, key, value) {
+  set(request, entries.claim, key, value)
 }
 
 export function getClaim (request, key) {
   return get(request, entries.claim, key)
 }
 
-export function setEndemicsClaim (request, key, value, status, { shouldEmitEvent } = { shouldEmitEvent: true }) {
-  set(request, entries.endemicsClaim, key, value, status, shouldEmitEvent)
+export function setEndemicsClaim (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.endemicsClaim, key, value, shouldEmitEvent)
 }
 
 export function getEndemicsClaim (request, key) {
@@ -82,17 +81,17 @@ export function clearEndemicsClaim (request) {
 
 export const removeMultipleHerdsSessionData = (request) => {
   const sessionEndemicsClaim = getEndemicsClaim(request)
-  sessionEndemicsClaim.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined, 'success', { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined, 'success', { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined, 'success', { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined, 'success', { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined, 'success', { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined, 'success', { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined, 'success', { shouldEmitEvent: false })
+  sessionEndemicsClaim.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined, { shouldEmitEvent: false })
 }
 
-export function setTempClaimReference (request, key, value, status) {
-  set(request, entries.tempClaimReference, key, value, status)
+export function setTempClaimReference (request, key, value) {
+  set(request, entries.tempClaimReference, key, value)
 }
 
 export function setToken (request, key, value) {
