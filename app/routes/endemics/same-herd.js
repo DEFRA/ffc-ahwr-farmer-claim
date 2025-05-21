@@ -104,7 +104,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdSame } = request.payload
-      setEndemicsClaim(request, herdSameKey, herdSame)
+      setEndemicsClaim(request, herdSameKey, herdSame, { shouldEmitEvent: false })
 
       const {
         previousClaims,

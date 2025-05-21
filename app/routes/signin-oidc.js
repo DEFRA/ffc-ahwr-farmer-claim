@@ -45,14 +45,18 @@ export const signInHandler = {
         const { referer } = request.headers
         const { code, state } = request.query
 
-        request.logger.info('Claim signin-oidc handler invoked', {
+        const loggerInfo = {
           source: 'claim/signin-oidc',
           referer,
           code,
           state,
           remoteAddress: request.info.remoteAddress,
           userAgent: request.headers['user-agent']
-        })
+        }
+
+        // Trying out different debugging methods
+        request.logger.info('Claim signin-oidc handler invoked: ' + JSON.stringify(loggerInfo))
+        request.logger.info(loggerInfo, '*Claim signin-oidc handler invoked:')
 
         await authenticate(request)
 

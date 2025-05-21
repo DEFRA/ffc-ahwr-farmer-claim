@@ -5,6 +5,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
+import { sendHerdEvent } from '../../event/send-herd-event.js'
 import { OTHERS_ON_SBI } from '../../constants/herd.js'
 
 const { urlPrefix } = config
@@ -70,9 +71,10 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload
-      const { herds, herdOthersOnSbi } = getEndemicsClaim(request)
+      const { herds, herdOthersOnSbi, herdId, herdVersion } = getEndemicsClaim(request)
 
-      setEndemicsClaim(request, herdCphKey, herdCph)
+      setEndemicsClaim(request, herdCphKey, herdCph, { shouldEmitEvent: false })
+      sendHerdEvent({ request, type: 'herd-cph', message: 'Herd CPH collected from user', data: { herdId, herdVersion, herdCph } })
 
       let nextPageUrl
       if (herds?.length) {

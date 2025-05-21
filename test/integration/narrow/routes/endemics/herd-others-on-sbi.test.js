@@ -6,12 +6,16 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
+import { sendHerdEvent } from '../../../../../app/event/send-herd-event.js'
 
 const { urlPrefix } = config
 const { endemicsHerdOthersOnSbi: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
+jest.mock('../../../../../app/event/send-herd-event.js', () => ({
+  sendHerdEvent: jest.fn()
+}))
 
 describe('herd-others-on-sbi tests', () => {
   const url = `${urlPrefix}/${pageUnderTest}`
@@ -159,6 +163,22 @@ describe('herd-others-on-sbi tests', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-details')
       expect(setEndemicsClaim).toHaveBeenCalled()
+      expect(sendHerdEvent).toHaveBeenCalled()
+    })
+
+    test('navigates to the correct page when payload valid', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep'
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdOthersOnSbi: 'yes' }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
+      expect(setEndemicsClaim).toHaveBeenCalled()
+      expect(sendHerdEvent).not.toHaveBeenCalled()
     })
 
     test('display errors with flock labels when payload invalid and typeOfLivestock is sheep', async () => {

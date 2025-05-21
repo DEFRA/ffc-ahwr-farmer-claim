@@ -91,16 +91,16 @@ const getHandler = {
 
 const addHerdToSession = (request, existingHerd, herds) => {
   if (existingHerd) {
-    setEndemicsClaim(request, herdVersionKey, existingHerd.herdVersion + 1)
-    setEndemicsClaim(request, herdNameKey, existingHerd.herdName)
-    setEndemicsClaim(request, herdCphKey, existingHerd.cph)
-    setEndemicsClaim(request, herdReasonsKey, existingHerd.herdReasons)
-    setEndemicsClaim(request, herdOthersOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO)
+    setEndemicsClaim(request, herdVersionKey, existingHerd.herdVersion + 1, { shouldEmitEvent: false })
+    setEndemicsClaim(request, herdNameKey, existingHerd.herdName, { shouldEmitEvent: false })
+    setEndemicsClaim(request, herdCphKey, existingHerd.cph, { shouldEmitEvent: false })
+    setEndemicsClaim(request, herdReasonsKey, existingHerd.herdReasons, { shouldEmitEvent: false })
+    setEndemicsClaim(request, herdOthersOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO, { shouldEmitEvent: false })
   } else {
     if (herds.length) {
-      setEndemicsClaim(request, herdOthersOnSbiKey, OTHERS_ON_SBI.NO)
+      setEndemicsClaim(request, herdOthersOnSbiKey, OTHERS_ON_SBI.NO, { shouldEmitEvent: false })
     }
-    setEndemicsClaim(request, herdVersionKey, 1)
+    setEndemicsClaim(request, herdVersionKey, 1, { shouldEmitEvent: false })
   }
 }
 
@@ -136,7 +136,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
-      setEndemicsClaim(request, herdIdKey, herdId)
+      setEndemicsClaim(request, herdIdKey, herdId, { shouldEmitEvent: false })
 
       const {
         herds,

@@ -6,6 +6,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
+import { sendHerdEvent } from '../../event/send-herd-event.js'
 
 const { urlPrefix } = config
 const {
@@ -77,9 +78,29 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdOthersOnSbi } = request.payload
-      setEndemicsClaim(request, herdOthersOnSbiKey, herdOthersOnSbi)
+      setEndemicsClaim(request, herdOthersOnSbiKey, herdOthersOnSbi, { shouldEmitEvent: false })
+
       if (herdOthersOnSbi === OTHERS_ON_SBI.YES) {
-        setEndemicsClaim(request, herdReasonsKey, [ONLY_HERD])
+        setEndemicsClaim(request, herdReasonsKey, [ONLY_HERD], { shouldEmitEvent: false })
+      } else {
+        const { herdId, herdVersion } = getEndemicsClaim(request)
+
+        sendHerdEvent({
+          request,
+          type: 'herd-reasons',
+          message: 'Only herd for user',
+          data: {
+            herdId,
+            herdVersion,
+            herdReasonManagementNeeds: false,
+            herdReasonUniqueHealth: false,
+            herdReasonDifferentBreed: false,
+            herdReasonOtherPurpose: false,
+            herdReasonKeptSeparate: false,
+            herdReasonOnlyHerd: true,
+            herdReasonOther: false
+          }
+        })
       }
 
       return h.redirect(herdOthersOnSbi === OTHERS_ON_SBI.YES ? checkHerdDetailsPageUrl : enterEnterHerdDetailsPageUrl)
