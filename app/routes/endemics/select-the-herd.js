@@ -11,6 +11,8 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { ONLY_HERD } from './herd-others-on-sbi.js'
 import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { formatDate, getHerdOrFlock } from '../../lib/display-helpers.js'
+import { getUnnamedHerdId } from '../../lib/get-unnamed-herd-id.js'
 
 const { endemics } = claimConstants.claimType
 
@@ -61,9 +63,22 @@ const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
   return { species: typeOfLivestock, claimType: claimTypeText, lastVisitDate: dateOfVisitText, claimDate: claimDateText }
 }
 
-const getGroupOfSpeciesName = (typeOfLivestock) => {
-  return typeOfLivestock === 'sheep' ? 'flock' : 'herd'
+const getMostRecentClaimWithoutHerd = (previousClaims, typeOfLivestock) => {
+  const claimsWithoutHerd = previousClaims.filter(
+    claim => claim.data.typeOfLivestock === typeOfLivestock && !claim.data.herdId
+  );
+
+  if (claimsWithoutHerd.length === 0) return null;
+
+  return claimsWithoutHerd.reduce((latest, current) => new Date(current.data.dateOfVisit) > new Date(latest.data.dateOfVisit) ? current : latest);
 }
+
+const createUnnamedHerd = (claim, unnamedHerdId, typeOfLivestock) => (
+  {
+    herdId: unnamedHerdId,
+    herdName: `Unnamed ${getHerdOrFlock(typeOfLivestock)} (Last claim: ${claim.data.claimType === 'R' ? 'review' : 'follow-up'} visit on the ${formatDate(claim.data.dateOfVisit)})`
+  }
+)
 
 const getHandler = {
   method: 'GET',
@@ -71,19 +86,23 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
+      const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, unnamedHerdId: unnamedHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
       const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
-      const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
+      const unnamedHerdId = getUnnamedHerdId(request, unnamedHerdIdFromSession)
+
+      const herdOrFlock = getHerdOrFlock(typeOfLivestock)
       const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
+
+      const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock)
 
       return h.view(endemicsSelectTheHerd, {
         backLink: previousPageUrl,
         pageTitleText: herds.length > 1 ? `Select the ${herdOrFlock} you are claiming for` : `Is this the same ${herdOrFlock} you have previously claimed for?`,
         tempHerdId,
         ...claimInfo,
-        herds,
+        herds: claimWithoutHerd ? herds.concat(createUnnamedHerd(claimWithoutHerd, unnamedHerdId, typeOfLivestock)) : herds,
         herdOrFlock,
-        herdId
+        herdId,
       })
     }
   }
@@ -113,10 +132,11 @@ const postHandler = {
         herdId: Joi.string().uuid().required()
       }),
       failAction: async (request, h, err) => {
+        console.log({ id: request.herdId })
         request.logger.setBindings({ err })
         const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
-        const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
+        const herdOrFlock = getHerdOrFlock(typeOfLivestock)
         const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
 
         return h.view(endemicsSelectTheHerd, {

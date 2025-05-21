@@ -165,7 +165,7 @@ const getHandler = {
         testResults,
         herdName
       } = sessionData
-
+ 
       const { isBeef, isDairy, isPigs, isSheep } =
         getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -539,7 +539,8 @@ const postHandler = {
         herdName,
         herdCph,
         herdReasons,
-        herdSame
+        herdSame,
+        unnamedHerdId
       } = getEndemicsClaim(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
@@ -584,7 +585,7 @@ const postHandler = {
               herdName,
               cph: herdCph,
               herdReasons,
-              herdSame
+              herdSame: herdSame ?? (herdId === unnamedHerdId ? 'yes' : undefined)
             }
           })
         }
