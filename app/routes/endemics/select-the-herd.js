@@ -211,7 +211,7 @@ const postHandler = {
       const existingHerd = herds.find((herd) => herd.herdId === herdId)
       addHerdToSession(request, existingHerd, herds)
       if (herdId === unnamedHerdId) {
-        setEndemicsClaim(request, herdSameKey, 'yes')
+        setEndemicsClaim(request, herdSameKey, 'yes', { shouldEmitEvent: false })
       }
 
       const nextPageUrl = existingHerd ? checkHerdDetailsPageUrl : enterHerdNamePageUrl
