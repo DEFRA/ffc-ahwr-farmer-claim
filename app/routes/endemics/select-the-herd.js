@@ -24,14 +24,14 @@ const {
   endemicsCheckHerdDetails,
   endemicsSelectTheHerdException,
   endemicsSelectTheHerdDateException,
-  endemicsWhichSpecies
+  endemicsWhichTypeOfReview
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
 const previousPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 const enterHerdNamePageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
 const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const whichSpeciesPageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
+const whichTypeOfReviewPageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
 const dateOfVisitPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
 
 const {
@@ -42,7 +42,8 @@ const {
     herdCph: herdCphKey,
     herdReasons: herdReasonsKey,
     dateOfVisit: dateOfVisitKey,
-    herdOthersOnSbi: herdOthersOnSbiKey
+    herdOthersOnSbi: herdOthersOnSbiKey,
+    herdSame: herdSameKey
   }
 } = sessionKeys
 
@@ -66,11 +67,11 @@ const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
 const getMostRecentClaimWithoutHerd = (previousClaims, typeOfLivestock) => {
   const claimsWithoutHerd = previousClaims.filter(
     claim => claim.data.typeOfLivestock === typeOfLivestock && !claim.data.herdId
-  );
+  )
 
-  if (claimsWithoutHerd.length === 0) return null;
+  if (claimsWithoutHerd.length === 0) { return null }
 
-  return claimsWithoutHerd.reduce((latest, current) => new Date(current.data.dateOfVisit) > new Date(latest.data.dateOfVisit) ? current : latest);
+  return claimsWithoutHerd.reduce((latest, current) => new Date(current.data.dateOfVisit) > new Date(latest.data.dateOfVisit) ? current : latest)
 }
 
 const createUnnamedHerd = (claim, unnamedHerdId, typeOfLivestock) => (
@@ -102,7 +103,7 @@ const getHandler = {
         ...claimInfo,
         herds: claimWithoutHerd ? herds.concat(createUnnamedHerd(claimWithoutHerd, unnamedHerdId, typeOfLivestock)) : herds,
         herdOrFlock,
-        herdId,
+        herdId
       })
     }
   }
@@ -123,6 +124,8 @@ const addHerdToSession = (request, existingHerd, herds) => {
   }
 }
 
+const isUnnamedHerdClaim = (herdId, unnamedHerdId, claim) => herdId === unnamedHerdId && !claim.data.herdId
+
 const postHandler = {
   method: 'POST',
   path: pageUrl,
@@ -132,7 +135,6 @@ const postHandler = {
         herdId: Joi.string().uuid().required()
       }),
       failAction: async (request, h, err) => {
-        console.log({ id: request.herdId })
         request.logger.setBindings({ err })
         const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
@@ -165,21 +167,25 @@ const postHandler = {
         typeOfLivestock,
         dateOfVisit,
         organisation,
-        latestVetVisitApplication: oldWorldApplication
+        latestVetVisitApplication: oldWorldApplication,
+        tempHerdId,
+        unnamedHerdId
       } = getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
-      const existingHerd = herds.find((herd) => herd.herdId === herdId)
 
-      if (!existingHerd && typeOfReview === endemics) {
+      if (herdId === tempHerdId && typeOfReview === endemics) {
         return h.view(endemicsSelectTheHerdException, {
           backLink: pageUrl,
-          claimForAReviewLink: whichSpeciesPageUrl
+          claimForAReviewLink: whichTypeOfReviewPageUrl
         })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
-      const prevHerdClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock && claim.data.herdId === herdId)
+      const prevHerdClaims = previousClaims.filter(claim =>
+        claim.data.typeOfLivestock === typeOfLivestock &&
+        (isUnnamedHerdClaim(herdId, unnamedHerdId, claim) || claim.data.herdId === herdId)
+      )
       const errorMessage = canMakeClaim({ prevClaims: prevHerdClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
       if (errorMessage) {
@@ -200,7 +206,11 @@ const postHandler = {
           .takeover()
       }
 
+      const existingHerd = herds.find((herd) => herd.herdId === herdId)
       addHerdToSession(request, existingHerd, herds)
+      if (herdId === unnamedHerdId) {
+        setEndemicsClaim(request, herdSameKey, 'yes')
+      }
 
       const nextPageUrl = existingHerd ? checkHerdDetailsPageUrl : enterHerdNamePageUrl
 
