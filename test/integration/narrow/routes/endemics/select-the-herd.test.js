@@ -518,7 +518,7 @@ describe('select-the-herd tests', () => {
       expect($('a[href="#herdId"]').text()).toContain('Select the flock you are claiming for')
     })
 
-    test('display erorrs when endemics and previous herd does not exist', async () => {
+    test('display errors when endemics and selects different herd', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'E',

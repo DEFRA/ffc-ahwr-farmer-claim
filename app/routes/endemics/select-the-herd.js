@@ -71,7 +71,9 @@ const getMostRecentClaimWithoutHerd = (previousClaims, typeOfLivestock) => {
 
   if (claimsWithoutHerd.length === 0) { return null }
 
-  return claimsWithoutHerd.reduce((latest, current) => new Date(current.data.dateOfVisit) > new Date(latest.data.dateOfVisit) ? current : latest)
+  return claimsWithoutHerd.reduce(
+    (latest, current) => new Date(current.data.dateOfVisit) > new Date(latest.data.dateOfVisit) ? current : latest
+  )
 }
 
 const createUnnamedHerd = (claim, unnamedHerdId, typeOfLivestock) => (
