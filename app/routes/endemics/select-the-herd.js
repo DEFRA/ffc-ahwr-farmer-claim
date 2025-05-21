@@ -105,7 +105,7 @@ const getHandler = {
         ...claimInfo,
         herds: claimWithoutHerd ? herds.concat(createUnnamedHerd(claimWithoutHerd, unnamedHerdId, typeOfLivestock)) : herds,
         herdOrFlock,
-        herdId,
+        herdId
       })
     }
   }
@@ -137,7 +137,6 @@ const postHandler = {
         herdId: Joi.string().uuid().required()
       }),
       failAction: async (request, h, err) => {
-        console.log({ id: request.herdId })
         request.logger.setBindings({ err })
         const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, typeOfReview, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
