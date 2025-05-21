@@ -1,6 +1,6 @@
-import { getEndemicsClaim } from '../session'
-import { getIpFromRequest } from './get-ip-from-request'
-import { raiseEvent } from './raise-event'
+import { getEndemicsClaim } from '../session/index.js'
+import { getIpFromRequest } from './get-ip-from-request.js'
+import { raiseEvent } from './raise-event.js'
 
 export const sendHerdEvent = async ({ request, type, message, data }) => {
   const ip = getIpFromRequest(request)
