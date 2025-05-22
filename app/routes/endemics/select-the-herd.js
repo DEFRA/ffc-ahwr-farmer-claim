@@ -142,7 +142,7 @@ const postHandler = {
         const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
         const herdOrFlock = getHerdOrFlock(typeOfLivestock)
-        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
+        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
         return h.view(endemicsSelectTheHerd, {
           ...request.payload,

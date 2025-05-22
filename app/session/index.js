@@ -76,17 +76,19 @@ export function clearEndemicsClaim (request) {
   setEndemicsClaim(request, 'organisation', endemicsClaim?.organisation)
   setEndemicsClaim(request, 'latestVetVisitApplication', endemicsClaim?.latestVetVisitApplication)
   setEndemicsClaim(request, 'latestEndemicsApplication', endemicsClaim?.latestEndemicsApplication)
-  removeMultipleHerdsSessionData(request)
+  removeMultipleHerdsSessionData(request, endemicsClaim)
 }
 
-export const removeMultipleHerdsSessionData = (request) => {
-  const sessionEndemicsClaim = getEndemicsClaim(request)
-  sessionEndemicsClaim.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined, { shouldEmitEvent: false })
-  removeHerdSessionData(request, sessionEndemicsClaim)
+export const removeMultipleHerdsSessionData = (request, sessionEndemicsClaim) => {
+  const sessionEndemicsClaim2 = sessionEndemicsClaim ?? getEndemicsClaim(request)
+
+  sessionEndemicsClaim2.tempHerdId && setEndemicsClaim(request, tempHerdIdKey, undefined, { shouldEmitEvent: false })
+  removeHerdSessionData(request, sessionEndemicsClaim2)
 }
 
 export const removeHerdSessionData = (request, sessionEndemicsClaim) => {
   const sessionEndemicsClaim2 = sessionEndemicsClaim ?? getEndemicsClaim(request)
+
   sessionEndemicsClaim2.herdId && setEndemicsClaim(request, herdIdKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim2.herdName && setEndemicsClaim(request, herdNameKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim2.herdCph && setEndemicsClaim(request, herdCphKey, undefined, { shouldEmitEvent: false })
