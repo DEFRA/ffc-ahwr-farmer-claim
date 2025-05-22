@@ -161,6 +161,7 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
+      const endemicsClaim = getEndemicsClaim(request)
       const {
         herds,
         typeOfReview,
@@ -172,10 +173,10 @@ const postHandler = {
         herdId: herdIdFromSession,
         tempHerdId,
         unnamedHerdId
-      } = getEndemicsClaim(request)
+      } = endemicsClaim
 
       if (herdId !== herdIdFromSession) {
-        removeHerdSessionData(request, undefined)
+        removeHerdSessionData(request, endemicsClaim)
       }
 
       setEndemicsClaim(request, herdIdKey, herdId, { shouldEmitEvent: false })
