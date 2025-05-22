@@ -11,6 +11,7 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 
 const { urlPrefix } = config
 
@@ -25,10 +26,14 @@ const {
 const { speciesNumbers, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 
 const backLink = (request) => {
-  const { reviewTestResults, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { reviewTestResults, typeOfLivestock, typeOfReview, dateOfVisit, previousClaims } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
+
+  if (isMultipleHerdsUserJourney(dateOfVisit)) {
+    return getHerdBackLink(typeOfLivestock, previousClaims)
+  }
 
   if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsDateOfVisit}`

@@ -17,7 +17,8 @@ import {
   isWithIn4MonthsBeforeOrAfterDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, skipSameHerdPage } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 
 const { ruralPaymentsAgency, urlPrefix } = config
 const {
@@ -30,9 +31,7 @@ const {
   endemicsSpeciesNumbers,
   endemicsDateOfTestingException,
   endemicsTestUrn,
-  endemicsPIHuntAllAnimals,
-  endemicsCheckHerdDetails,
-  endemicsSameHerd
+  endemicsPIHuntAllAnimals
 } = links
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
@@ -42,10 +41,7 @@ const backLink = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isMultipleHerdsUserJourney(dateOfVisit)) {
-    if (!skipSameHerdPage(previousClaims, typeOfLivestock)) {
-      return `${urlPrefix}/${endemicsSameHerd}`
-    }
-    return `${urlPrefix}/${endemicsCheckHerdDetails}`
+    return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
   if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
@@ -110,9 +106,9 @@ const getHandler = {
         whenTestingWasCarriedOut: dateOfTesting
           ? {
               value:
-                dateOfVisit === dateOfTesting
-                  ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-                  : 'onAnotherDate',
+              dateOfVisit === dateOfTesting
+                ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                : 'onAnotherDate',
               onAnotherDate: {
                 day: {
                   value: new Date(dateOfTesting).getDate()
@@ -364,7 +360,7 @@ const postHandler = {
 
       const dateOfTesting =
         request.payload.whenTestingWasCarriedOut ===
-        'whenTheVetVisitedTheFarmToCarryOutTheReview'
+          'whenTheVetVisitedTheFarmToCarryOutTheReview'
           ? dateOfVisit
           : new Date(
             request.payload[`${onAnotherDateInputId}-year`],
