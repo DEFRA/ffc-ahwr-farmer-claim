@@ -8,6 +8,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
+import { getUnnamedHerdId } from '../../../../../app/lib/get-unnamed-herd-id.js'
 
 const { urlPrefix } = config
 const { endemicsSelectTheHerd: pageUnderTest } = links
@@ -16,6 +17,7 @@ jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/lib/can-make-claim.js')
 jest.mock('../../../../../app/event/raise-invalid-data-event.js')
+jest.mock('../../../../../app/lib/get-unnamed-herd-id.js')
 
 describe('select-the-herd tests', () => {
   const url = `${urlPrefix}/${pageUnderTest}`
@@ -158,6 +160,120 @@ describe('select-the-herd tests', () => {
       const valueInTypeColumn = $('.govuk-summary-list__row').filter((_, el) => $(el).find('.govuk-summary-list__key').text().trim() === 'Type').first().find('.govuk-summary-list__value').text().trim()
       expect(valueInTypeColumn).toBe('Review')
     })
+
+    test('displays unnamed herd with most recent claim date without herd when multiple previous claims with and without herd exists', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-05T00:00:00.000Z', claimType: 'R', herdId: '1' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z', claimType: 'R' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z', claimType: 'R' } }
+        ],
+        herdId: fakeHerdId,
+        tempHerdId: fakeHerdId,
+        herds: [
+          {
+            herdId: '100bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Barn animals'
+          },
+          {
+            herdId: '200bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Hilltop'
+          },
+          {
+            herdId: '300bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Field animals'
+          }
+        ]
+      })
+      getUnnamedHerdId.mockReturnValue('400bb722-3de1-443e-8304-0bba8f922050')
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Select the herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expectPhaseBanner.ok($)
+
+      const radios = $('.govuk-radios__item')
+
+      expect(radios.length).toBe(5)
+
+      expect(radios.eq(0).find('input').val()).toBe('100bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(0).text()).toContain('Barn animals')
+
+      expect(radios.eq(1).find('input').val()).toBe('200bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(1).text()).toContain('Hilltop')
+
+      expect(radios.eq(2).find('input').val()).toBe('300bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(2).text()).toContain('Field animals')
+
+      expect(radios.eq(3).find('input').val()).toBe('400bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(3).text().trim()).toEqual('Unnamed herd (Last claim: review visit on the 1 April 2025)')
+
+      expect(radios.eq(4).find('input').val()).toBe(fakeHerdId)
+      expect(radios.eq(4).text()).toContain('I am claiming for a different herd')
+      expect(radios.eq(4).find('input').is(':checked')).toBeTruthy()
+    })
+
+    test('displays unnamed herd with most recent follow-up claim date without herd when multiple previous claims with and without herd exists', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-05T00:00:00.000Z', claimType: 'R', herdId: '1' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z', claimType: 'R' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z', claimType: 'R' } }
+        ],
+        herdId: fakeHerdId,
+        tempHerdId: fakeHerdId,
+        herds: [
+          {
+            herdId: '100bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Barn animals'
+          },
+          {
+            herdId: '200bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Hilltop'
+          },
+          {
+            herdId: '300bb722-3de1-443e-8304-0bba8f922050',
+            herdName: 'Field animals'
+          }
+        ]
+      })
+      getUnnamedHerdId.mockReturnValue('400bb722-3de1-443e-8304-0bba8f922050')
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Select the herd you are claiming for - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expectPhaseBanner.ok($)
+
+      const radios = $('.govuk-radios__item')
+
+      expect(radios.length).toBe(5)
+
+      expect(radios.eq(0).find('input').val()).toBe('100bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(0).text()).toContain('Barn animals')
+
+      expect(radios.eq(1).find('input').val()).toBe('200bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(1).text()).toContain('Hilltop')
+
+      expect(radios.eq(2).find('input').val()).toBe('300bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(2).text()).toContain('Field animals')
+
+      expect(radios.eq(3).find('input').val()).toBe('400bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(3).text().trim()).toEqual('Unnamed herd (Last claim: review visit on the 1 April 2025)')
+
+      expect(radios.eq(4).find('input').val()).toBe(fakeHerdId)
+      expect(radios.eq(4).text()).toContain('I am claiming for a different herd')
+      expect(radios.eq(4).find('input').is(':checked')).toBeTruthy()
+    })
   })
 
   describe('POST', () => {
@@ -176,7 +292,11 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
         ],
-        herds: []
+        herds: [],
+        dateOfVisit: '2025-04-14T00:00:00.000Z',
+        organisation: {
+          farmerName: 'John Doe'
+        }
       })
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdId: fakeHerdId }, headers: { cookie: `crumb=${crumb}` } })
@@ -185,6 +305,15 @@ describe('select-the-herd tests', () => {
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
+      expect(canMakeClaim).toHaveBeenCalledWith({
+        dateOfVisit: '2025-04-14T00:00:00.000Z',
+        organisation: {
+          farmerName: 'John Doe'
+        },
+        prevClaims: [],
+        typeOfLivestock: 'sheep',
+        typeOfReview: 'R'
+      })
     })
 
     test('navigates to enter herd name when multiple herds exists and does not match herd id', async () => {
@@ -194,8 +323,8 @@ describe('select-the-herd tests', () => {
         typeOfLivestock: 'sheep',
         previousClaims: [
           { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', herdId: '1' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '2' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [{
@@ -206,7 +335,11 @@ describe('select-the-herd tests', () => {
           herdReasons: ['reasonOne']
         }, {
           herdId: '2'
-        }]
+        }],
+        organisation: {
+          farmerName: 'John Doe'
+        },
+        dateOfVisit: '2025-04-14T00:00:00.000Z'
       })
 
       const payload = { crumb, herdId: fakeHerdId }
@@ -217,6 +350,71 @@ describe('select-the-herd tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
+      expect(canMakeClaim).toHaveBeenCalledWith({
+        dateOfVisit: '2025-04-14T00:00:00.000Z',
+        organisation: {
+          farmerName: 'John Doe'
+        },
+        prevClaims: [],
+        typeOfLivestock: 'sheep',
+        typeOfReview: 'R'
+      })
+    })
+
+    test('navigates to enter herd name when herdId is unnamed herd', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-03-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '1' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+        ],
+        herds: [{
+          herdId: '1',
+          herdName: 'Barn animals',
+          herdVersion: 1,
+          cph: '22/333/4444',
+          herdReasons: ['reasonOne']
+        }, {
+          herdId: '2'
+        }],
+        unnamedHerdId: '100bb722-3de1-443e-8304-0bba8f922050',
+        dateOfVisit: '2025-04-14T00:00:00.000Z',
+        organisation: {
+          farmerName: 'John Doe'
+        }
+      })
+
+      const payload = { crumb, herdId: '100bb722-3de1-443e-8304-0bba8f922050' }
+      const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(4)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', '100bb722-3de1-443e-8304-0bba8f922050', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
+      expect(canMakeClaim).toHaveBeenCalledWith({
+        dateOfVisit: '2025-04-14T00:00:00.000Z',
+        organisation: {
+          farmerName: 'John Doe'
+        },
+        prevClaims: [
+          {
+            createdAt: '2025-03-01T00:00:00.000Z',
+            data: {
+              typeOfLivestock: 'sheep',
+              typeOfReview: 'R'
+            }
+          }
+        ],
+        typeOfLivestock: 'sheep',
+        typeOfReview: 'R'
+      })
     })
 
     test('navigates to check herd details when herd exists and matches herd id', async () => {
@@ -259,8 +457,8 @@ describe('select-the-herd tests', () => {
         typeOfLivestock: 'sheep',
         previousClaims: [
           { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', herdId: fakeHerdId } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: fakeHerdId } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [{
@@ -271,7 +469,11 @@ describe('select-the-herd tests', () => {
           herdReasons: ['reasonOne']
         }, {
           herdId: '2'
-        }]
+        }],
+        organisation: {
+          farmerName: 'John Doe'
+        },
+        dateOfVisit: '2025-04-14T00:00:00.000Z'
       })
 
       const payload = { crumb, herdId: fakeHerdId }
@@ -279,12 +481,40 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(6)
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['reasonOne'], { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
+      expect(canMakeClaim).toHaveBeenCalledWith({
+        dateOfVisit: '2025-04-14T00:00:00.000Z',
+        organisation: {
+          farmerName: 'John Doe'
+        },
+        prevClaims: [
+          {
+            createdAt: '2025-04-01T00:00:00.000Z',
+            data: {
+              typeOfReview: 'R',
+              typeOfLivestock: 'sheep',
+              herdId: '909bb722-3de1-443e-8304-0bba8f922050'
+            }
+          },
+          {
+            createdAt: '2025-04-28T00:00:00.000Z',
+            data: {
+              herdId: fakeHerdId,
+              typeOfLivestock: 'sheep',
+              typeOfReview: 'R',
+              dateOfVisit: '2025-04-14T00:00:00.000Z'
+            }
+          }
+        ],
+        typeOfLivestock: 'sheep',
+        typeOfReview: 'R'
+      })
     })
 
     test('display errors when payload invalid', async () => {
@@ -309,7 +539,7 @@ describe('select-the-herd tests', () => {
       expect($('a[href="#herdId"]').text()).toContain('Select the flock you are claiming for')
     })
 
-    test('display erorrs when endemics and previous herd does not exist', async () => {
+    test('display errors when endemics and selects different herd', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'E',
@@ -320,7 +550,8 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
         ],
-        herds: []
+        herds: [],
+        tempHerdId: fakeHerdId
       })
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdId: fakeHerdId }, headers: { cookie: `crumb=${crumb}` } })
