@@ -222,6 +222,7 @@ const postHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
+      const endemicsClaim = getEndemicsClaim(request)
       const {
         typeOfReview: typeOfClaim,
         previousClaims,
@@ -232,7 +233,7 @@ const postHandler = {
         latestEndemicsApplication: newWorldApplication,
         herdId,
         herdVersion
-      } = getEndemicsClaim(request)
+      } = endemicsClaim
 
       const { isDairy } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
@@ -313,7 +314,7 @@ const postHandler = {
       }
 
       // all of below only applies when user rejects T&Cs
-      removeMultipleHerdsSessionData(request)
+      removeMultipleHerdsSessionData(request, endemicsClaim)
 
       const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
       const errorMessage = canMakeClaim({ prevClaims: prevLivestockClaims, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })

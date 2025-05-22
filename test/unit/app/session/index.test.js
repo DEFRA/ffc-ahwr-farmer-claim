@@ -133,7 +133,7 @@ describe('session', () => {
     expect(requestSetMock.yar.clear).toHaveBeenCalledWith('tempClaimReference')
   })
 
-  test('session clearEndemicsClaim clears correct keys and keeps correct keys', async () => {
+  test('session clearEndemicsClaim clears correct keys and keeps correct keys when no MH data', async () => {
     const yarMock = {
       get: jest.fn(),
       set: jest.fn(),
@@ -141,9 +141,58 @@ describe('session', () => {
     }
     yarMock.get.mockReturnValue({ organisation: 'org', reference: 'ref' })
     const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
+
     session.clearEndemicsClaim(requestSetMock)
 
-    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(1)
-    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(3)
+    const EXPECTED_NUM_CALLS_TO_SET = 3 // each time 'set' is called, it calls 'get' twice.
+    const EXPECTED_NUM_CALLS_TO_GET = (EXPECTED_NUM_CALLS_TO_SET * 2) + 1 // clearEndemicsClaim only calls getEndemicsClaim once
+
+    expect(requestSetMock.yar.get).toHaveBeenCalledTimes(EXPECTED_NUM_CALLS_TO_GET)
+    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(EXPECTED_NUM_CALLS_TO_SET)
+
+    // check all data set/cleared when making last call to set
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].organisation).toBe('org')
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].latestVetVisitApplication).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].latestEndemicsApplication).toBeUndefined()
+  })
+
+  test('session clearEndemicsClaim clears correct keys and keeps correct keys when there is MH data', async () => {
+    const yarMock = {
+      get: jest.fn(),
+      set: jest.fn(),
+      clear: jest.fn()
+    }
+    yarMock.get.mockReturnValue({
+      organisation: 'org',
+      reference: 'ref',
+      tempHerdId: 'dummy-to-verify-cleared',
+      herdId: 'dummy-to-verify-cleared',
+      herdName: 'dummy-to-verify-cleared',
+      herdCph: 'dummy-to-verify-cleared',
+      herdOthersOnSbi: 'dummy-to-verify-cleared',
+      herdReasons: 'dummy-to-verify-cleared',
+      herdSame: 'dummy-to-verify-cleared'
+    })
+    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
+
+    session.clearEndemicsClaim(requestSetMock)
+
+    const EXPECTED_NUM_CALLS_TO_SET = 10 // each time 'set' is called, it calls 'get' twice.
+    const EXPECTED_NUM_CALLS_TO_GET = (EXPECTED_NUM_CALLS_TO_SET * 2) + 1 // clearEndemicsClaim only calls 'getEndemicsClaim' once
+
+    expect(requestSetMock.yar.get).toHaveBeenCalledTimes(EXPECTED_NUM_CALLS_TO_GET)
+    expect(requestSetMock.yar.set).toHaveBeenCalledTimes(EXPECTED_NUM_CALLS_TO_SET)
+
+    // check all data set/cleared when making last call to set
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].organisation).toBe('org')
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].latestVetVisitApplication).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].latestEndemicsApplication).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].tempHerdId).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].herdId).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].herdName).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].herdCph).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].herdOthersOnSbi).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].herdReasons).toBeUndefined()
+    expect(requestSetMock.yar.set.mock.calls[EXPECTED_NUM_CALLS_TO_SET - 1][1].herdSame).toBeUndefined()
   })
 })

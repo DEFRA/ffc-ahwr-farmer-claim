@@ -140,6 +140,27 @@ describe('select-the-herd tests', () => {
       expect(radios.eq(3).find('input').is(':checked')).toBeTruthy()
     })
 
+    test('returns 200 and displays type value from previousClaims when only one herd and no pre-MH claims', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'E',
+        typeOfLivestock: 'sheep',
+        previousClaims: [{ createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '100bb722-3de1-443e-8304-0bba8f922050' } }],
+        herds: [{ herdId: '100bb722-3de1-443e-8304-0bba8f922050', herdName: 'Barn animals' }]
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/date-of-visit')
+      expectPhaseBanner.ok($)
+
+      const valueInTypeColumn = $('.govuk-summary-list__row').filter((_, el) => $(el).find('.govuk-summary-list__key').text().trim() === 'Type').first().find('.govuk-summary-list__value').text().trim()
+      expect(valueInTypeColumn).toBe('Review')
+    })
+
     test('displays unnamed herd with most recent claim date without herd when multiple previous claims with and without herd exists', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',

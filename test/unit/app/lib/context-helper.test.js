@@ -3,7 +3,8 @@ import {
   getTypeOfLivestockFromLatestClaim,
   refreshApplications,
   refreshClaims,
-  isVisitDateAfterPIHuntAndDairyGoLive
+  isVisitDateAfterPIHuntAndDairyGoLive,
+  skipSameHerdPage
 } from '../../../../app/lib/context-helper.js'
 import { getClaimsByApplicationReference } from '../../../../app/api-requests/claim-service-api.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
@@ -211,5 +212,40 @@ describe('context-helper', () => {
   test('isVisitDateAfterPIHuntAndDairyGoLive returns true when visit date post go live and value provided is a date', () => {
     const dayOfGoLive = PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
     expect(isVisitDateAfterPIHuntAndDairyGoLive(dayOfGoLive)).toBe(true)
+  })
+
+  test('skipSameHerdPage, skip when no claims for any species', () => {
+    const previousClaims = []
+
+    expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(true)
+  })
+
+  test('skipSameHerdPage, skip when no claims for species but do have claims for other species', () => {
+    const previousClaims = [
+      { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfLivestock: 'pigs' } },
+      { createdAt: '2025-05-01T00:00:00.000Z', data: { typeOfLivestock: 'beef', herdId: '1' } },
+      { createdAt: '2025-05-02T00:00:00.000Z', data: { typeOfLivestock: 'pigs', herdId: '2' } },
+      { createdAt: '2025-05-03T00:00:00.000Z', data: { typeOfLivestock: 'dairy', herdId: '3' } }
+    ]
+
+    expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(true)
+  })
+
+  test('skipSameHerdPage, skip when claims for species but one had herd', () => {
+    const previousClaims = [
+      { createdAt: '2025-05-01T00:00:00.000Z', data: { typeOfLivestock: 'sheep' } },
+      { createdAt: '2025-05-02T00:00:00.000Z', data: { typeOfLivestock: 'sheep', herdId: '1' } }
+    ]
+
+    expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(true)
+  })
+
+  test('skipSameHerdPage, don\'t skip when claims for species and none had herd', () => {
+    const previousClaims = [
+      { createdAt: '2025-05-01T00:00:00.000Z', data: { typeOfLivestock: 'sheep' } },
+      { createdAt: '2025-05-02T00:00:00.000Z', data: { typeOfLivestock: 'sheep' } }
+    ]
+
+    expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(false)
   })
 })

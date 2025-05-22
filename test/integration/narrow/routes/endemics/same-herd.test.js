@@ -38,10 +38,10 @@ describe('select-the-herd tests', () => {
   })
 
   describe('GET', () => {
-    test('returns 200 with flock labels when species sheep', async () => {
+    test('returns 200 with flock labels when species sheep and display type value from previousClaims', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
+        typeOfReview: 'E',
         typeOfLivestock: 'sheep',
         previousClaims: [
           { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
@@ -59,6 +59,11 @@ describe('select-the-herd tests', () => {
       expect($('title').text().trim()).toContain('Is this the same flock you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/check-herd-details')
       expectPhaseBanner.ok($)
+
+      const valueInTypeColumn = $('.govuk-summary-list__row')
+        .filter((_, el) => $(el).find('.govuk-summary-list__key').text().trim() === 'Type')
+        .first().find('.govuk-summary-list__value').text().trim()
+      expect(valueInTypeColumn).toBe('Review')
     })
 
     test('returns 200 with herd labels when species beef, also selects correct herd', async () => {

@@ -34,16 +34,17 @@ const {
   }
 } = sessionKeys
 
-const getClaimInfo = (previousClaims, typeOfLivestock, typeOfReview) => {
-  const claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
+const getClaimInfo = (previousClaims, typeOfLivestock) => {
+  let claimTypeText
   let dateOfVisitText
   let claimDateText
 
   const previousClaimsForSpecies = previousClaims?.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
   if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
-    const { createdAt, data: { dateOfVisit } } =
+    const { createdAt, data: { typeOfReview, dateOfVisit } } =
       previousClaimsForSpecies.reduce((latest, claim) => { return claim.createdAt > latest.createdAt ? claim : latest })
 
+    claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
     dateOfVisitText = new Date(dateOfVisit).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     claimDateText = new Date(createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   }
@@ -61,9 +62,9 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { typeOfLivestock, previousClaims, typeOfReview, herdSame } = getEndemicsClaim(request)
+      const { typeOfLivestock, previousClaims, herdSame } = getEndemicsClaim(request)
       const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-      const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
+      const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
       return h.view(endemicsSameHerd, {
         backLink: previousPageUrl,
@@ -85,9 +86,9 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, previousClaims, typeOfReview, herdSame } = getEndemicsClaim(request)
+        const { typeOfLivestock, previousClaims, herdSame } = getEndemicsClaim(request)
         const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
-        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock, typeOfReview)
+        const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
         return h.view(endemicsSameHerd, {
           ...request.payload,
