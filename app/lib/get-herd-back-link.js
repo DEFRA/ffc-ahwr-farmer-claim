@@ -1,6 +1,6 @@
-import { skipSameHerdPage } from './context-helper'
 import { config } from '../config/index.js'
 import links from '../config/routes.js'
+import { skipSameHerdPage } from './context-helper.js'
 
 const { urlPrefix } = config
 const { endemicsCheckHerdDetails, endemicsSameHerd } = links
