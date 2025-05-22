@@ -214,6 +214,12 @@ describe('context-helper', () => {
     expect(isVisitDateAfterPIHuntAndDairyGoLive(dayOfGoLive)).toBe(true)
   })
 
+  test('skipSameHerdPage, skip when no claims for any species', () => {
+    const previousClaims = []
+
+    expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(true)
+  })
+
   test('skipSameHerdPage, skip when no claims for species but do have claims for other species', () => {
     const previousClaims = [
       { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfLivestock: 'pigs' } },
