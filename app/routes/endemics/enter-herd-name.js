@@ -49,6 +49,8 @@ const ERROR_MESSAGES = {
   NAME_UNIQUE: 'You have already used this name, the name must be unique'
 }
 
+const isHerdNameEmpty = (errorType) => errorType === 'any.required' || errorType === 'string.base' || errorType === 'string.empty'
+
 const postHandler = {
   method: 'POST',
   path: pageUrl,
@@ -71,18 +73,16 @@ const postHandler = {
         request.logger.setBindings({ err })
         const { herds, typeOfLivestock } = getEndemicsClaim(request)
         const herdOrFlock = getHerdOrFlock(typeOfLivestock)
-
-        let message = err.details[0].message
         const errorType = err.details[0].type
 
-        if (errorType === 'any.required' || errorType === 'string.base' || errorType === 'string.empty') {
-          message = `Enter the ${herdOrFlock} name`
-        }
+        const errorText = isHerdNameEmpty(errorType)
+          ? `Enter the ${herdOrFlock} name`
+          : err.details[0].message
 
         return h.view(endemicsEnterHerdName, {
           ...request.payload,
           errorMessage: {
-            text: message,
+            text: errorText,
             href: '#herdName'
           },
           backLink: getBackLink(herds),
