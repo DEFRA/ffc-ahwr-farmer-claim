@@ -41,10 +41,10 @@ const getClaimInfo = (previousClaims, typeOfLivestock) => {
 
   const previousClaimsForSpecies = previousClaims?.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
   if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
-    const { createdAt, data: { typeOfReview, dateOfVisit } } =
+    const { createdAt, data: { dateOfVisit, claimType } } =
       previousClaimsForSpecies.reduce((latest, claim) => { return claim.createdAt > latest.createdAt ? claim : latest })
 
-    claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
+    claimTypeText = claimType === 'R' ? 'Review' : 'Endemics'
     dateOfVisitText = new Date(dateOfVisit).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     claimDateText = new Date(createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   }

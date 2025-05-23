@@ -53,10 +53,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: []
       })
@@ -145,7 +145,7 @@ describe('select-the-herd tests', () => {
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'E',
         typeOfLivestock: 'sheep',
-        previousClaims: [{ createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '100bb722-3de1-443e-8304-0bba8f922050' } }],
+        previousClaims: [{ createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '100bb722-3de1-443e-8304-0bba8f922050' } }],
         herds: [{ herdId: '100bb722-3de1-443e-8304-0bba8f922050', herdName: 'Barn animals' }]
       })
 
@@ -167,9 +167,9 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-05T00:00:00.000Z', claimType: 'R', herdId: '1' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z', claimType: 'R' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z', claimType: 'R' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-05T00:00:00.000Z', herdId: '1' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z' } }
         ],
         herdId: fakeHerdId,
         tempHerdId: fakeHerdId,
@@ -224,9 +224,9 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-05T00:00:00.000Z', claimType: 'R', herdId: '1' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z', claimType: 'R' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z', claimType: 'R' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-05T00:00:00.000Z', herdId: '1' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z' } }
         ],
         herdId: fakeHerdId,
         tempHerdId: fakeHerdId,
@@ -287,10 +287,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [],
         dateOfVisit: '2025-04-14T00:00:00.000Z',
@@ -322,10 +322,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', herdId: '1' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '2' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', herdId: '1' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '2' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [{
           herdId: '1',
@@ -367,10 +367,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-03-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '1' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-03-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: '1' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [{
           herdId: '1',
@@ -408,7 +408,7 @@ describe('select-the-herd tests', () => {
             createdAt: '2025-03-01T00:00:00.000Z',
             data: {
               typeOfLivestock: 'sheep',
-              typeOfReview: 'R'
+              claimType: 'R'
             }
           }
         ],
@@ -423,10 +423,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [{
           herdId: fakeHerdId,
@@ -456,10 +456,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', herdId: fakeHerdId } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: fakeHerdId } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', herdId: fakeHerdId } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z', herdId: fakeHerdId } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [{
           herdId: fakeHerdId,
@@ -497,7 +497,7 @@ describe('select-the-herd tests', () => {
           {
             createdAt: '2025-04-01T00:00:00.000Z',
             data: {
-              typeOfReview: 'R',
+              claimType: 'R',
               typeOfLivestock: 'sheep',
               herdId: '909bb722-3de1-443e-8304-0bba8f922050'
             }
@@ -507,7 +507,7 @@ describe('select-the-herd tests', () => {
             data: {
               herdId: fakeHerdId,
               typeOfLivestock: 'sheep',
-              typeOfReview: 'R',
+              claimType: 'R',
               dateOfVisit: '2025-04-14T00:00:00.000Z'
             }
           }
@@ -523,10 +523,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: []
       })
@@ -545,10 +545,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'E',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [],
         tempHerdId: fakeHerdId
@@ -570,10 +570,10 @@ describe('select-the-herd tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         previousClaims: [
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } },
-          { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep' } },
-          { createdAt: '2025-04-28T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
-          { createdAt: '2025-04-30T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
         herds: [],
         dateOfVisit: '2025-05-01'

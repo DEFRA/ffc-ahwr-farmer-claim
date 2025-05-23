@@ -54,10 +54,10 @@ const getClaimInfo = (previousClaims, typeOfLivestock) => {
 
   const previousClaimsForSpecies = previousClaims?.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
   if (previousClaimsForSpecies && previousClaimsForSpecies.length > 0) {
-    const { createdAt, data: { typeOfReview, dateOfVisit } } =
+    const { createdAt, data: { dateOfVisit, claimType } } =
       previousClaimsForSpecies.reduce((latest, claim) => { return claim.createdAt > latest.createdAt ? claim : latest })
 
-    claimTypeText = typeOfReview === 'R' ? 'Review' : 'Endemics'
+    claimTypeText = claimType === 'R' ? 'Review' : 'Endemics'
     dateOfVisitText = new Date(dateOfVisit).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
     claimDateText = new Date(createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   }
@@ -139,10 +139,14 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, tempHerdId: tempHerdIdFromSession, previousClaims, herds } = getEndemicsClaim(request)
+        const { typeOfLivestock, herdId, tempHerdId: tempHerdIdFromSession, unnamedHerdId: unnamedHerdIdFromSession, previousClaims, herds } = getEndemicsClaim(request)
         const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
+        const unnamedHerdId = getUnnamedHerdId(request, unnamedHerdIdFromSession)
+
         const herdOrFlock = getHerdOrFlock(typeOfLivestock)
         const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
+
+        const claimWithoutHerd = getMostRecentClaimWithoutHerd(previousClaims, typeOfLivestock)
 
         return h.view(endemicsSelectTheHerd, {
           ...request.payload,
@@ -154,8 +158,9 @@ const postHandler = {
           pageTitleText: herds.length > 1 ? `Select the ${herdOrFlock} you are claiming for` : `Is this the same ${herdOrFlock} you have previously claimed for?`,
           tempHerdId,
           ...claimInfo,
-          herds,
-          herdOrFlock
+          herds: claimWithoutHerd ? herds.concat(createUnnamedHerd(claimWithoutHerd, unnamedHerdId, typeOfLivestock)) : herds,
+          herdOrFlock,
+          herdId
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
