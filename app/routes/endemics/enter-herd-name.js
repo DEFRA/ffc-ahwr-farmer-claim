@@ -43,7 +43,7 @@ const getHandler = {
 const minHerdNameLength = 2
 const maxHerdNameLength = 30
 
-export const ERROR_MESSAGES = {
+const ERROR_MESSAGES = {
   NAME_LENGTH: `Name must be between ${minHerdNameLength} and ${maxHerdNameLength} characters`,
   NAME_PATTERN: 'Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.',
   NAME_UNIQUE: 'You have already used this name, the name must be unique'
