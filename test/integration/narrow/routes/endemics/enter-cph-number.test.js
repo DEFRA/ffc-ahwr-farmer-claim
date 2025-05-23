@@ -174,7 +174,7 @@ describe('enter-cph-number tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
-    test('display errors when payload invalid', async () => {
+    test('display errors when cph number is missing', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -187,6 +187,24 @@ describe('enter-cph-number tests', () => {
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
       expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
+      expect($('p[id="herdCph-error"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
+      expectHerdText($)
+    })
+
+    test('display errors when cph number does not contain digits', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef'
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdCph: 'aa/222/3333' }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
+      expect($('p[id="herdCph-error"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
       expectHerdText($)
     })
 
@@ -202,6 +220,8 @@ describe('enter-cph-number tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this flock, format should be nn/nnn/nnnn')
+      expect($('p[id="herdCph-error"]').text()).toContain('Enter the CPH for this flock, format should be nn/nnn/nnnn')
       expectFlockText($)
     })
 
@@ -219,6 +239,7 @@ describe('enter-cph-number tests', () => {
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
       expect($('a[href="#herdCph"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
+      expect($('p[id="herdCph-error"]').text()).toContain('Enter the CPH for this herd, format should be nn/nnn/nnnn')
       expectHerdText($)
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
     })
