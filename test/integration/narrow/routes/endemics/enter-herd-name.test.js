@@ -155,7 +155,33 @@ describe('enter-herd-name tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
-    test('display errors when payload invalid', async () => {
+    test('navigates to the correct page when payload valid and multiple previous claims with herds', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          {
+            herd: {
+              herdName: 'First herd'
+            }
+          },
+          {
+            herd: {
+              herdName: 'Second herd'
+            }
+          }
+        ]
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdName: '    Commercial Herd    ' }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/enter-cph-number')
+      expect(setEndemicsClaim).toHaveBeenCalled()
+    })
+
+    test('displays errors when herd name is missing', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -168,12 +194,91 @@ describe('enter-herd-name tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdName"]').text()).toContain('Enter the herd name')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
+      expectHerdText($)
+    })
+
+    test('displays errors when herd name is less than 2 characters', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herds: [{ id: 1 }]
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdName: 'a' }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
       expect($('a[href="#herdName"]').text()).toContain('Name must be between 2 and 30 characters')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
       expectHerdText($)
     })
 
-    test('returns 400 with back link to date of visit when no previous herds and sheep', async () => {
+    test('displays errors when herd name is greater than 30 characters', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herds: [{ id: 1 }]
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdName: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdName"]').text()).toContain('Name must be between 2 and 30 characters')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
+      expectHerdText($)
+    })
+
+    test('displays errors when herd name contains an invalid character', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herds: [{ id: 1 }]
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdName: 'abc$' }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdName"]').text()).toContain('Name must only include letters a to z, numbers and special characters such as hyphens, spaces and apostrophes.')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
+      expectHerdText($)
+    })
+
+    test('displays errors when herd name has already been used in a previous claim', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herds: [{ id: 1 }],
+        previousClaims: [
+          {
+            herd: {
+              herdName: 'Commercial Herd'
+            }
+          }
+        ]
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdName: '    Commercial Herd    ' }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdName"]').text()).toContain('You have already used this name, the name must be unique')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/select-the-herd')
+      expectHerdText($)
+    })
+
+    test('displays errors with back link to date of visit when no previous herds and sheep', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -185,7 +290,7 @@ describe('enter-herd-name tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdName"]').text()).toContain('Name must be between 2 and 30 characters')
+      expect($('a[href="#herdName"]').text()).toContain('Enter the flock name')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/date-of-visit')
       expectFlockText($)
     })
