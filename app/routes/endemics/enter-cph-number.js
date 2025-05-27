@@ -74,7 +74,7 @@ const postHandler = {
       const { herds, herdOthersOnSbi, herdId, herdVersion } = getEndemicsClaim(request)
 
       setEndemicsClaim(request, herdCphKey, herdCph, { shouldEmitEvent: false })
-      sendHerdEvent({ request, type: 'herd-cph', message: 'Herd CPH collected from user', data: { herdId, herdVersion, herdCph } })
+      await sendHerdEvent({ request, type: 'herd-cph', message: 'Herd CPH collected from user', data: { herdId, herdVersion, herdCph } })
 
       let nextPageUrl
       if (herds?.length) {

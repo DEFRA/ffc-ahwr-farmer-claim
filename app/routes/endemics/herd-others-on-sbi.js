@@ -85,7 +85,7 @@ const postHandler = {
       } else {
         const { herdId, herdVersion } = getEndemicsClaim(request)
 
-        sendHerdEvent({
+        await sendHerdEvent({
           request,
           type: 'herd-reasons',
           message: 'Only herd for user',
