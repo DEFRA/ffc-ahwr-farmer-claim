@@ -151,7 +151,7 @@ describe('herd-others-on-sbi tests', () => {
       crumb = await getCrumbs(server)
     })
 
-    test('navigates to the correct page when payload valid', async () => {
+    test('navigates to enter herd details when no existing herd and they select no', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -162,11 +162,12 @@ describe('herd-others-on-sbi tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-details')
-      expect(setEndemicsClaim).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
       expect(sendHerdEvent).toHaveBeenCalled()
     })
 
-    test('navigates to the correct page when payload valid', async () => {
+    test('navigates to check herd details when no existing herd and they select yes', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -177,11 +178,13 @@ describe('herd-others-on-sbi tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
-      expect(setEndemicsClaim).toHaveBeenCalled()
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(2)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'yes', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['onlyHerd'], { shouldEmitEvent: false })
       expect(sendHerdEvent).not.toHaveBeenCalled()
     })
 
-    test('display errors with flock labels when payload invalid and typeOfLivestock is sheep', async () => {
+    test('display errors with flock labels when no answer selected and typeOfLivestock is sheep', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -198,7 +201,7 @@ describe('herd-others-on-sbi tests', () => {
       expect($('.govuk-hint').text()).toContain('Tell us about this flock')
     })
 
-    test('display errors with herd labels when payload invalid', async () => {
+    test('display errors with herd labels when no answer selected and typeOfLivestock is not sheep', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',

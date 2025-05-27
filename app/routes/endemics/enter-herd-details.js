@@ -75,7 +75,7 @@ const postHandler = {
       const { herdId, herdVersion } = getEndemicsClaim(request)
       setEndemicsClaim(request, herdReasonsKey, [].concat(herdReasons), { shouldEmitEvent: false })
 
-      sendHerdEvent({
+      await sendHerdEvent({
         request,
         type: 'herd-reasons',
         message: 'Herd reasons collected from user',

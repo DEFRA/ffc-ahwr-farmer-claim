@@ -107,7 +107,7 @@ const postHandler = {
       }
 
       setEndemicsClaim(request, herdNameKey, herdName.trim(), { shouldEmitEvent: false })
-      sendHerdEvent({
+      await sendHerdEvent({
         request,
         type: 'herd-name',
         message: 'Herd name collected from user',
