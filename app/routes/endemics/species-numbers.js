@@ -26,12 +26,12 @@ const {
 const { speciesNumbers, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 
 const backLink = (request) => {
-  const { reviewTestResults, typeOfLivestock, typeOfReview, dateOfVisit, previousClaims } = getEndemicsClaim(request)
+  const { reviewTestResults, typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isNegative } = getTestResult(reviewTestResults)
 
-  if (isMultipleHerdsUserJourney(dateOfVisit)) {
+  if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
     return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
@@ -52,19 +52,19 @@ const sheepNumbersExceptionsText = {
   E: 'follow-up'
 }
 const getHerdText = (typeOfLivestock) => typeOfLivestock !== 'sheep' ? 'in this herd' : 'in this flock'
-const errorMessageText = (typeOfReview, speciesEligibleNumberForDisplay, typeOfLivestock, dateOfVisit) => {
+const errorMessageText = (typeOfReview, speciesEligibleNumberForDisplay, typeOfLivestock, dateOfVisit, latestEndemicsApplication) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
   const herdText = getHerdText(typeOfLivestock)
 
-  return isMultipleHerdsUserJourney(dateOfVisit)
+  return isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)
     ? `Select yes if you had ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}.`
     : `Select if you had ${speciesEligibleNumberForDisplay} on the date of the ${claimTypeText}.`
 }
-const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivestock, dateOfVisit) => {
+const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivestock, dateOfVisit, latestEndemicsApplication) => {
   const { isReview } = getReviewType(typeOfReview)
   const claimTypeText = isReview ? 'review' : 'follow-up'
-  const herdText = isMultipleHerdsUserJourney(dateOfVisit) ? getHerdText(typeOfLivestock) : ''
+  const herdText = isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags) ? getHerdText(typeOfLivestock) : ''
 
   return `Did you have ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}?`
 }
@@ -83,7 +83,7 @@ const getHandler = {
       return h.view(endemicsSpeciesNumbers, {
         backLink: backLink(request),
         ...getYesNoRadios(
-          legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit),
+          legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
           speciesNumbers,
           getEndemicsClaim(request, speciesNumbers),
           undefined,
@@ -111,12 +111,12 @@ const postHandler = {
         const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
-          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit) },
+          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication) },
           ...getYesNoRadios(
-            legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit),
+            legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
             speciesNumbers,
             getEndemicsClaim(request, speciesNumbers),
-            errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit),
+            errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
             radioOptions
           )
         })

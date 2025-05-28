@@ -32,6 +32,7 @@ import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { config } from '../../../../../app/config/index.js'
 import { isMultipleHerdsUserJourney } from '../../../../../app/lib/context-helper.js'
+import { submitNewClaim } from '../../../../../app/api-requests/claim-service-api.js'
 
 const { livestockTypes } = claimConstants
 
@@ -39,6 +40,7 @@ jest.mock('../../../../../app/session')
 jest.mock('@hapi/wreck')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
 jest.mock('../../../../../app/lib/context-helper.js')
+jest.mock('../../../../../app/api-requests/claim-service-api.js')
 
 describe('Check answers test', () => {
   const auth = { credentials: {}, strategy: 'cookie' }
@@ -499,7 +501,8 @@ describe('Check answers test', () => {
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
           testResults: 'testResults',
-          reference: 'TEMP-6GSE-PIR8'
+          reference: 'TEMP-6GSE-PIR8',
+          latestEndemicsApplication: { flags: [] }
         }
       })
       const options = {
@@ -535,7 +538,8 @@ describe('Check answers test', () => {
           numberOfOralFluidSamples: 'numberOfOralFluidSamples',
           numberAnimalsTested: 'numberAnimalsTested',
           testResults: undefined,
-          reference: 'TEMP-6GSE-PIR8'
+          reference: 'TEMP-6GSE-PIR8',
+          latestEndemicsApplication: { flags: [] }
         }
       })
       const options = {
@@ -578,7 +582,8 @@ describe('Check answers test', () => {
           vetRCVSNumber: 'vetRCVSNumber',
           laboratoryURN: 'laboratoryURN',
           vetVisitsReviewTestResults: 'vetVisitsReviewTestResults',
-          reference: 'TEMP-6GSE-PIR8'
+          reference: 'TEMP-6GSE-PIR8',
+          latestEndemicsApplication: { flags: [] }
         }
       })
       const options = {
@@ -604,6 +609,7 @@ describe('Check answers test', () => {
 
     beforeEach(async () => {
       crumb = await getCrumbs(server)
+      jest.resetAllMocks()
     })
 
     function expectAppInsightsEventRaised (tempClaimReference, claimReference, status) {
@@ -628,6 +634,7 @@ describe('Check answers test', () => {
           payload: { crumb },
           headers: { cookie: `crumb=${crumb}` }
         }
+
         getEndemicsClaim.mockImplementation(() => {
           return {
             typeOfLivestock: 'pigs',
@@ -645,6 +652,7 @@ describe('Check answers test', () => {
             reference: 'tempClaimReference'
           }
         })
+        submitNewClaim.mockImplementation(() => ({ reference: 'TEMP-6GSE-PIR8' }))
 
         const mockResponse = {
           res: {
@@ -653,24 +661,50 @@ describe('Check answers test', () => {
           },
           payload: { reference: 'TEMP-6GSE-PIR8' }
         }
-
         Wreck.post.mockResolvedValue(mockResponse)
 
-        jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
-          return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
-          }
-        })
         const res = await server.inject(options)
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
+        // verify data passed to submitNewClaim when not sheep follow-up or multiple herd claim
+        expect(submitNewClaim).toBeCalledWith(
+          {
+            applicationReference: 'TEMP-6GSE-PIR8',
+            createdBy: 'admin',
+            data: {
+              biosecurity: undefined,
+              dateOfTesting: '2023-12-19T10:25:11.318Z',
+              dateOfVisit: '2023-12-19T10:25:11.318Z',
+              diseaseStatus: undefined,
+              herdVaccinationStatus: undefined,
+              laboratoryURN: '123456',
+              numberAnimalsTested: undefined,
+              numberOfOralFluidSamples: undefined,
+              numberOfSamplesTested: undefined,
+              piHunt: undefined,
+              piHuntAllAnimals: undefined,
+              piHuntRecommended: undefined,
+              reviewTestResults: undefined,
+              sheepEndemicsPackage: undefined,
+              speciesNumbers: 'Yes',
+              testResults: undefined,
+              typeOfLivestock: 'pigs',
+              vetRCVSNumber: '123456',
+              vetVisitsReviewTestResults: undefined,
+              vetsName: 'VetName'
+            },
+            reference: 'tempClaimReference',
+            type: 'R'
+          },
+          expect.any(Object))
+
         expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
       })
 
     test.each([{ latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths }, { latestVetVisitApplication: latestVetVisitApplicationNotWithInLastTenMonths }])(
-      'When post new claim (sheep endemics), it should redirect to confirmation page',
+      'When post new claim (sheep endemics), it should pass correct data to submitNewClaim and redirect to confirmation page',
       async ({ latestVetVisitApplication }) => {
         const options = {
           method: 'POST',
@@ -698,6 +732,7 @@ describe('Check answers test', () => {
             reference: 'tempClaimReference'
           }
         })
+        submitNewClaim.mockImplementation(() => ({ reference: 'TEMP-6GSE-PIR8' }))
 
         const mockResponse = {
           res: {
@@ -706,22 +741,162 @@ describe('Check answers test', () => {
           },
           payload: { reference: 'TEMP-6GSE-PIR8' }
         }
-
         Wreck.post.mockResolvedValue(mockResponse)
 
-        jest.mock('../../../../../app/api-requests/claim-service-api.js', () => {
-          return {
-            submitNewClaim: jest.fn().mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
-          }
-        })
         const res = await server.inject(options)
 
         expect(res.statusCode).toBe(302)
         expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
 
+        // verify data passed to submitNewClaim when is sheep follow-up but not multiple herd claim
+        expect(submitNewClaim).toBeCalledWith(
+          {
+            applicationReference: 'TEMP-6GSE-PIR8',
+            createdBy: 'admin',
+            data: {
+              biosecurity: undefined,
+              dateOfTesting: '2023-12-19T10:25:11.318Z',
+              dateOfVisit: '2023-12-19T10:25:11.318Z',
+              diseaseStatus: undefined,
+              herdVaccinationStatus: undefined,
+              laboratoryURN: '123456',
+              numberAnimalsTested: undefined,
+              numberOfOralFluidSamples: undefined,
+              numberOfSamplesTested: undefined,
+              piHunt: undefined,
+              piHuntAllAnimals: undefined,
+              piHuntRecommended: undefined,
+              reviewTestResults: undefined,
+              sheepEndemicsPackage: undefined,
+              speciesNumbers: 'Yes',
+              testResults: [
+                { diseaseType: 'flystrike', result: 'clinicalSymptomsPresent' },
+                { diseaseType: 'sheepScab', result: 'negative' },
+                {
+                  diseaseType: 'other',
+                  result: [
+                    { diseaseType: 'disease one', result: 'test result one' },
+                    { diseaseType: 'disease two', result: 'test result two' }
+                  ]
+                }
+              ],
+              typeOfLivestock: 'sheep',
+              vetRCVSNumber: '123456',
+              vetVisitsReviewTestResults: undefined,
+              vetsName: 'VetName'
+            },
+            reference: 'tempClaimReference',
+            type: 'E'
+          },
+          expect.any(Object))
+
         expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
       }
     )
+
+    test('verify data passed to submitNewClaim when is sheep follow-up and multiple herd claim', async () => {
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      getEndemicsClaim.mockImplementation(() => {
+        return {
+          typeOfLivestock: 'sheep',
+          typeOfReview: 'E',
+          dateOfVisit: '2025-05-02T12:00:00.000Z',
+          dateOfTesting: '2025-05-02T12:00:00.000Z',
+          speciesNumbers: 'Yes',
+          vetsName: 'VetName',
+          vetRCVSNumber: '123456',
+          laboratoryURN: '123456',
+          latestVetVisitApplication: latestVetVisitApplicationWithInLastTenMonths,
+          sheepTestResults,
+          latestEndemicsApplication: {
+            reference: 'TEMP-6GSE-PIR8',
+            flags: []
+          },
+          reference: 'tempClaimReference',
+          herdCph: '22/333/4444',
+          herdId: '24b2f256-4bcf-4ef7-b527-fc8a17437691',
+          herdName: 'Sheep Flock 1',
+          herdReasons: ['onlyHerd'],
+          herdSame: 'yes',
+          herdVersion: 1
+        }
+      })
+      isMultipleHerdsUserJourney.mockReturnValue(true)
+      submitNewClaim.mockImplementation(() => ({ reference: 'TEMP-6GSE-PIR8' }))
+
+      const mockResponse = {
+        res: {
+          statusCode: 200,
+          statusMessage: 'OK'
+        },
+        payload: { reference: 'TEMP-6GSE-PIR8' }
+      }
+      Wreck.post.mockResolvedValue(mockResponse)
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/confirmation'))
+
+      // verify data passed to submitNewClaim when is sheep follow-up and multiple herd claim
+      expect(submitNewClaim).toBeCalledWith(
+        {
+          applicationReference: 'TEMP-6GSE-PIR8',
+          createdBy: 'admin',
+          data: {
+            biosecurity: undefined,
+            dateOfVisit: '2025-05-02T12:00:00.000Z',
+            dateOfTesting: '2025-05-02T12:00:00.000Z',
+            diseaseStatus: undefined,
+            herdVaccinationStatus: undefined,
+            laboratoryURN: '123456',
+            numberAnimalsTested: undefined,
+            numberOfOralFluidSamples: undefined,
+            numberOfSamplesTested: undefined,
+            piHunt: undefined,
+            piHuntAllAnimals: undefined,
+            piHuntRecommended: undefined,
+            reviewTestResults: undefined,
+            sheepEndemicsPackage: undefined,
+            speciesNumbers: 'Yes',
+            testResults: [
+              { diseaseType: 'flystrike', result: 'clinicalSymptomsPresent' },
+              { diseaseType: 'sheepScab', result: 'negative' },
+              {
+                diseaseType: 'other',
+                result: [
+                  { diseaseType: 'disease one', result: 'test result one' },
+                  { diseaseType: 'disease two', result: 'test result two' }
+                ]
+              }
+            ],
+            herd: {
+              cph: '22/333/4444',
+              herdId: '24b2f256-4bcf-4ef7-b527-fc8a17437691',
+              herdName: 'Sheep Flock 1',
+              herdReasons: ['onlyHerd'],
+              herdSame: 'yes',
+              herdVersion: 1
+            },
+            typeOfLivestock: 'sheep',
+            vetRCVSNumber: '123456',
+            vetVisitsReviewTestResults: undefined,
+            vetsName: 'VetName'
+          },
+          reference: 'tempClaimReference',
+          type: 'E'
+        },
+        expect.any(Object))
+
+      expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
+    })
 
     test('when not logged in redirects to defra id', async () => {
       const options = {
