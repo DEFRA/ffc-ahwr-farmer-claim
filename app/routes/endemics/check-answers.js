@@ -29,13 +29,9 @@ const getBackLink = (isReview, isSheep) => {
     : `${urlPrefix}/${routes.endemicsBiosecurity}`
 }
 const getNoChangeRows = (
-  isReview,
-  isPigs,
-  isSheep,
-  typeOfLivestock,
+  { isReview, isPigs, isSheep, typeOfLivestock, dateOfVisit }, // claim info
   organisationName,
   herdName,
-  dateOfVisit,
   agreementFlags
 ) => [
   {
@@ -486,13 +482,9 @@ const getHandler = {
 
       const rows = [
         ...getNoChangeRows(
-          isReview,
-          isPigs,
-          isSheep,
-          typeOfLivestock,
+          { isReview, isPigs, isSheep, typeOfLivestock, dateOfVisit },
           organisation?.name,
           herdName,
-          dateOfVisit,
           latestEndemicsApplication.flags
         ),
         ...speciesRows()
