@@ -20,7 +20,6 @@ const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const sameHerdPageUrl = `${urlPrefix}/${endemicsSameHerd}`
-
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const getHerdReasonsText = (herdReasons) => {
@@ -33,7 +32,7 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdName, herdCph, herdReasons, herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
+      const { herdName, herdCph, herdReasons, herdOthersOnSbi, typeOfLivestock, herds } = getEndemicsClaim(request)
       const herdReasonsText = getHerdReasonsText(herdReasons)
 
       return h.view(endemicsCheckHerdDetails, {
@@ -41,7 +40,7 @@ const getHandler = {
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
-        herdOthersOnSbi,
+        herdOthersOnSbi: !herds?.length ? herdOthersOnSbi : undefined,
         herdCphLink,
         herdReasonsLink: enterHerdDetailsPageUrl,
         herdOthersOnSbiLink: herdOthersOnSbiPageUrl,
