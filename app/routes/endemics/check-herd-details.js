@@ -6,6 +6,7 @@ import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { skipSameHerdPage } from '../../lib/context-helper.js'
 import { getNextPage } from './date-of-visit-mh.js'
+import { ONLY_HERD } from './herd-others-on-sbi.js'
 
 const { urlPrefix } = config
 const {
@@ -32,15 +33,16 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdName, herdCph, herdReasons, herdOthersOnSbi, typeOfLivestock, herds } = getEndemicsClaim(request)
+      const { herdId, herdName, herdCph, herdReasons, herdOthersOnSbi, typeOfLivestock, herds } = getEndemicsClaim(request)
       const herdReasonsText = getHerdReasonsText(herdReasons)
+      const existingHerd = herds?.find((herd) => herd.herdId === herdId)
 
       return h.view(endemicsCheckHerdDetails, {
         backLink: herdOthersOnSbi === OTHERS_ON_SBI.YES ? herdOthersOnSbiPageUrl : enterHerdDetailsPageUrl,
         herdName,
         herdCph,
         herdReasons: herdReasonsText,
-        herdOthersOnSbi: !herds?.length ? herdOthersOnSbi : undefined,
+        herdOthersOnSbi: !herds?.length || existingHerd?.herdReasons?.[0] === ONLY_HERD ? herdOthersOnSbi : undefined,
         herdCphLink,
         herdReasonsLink: enterHerdDetailsPageUrl,
         herdOthersOnSbiLink: herdOthersOnSbiPageUrl,
