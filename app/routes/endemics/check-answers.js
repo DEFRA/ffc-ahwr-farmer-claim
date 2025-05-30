@@ -28,28 +28,20 @@ const getBackLink = (isReview, isSheep) => {
     ? `${urlPrefix}/${routes.endemicsSheepTestResults}`
     : `${urlPrefix}/${routes.endemicsBiosecurity}`
 }
-const getNoChangeRows = (
-  isReview,
-  isPigs,
-  isSheep,
-  typeOfLivestock,
-  organisationName,
-  herdName,
-  dateOfVisit
-) => [
+const getNoChangeRows = ({ isReview, isPigs, isSheep, typeOfLivestock, dateOfVisit, organisationName, herdName, agreementFlags }) => [
   {
     key: { text: 'Business name' },
     value: { html: upperFirstLetter(organisationName) }
   },
   {
-    key: { text: isMultipleHerdsUserJourney(dateOfVisit) ? 'Species' : 'Livestock' },
+    key: { text: isMultipleHerdsUserJourney(dateOfVisit, agreementFlags) ? 'Species' : 'Livestock' },
     value: {
       html: upperFirstLetter(
         isPigs || isSheep ? typeOfLivestock : `${typeOfLivestock} cattle`
       )
     }
   },
-  ...(isMultipleHerdsUserJourney(dateOfVisit) ? [getHerdNameRow(herdName, typeOfLivestock)] : []),
+  ...(isMultipleHerdsUserJourney(dateOfVisit, agreementFlags) ? [getHerdNameRow(herdName, typeOfLivestock)] : []),
   {
     key: { text: 'Review or follow-up' },
     value: {
@@ -163,7 +155,8 @@ const getHandler = {
         laboratoryURN,
         numberAnimalsTested,
         testResults,
-        herdName
+        herdName,
+        latestEndemicsApplication
       } = sessionData
 
       const { isBeef, isDairy, isPigs, isSheep } =
@@ -483,15 +476,7 @@ const getHandler = {
       }
 
       const rows = [
-        ...getNoChangeRows(
-          isReview,
-          isPigs,
-          isSheep,
-          typeOfLivestock,
-          organisation?.name,
-          herdName,
-          dateOfVisit
-        ),
+        ...getNoChangeRows({ isReview, isPigs, isSheep, typeOfLivestock, dateOfVisit, organisationName: organisation?.name, herdName, agreementFlags: latestEndemicsApplication.flags }),
         ...speciesRows()
       ]
 
@@ -577,7 +562,7 @@ const postHandler = {
               result: typeof sheepTest.result === 'object' ? sheepTest.result.map(testResult => ({ diseaseType: testResult.diseaseType, result: testResult.testResult })) : sheepTest.result
             }))
           }),
-          ...(isMultipleHerdsUserJourney(dateOfVisit) && {
+          ...(isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags) && {
             herd: {
               herdId,
               herdVersion,

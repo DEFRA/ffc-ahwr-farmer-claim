@@ -298,7 +298,7 @@ const postHandler = {
           .takeover()
       }
 
-      if (isMultipleHerdsUserJourney(dateOfVisit)) {
+      if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds, { shouldEmitEvent: false })
 

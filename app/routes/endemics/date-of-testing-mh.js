@@ -36,11 +36,11 @@ const {
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {
-  const { typeOfLivestock, typeOfReview, dateOfVisit, previousClaims } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  if (isMultipleHerdsUserJourney(dateOfVisit)) {
+  if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
     return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 

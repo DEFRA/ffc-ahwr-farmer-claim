@@ -4,8 +4,10 @@ import {
   refreshApplications,
   refreshClaims,
   isVisitDateAfterPIHuntAndDairyGoLive,
-  skipSameHerdPage
+  skipSameHerdPage,
+  isMultipleHerdsUserJourney
 } from '../../../../app/lib/context-helper.js'
+import { config } from '../../../../app/config/index.js'
 import { getClaimsByApplicationReference } from '../../../../app/api-requests/claim-service-api.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
 import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
@@ -247,5 +249,31 @@ describe('context-helper', () => {
     ]
 
     expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(false)
+  })
+
+  test('isMultipleHerdsUserJourney, returns false when feature disabled', () => {
+    config.multiHerds.enabled = false
+
+    expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [])).toBe(false)
+  })
+  test('isMultipleHerdsUserJourney, returns false when visit date before golive', () => {
+    config.multiHerds.enabled = true
+
+    expect(isMultipleHerdsUserJourney('2025-04-30T00:00:00.000Z', [])).toBe(false)
+  })
+  test('isMultipleHerdsUserJourney, returns false when reject T&Cs flag', () => {
+    config.multiHerds.enabled = true
+
+    expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [{ appliesToMh: false }, { appliesToMh: true }])).toBe(false)
+  })
+  test('isMultipleHerdsUserJourney, returns true when feature enabled, visit date on/after golive and no flags', () => {
+    config.multiHerds.enabled = true
+
+    expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [])).toBe(true)
+  })
+  test('isMultipleHerdsUserJourney, returns true when feature enabled, visit date on/after golive and no reject T&Cs flag', () => {
+    config.multiHerds.enabled = true
+
+    expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [{ appliesToMh: false }])).toBe(true)
   })
 })

@@ -49,7 +49,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative', backLink: '/claim/endemics/date-of-visit' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive', backLink: '/claim/endemics/date-of-testing' }
     ])('returns 200', async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } } })
       const options = {
         method: 'GET',
         auth,
@@ -73,7 +73,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
     ])('returns 200 when multi herds is enabled', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
       isMultipleHerdsUserJourney.mockReturnValue(true)
-      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8' }))
+      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } }))
       const options = {
         method: 'GET',
         auth,
@@ -94,7 +94,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
     test('returns 200 when multi herds is enabled and species is sheep', async () => {
       isMultipleHerdsUserJourney.mockReturnValue(true)
-      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'sheep', typeOfReview: 'R', reviewTestResults: 'negative', reference: 'TEMP-6GSE-PIR8' }))
+      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'sheep', typeOfReview: 'R', reviewTestResults: 'negative', reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } }))
       const options = {
         method: 'GET',
         auth,
@@ -226,7 +226,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     })
     test('shows error when payload is invalid', async () => {
       const { isReview } = getReviewType('E')
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive', latestEndemicsApplication: { flags: [] } } })
       const options = {
         method: 'POST',
         url,
@@ -247,7 +247,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     test('shows error when payload is invalid and multi herds is enabled', async () => {
       isMultipleHerdsUserJourney.mockReturnValue(true)
       const { isReview } = getReviewType('E')
-      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'beef', reviewTestResults: 'positive' }))
+      getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'beef', reviewTestResults: 'positive', latestEndemicsApplication: { flags: [] } }))
       const options = {
         method: 'POST',
         url,
@@ -304,7 +304,7 @@ describe('Species numbers test when Optional PI Hunt is ON', () => {
       { typeOfLivestock: 'beef' },
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: 'TEMP-6GSE-PIR8' } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } } })
       const options = {
         method: 'GET',
         auth,
