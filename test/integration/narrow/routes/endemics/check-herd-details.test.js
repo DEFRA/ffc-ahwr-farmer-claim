@@ -121,6 +121,7 @@ describe('check-herd-details tests', () => {
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
       expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
       expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
       expectPhaseBanner.ok($)
     })
 
@@ -145,6 +146,93 @@ describe('check-herd-details tests', () => {
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-herd-details')
       expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
       expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expectPhaseBanner.ok($)
+    })
+
+    test('should display others on sbi when existing herd and it was the only herd', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
+        herdVersion: 1,
+        herdName: 'Commercial Herd',
+        herdCph: '22/333/4444',
+        herdOthersOnSbi: 'no',
+        herdReasons: ['differentBreed'],
+        herds: [{
+          herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
+          herdReasons: ['onlyHerd']
+        }]
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-herd-details')
+      expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
+      expect($('h1').text().trim()).toBe('Check herd details')
+      expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expectPhaseBanner.ok($)
+    })
+
+    test('should display others on sbi when no existing herds', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
+        herdVersion: 1,
+        herdName: 'Commercial Herd',
+        herdCph: '22/333/4444',
+        herdOthersOnSbi: 'no',
+        herdReasons: ['differentBreed'],
+        herds: []
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-herd-details')
+      expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
+      expect($('h1').text().trim()).toBe('Check herd details')
+      expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expectPhaseBanner.ok($)
+    })
+
+    test('should not display others on sbi when existing herd and it was not the only herd', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
+        herdVersion: 1,
+        herdName: 'Commercial Herd',
+        herdCph: '22/333/4444',
+        herdOthersOnSbi: 'no',
+        herdReasons: ['differentBreed'],
+        herds: [{
+          herdId: '909bb722-3de1-443e-8304-0bba8fx5922050'
+        }]
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-herd-details')
+      expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
+      expect($('h1').text().trim()).toBe('Check herd details')
+      expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeFalsy()
       expectPhaseBanner.ok($)
     })
   })
