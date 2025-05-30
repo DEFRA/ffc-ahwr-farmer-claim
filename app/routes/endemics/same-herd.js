@@ -9,6 +9,7 @@ import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewWithinLast10Months } from '../../api-requests/claim-service-api.js'
 import { getNextPage } from './date-of-visit-mh.js'
+import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
 const { urlPrefix } = config
 const {
@@ -52,10 +53,6 @@ const getClaimInfo = (previousClaims, typeOfLivestock) => {
   return { species: typeOfLivestock, claimType: claimTypeText, lastVisitDate: dateOfVisitText, claimDate: claimDateText }
 }
 
-const getGroupOfSpeciesName = (typeOfLivestock) => {
-  return typeOfLivestock === 'sheep' ? 'flock' : 'herd'
-}
-
 const getHandler = {
   method: 'GET',
   path: pageUrl,
@@ -63,7 +60,7 @@ const getHandler = {
     tags: ['mh'],
     handler: async (request, h) => {
       const { typeOfLivestock, previousClaims, herdSame } = getEndemicsClaim(request)
-      const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
+      const herdOrFlock = getHerdOrFlock(typeOfLivestock)
       const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
       return h.view(endemicsSameHerd, {
@@ -87,7 +84,7 @@ const postHandler = {
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
         const { typeOfLivestock, previousClaims, herdSame } = getEndemicsClaim(request)
-        const herdOrFlock = getGroupOfSpeciesName(typeOfLivestock)
+        const herdOrFlock = getHerdOrFlock(typeOfLivestock)
         const claimInfo = getClaimInfo(previousClaims, typeOfLivestock)
 
         return h.view(endemicsSameHerd, {
@@ -120,22 +117,21 @@ const postHandler = {
       if (herdSame === 'yes') {
         const prevClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
-        if (isEndemicsFollowUp) {
-          const prevReviewClaim = getReviewWithinLast10Months(
-            dateOfVisit,
-            previousClaims,
-            oldWorldApplication,
-            typeOfLivestock
-          )
-          setEndemicsClaim(request, relevantReviewForEndemicsKey, prevReviewClaim)
-        }
-
         const errorMessage = canMakeClaim({ prevClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
         if (errorMessage) {
+          if (isEndemicsFollowUp) {
+            const prevReviewClaim = getReviewWithinLast10Months(
+              dateOfVisit,
+              previousClaims,
+              oldWorldApplication,
+              typeOfLivestock
+            )
+            setEndemicsClaim(request, relevantReviewForEndemicsKey, prevReviewClaim)
+          }
           raiseInvalidDataEvent(
             request, dateOfVisitKey,
-          `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
+            `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
           )
 
           return h
@@ -143,7 +139,6 @@ const postHandler = {
               backLink: pageUrl,
               errorMessage,
               ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: 'If you entered the wrong date, you\'ll need to go back and enter the correct date.',
               backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
               backToPageLink: dateOfVisitPageUrl
             })

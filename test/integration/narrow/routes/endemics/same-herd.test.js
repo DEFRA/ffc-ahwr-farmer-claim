@@ -92,7 +92,7 @@ describe('select-the-herd tests', () => {
       crumb = await getCrumbs(server)
     })
 
-    test('navigates to the correct page when payload valid', async () => {
+    test('navigates to date of testing when herdSame is yes and type of claim is review', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -104,15 +104,64 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ]
       })
+      const payload = { herdSame: 'yes' }
 
-      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdSame: 'yes' }, headers: { cookie: `crumb=${crumb}` } })
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, ...payload }, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-      expect(setEndemicsClaim).toHaveBeenCalled()
+      expect(setEndemicsClaim).toBeCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
     })
 
-    test('display errors when payload invalid', async () => {
+    test('navigates to date of testing when herdSame is yes and type of claim is endemics', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'E',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
+        ]
+      })
+      const prevReview = { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2024-01-01T00:00:00.000Z' } }
+      getReviewWithinLast10Months.mockReturnValue(prevReview)
+      const payload = { herdSame: 'yes' }
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, ...payload }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+      expect(setEndemicsClaim).toBeCalledTimes(2)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', prevReview)
+    })
+
+    test('display errors with herds labels when payload does not contain herdSame and species is not sheep', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
+        ],
+        herds: []
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdSame"]').text()).toContain('Select yes if it is the same herd')
+    })
+
+    test('display errors with flock labels when payload does not contain herdSame and species is sheep', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
