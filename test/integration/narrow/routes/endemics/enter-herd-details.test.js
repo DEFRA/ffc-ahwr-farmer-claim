@@ -67,7 +67,7 @@ describe('enter-herd-details tests', () => {
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
-        herdReasons: ['differentBreed', 'other']
+        herdReasons: ['differentBreed', 'keptSeparate']
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -77,7 +77,7 @@ describe('enter-herd-details tests', () => {
       expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
       expect($('.govuk-checkboxes__input[value="differentBreed"]').is(':checked')).toBeTruthy()
-      expect($('.govuk-checkboxes__input[value="other"]').is(':checked')).toBeTruthy()
+      expect($('.govuk-checkboxes__input[value="keptSeparate"]').is(':checked')).toBeTruthy()
       expectPhaseBanner.ok($)
     })
 
