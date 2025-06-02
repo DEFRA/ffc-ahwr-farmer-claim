@@ -139,6 +139,7 @@ const postHandler = {
               backLink: pageUrl,
               errorMessage,
               ruralPaymentsAgency: config.ruralPaymentsAgency,
+              backToPageText: 'If you entered the wrong date, you\'ll need to go back and enter the correct date.',
               backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
               backToPageLink: dateOfVisitPageUrl
             })
