@@ -7,7 +7,6 @@ import HttpStatus from 'http-status-codes'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { getReviewWithinLast10Months } from '../../api-requests/claim-service-api.js'
 import { getNextPage } from './date-of-visit-mh.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 
@@ -30,8 +29,7 @@ const {
   endemicsClaim: {
     herdSame: herdSameKey,
     dateOfVisit: dateOfVisitKey,
-    typeOfReview: typeOfReviewKey,
-    relevantReviewForEndemics: relevantReviewForEndemicsKey
+    typeOfReview: typeOfReviewKey
   }
 } = sessionKeys
 
@@ -120,15 +118,6 @@ const postHandler = {
         const errorMessage = canMakeClaim({ prevClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
         if (errorMessage) {
-          if (isEndemicsFollowUp) {
-            const prevReviewClaim = getReviewWithinLast10Months(
-              dateOfVisit,
-              previousClaims,
-              oldWorldApplication,
-              typeOfLivestock
-            )
-            setEndemicsClaim(request, relevantReviewForEndemicsKey, prevReviewClaim)
-          }
           raiseInvalidDataEvent(
             request, dateOfVisitKey,
             `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
