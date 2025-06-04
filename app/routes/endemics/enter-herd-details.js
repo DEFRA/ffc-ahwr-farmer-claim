@@ -8,6 +8,7 @@ import HttpStatus from 'http-status-codes'
 // import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
+import { skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 const {
@@ -25,7 +26,7 @@ const nextPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
 const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 
-const getPreviousPageUrl = (herds) => herds?.length ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
+const getPreviousPageUrl = (herds, herdId) => skipOtherHerdsOnSbiPage(herds, herdId) ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
 
 const getHandler = {
   method: 'GET',
@@ -33,9 +34,9 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
+      const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
       return h.view(endemicsEnterHerdDetails, {
-        backLink: getPreviousPageUrl(herds),
+        backLink: getPreviousPageUrl(herds, herdId),
         herdReasons: herdReasons ?? [],
         herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
@@ -56,7 +57,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { typeOfLivestock, herds } = getEndemicsClaim(request)
+        const { herdId, typeOfLivestock, herds } = getEndemicsClaim(request)
 
         return h.view(endemicsEnterHerdDetails, {
           ...request.payload,
@@ -64,7 +65,7 @@ const postHandler = {
             text: `Select the reasons for this separate ${getHerdOrFlock(typeOfLivestock)}`,
             href: '#herdReasons'
           },
-          backLink: getPreviousPageUrl(herds),
+          backLink: getPreviousPageUrl(herds, herdId),
           herdReasons: [].concat(request.payload.herdReasons),
           herdOrFlock: getHerdOrFlock(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()

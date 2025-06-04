@@ -5,6 +5,7 @@ import {
   refreshClaims,
   isVisitDateAfterPIHuntAndDairyGoLive,
   skipSameHerdPage,
+  skipOtherHerdsOnSbiPage,
   isMultipleHerdsUserJourney
 } from '../../../../app/lib/context-helper.js'
 import { config } from '../../../../app/config/index.js'
@@ -12,7 +13,7 @@ import { getClaimsByApplicationReference } from '../../../../app/api-requests/cl
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
 import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
 import { isWithin10Months } from '../../../../app/lib/date-utils.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../../../app/constants/constants.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, ONLY_HERD } from '../../../../app/constants/constants.js'
 
 jest.mock('../../../../app/session/index')
 jest.mock('../../../../app/api-requests/claim-service-api')
@@ -240,6 +241,37 @@ describe('context-helper', () => {
     ]
 
     expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(true)
+  })
+
+  test('skipOtherHerdsOnSbiPage, do not skip when existing herds undefined', () => {
+    const randomlyGeneratedId = '8c726c7f-ceac-4253-8155-0fa5c868fbde'
+    const existingHerds = undefined
+
+    expect(skipOtherHerdsOnSbiPage(existingHerds, randomlyGeneratedId)).toBe(false)
+  })
+  test('skipOtherHerdsOnSbiPage, do not skip when existing herds empty', () => {
+    const randomlyGeneratedId = '8c726c7f-ceac-4253-8155-0fa5c868fbde'
+    const existingHerds = []
+
+    expect(skipOtherHerdsOnSbiPage(existingHerds, randomlyGeneratedId)).toBe(false)
+  })
+  test('skipOtherHerdsOnSbiPage, skip when not using an existing herd', () => {
+    const randomlyGeneratedId = '8c726c7f-ceac-4253-8155-0fa5c868fbde'
+    const existingHerds = [{ herdId: '97ae1e8e-f8cd-44e0-bd61-d3469ae322c5', herdReasons: [ONLY_HERD] }]
+
+    expect(skipOtherHerdsOnSbiPage(existingHerds, randomlyGeneratedId)).toBe(true)
+  })
+  test(`skipOtherHerdsOnSbiPage, skip when existing herd but reason not ${ONLY_HERD}`, () => {
+    const existingHerdId = '8c726c7f-ceac-4253-8155-0fa5c868fbde'
+    const existingHerds = [{ herdId: existingHerdId, herdReasons: ['foo'] }]
+
+    expect(skipOtherHerdsOnSbiPage(existingHerds, existingHerdId)).toBe(true)
+  })
+  test(`skipOtherHerdsOnSbiPage, do not skip when existing herd and reason is ${ONLY_HERD}`, () => {
+    const existingHerdId = '8c726c7f-ceac-4253-8155-0fa5c868fbde'
+    const existingHerds = [{ herdId: existingHerdId, herdReasons: [ONLY_HERD] }]
+
+    expect(skipOtherHerdsOnSbiPage(existingHerds, existingHerdId)).toBe(false)
   })
 
   test('skipSameHerdPage, don\'t skip when claims for species and none had herd', () => {

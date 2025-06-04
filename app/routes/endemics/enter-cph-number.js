@@ -7,6 +7,7 @@ import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
 import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
 const {
@@ -77,7 +78,7 @@ const postHandler = {
       await sendHerdEvent({ request, type: 'herd-cph', message: 'Herd CPH collected from user', data: { herdId, herdVersion, herdCph } })
 
       let nextPageUrl
-      if (herds?.length) {
+      if (skipOtherHerdsOnSbiPage(herds, herdId)) {
         nextPageUrl = herdOthersOnSbi === OTHERS_ON_SBI.NO ? enterHerdDetailsPageUrl : checkHerdDetailsPageUrl
       } else {
         nextPageUrl = herdOthersOnSbiPageUrl
