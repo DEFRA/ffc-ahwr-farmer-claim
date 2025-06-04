@@ -4,8 +4,7 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
-// TODO MultiHerds use this to create checkboxes:
-// import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
+import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
 import { skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
@@ -35,9 +34,19 @@ const getHandler = {
     tags: ['mh'],
     handler: async (request, h) => {
       const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
+      const selectedHerdReasons = herdReasons ?? []
+      const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
+        .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
+        .map(([code, description]) => ({
+          value: code,
+          text: description,
+          checked: selectedHerdReasons.includes(code)
+        }))
+
       return h.view(endemicsEnterHerdDetails, {
         backLink: getPreviousPageUrl(herds, herdId),
-        herdReasons: herdReasons ?? [],
+        checkboxItemsForHerdReasons,
+        herdReasons: selectedHerdReasons,
         herdOrFlock: getHerdOrFlock(typeOfLivestock)
       })
     }
@@ -58,6 +67,13 @@ const postHandler = {
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
         const { herdId, typeOfLivestock, herds } = getEndemicsClaim(request)
+        const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
+          .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
+          .map(([code, description]) => ({
+            value: code,
+            text: description,
+            checked: false
+          }))
 
         return h.view(endemicsEnterHerdDetails, {
           ...request.payload,
@@ -66,7 +82,8 @@ const postHandler = {
             href: '#herdReasons'
           },
           backLink: getPreviousPageUrl(herds, herdId),
-          herdReasons: [].concat(request.payload.herdReasons),
+          checkboxItemsForHerdReasons,
+          herdReasons: [],
           herdOrFlock: getHerdOrFlock(typeOfLivestock)
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
