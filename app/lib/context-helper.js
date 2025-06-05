@@ -111,7 +111,7 @@ export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
 
 export const skipOtherHerdsOnSbiPage = (existingHerds, selectedHerdId) => {
   const hasHerds = existingHerds?.length > 0
-  const hasReasonOnlyHerd = existingHerds && existingHerds?.some(h => h.herdId === selectedHerdId && h.herdReasons?.includes(ONLY_HERD))
+  const hasReasonOnlyHerd = existingHerds?.some(h => h.herdId === selectedHerdId && h.herdReasons?.includes(ONLY_HERD))
 
   return hasHerds && !hasReasonOnlyHerd
 }
