@@ -6,6 +6,7 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
+import { ONLY_HERD } from '../../../../../app/constants/constants.js'
 
 const { urlPrefix } = config
 const { endemicsEnterHerdDetails: pageUnderTest } = links
@@ -101,12 +102,13 @@ describe('enter-herd-details tests', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('returns 200 with back link to enter cph number when previous herds', async () => {
+    test(`returns 200 with back link to enter cph number when previous herds but herd reason not ${ONLY_HERD}`, async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
-        herds: [{ id: 'herd one' }]
+        herdId: 'herd-one',
+        herds: [{ herdId: 'herd-one', herdReasons: ['foo'] }]
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -115,6 +117,28 @@ describe('enter-herd-details tests', () => {
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
+      expect($('.govuk-heading-l').text().trim()).toBe('Enter the herd details')
+      expect($('.govuk-hint').text().trim()).toContain('Tell us about this herd')
+      const legendText = $('.govuk-fieldset__legend--m').text().trim()
+      expect(legendText).toBe('The herd is a separate herd (epidemiologically distinct unit) of this species because:')
+      expectPhaseBanner.ok($)
+    })
+
+    test(`returns 200 with back link to herd-others-on-sbi when previous herds and herd reason is ${ONLY_HERD}`, async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herdId: 'herd-one',
+        herds: [{ herdId: 'herd-one', herdReasons: [ONLY_HERD] }]
+      })
+
+      const res = await server.inject({ method: 'GET', url, auth })
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('title').text().trim()).toContain('Enter the herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
       expect($('.govuk-heading-l').text().trim()).toBe('Enter the herd details')
       expect($('.govuk-hint').text().trim()).toContain('Tell us about this herd')
       const legendText = $('.govuk-fieldset__legend--m').text().trim()

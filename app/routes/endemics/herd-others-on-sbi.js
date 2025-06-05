@@ -7,6 +7,7 @@ import HttpStatus from 'http-status-codes'
 import { OTHERS_ON_SBI } from '../../constants/herd.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
+import { ONLY_HERD } from '../../constants/constants.js'
 
 const { urlPrefix } = config
 const {
@@ -20,8 +21,6 @@ const pageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
 const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 const enterEnterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-
-export const ONLY_HERD = 'onlyHerd'
 
 const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey, herdReasons: herdReasonsKey } } = sessionKeys
 

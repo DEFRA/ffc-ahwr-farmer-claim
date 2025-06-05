@@ -39,32 +39,7 @@
                     classes: "govuk-fieldset__legend--m"
                   }
                 },
-              items: [
-              {
-                  value: "separateManagementNeeds",
-                  text: "They have separate management needs",
-                  checked: herdReasons.includes('separateManagementNeeds')
-              },
-              {
-                  value: "uniqueHealthNeeds",
-                  text: "They have unique health needs",
-                  checked: herdReasons.includes('uniqueHealthNeeds')
-              },
-              {
-                  value: "differentBreed",
-                  text: "They are a different breed",
-                  checked: herdReasons.includes('differentBreed')
-              },
-              {
-                  value: "differentPurpose",
-                  text: "They are used for another purpose (e.g. breeding)",
-                  checked: herdReasons.includes('differentPurpose')
-              },
-              {
-                  value: "keptSeparate",
-                  text: "They have been kept completely separate",
-                  checked: herdReasons.includes('keptSeparate')
-              }]
+              items: checkboxItemsForHerdReasons
             }) 
           }}
           {{ govukButton({

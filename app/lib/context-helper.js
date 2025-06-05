@@ -6,7 +6,7 @@ import { getClaimsByApplicationReference } from '../api-requests/claim-service-a
 import { createTempClaimReference } from './create-temp-claim-reference.js'
 import { claimConstants } from '../constants/claim.js'
 import { config } from '../config/index.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE } from '../constants/constants.js'
+import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE, ONLY_HERD } from '../constants/constants.js'
 
 const {
   endemicsClaim: {
@@ -107,4 +107,11 @@ export const isMultipleHerdsUserJourney = (dateOfVisit, agreementFlags) => {
 export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
   const previousClaimsForSpecies = previousClaims.filter(claim => { return claim.data.typeOfLivestock === typeOfLivestock })
   return !previousClaimsForSpecies.length || previousClaimsForSpecies.some(claim => claim.data.herdId)
+}
+
+export const skipOtherHerdsOnSbiPage = (existingHerds, selectedHerdId) => {
+  const hasHerds = existingHerds?.length > 0
+  const hasReasonOnlyHerd = existingHerds?.some(h => h.herdId === selectedHerdId && h.herdReasons?.includes(ONLY_HERD))
+
+  return hasHerds && !hasReasonOnlyHerd
 }

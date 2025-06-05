@@ -19,6 +19,8 @@ export const status = {
   ON_HOLD: 11
 }
 
+export const ONLY_HERD = 'onlyHerd'
+
 export const MULTIPLE_SPECIES_RELEASE_DATE = new Date('2025-02-26T00:00:00')
 
 export const MULTIPLE_HERDS_RELEASE_DATE = new Date(config.multiHerds.releaseDate)
