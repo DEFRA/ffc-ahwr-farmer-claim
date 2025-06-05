@@ -109,6 +109,9 @@ export const skipSameHerdPage = (previousClaims, typeOfLivestock) => {
   return !previousClaimsForSpecies.length || previousClaimsForSpecies.some(claim => claim.data.herdId)
 }
 
-export const skipOtherHerdsOnSbiPage = (existingHerds, herdId) => {
-  return !(!existingHerds?.length || existingHerds?.find(h => h.herdId === herdId)?.herdReasons?.[0] === ONLY_HERD)
+export const skipOtherHerdsOnSbiPage = (existingHerds, selectedHerdId) => {
+  const hasHerds = existingHerds?.length > 0
+  const hasReasonOnlyHerd = existingHerds && existingHerds?.some(h => h.herdId === selectedHerdId && h.herdReasons?.includes(ONLY_HERD))
+
+  return hasHerds && !hasReasonOnlyHerd
 }

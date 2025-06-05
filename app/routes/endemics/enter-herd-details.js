@@ -27,27 +27,43 @@ const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 
 const getPreviousPageUrl = (herds, herdId) => skipOtherHerdsOnSbiPage(herds, herdId) ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
 
+const getEnterHerdDetailsViewData = (request) => {
+  const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
+  const selectedHerdReasons = herdReasons ?? []
+  const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
+    .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
+    .map(([code, description]) => ({
+      value: code,
+      text: description,
+      checked: selectedHerdReasons.includes(code)
+    }))
+
+  return {
+    backLink: getPreviousPageUrl(herds, herdId),
+    checkboxItemsForHerdReasons,
+    herdReasons: selectedHerdReasons,
+    herdOrFlock: getHerdOrFlock(typeOfLivestock)
+  }
+}
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
-      const selectedHerdReasons = herdReasons ?? []
-      const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
-        .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
-        .map(([code, description]) => ({
-          value: code,
-          text: description,
-          checked: selectedHerdReasons.includes(code)
-        }))
+      const {
+        backLink,
+        checkboxItemsForHerdReasons,
+        herdReasons,
+        herdOrFlock
+      } = getEnterHerdDetailsViewData(request)
 
       return h.view(endemicsEnterHerdDetails, {
-        backLink: getPreviousPageUrl(herds, herdId),
+        backLink,
         checkboxItemsForHerdReasons,
-        herdReasons: selectedHerdReasons,
-        herdOrFlock: getHerdOrFlock(typeOfLivestock)
+        herdReasons,
+        herdOrFlock
       })
     }
   }
@@ -66,25 +82,23 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const { herdId, typeOfLivestock, herds } = getEndemicsClaim(request)
-        const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
-          .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
-          .map(([code, description]) => ({
-            value: code,
-            text: description,
-            checked: false
-          }))
+        const {
+          backLink,
+          checkboxItemsForHerdReasons,
+          herdReasons,
+          herdOrFlock
+        } = getEnterHerdDetailsViewData(request)
 
         return h.view(endemicsEnterHerdDetails, {
           ...request.payload,
           errorMessage: {
-            text: `Select the reasons for this separate ${getHerdOrFlock(typeOfLivestock)}`,
+            text: `Select the reasons for this separate ${herdOrFlock}`,
             href: '#herdReasons'
           },
-          backLink: getPreviousPageUrl(herds, herdId),
+          backLink,
           checkboxItemsForHerdReasons,
-          herdReasons: [],
-          herdOrFlock: getHerdOrFlock(typeOfLivestock)
+          herdReasons,
+          herdOrFlock
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
