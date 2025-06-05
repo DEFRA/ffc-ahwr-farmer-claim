@@ -5,7 +5,7 @@ import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { skipSameHerdPage, skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
-import { getNextPage } from './date-of-visit-mh.js'
+import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
 
 const { urlPrefix } = config
 const {
@@ -56,7 +56,7 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const { previousClaims, typeOfLivestock } = getEndemicsClaim(request)
-      const nextPageUrl = skipSameHerdPage(previousClaims, typeOfLivestock) ? getNextPage(request) : sameHerdPageUrl
+      const nextPageUrl = skipSameHerdPage(previousClaims, typeOfLivestock) ? getNextMultipleHerdsPage(request) : sameHerdPageUrl
       return h.redirect(nextPageUrl)
     }
   }

@@ -103,7 +103,6 @@ const getPastReviewClaimsForSpeciesAndHerd = (previousClaims = [], dateOfVisit, 
 )
 
 export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview, typeOfLivestock, herdId) => {
-  console.log(previousClaims)
   const pastReviewClaims = getPastReviewClaimsForSpeciesAndHerd(previousClaims, dateOfVisit, typeOfLivestock, herdId)
   if (vetVisitReview?.data?.whichReview === typeOfLivestock) {
     pastReviewClaims.push({

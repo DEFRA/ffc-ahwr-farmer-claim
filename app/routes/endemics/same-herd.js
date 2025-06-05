@@ -7,8 +7,8 @@ import HttpStatus from 'http-status-codes'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { getNextPage } from './date-of-visit-mh.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
+import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
 
 const { urlPrefix } = config
 const {
@@ -157,7 +157,7 @@ const postHandler = {
           .takeover()
       }
 
-      return h.redirect(getNextPage(request))
+      return h.redirect(getNextMultipleHerdsPage(request))
     }
   }
 }
