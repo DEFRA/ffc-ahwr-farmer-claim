@@ -1,7 +1,8 @@
 import { claimConstants } from '../constants/claim.js'
 
+const { beef, dairy, pigs, sheep } = claimConstants.livestockTypes
+
 export const getLivestockTypes = (typeOfLivestock) => {
-  const { beef, dairy, pigs, sheep } = claimConstants.livestockTypes
   return {
     isBeef: typeOfLivestock === beef,
     isDairy: typeOfLivestock === dairy,
@@ -9,3 +10,5 @@ export const getLivestockTypes = (typeOfLivestock) => {
     isSheep: typeOfLivestock === sheep
   }
 }
+
+export const isCows = (typeOfLivestock) => typeOfLivestock === beef || typeOfLivestock === dairy

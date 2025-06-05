@@ -6,14 +6,14 @@ import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
-import { getNextPage } from '../../../../../app/routes/endemics/date-of-visit-mh.js'
+import { getNextMultipleHerdsPage } from '../../../../../app/lib/get-next-multiple-herds-page.js'
 
 const { urlPrefix } = config
 const { endemicsCheckHerdDetails: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
-jest.mock('../../../../../app/routes/endemics/date-of-visit-mh.js')
+jest.mock('.../../../../../app/lib/get-next-multiple-herds-page.js')
 
 const assertLinkExistsFor = ($, spanText) => {
   const link = $('a.govuk-link').filter((_, el) => {
@@ -271,7 +271,7 @@ describe('check-herd-details tests', () => {
         ...validPayloadWithPreviousClaimsWithoutHerd,
         previousClaims: []
       })
-      getNextPage.mockReturnValue('/claim/endemics/date-of-testing')
+      getNextMultipleHerdsPage.mockReturnValue('/claim/endemics/date-of-testing')
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
 
@@ -288,7 +288,7 @@ describe('check-herd-details tests', () => {
           { createdAt: '2025-03-10T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
         ]
       })
-      getNextPage.mockReturnValue('/claim/endemics/date-of-testing')
+      getNextMultipleHerdsPage.mockReturnValue('/claim/endemics/date-of-testing')
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
 
