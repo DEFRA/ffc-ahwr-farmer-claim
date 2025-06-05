@@ -95,14 +95,16 @@ export const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) =
   return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
-const getPastReviewClaimsForSpecies = (previousClaims = [], dateOfVisit, typeOfLivestock) => previousClaims.filter(prevClaim =>
+const getPastReviewClaimsForSpeciesAndHerd = (previousClaims = [], dateOfVisit, typeOfLivestock, herdId) => previousClaims.filter(prevClaim =>
   new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) &&
   prevClaim.type === claimType.review &&
-  typeOfLivestock === prevClaim.data.typeOfLivestock
+  typeOfLivestock === prevClaim.data.typeOfLivestock &&
+  (herdId ? herdId === prevClaim.herd?.id : true) // Only filtering on this if herdId is present, as we may not be on a MultiHerds journey
 )
 
-export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview, typeOfLivestock) => {
-  const pastReviewClaims = getPastReviewClaimsForSpecies(previousClaims, dateOfVisit, typeOfLivestock)
+export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview, typeOfLivestock, herdId) => {
+  console.log(previousClaims)
+  const pastReviewClaims = getPastReviewClaimsForSpeciesAndHerd(previousClaims, dateOfVisit, typeOfLivestock, herdId)
   if (vetVisitReview?.data?.whichReview === typeOfLivestock) {
     pastReviewClaims.push({
       ...vetVisitReview,
@@ -117,8 +119,8 @@ export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisi
 }
 
 export const getReviewTestResultWithinLast10Months = (request) => {
-  const { dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock } = getEndemicsClaim(request)
-  const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock)
+  const { dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock, herdId } = getEndemicsClaim(request)
+  const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock, herdId)
   if (!reviewWithinLast10Months) return undefined
 
   return reviewWithinLast10Months?.data?.testResults

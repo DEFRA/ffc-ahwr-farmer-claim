@@ -207,7 +207,7 @@ describe('Claim Service API', () => {
     expect(isCattleEndemicsClaimForOldWorldReview()).toBe(false)
   })
 
-  test('should return testResults when there is a previous review within 10 months and the same species', () => {
+  test('getReviewTestResultWithinLast10Months should return testResults when there is a previous review within 10 months and the same species', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'beef',
@@ -231,7 +231,7 @@ describe('Claim Service API', () => {
     expect(getReviewTestResultWithinLast10Months()).toBe('positive')
   })
 
-  test('should return undefined when there are previous reviews within 10 months and not the same species', () => {
+  test('getReviewTestResultWithinLast10Months should return undefined when there are previous reviews within 10 months and not the same species', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'beef',
@@ -256,7 +256,7 @@ describe('Claim Service API', () => {
     expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
   })
 
-  test('should return undefined when there are previous reviews outside of 10 months and the same species', () => {
+  test('getReviewTestResultWithinLast10Months should return undefined when there are previous reviews outside of 10 months and the same species', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'beef',
@@ -281,7 +281,7 @@ describe('Claim Service API', () => {
     expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
   })
 
-  test('should return testResults of the most recent previous same species review when there are multiple previous reviews within 10 months and are different species', () => {
+  test('getReviewTestResultWithinLast10Months should return testResults of the most recent previous same species review when there are multiple previous reviews within 10 months and are different species', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'sheep',
@@ -330,7 +330,7 @@ describe('Claim Service API', () => {
     expect(getReviewTestResultWithinLast10Months()).toBe('negative')
   })
 
-  test('should return testResults when an old world review within 10 months and the same species', () => {
+  test('getReviewTestResultWithinLast10Months should return testResults when an old world review within 10 months and the same species', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'sheep',
@@ -361,7 +361,7 @@ describe('Claim Service API', () => {
     expect(getReviewTestResultWithinLast10Months()).toBe('positive')
   })
 
-  test('should return undefined when an old world review outside 10 months and the same species', () => {
+  test('getReviewTestResultWithinLast10Months should return undefined when an old world review outside 10 months and the same species', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'sheep',
@@ -379,7 +379,7 @@ describe('Claim Service API', () => {
     expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
   })
 
-  test('should return undefined when there are no previous claims', () => {
+  test('getReviewTestResultWithinLast10Months should return undefined when there are no previous claims', () => {
     getEndemicsClaim.mockReturnValueOnce({
       typeOfReview: 'E',
       typeOfLivestock: 'sheep',
@@ -389,5 +389,61 @@ describe('Claim Service API', () => {
     })
 
     expect(getReviewTestResultWithinLast10Months()).toBe(undefined)
+  })
+
+  test('getReviewTestResultWithinLast10Months should return only the claim associated with the same herdId found in the session', () => {
+    getEndemicsClaim.mockReturnValueOnce({
+      typeOfReview: 'E',
+      typeOfLivestock: 'sheep',
+      latestVetVisitApplication: { data: { whichReview: 'sheep' } },
+      dateOfVisit: '2025-02-01',
+      herdId: 'ABC123',
+      previousClaims: [
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'sheep',
+            dateOfVisit: '2024-11-01',
+            testResults: 'negative'
+          },
+          herd: {
+            id: 'ABC123'
+          }
+        },
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'sheep',
+            dateOfVisit: '2024-11-01',
+            testResults: 'positive'
+          },
+          herd: {
+            id: 'XYZ999'
+          }
+        },
+        {
+          reference: 'AHWR-C2EA-C718',
+          applicationReference: 'AHWR-2470-6BA9',
+          statusId: 9,
+          type: 'R',
+          createdAt: '2024-09-01T10:25:11.318Z',
+          data: {
+            typeOfLivestock: 'sheep',
+            dateOfVisit: '2024-11-01',
+            testResults: 'positive'
+          }
+        }
+      ]
+    })
+
+    expect(getReviewTestResultWithinLast10Months()).toBe('negative')
   })
 })
