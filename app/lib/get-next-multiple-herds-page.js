@@ -1,6 +1,6 @@
 import { getReviewTestResultWithinLast10Months, getReviewWithinLast10Months } from '../api-requests/claim-service-api.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../session/index.js'
-import { getLivestockTypes } from './get-livestock-types.js'
+import { getLivestockTypes, isCows } from './get-livestock-types.js'
 import { getReviewType } from './get-review-type.js'
 import { sessionKeys } from '../session/keys.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from './context-helper.js'
@@ -27,7 +27,7 @@ export const getNextMultipleHerdsPage = (request) => {
     dateOfVisit
   } = getEndemicsClaim(request)
 
-  const { isBeef, isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
+  const { isSheep } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfClaim)
 
   if (isEndemicsFollowUp) {
@@ -43,7 +43,7 @@ export const getNextMultipleHerdsPage = (request) => {
     )
   }
 
-  if ((isBeef || isDairy || isPigs) && isEndemicsFollowUp) {
+  if (!isSheep && isEndemicsFollowUp) {
     const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
 
     if (!piHuntEnabledAndVisitDateAfterGoLive) {
@@ -58,7 +58,7 @@ export const getNextMultipleHerdsPage = (request) => {
       reviewTestResultsValue
     )
 
-    if ((isBeef || isDairy) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
+    if (isCows(typeOfLivestock) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
       return `${config.urlPrefix}/${endemicsSpeciesNumbers}`
     }
   }

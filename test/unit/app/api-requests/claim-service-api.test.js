@@ -419,10 +419,10 @@ describe('Claim Service API', () => {
           applicationReference: 'AHWR-2470-6BA9',
           statusId: 9,
           type: 'R',
-          createdAt: '2024-09-01T10:25:11.318Z',
+          createdAt: '2024-12-15T10:25:11.318Z',
           data: {
             typeOfLivestock: 'sheep',
-            dateOfVisit: '2024-11-01',
+            dateOfVisit: '2024-12-01',
             testResults: 'positive'
           },
           herd: {
