@@ -221,4 +221,16 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
     const $ = cheerio.load(res.payload)
     expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/same-herd')
   })
+
+  test('returns 200 and correct backlink when beef follow-up post PIHuntAndDairy golive', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2025-06-06') }, reference: 'TEMP-6GSE-PIR8' })
+    skipSameHerdPage.mockImplementation(() => { return true })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/pi-hunt-all-animals')
+  })
 })

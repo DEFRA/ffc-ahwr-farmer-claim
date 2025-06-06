@@ -40,12 +40,12 @@ const backLink = (request) => {
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
-    return getHerdBackLink(typeOfLivestock, previousClaims)
-  }
-
   if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+  }
+
+  if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
+    return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
   return `${urlPrefix}/${endemicsDateOfVisit}`
