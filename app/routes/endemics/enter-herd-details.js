@@ -27,7 +27,7 @@ const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 
 const getPreviousPageUrl = (herds, herdId) => skipOtherHerdsOnSbiPage(herds, herdId) ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
 
-const getEnterHerdDetailsViewData = (request, ignoreHerdReasons) => {
+const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
   const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
   const selectedHerdReasons = ignoreHerdReasons ? [] : (herdReasons ?? [])
   const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
