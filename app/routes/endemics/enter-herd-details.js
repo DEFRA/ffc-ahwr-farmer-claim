@@ -27,9 +27,9 @@ const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 
 const getPreviousPageUrl = (herds, herdId) => skipOtherHerdsOnSbiPage(herds, herdId) ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
 
-const getEnterHerdDetailsViewData = (request) => {
+const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
   const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
-  const selectedHerdReasons = herdReasons ?? []
+  const selectedHerdReasons = ignoreHerdReasons ? [] : (herdReasons ?? [])
   const checkboxItemsForHerdReasons = Object.entries(MULTIPLE_HERD_REASONS)
     .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
     .map(([code, description]) => ({
@@ -87,7 +87,7 @@ const postHandler = {
           checkboxItemsForHerdReasons,
           herdReasons,
           herdOrFlock
-        } = getEnterHerdDetailsViewData(request)
+        } = getEnterHerdDetailsViewData(request, true)
 
         return h.view(endemicsEnterHerdDetails, {
           ...request.payload,

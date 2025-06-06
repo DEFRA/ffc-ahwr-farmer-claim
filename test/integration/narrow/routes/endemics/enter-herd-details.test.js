@@ -184,6 +184,24 @@ describe('enter-herd-details tests', () => {
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
     })
 
+    test('display errors and no reasons selected when reasons stored in session but payload is now invalid', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'beef',
+        herdReasons: ['differentBreed']
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb }, headers: { cookie: `crumb=${crumb}` } })
+
+      const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(400)
+      expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
+      expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this separate herd')
+      expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
+      expect($('.govuk-checkboxes__input[value="differentBreed"]').is(':checked')).toBeFalsy()
+    })
+
     test('display errors with flock labels when payload invalid', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
