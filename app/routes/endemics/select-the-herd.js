@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim, removeHerdSessionData } from '../../session/index.js'
+import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSelectHerdChange } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { claimConstants } from '../../constants/claim.js'
@@ -166,7 +166,6 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdId } = request.payload
-      const endemicsClaim = getEndemicsClaim(request)
       const {
         herds,
         typeOfReview,
@@ -178,10 +177,10 @@ const postHandler = {
         herdId: herdIdFromSession,
         tempHerdId,
         unnamedHerdId
-      } = endemicsClaim
+      } = getEndemicsClaim(request)
 
       if (herdId !== herdIdFromSession) {
-        removeHerdSessionData(request, endemicsClaim)
+        removeSessionDataForSelectHerdChange(request)
       }
 
       setEndemicsClaim(request, herdIdKey, herdId, { shouldEmitEvent: false })
