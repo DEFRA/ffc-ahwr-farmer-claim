@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSameHerdChange } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
@@ -100,6 +100,12 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdSame } = request.payload
+      const { herdSame: herdSameFromSession } = getEndemicsClaim(request)
+
+      if (herdSame !== herdSameFromSession) {
+        removeSessionDataForSameHerdChange(request)
+      }
+
       setEndemicsClaim(request, herdSameKey, herdSame, { shouldEmitEvent: false })
 
       const {

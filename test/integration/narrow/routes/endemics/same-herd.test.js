@@ -2,7 +2,7 @@ import cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import expectPhaseBanner from 'assert'
-import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSameHerdChange } from '../../../../../app/session/index.js'
 import { setMultiHerds } from '../../../../mocks/config.js'
 import { getReviewWithinLast10Months } from '../../../../../app/api-requests/claim-service-api.js'
 import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
@@ -225,6 +225,42 @@ describe('select-the-herd tests', () => {
       expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
       expect(link.text().trim()).toBe('You must have an approved review claim for this species, before you can claim for a follow-up.')
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
+    })
+
+    test('does call removeSessionDataForSameHerdChange when herdSame answer changes', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2024-01-01T00:00:00.000Z' } }
+        ],
+        herdSame: 'yes'
+      })
+
+      const payload = { crumb, herdSame: 'no' }
+      const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(removeSessionDataForSameHerdChange).toHaveBeenCalledTimes(1)
+    })
+
+    test('does NOT call removeSessionDataForSameHerdChange when herdSame answer stays the same', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2024-01-01T00:00:00.000Z' } }
+        ],
+        herdSame: 'yes'
+      })
+
+      const payload = { crumb, herdSame: 'yes' }
+      const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(removeSessionDataForSameHerdChange).toHaveBeenCalledTimes(0)
     })
   })
 })

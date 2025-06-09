@@ -4,7 +4,7 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
-import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSelectHerdChange } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
@@ -598,6 +598,53 @@ describe('select-the-herd tests', () => {
       )
       expect($('.govuk-warning-text__text').text()).toContain('Your claim will be checked by our team.')
       expect($('#back').attr('href')).toEqual('/claim/endemics/select-the-herd')
+    })
+
+    test('does call removeSessionDataForSelectHerdChange and sets herdId when herd selection changes', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [],
+        herds: [{
+          herdId: fakeHerdId,
+          herdName: 'Barn animals',
+          herdVersion: 1,
+          cph: '22/333/4444',
+          herdReasons: ['onlyHerd']
+        }],
+        herdId: 'previously-selected-herdId'
+      })
+
+      const payload = { crumb, herdId: fakeHerdId }
+      const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(removeSessionDataForSelectHerdChange).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+    })
+
+    test('does NOT call removeSessionDataForSelectHerdChange when herd selection stays the same', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [],
+        herds: [{
+          herdId: fakeHerdId,
+          herdName: 'Barn animals',
+          herdVersion: 1,
+          cph: '22/333/4444',
+          herdReasons: ['onlyHerd']
+        }],
+        herdId: fakeHerdId
+      })
+
+      const payload = { crumb, herdId: fakeHerdId }
+      const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(removeSessionDataForSelectHerdChange).toHaveBeenCalledTimes(0)
     })
   })
 })
