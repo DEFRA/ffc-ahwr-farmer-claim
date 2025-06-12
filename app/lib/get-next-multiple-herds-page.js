@@ -1,4 +1,4 @@
-import { getReviewTestResultWithinLast10Months, getReviewWithinLast10Months } from '../api-requests/claim-service-api.js'
+import { getReviewWithinLast10Months } from '../api-requests/claim-service-api.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../session/index.js'
 import { getLivestockTypes, isCows } from './get-livestock-types.js'
 import { getReviewType } from './get-review-type.js'
@@ -24,43 +24,50 @@ export const getNextMultipleHerdsPage = (request) => {
     latestVetVisitApplication: oldWorldApplication,
     typeOfLivestock,
     reviewTestResults,
-    dateOfVisit
+    dateOfVisit,
+    herdId,
+    tempHerdId,
+    unnamedHerdId
   } = getEndemicsClaim(request)
 
   const { isSheep } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfClaim)
 
-  // TODO RJ this doesn't provide herdID but is called from check-herd-details?
   if (isEndemicsFollowUp) {
+    const reviewHerdId = herdId !== unnamedHerdId && herdId !== tempHerdId ? herdId : undefined
+
+    const reviewWithinLast10Months = getReviewWithinLast10Months(
+      dateOfVisit,
+      previousClaims,
+      oldWorldApplication,
+      typeOfLivestock,
+      reviewHerdId
+    )
+
     setEndemicsClaim(
       request,
       relevantReviewForEndemicsKey,
-      getReviewWithinLast10Months(
-        dateOfVisit,
-        previousClaims,
-        oldWorldApplication,
-        typeOfLivestock
+      reviewWithinLast10Months
+    )
+
+    if (!isSheep) {
+      const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
+
+      if (!piHuntEnabledAndVisitDateAfterGoLive) {
+        clearPiHuntSessionOnChange(request, 'dateOfVisit')
+      }
+
+      const reviewTestResultsValue = reviewTestResults ?? reviewWithinLast10Months?.data?.testResults
+
+      setEndemicsClaim(
+        request,
+        reviewTestResultsKey,
+        reviewTestResultsValue
       )
-    )
-  }
 
-  if (!isSheep && isEndemicsFollowUp) {
-    const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)
-
-    if (!piHuntEnabledAndVisitDateAfterGoLive) {
-      clearPiHuntSessionOnChange(request, 'dateOfVisit')
-    }
-
-    const reviewTestResultsValue = reviewTestResults ?? getReviewTestResultWithinLast10Months(request)
-
-    setEndemicsClaim(
-      request,
-      reviewTestResultsKey,
-      reviewTestResultsValue
-    )
-
-    if (isCows(typeOfLivestock) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
-      return `${config.urlPrefix}/${endemicsSpeciesNumbers}`
+      if (isCows(typeOfLivestock) && (piHuntEnabledAndVisitDateAfterGoLive || reviewTestResultsValue === 'negative')) {
+        return `${config.urlPrefix}/${endemicsSpeciesNumbers}`
+      }
     }
   }
 

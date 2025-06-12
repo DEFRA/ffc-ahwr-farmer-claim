@@ -204,7 +204,7 @@ describe('session', () => {
     session.removeSessionDataForSelectHerdChange(request)
 
     expect(request.yar.clear).toHaveBeenCalledTimes(1)
-    expect(request.yar.set).toHaveBeenCalledTimes(10)
+    expect(request.yar.set).toHaveBeenCalledTimes(11)
     // verify last call includes only correct keys/values
     expect(yarMock.set.mock.lastCall).toEqual(['endemicsClaim', {
       organisation: sessionDataBeforeCall.organisation,
@@ -249,7 +249,7 @@ describe('session', () => {
     session.removeSessionDataForSameHerdChange(request)
 
     expect(request.yar.clear).toHaveBeenCalledTimes(1)
-    expect(request.yar.set).toHaveBeenCalledTimes(16)
+    expect(request.yar.set).toHaveBeenCalledTimes(18)
     // verify last call includes only correct keys/values
     expect(yarMock.set.mock.lastCall).toEqual(['endemicsClaim', {
       organisation: sessionDataBeforeCall.organisation,

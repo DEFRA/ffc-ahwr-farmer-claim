@@ -32,7 +32,8 @@ const {
     herdCph: herdCphKey,
     herdOthersOnSbi: herdOthersOnSbiKey,
     herdReasons: herdReasonsKey,
-    herdSame: herdSameKey
+    herdSame: herdSameKey,
+    vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey
   }
 } = sessionKeys
 
@@ -100,12 +101,6 @@ export function removeSessionDataForSelectHerdChange (request) {
   setEndemicsClaim(request, previousClaimsKey, endemicsClaim?.previousClaims, { shouldEmitEvent: false })
   setEndemicsClaim(request, referenceKey, endemicsClaim?.reference, { shouldEmitEvent: false })
 
-  // TODO RJ can lose.. vetVisitsReviewTestResultsKey/relevantReviewForEndemicsKey - (isBeef || isDairy) ? endemicsWhichTypeOfReview : endemicsVetRCVS
-  // TODO RJ same-herd needs to set temp or unnamed as herdId in session
-  // TODO RJ reviewTestResultsKey - being set in correct places, all 3, just using herdId when shouldn't
-  // TODO RJ using unnamed and temp herdIds correctly, same-herd
-
-
   setEndemicsClaim(request, typeOfLivestockKey, endemicsClaim?.typeOfLivestock, { shouldEmitEvent: false })
   setEndemicsClaim(request, typeOfReviewKey, endemicsClaim?.typeOfReview, { shouldEmitEvent: false })
   setEndemicsClaim(request, dateOfVisitKey, endemicsClaim?.dateOfVisit, { shouldEmitEvent: false })
@@ -138,6 +133,8 @@ export function removeSessionDataForSameHerdChange (request) {
   setEndemicsClaim(request, herdCphKey, endemicsClaim?.herdCph, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdOthersOnSbiKey, endemicsClaim?.herdOthersOnSbi, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdReasonsKey, endemicsClaim?.herdReasons, { shouldEmitEvent: false })
+
+  setEndemicsClaim(request, vetVisitsReviewTestResultsKey, endemicsClaim?.vetVisitsReviewTestResults, { shouldEmitEvent: false })
 }
 
 export const removeMultipleHerdsSessionData = (request, sessionEndemicsClaim) => {
