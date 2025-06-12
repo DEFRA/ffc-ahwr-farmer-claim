@@ -6,7 +6,8 @@ import {
   isVisitDateAfterPIHuntAndDairyGoLive,
   skipSameHerdPage,
   skipOtherHerdsOnSbiPage,
-  isMultipleHerdsUserJourney
+  isMultipleHerdsUserJourney,
+  getReviewHerdId
 } from '../../../../app/lib/context-helper.js'
 import { config } from '../../../../app/config/index.js'
 import { getClaimsByApplicationReference } from '../../../../app/api-requests/claim-service-api.js'
@@ -307,5 +308,34 @@ describe('context-helper', () => {
     config.multiHerds.enabled = true
 
     expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [{ appliesToMh: false }])).toBe(true)
+  })
+
+  describe('getReviewHerdId', () => {
+    it('returns herdId when it is not equal to unnamedHerdId or tempHerdId', () => {
+      const result = getReviewHerdId({
+        herdId: 'abc123',
+        tempHerdId: 'temp456',
+        unnamedHerdId: 'unnamed789'
+      })
+      expect(result).toBe('abc123')
+    })
+
+    it('returns undefined when herdId equals tempHerdId', () => {
+      const result = getReviewHerdId({
+        herdId: 'temp456',
+        tempHerdId: 'temp456',
+        unnamedHerdId: 'unnamed789'
+      })
+      expect(result).toBeUndefined()
+    })
+
+    it('returns undefined when herdId equals unnamedHerdId', () => {
+      const result = getReviewHerdId({
+        herdId: 'unnamed789',
+        tempHerdId: 'temp456',
+        unnamedHerdId: 'unnamed789'
+      })
+      expect(result).toBeUndefined()
+    })
   })
 })

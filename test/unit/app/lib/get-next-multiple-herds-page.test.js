@@ -7,8 +7,14 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session'
 import { sessionKeys } from '../../../../app/session/keys'
 
 jest.mock('../../../../app/session')
-jest.mock('../../../../app/lib/context-helper.js')
 jest.mock('../../../../app/api-requests/claim-service-api.js')
+jest.mock('../../../../app/lib/context-helper.js', () => {
+  const actual = jest.requireActual('../../../../app/lib/context-helper.js')
+  return {
+    ...actual,
+    isVisitDateAfterPIHuntAndDairyGoLive: jest.fn()
+  }
+})
 
 describe('getNextMultipleHerdsPage', () => {
   const mockRequest = {}
