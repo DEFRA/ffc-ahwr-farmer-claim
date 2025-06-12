@@ -30,6 +30,7 @@ export const getNextMultipleHerdsPage = (request) => {
   const { isSheep } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfClaim)
 
+  // TODO RJ this doesn't provide herdID but is called from check-herd-details?
   if (isEndemicsFollowUp) {
     setEndemicsClaim(
       request,
