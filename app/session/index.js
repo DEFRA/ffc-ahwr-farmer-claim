@@ -109,11 +109,12 @@ export function removeSessionDataForSelectHerdChange (request) {
   setEndemicsClaim(request, herdsKey, endemicsClaim?.herds, { shouldEmitEvent: false })
 
   setEndemicsClaim(request, vetVisitsReviewTestResultsKey, endemicsClaim?.vetVisitsReviewTestResults, { shouldEmitEvent: false })
+
+  return endemicsClaim
 }
 
 export function removeSessionDataForSameHerdChange (request) {
-  removeSessionDataForSelectHerdChange(request)
-  const endemicsClaim = getEndemicsClaim(request)
+  const endemicsClaim = removeSessionDataForSelectHerdChange(request)
 
   setEndemicsClaim(request, herdIdKey, endemicsClaim?.herdId, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdVersionKey, endemicsClaim?.herdVersion, { shouldEmitEvent: false })
