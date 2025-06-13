@@ -184,12 +184,6 @@ describe('Claim Service API', () => {
     expect(isDateOfTestingLessThanDateOfVisit('2024-10-04', '2023-10-23')).toBe(true)
   })
 
-  test('Check if date of visit is valid for when type of review is not review or endemics', async () => {
-    const { isValidDateOfVisit } = require('../../../../app/api-requests/claim-service-api')
-
-    expect(isValidDateOfVisit('T')).toMatchObject({ isValid: false })
-  })
-
   test('Check if is first time endemic claim for active old world review claim', () => {
     getEndemicsClaim.mockReturnValueOnce({ typeOfReview: 'E', typeOfLivestock: 'beef', latestVetVisitApplication: { data: { whichReview: 'beef' } }, previousClaims: [] })
 

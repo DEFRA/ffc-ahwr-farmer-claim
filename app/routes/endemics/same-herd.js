@@ -9,6 +9,8 @@ import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
+import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
+import { getUnnamedHerdId } from '../../lib/get-unnamed-herd-id.js'
 
 const { urlPrefix } = config
 const {
@@ -29,7 +31,8 @@ const {
   endemicsClaim: {
     herdSame: herdSameKey,
     dateOfVisit: dateOfVisitKey,
-    typeOfReview: typeOfReviewKey
+    typeOfReview: typeOfReviewKey,
+    herdId: herdIdKey
   }
 } = sessionKeys
 
@@ -114,11 +117,14 @@ const postHandler = {
         dateOfVisit,
         organisation,
         typeOfLivestock,
-        latestVetVisitApplication: oldWorldApplication
+        latestVetVisitApplication: oldWorldApplication,
+        unnamedHerdId,
+        tempHerdId
       } = getEndemicsClaim(request)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
       if (herdSame === 'yes') {
+        setEndemicsClaim(request, herdIdKey, getUnnamedHerdId(request, unnamedHerdId), { shouldEmitEvent: false })
         const prevClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
         const errorMessage = canMakeClaim({ prevClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
@@ -143,24 +149,28 @@ const postHandler = {
         }
       }
 
-      if (herdSame === 'no' && isEndemicsFollowUp) {
-        raiseInvalidDataEvent(
-          request,
-          typeOfReviewKey,
-          'Cannot claim for endemics without a previous review.'
-        )
+      if (herdSame === 'no') {
+        setEndemicsClaim(request, herdIdKey, getTempHerdId(request, tempHerdId), { shouldEmitEvent: false })
 
-        return h
-          .view(`${endemicsSameHerdException}`, {
-            backLink: pageUrl,
-            errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
-            backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
-            backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
-            backToPageLink: whichTypeOfReviewPageUrl
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover()
+        if (isEndemicsFollowUp) {
+          raiseInvalidDataEvent(
+            request,
+            typeOfReviewKey,
+            'Cannot claim for endemics without a previous review.'
+          )
+
+          return h
+            .view(`${endemicsSameHerdException}`, {
+              backLink: pageUrl,
+              errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
+              ruralPaymentsAgency: config.ruralPaymentsAgency,
+              backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
+              backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
+              backToPageLink: whichTypeOfReviewPageUrl
+            })
+            .code(HttpStatus.BAD_REQUEST)
+            .takeover()
+        }
       }
 
       return h.redirect(getNextMultipleHerdsPage(request))

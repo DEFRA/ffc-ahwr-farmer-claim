@@ -17,7 +17,7 @@ import {
   isWithIn4MonthsBeforeOrAfterDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, getReviewHerdId } from '../../lib/context-helper.js'
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 
 const { ruralPaymentsAgency, urlPrefix } = config
@@ -353,7 +353,10 @@ const postHandler = {
         typeOfReview,
         typeOfLivestock,
         previousClaims,
-        latestVetVisitApplication
+        latestVetVisitApplication,
+        herdId,
+        unnamedHerdId,
+        tempHerdId
       } = getEndemicsClaim(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
@@ -387,11 +390,13 @@ const postHandler = {
           .takeover()
       }
 
+      const reviewHerdId = getReviewHerdId({ herdId, tempHerdId, unnamedHerdId })
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
         previousClaims,
         latestVetVisitApplication,
-        typeOfLivestock
+        typeOfLivestock,
+        reviewHerdId
       )
 
       if (

@@ -102,7 +102,9 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
           { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
-        ]
+        ],
+        unnamedHerdId: 'unnamed-123',
+        tempHerdId: 'temp-456'
       })
       const payload = { herdSame: 'yes' }
 
@@ -110,8 +112,9 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-      expect(setEndemicsClaim).toBeCalledTimes(1)
+      expect(setEndemicsClaim).toBeCalledTimes(2)
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', 'unnamed-123', { shouldEmitEvent: false })
     })
 
     test('navigates to date of testing when herdSame is yes and type of claim is endemics', async () => {
@@ -124,7 +127,9 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
           { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
-        ]
+        ],
+        unnamedHerdId: 'unnamed-123',
+        tempHerdId: 'temp-456'
       })
       const prevReview = { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2024-01-01T00:00:00.000Z' } }
       getReviewWithinLast10Months.mockReturnValue(prevReview)
@@ -134,9 +139,35 @@ describe('select-the-herd tests', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
-      expect(setEndemicsClaim).toBeCalledTimes(2)
+      expect(setEndemicsClaim).toBeCalledTimes(3)
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', prevReview)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', 'unnamed-123', { shouldEmitEvent: false })
+    })
+
+    test('navigates to date of testing when herdSame is no and type of claim is review', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep',
+        previousClaims: [
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } },
+          { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep' } },
+          { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
+          { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
+        ],
+        unnamedHerdId: 'unnamed-123',
+        tempHerdId: 'temp-456'
+      })
+      const payload = { herdSame: 'no' }
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, ...payload }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
+      expect(setEndemicsClaim).toBeCalledTimes(2)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'no', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', 'temp-456', { shouldEmitEvent: false })
     })
 
     test('display errors with herds labels when payload does not contain herdSame and species is not sheep', async () => {

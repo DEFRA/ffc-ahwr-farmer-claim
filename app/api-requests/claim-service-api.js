@@ -2,13 +2,11 @@ import wreck from '@hapi/wreck'
 import appInsights from 'applicationinsights'
 import { config } from '../config/index.js'
 import { claimConstants } from '../constants/claim.js'
-import { status } from '../constants/constants.js'
 import { isWithin10Months } from '../lib/date-utils.js'
 import { getEndemicsClaim } from '../session/index.js'
 import { getReviewType } from '../lib/get-review-type.js'
 
 const { claimType, livestockTypes, dateOfVetVisitExceptions } = claimConstants
-const { REJECTED, READY_TO_PAY, PAID } = status
 
 export async function getClaimsByApplicationReference (applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/claim/get-by-application-reference/${applicationReference}`
@@ -118,8 +116,8 @@ export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisi
 }
 
 export const getReviewTestResultWithinLast10Months = (request) => {
-  const { dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock, herdId } = getEndemicsClaim(request)
-  const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock, herdId)
+  const { dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock } = getEndemicsClaim(request)
+  const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock)
   if (!reviewWithinLast10Months) return undefined
 
   return reviewWithinLast10Months?.data?.testResults
@@ -144,34 +142,6 @@ export const getDateOfVetVisitException = (claimType) => {
 export const isValidClaimWithin10Months = (claimType, dateOfVisit, previousClaims, vetVisitReview) => {
   const isValid = !isAClaimTypeWithin10Months(claimType, dateOfVisit, previousClaims, vetVisitReview)
   return { isValid, ...(!isValid && { reason: getDateOfVetVisitException(claimType) }) }
-}
-
-export const isValidDateOfVisit = (dateOfVisit, typeOfClaim, previousClaims, vetVisitReview) => {
-  switch (typeOfClaim) {
-    case claimType.review:
-      // Cannot have another review dateOfVisit +- 10 months
-      return isValidClaimWithin10Months(claimType.review, dateOfVisit, previousClaims, vetVisitReview)
-    case claimType.endemics: {
-      const pastClaims = previousClaims?.filter((prevClaim) => new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit))
-      if (isAClaimTypeWithin10Months(claimType.review, dateOfVisit, pastClaims, vetVisitReview)) {
-        // Review within 10 months is REJECTED
-        if (getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId === REJECTED) {
-          return { isValid: false, reason: dateOfVetVisitExceptions.rejectedReview }
-        }
-        // Claim endemics before review status is READY_TO_PAY
-        if (![READY_TO_PAY, PAID].includes(getReviewWithinLast10Months(dateOfVisit, previousClaims, vetVisitReview)?.statusId)) {
-          return { isValid: false, reason: dateOfVetVisitExceptions.claimEndemicsBeforeReviewPayment }
-        }
-        // Cannot have another endemics dateOfVisit +- 10 months
-        return isValidClaimWithin10Months(claimType.endemics, dateOfVisit, previousClaims, vetVisitReview)
-      }
-      // Need a review within the last 10 months for an endemics
-      return { isValid: false, reason: dateOfVetVisitExceptions.noReview }
-    }
-    default:
-      // typeOfClaim was not review or endemics
-      return { isValid: false }
-  }
 }
 
 export const isCattleEndemicsClaimForOldWorldReview = (request) => {
