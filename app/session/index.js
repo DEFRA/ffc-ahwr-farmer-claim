@@ -112,22 +112,8 @@ export function removeSessionDataForSelectHerdChange (request) {
 }
 
 export function removeSessionDataForSameHerdChange (request) {
+  removeSessionDataForSelectHerdChange(request)
   const endemicsClaim = getEndemicsClaim(request)
-
-  request.yar.clear(entries.endemicsClaim)
-
-  setEndemicsClaim(request, organisationKey, endemicsClaim?.organisation, { shouldEmitEvent: false })
-  setEndemicsClaim(request, latestVetVisitApplicationKey, endemicsClaim?.latestVetVisitApplication, { shouldEmitEvent: false })
-  setEndemicsClaim(request, latestEndemicsApplicationKey, endemicsClaim?.latestEndemicsApplication, { shouldEmitEvent: false })
-  setEndemicsClaim(request, previousClaimsKey, endemicsClaim?.previousClaims, { shouldEmitEvent: false })
-  setEndemicsClaim(request, referenceKey, endemicsClaim?.reference, { shouldEmitEvent: false })
-
-  setEndemicsClaim(request, typeOfLivestockKey, endemicsClaim?.typeOfLivestock, { shouldEmitEvent: false })
-  setEndemicsClaim(request, typeOfReviewKey, endemicsClaim?.typeOfReview, { shouldEmitEvent: false })
-  setEndemicsClaim(request, dateOfVisitKey, endemicsClaim?.dateOfVisit, { shouldEmitEvent: false })
-  setEndemicsClaim(request, tempHerdIdKey, endemicsClaim?.tempHerdId, { shouldEmitEvent: false })
-  setEndemicsClaim(request, unnamedHerdIdKey, endemicsClaim?.unnamedHerdId, { shouldEmitEvent: false })
-  setEndemicsClaim(request, herdsKey, endemicsClaim?.herds, { shouldEmitEvent: false })
 
   setEndemicsClaim(request, herdIdKey, endemicsClaim?.herdId, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdVersionKey, endemicsClaim?.herdVersion, { shouldEmitEvent: false })
@@ -135,8 +121,6 @@ export function removeSessionDataForSameHerdChange (request) {
   setEndemicsClaim(request, herdCphKey, endemicsClaim?.herdCph, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdOthersOnSbiKey, endemicsClaim?.herdOthersOnSbi, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdReasonsKey, endemicsClaim?.herdReasons, { shouldEmitEvent: false })
-
-  setEndemicsClaim(request, vetVisitsReviewTestResultsKey, endemicsClaim?.vetVisitsReviewTestResults, { shouldEmitEvent: false })
 }
 
 export const removeMultipleHerdsSessionData = (request, sessionEndemicsClaim) => {
