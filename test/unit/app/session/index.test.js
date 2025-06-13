@@ -224,7 +224,7 @@ describe('session', () => {
     }])
   })
 
-  test.only('session removeSessionDataForSameHerdChange clears and keeps correct keys', async () => {
+  test('session removeSessionDataForSameHerdChange clears and keeps correct keys', async () => {
     const sessionDataBeforeCall = {
       organisation: 'dummy-organisation',
       latestVetVisitApplication: { dummy: 'dummy-latestVetVisitApplication' },
