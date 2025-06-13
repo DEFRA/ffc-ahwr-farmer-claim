@@ -193,7 +193,8 @@ describe('session', () => {
       dateOfVisit: 'dummy-dateOfVisit',
       tempHerdId: 'dummy-tempHerdId',
       herds: [{ dummy: 'dummy-herds' }],
-      dummy: 'dummy-should-be-removed'
+      dummy: 'dummy-should-be-removed',
+      unnamedHerdId: 'dummy-unnamedHerdId'
     }
     const yarMock = { get: jest.fn(), set: jest.fn(), clear: jest.fn() }
     yarMock.get
@@ -216,7 +217,8 @@ describe('session', () => {
       typeOfReview: sessionDataBeforeCall.typeOfReview,
       dateOfVisit: sessionDataBeforeCall.dateOfVisit,
       tempHerdId: sessionDataBeforeCall.tempHerdId,
-      herds: sessionDataBeforeCall.herds
+      herds: sessionDataBeforeCall.herds,
+      unnamedHerdId: sessionDataBeforeCall.unnamedHerdId
     }])
   })
 
@@ -238,7 +240,9 @@ describe('session', () => {
       herdCph: 'dummy-herdCph',
       herdOthersOnSbi: 'dummy-herdOthersOnSbi',
       herdReasons: 'dummy-herdReasons',
-      dummy: 'dummy-should-be-removed'
+      dummy: 'dummy-should-be-removed',
+      unnamedHerdId: 'dummy-unnamedHerdId',
+      vetVisitsReviewTestResults: 'dummy-vetVisitsReviewTestResults'
     }
     const yarMock = { get: jest.fn(), set: jest.fn(), clear: jest.fn() }
     yarMock.get
@@ -267,7 +271,9 @@ describe('session', () => {
       herdName: sessionDataBeforeCall.herdName,
       herdCph: sessionDataBeforeCall.herdCph,
       herdOthersOnSbi: sessionDataBeforeCall.herdOthersOnSbi,
-      herdReasons: sessionDataBeforeCall.herdReasons
+      herdReasons: sessionDataBeforeCall.herdReasons,
+      unnamedHerdId: sessionDataBeforeCall.unnamedHerdId,
+      vetVisitsReviewTestResults: sessionDataBeforeCall.vetVisitsReviewTestResults
     }])
   })
 })
