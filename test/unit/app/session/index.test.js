@@ -21,7 +21,6 @@ describe('session', () => {
 
   const setFunctionsToTest = [
     { func: 'setEndemicsClaim', expectedSectionKey: endemicsClaimKey },
-    { func: 'setClaim', expectedSectionKey: claimKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
     { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey },
@@ -240,7 +239,7 @@ describe('session', () => {
       herdVersion: 'dummy-herdVersion',
       herdName: 'dummy-herdName',
       herdCph: 'dummy-herdCph',
-      herdOthersOnSbi: 'dummy-herdOthersOnSbi',
+      isOnlyHerdOnSbi: 'dummy-isOnlyHerdOnSbi',
       herdReasons: 'dummy-herdReasons',
       dummy: 'dummy-should-be-removed',
       unnamedHerdId: 'dummy-unnamedHerdId',
@@ -272,7 +271,7 @@ describe('session', () => {
       herdVersion: sessionDataBeforeCall.herdVersion,
       herdName: sessionDataBeforeCall.herdName,
       herdCph: sessionDataBeforeCall.herdCph,
-      herdOthersOnSbi: sessionDataBeforeCall.herdOthersOnSbi,
+      isOnlyHerdOnSbi: sessionDataBeforeCall.isOnlyHerdOnSbi,
       herdReasons: sessionDataBeforeCall.herdReasons,
       unnamedHerdId: sessionDataBeforeCall.unnamedHerdId,
       vetVisitsReviewTestResults: sessionDataBeforeCall.vetVisitsReviewTestResults

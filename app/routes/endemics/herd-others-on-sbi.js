@@ -4,10 +4,9 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
-import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { ONLY_HERD_ON_SBI, ONLY_HERD } from '../../constants/constants.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
-import { ONLY_HERD } from '../../constants/constants.js'
 
 const { urlPrefix } = config
 const {
@@ -22,7 +21,7 @@ const previousPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
 const enterEnterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
 const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
 
-const { endemicsClaim: { herdOthersOnSbi: herdOthersOnSbiKey, herdReasons: herdReasonsKey } } = sessionKeys
+const { endemicsClaim: { isOnlyHerdOnSbi: isOnlyHerdOnSbiKey, herdReasons: herdReasonsKey } } = sessionKeys
 
 const getSpeciesGroupText = (typeOfLivestock) => {
   const textByLivestock = {
@@ -40,10 +39,10 @@ const getHandler = {
   options: {
     tags: ['mh'],
     handler: async (request, h) => {
-      const { herdOthersOnSbi, typeOfLivestock } = getEndemicsClaim(request)
+      const { isOnlyHerdOnSbi, typeOfLivestock } = getEndemicsClaim(request)
       return h.view(endemicsHerdOthersOnSbi, {
         backLink: previousPageUrl,
-        herdOthersOnSbi,
+        isOnlyHerdOnSbi,
         herdOrFlock: getHerdOrFlock(typeOfLivestock),
         speciesGroupText: getSpeciesGroupText(typeOfLivestock)
       })
@@ -57,7 +56,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        herdOthersOnSbi: Joi.string().required()
+        isOnlyHerdOnSbi: Joi.string().required()
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
@@ -67,7 +66,7 @@ const postHandler = {
           ...request.payload,
           errorMessage: {
             text: `Select yes if this is the only ${getSpeciesGroupText(typeOfLivestock)} associated with this SBI`,
-            href: '#herdOthersOnSbi'
+            href: '#isOnlyHerdOnSbi'
           },
           backLink: previousPageUrl,
           herdOrFlock: getHerdOrFlock(typeOfLivestock),
@@ -76,14 +75,12 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { herdOthersOnSbi } = request.payload
-      setEndemicsClaim(request, herdOthersOnSbiKey, herdOthersOnSbi, { shouldEmitEvent: false })
+      const { isOnlyHerdOnSbi } = request.payload
+      setEndemicsClaim(request, isOnlyHerdOnSbiKey, isOnlyHerdOnSbi, { shouldEmitEvent: false })
 
-      if (herdOthersOnSbi === OTHERS_ON_SBI.YES) {
+      if (isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES) {
         setEndemicsClaim(request, herdReasonsKey, [ONLY_HERD], { shouldEmitEvent: false })
-      } else {
         const { herdId, herdVersion } = getEndemicsClaim(request)
-
         await sendHerdEvent({
           request,
           type: 'herd-reasons',
@@ -100,9 +97,11 @@ const postHandler = {
             herdReasonOther: false
           }
         })
+
+        return h.redirect(checkHerdDetailsPageUrl)
       }
 
-      return h.redirect(herdOthersOnSbi === OTHERS_ON_SBI.YES ? checkHerdDetailsPageUrl : enterEnterHerdDetailsPageUrl)
+      return h.redirect(enterEnterHerdDetailsPageUrl)
     }
   }
 }

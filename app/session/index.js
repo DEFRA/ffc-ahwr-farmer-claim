@@ -30,7 +30,7 @@ const {
     herdVersion: herdVersionKey,
     herdName: herdNameKey,
     herdCph: herdCphKey,
-    herdOthersOnSbi: herdOthersOnSbiKey,
+    isOnlyHerdOnSbi: isOnlyHerdOnSbiKey,
     herdReasons: herdReasonsKey,
     herdSame: herdSameKey,
     vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey
@@ -64,10 +64,6 @@ export function clear (request) {
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
   request.yar.clear(entries.tempClaimReference)
-}
-
-export function setClaim (request, key, value) {
-  set(request, entries.claim, key, value)
 }
 
 export function getClaim (request, key) {
@@ -120,7 +116,7 @@ export function removeSessionDataForSameHerdChange (request) {
   setEndemicsClaim(request, herdVersionKey, endemicsClaim?.herdVersion, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdNameKey, endemicsClaim?.herdName, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdCphKey, endemicsClaim?.herdCph, { shouldEmitEvent: false })
-  setEndemicsClaim(request, herdOthersOnSbiKey, endemicsClaim?.herdOthersOnSbi, { shouldEmitEvent: false })
+  setEndemicsClaim(request, isOnlyHerdOnSbiKey, endemicsClaim?.isOnlyHerdOnSbi, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdReasonsKey, endemicsClaim?.herdReasons, { shouldEmitEvent: false })
 }
 
@@ -129,25 +125,25 @@ export const removeMultipleHerdsSessionData = (request, sessionEndemicsClaim) =>
   sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined, { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.isOnlyHerdOnSbi && setEndemicsClaim(request, isOnlyHerdOnSbiKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined, { shouldEmitEvent: false })
 }
 
-export function setTempClaimReference (request, key, value) {
-  set(request, entries.tempClaimReference, key, value)
+export function setTempClaimReference (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.tempClaimReference, key, value, shouldEmitEvent)
 }
 
-export function setToken (request, key, value) {
-  set(request, entries.tokens, key, value)
+export function setToken (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.tokens, key, value, shouldEmitEvent)
 }
 
 export function getToken (request, key) {
   return get(request, entries.tokens, key)
 }
 
-export function setCustomer (request, key, value) {
-  set(request, entries.customer, key, value)
+export function setCustomer (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.customer, key, value, shouldEmitEvent)
 }
 
 export function getCustomer (request, key) {

@@ -21,6 +21,11 @@ export const status = {
 
 export const ONLY_HERD = 'onlyHerd'
 
+export const ONLY_HERD_ON_SBI = {
+  YES: 'yes',
+  NO: 'no'
+}
+
 export const MULTIPLE_SPECIES_RELEASE_DATE = new Date('2025-02-26T00:00:00')
 
 export const MULTIPLE_HERDS_RELEASE_DATE = new Date(config.multiHerds.releaseDate)
