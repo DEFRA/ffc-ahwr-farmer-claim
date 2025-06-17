@@ -57,7 +57,12 @@ export const getNextMultipleHerdsPage = (request) => {
       }
 
       const reviewTestResultsValue = reviewTestResults ?? reviewWithinLast10Months?.data?.testResults
-
+      console.log({
+        reviewTestResults,
+        reviewWithinLast10MonthsTestResults: reviewWithinLast10Months?.data?.testResults,
+        reviewTestResultsValue,
+        reviewWithinLast10Months
+      })
       setEndemicsClaim(
         request,
         reviewTestResultsKey,
