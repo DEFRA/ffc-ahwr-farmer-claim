@@ -9,8 +9,7 @@ import { claimConstants } from '../../constants/claim.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewType } from '../../lib/get-review-type.js'
-import { ONLY_HERD } from '../../constants/constants.js'
-import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { ONLY_HERD, ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { formatDate, getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getUnnamedHerdId } from '../../lib/get-unnamed-herd-id.js'
 
@@ -42,7 +41,7 @@ const {
     herdCph: herdCphKey,
     herdReasons: herdReasonsKey,
     dateOfVisit: dateOfVisitKey,
-    herdOthersOnSbi: herdOthersOnSbiKey,
+    isOnlyHerdOnSbi: isOnlyHerdOnSbiKey,
     herdSame: herdSameKey
   }
 } = sessionKeys
@@ -118,10 +117,10 @@ const addHerdToSession = (request, existingHerd, herds) => {
     setEndemicsClaim(request, herdNameKey, existingHerd.herdName, { shouldEmitEvent: false })
     setEndemicsClaim(request, herdCphKey, existingHerd.cph, { shouldEmitEvent: false })
     setEndemicsClaim(request, herdReasonsKey, existingHerd.herdReasons, { shouldEmitEvent: false })
-    setEndemicsClaim(request, herdOthersOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? OTHERS_ON_SBI.YES : OTHERS_ON_SBI.NO, { shouldEmitEvent: false })
+    setEndemicsClaim(request, isOnlyHerdOnSbiKey, existingHerd.herdReasons?.[0] === ONLY_HERD ? ONLY_HERD_ON_SBI.YES : ONLY_HERD_ON_SBI.NO, { shouldEmitEvent: false })
   } else {
     if (herds.length) {
-      setEndemicsClaim(request, herdOthersOnSbiKey, OTHERS_ON_SBI.NO, { shouldEmitEvent: false })
+      setEndemicsClaim(request, isOnlyHerdOnSbiKey, ONLY_HERD_ON_SBI.NO, { shouldEmitEvent: false })
     }
     setEndemicsClaim(request, herdVersionKey, 1, { shouldEmitEvent: false })
   }

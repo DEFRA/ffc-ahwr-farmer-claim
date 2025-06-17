@@ -38,19 +38,19 @@
   }
 ] %}
 
-{% if herdOthersOnSbi %}
+{% if isOnlyHerdOnSbi %}
   {% set rows = rows.concat([
     {
       key: {
         text: "Only " ~ herdOrFlock ~ " associated with SBI"
       },
       value: {
-        text: herdOthersOnSbi | capitalize
+        text: isOnlyHerdOnSbi | capitalize
       },
       actions: {
         items: [
           {
-            href: herdOthersOnSbiLink,
+            href: isOnlyHerdOnSbiLink,
             text: "Change",
             visuallyHiddenText: "Only " ~ herdOrFlock ~ " associated with SBI"
           }

@@ -57,7 +57,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
 
@@ -83,7 +83,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
 
@@ -100,7 +100,7 @@ describe('check-herd-details tests', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('returns 200 and backLink to herdOthersOnSbi when herdOthersOnSbi is yes', async () => {
+    test('returns 200 and backLink to isOnlyHerdOnSbi when isOnlyHerdOnSbi is yes', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -109,7 +109,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'yes',
+        isOnlyHerdOnSbi: 'yes',
         herdReasons: ['differentBreed']
       })
 
@@ -125,7 +125,7 @@ describe('check-herd-details tests', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('returns 200 and backLink to enterHerdDetails when herdOthersOnSbi is no', async () => {
+    test('returns 200 and backLink to enterHerdDetails when isOnlyHerdOnSbi is no', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -134,7 +134,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
 
@@ -159,7 +159,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: [{
           herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
@@ -189,7 +189,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: []
       })
@@ -216,7 +216,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: [{
           herdId: '909bb722-3de1-443e-8304-0bba8fx5922050'
@@ -250,7 +250,7 @@ describe('check-herd-details tests', () => {
       herdVersion: 1,
       herdName: 'Commercial Herd',
       herdCph: '22/333/4444',
-      herdOthersOnSbi: 'no',
+      isOnlyHerdOnSbi: 'no',
       herdReasons: ['differentBreed'],
       previousClaims: [
         { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }
