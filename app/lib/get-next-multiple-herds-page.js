@@ -61,7 +61,7 @@ export const getNextMultipleHerdsPage = (request) => {
         reviewTestResults,
         reviewWithinLast10MonthsTestResults: reviewWithinLast10Months?.data?.testResults,
         reviewTestResultsValue,
-        reviewWithinLast10Months,
+        reviewWithinLast10Months
       })
       setEndemicsClaim(
         request,
