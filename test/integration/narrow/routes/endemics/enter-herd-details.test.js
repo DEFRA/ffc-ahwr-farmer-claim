@@ -61,6 +61,18 @@ describe('enter-herd-details tests', () => {
       const legendText = $('.govuk-fieldset__legend--m').text().trim()
       expect(legendText).toBe('The herd is a separate herd (epidemiologically distinct unit) of this species because:')
       expectPhaseBanner.ok($)
+
+      const actualHintTexts = $('.govuk-checkboxes__item')
+        .map((_, el) => $(el).find('.govuk-hint').text().trim())
+        .get()
+      const expectedHintTexts = [
+        'for example, year-round or block calving',
+        'for example, different vaccination schedules',
+        'for example, breed types kept completely separately',
+        'for example, breeding, conservation grazing, cultural or heritage purposes like showing',
+        'for example, at a different location, housing or grazing area'
+      ]
+      expect(actualHintTexts).toEqual(expectedHintTexts)
     })
 
     test('returns 200 with herd labels when species beef, also selects differentBreed and other', async () => {

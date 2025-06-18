@@ -27,6 +27,14 @@ const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 
 const getPreviousPageUrl = (herds, herdId) => skipOtherHerdsOnSbiPage(herds, herdId) ? enterCphNumberPageUrl : herdOtherOnSbiPageUrl
 
+const HINT_TEXT_BY_REASON = {
+  separateManagementNeeds: 'for example, year-round or block calving',
+  uniqueHealthNeeds: 'for example, different vaccination schedules',
+  differentBreed: 'for example, breed types kept completely separately',
+  differentPurpose: 'for example, breeding, conservation grazing, cultural or heritage purposes like showing',
+  keptSeparate: 'for example, at a different location, housing or grazing area'
+}
+
 const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
   const { herdId, herdReasons, typeOfLivestock, herds } = getEndemicsClaim(request)
   const selectedHerdReasons = ignoreHerdReasons ? [] : (herdReasons ?? [])
@@ -35,6 +43,9 @@ const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
     .map(([code, description]) => ({
       value: code,
       text: description,
+      hint: {
+        text: HINT_TEXT_BY_REASON[code] || ''
+      },
       checked: selectedHerdReasons.includes(code)
     }))
 
