@@ -33,7 +33,7 @@ const getHandler = {
     tags: ['mh'],
     handler: async (request, h) => {
       const { herdId, herdName, herdCph, herdReasons, isOnlyHerdOnSbi, typeOfLivestock, herds } = getEndemicsClaim(request)
-      const herdReasonsText = getHerdReasonsText(herdReasons)
+      const herdReasonsText = isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES ? undefined : getHerdReasonsText(herdReasons)
 
       return h.view(endemicsCheckHerdDetails, {
         backLink: isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.YES ? herdOthersOnSbiPageUrl : enterHerdDetailsPageUrl,
