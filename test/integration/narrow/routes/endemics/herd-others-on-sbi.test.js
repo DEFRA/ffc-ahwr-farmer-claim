@@ -69,7 +69,7 @@ describe('herd-others-on-sbi tests', () => {
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
-        herdOthersOnSbi: 'no'
+        isOnlyHerdOnSbi: 'no'
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -151,36 +151,36 @@ describe('herd-others-on-sbi tests', () => {
       crumb = await getCrumbs(server)
     })
 
-    test('navigates to enter herd details when no existing herd and they select no', async () => {
+    test('navigates to enter herd details when no existing herd and they select yes', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep'
       })
 
-      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdOthersOnSbi: 'no' }, headers: { cookie: `crumb=${crumb}` } })
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/enter-herd-details')
-      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
-      expect(sendHerdEvent).toHaveBeenCalled()
-    })
-
-    test('navigates to check herd details when no existing herd and they select yes', async () => {
-      getEndemicsClaim.mockReturnValue({
-        reference: 'TEMP-6GSE-PIR8',
-        typeOfReview: 'R',
-        typeOfLivestock: 'sheep'
-      })
-
-      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdOthersOnSbi: 'yes' }, headers: { cookie: `crumb=${crumb}` } })
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, isOnlyHerdOnSbi: 'yes' }, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
       expect(setEndemicsClaim).toHaveBeenCalledTimes(2)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'yes', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'yes', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['onlyHerd'], { shouldEmitEvent: false })
+      expect(sendHerdEvent).toHaveBeenCalled()
+    })
+
+    test('navigates to check herd details when no existing herd and they select no', async () => {
+      getEndemicsClaim.mockReturnValue({
+        reference: 'TEMP-6GSE-PIR8',
+        typeOfReview: 'R',
+        typeOfLivestock: 'sheep'
+      })
+
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, isOnlyHerdOnSbi: 'no' }, headers: { cookie: `crumb=${crumb}` } })
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/enter-herd-details')
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'no', { shouldEmitEvent: false })
       expect(sendHerdEvent).not.toHaveBeenCalled()
     })
 
@@ -196,7 +196,7 @@ describe('herd-others-on-sbi tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdOthersOnSbi"]').text()).toContain('Select yes if this is the only flock of sheep associated with this SBI')
+      expect($('a[href="#isOnlyHerdOnSbi"]').text()).toContain('Select yes if this is the only flock of sheep associated with this SBI')
       expect($('title').text().trim()).toContain('Is this the only flock of sheep associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-hint').text()).toContain('Tell us about this flock')
     })
@@ -213,7 +213,7 @@ describe('herd-others-on-sbi tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdOthersOnSbi"]').text()).toContain('Select yes if this is the only beef cattle herd associated with this SBI')
+      expect($('a[href="#isOnlyHerdOnSbi"]').text()).toContain('Select yes if this is the only beef cattle herd associated with this SBI')
       expect($('title').text().trim()).toContain('Is this the only beef cattle herd associated with this Single Business Identifier (SBI)? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-hint').text()).toContain('Tell us about this herd')
     })

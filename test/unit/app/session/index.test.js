@@ -21,7 +21,6 @@ describe('session', () => {
 
   const setFunctionsToTest = [
     { func: 'setEndemicsClaim', expectedSectionKey: endemicsClaimKey },
-    { func: 'setClaim', expectedSectionKey: claimKey },
     { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
     { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey },
@@ -193,7 +192,9 @@ describe('session', () => {
       dateOfVisit: 'dummy-dateOfVisit',
       tempHerdId: 'dummy-tempHerdId',
       herds: [{ dummy: 'dummy-herds' }],
-      dummy: 'dummy-should-be-removed'
+      dummy: 'dummy-should-be-removed',
+      unnamedHerdId: 'dummy-unnamedHerdId',
+      vetVisitsReviewTestResults: 'dummy-vetVisitsReviewTestResults'
     }
     const yarMock = { get: jest.fn(), set: jest.fn(), clear: jest.fn() }
     yarMock.get
@@ -204,7 +205,7 @@ describe('session', () => {
     session.removeSessionDataForSelectHerdChange(request)
 
     expect(request.yar.clear).toHaveBeenCalledTimes(1)
-    expect(request.yar.set).toHaveBeenCalledTimes(10)
+    expect(request.yar.set).toHaveBeenCalledTimes(12)
     // verify last call includes only correct keys/values
     expect(yarMock.set.mock.lastCall).toEqual(['endemicsClaim', {
       organisation: sessionDataBeforeCall.organisation,
@@ -216,7 +217,9 @@ describe('session', () => {
       typeOfReview: sessionDataBeforeCall.typeOfReview,
       dateOfVisit: sessionDataBeforeCall.dateOfVisit,
       tempHerdId: sessionDataBeforeCall.tempHerdId,
-      herds: sessionDataBeforeCall.herds
+      herds: sessionDataBeforeCall.herds,
+      unnamedHerdId: sessionDataBeforeCall.unnamedHerdId,
+      vetVisitsReviewTestResults: sessionDataBeforeCall.vetVisitsReviewTestResults
     }])
   })
 
@@ -236,9 +239,11 @@ describe('session', () => {
       herdVersion: 'dummy-herdVersion',
       herdName: 'dummy-herdName',
       herdCph: 'dummy-herdCph',
-      herdOthersOnSbi: 'dummy-herdOthersOnSbi',
+      isOnlyHerdOnSbi: 'dummy-isOnlyHerdOnSbi',
       herdReasons: 'dummy-herdReasons',
-      dummy: 'dummy-should-be-removed'
+      dummy: 'dummy-should-be-removed',
+      unnamedHerdId: 'dummy-unnamedHerdId',
+      vetVisitsReviewTestResults: 'dummy-vetVisitsReviewTestResults'
     }
     const yarMock = { get: jest.fn(), set: jest.fn(), clear: jest.fn() }
     yarMock.get
@@ -249,7 +254,7 @@ describe('session', () => {
     session.removeSessionDataForSameHerdChange(request)
 
     expect(request.yar.clear).toHaveBeenCalledTimes(1)
-    expect(request.yar.set).toHaveBeenCalledTimes(16)
+    expect(request.yar.set).toHaveBeenCalledTimes(18)
     // verify last call includes only correct keys/values
     expect(yarMock.set.mock.lastCall).toEqual(['endemicsClaim', {
       organisation: sessionDataBeforeCall.organisation,
@@ -266,8 +271,10 @@ describe('session', () => {
       herdVersion: sessionDataBeforeCall.herdVersion,
       herdName: sessionDataBeforeCall.herdName,
       herdCph: sessionDataBeforeCall.herdCph,
-      herdOthersOnSbi: sessionDataBeforeCall.herdOthersOnSbi,
-      herdReasons: sessionDataBeforeCall.herdReasons
+      isOnlyHerdOnSbi: sessionDataBeforeCall.isOnlyHerdOnSbi,
+      herdReasons: sessionDataBeforeCall.herdReasons,
+      unnamedHerdId: sessionDataBeforeCall.unnamedHerdId,
+      vetVisitsReviewTestResults: sessionDataBeforeCall.vetVisitsReviewTestResults
     }])
   })
 })

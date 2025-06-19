@@ -349,7 +349,7 @@ describe('select-the-herd tests', () => {
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'no', { shouldEmitEvent: false })
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: '2025-04-14T00:00:00.000Z',
         organisation: {
@@ -396,7 +396,7 @@ describe('select-the-herd tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalledTimes(4)
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', '100bb722-3de1-443e-8304-0bba8f922050', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'no', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: '2025-04-14T00:00:00.000Z',
@@ -447,7 +447,7 @@ describe('select-the-herd tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['onlyHerd'], { shouldEmitEvent: false })
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'yes', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'yes', { shouldEmitEvent: false })
     })
 
     test('navigates to check herd details when multiple herds exists and matches herd id', async () => {
@@ -487,7 +487,7 @@ describe('select-the-herd tests', () => {
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdCph', '22/333/4444', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdReasons', ['reasonOne'], { shouldEmitEvent: false })
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdOthersOnSbi', 'no', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'no', { shouldEmitEvent: false })
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: '2025-04-14T00:00:00.000Z',
         organisation: {

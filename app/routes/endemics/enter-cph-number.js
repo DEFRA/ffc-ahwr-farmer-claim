@@ -6,7 +6,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
-import { OTHERS_ON_SBI } from '../../constants/herd.js'
+import { ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
 
 const { urlPrefix } = config
@@ -72,14 +72,14 @@ const postHandler = {
     },
     handler: async (request, h) => {
       const { herdCph } = request.payload
-      const { herds, herdOthersOnSbi, herdId, herdVersion } = getEndemicsClaim(request)
+      const { herds, isOnlyHerdOnSbi, herdId, herdVersion } = getEndemicsClaim(request)
 
       setEndemicsClaim(request, herdCphKey, herdCph, { shouldEmitEvent: false })
       await sendHerdEvent({ request, type: 'herd-cph', message: 'Herd CPH collected from user', data: { herdId, herdVersion, herdCph } })
 
       let nextPageUrl
       if (skipOtherHerdsOnSbiPage(herds, herdId)) {
-        nextPageUrl = herdOthersOnSbi === OTHERS_ON_SBI.NO ? enterHerdDetailsPageUrl : checkHerdDetailsPageUrl
+        nextPageUrl = isOnlyHerdOnSbi === ONLY_HERD_ON_SBI.NO ? enterHerdDetailsPageUrl : checkHerdDetailsPageUrl
       } else {
         nextPageUrl = herdOthersOnSbiPageUrl
       }

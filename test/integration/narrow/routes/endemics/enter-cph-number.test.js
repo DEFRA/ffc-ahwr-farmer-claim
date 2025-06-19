@@ -148,7 +148,7 @@ describe('enter-cph-number tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         herds: [{ id: 'herd one' }],
-        herdOthersOnSbi: 'yes'
+        isOnlyHerdOnSbi: 'yes'
       })
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdCph: '22/333/4444' }, headers: { cookie: `crumb=${crumb}` } })
@@ -164,7 +164,7 @@ describe('enter-cph-number tests', () => {
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
         herds: [{ id: 'herd one' }],
-        herdOthersOnSbi: 'no'
+        isOnlyHerdOnSbi: 'no'
       })
 
       const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdCph: '22/333/4444' }, headers: { cookie: `crumb=${crumb}` } })

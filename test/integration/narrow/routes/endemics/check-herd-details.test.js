@@ -57,7 +57,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
 
@@ -83,7 +83,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
 
@@ -100,7 +100,7 @@ describe('check-herd-details tests', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('returns 200 and backLink to herdOthersOnSbi when herdOthersOnSbi is yes', async () => {
+    test('returns 200 and backLink to isOnlyHerdOnSbi when isOnlyHerdOnSbi is yes', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -109,8 +109,8 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'yes',
-        herdReasons: ['differentBreed']
+        isOnlyHerdOnSbi: 'yes',
+        herdReasons: ['onlyHerd']
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -120,12 +120,12 @@ describe('check-herd-details tests', () => {
       expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
       expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
-      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
       expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeFalsy()
       expectPhaseBanner.ok($)
     })
 
-    test('returns 200 and backLink to enterHerdDetails when herdOthersOnSbi is no', async () => {
+    test('returns 200 and backLink to enterHerdDetails when isOnlyHerdOnSbi is no', async () => {
       getEndemicsClaim.mockReturnValue({
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
@@ -134,7 +134,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed']
       })
 
@@ -145,8 +145,8 @@ describe('check-herd-details tests', () => {
       expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-herd-details')
       expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
-      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
       expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
       expectPhaseBanner.ok($)
     })
 
@@ -159,7 +159,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: [{
           herdId: '909bb722-3de1-443e-8304-0bba8fx5922050',
@@ -189,7 +189,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: []
       })
@@ -216,7 +216,7 @@ describe('check-herd-details tests', () => {
         herdVersion: 1,
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
-        herdOthersOnSbi: 'no',
+        isOnlyHerdOnSbi: 'no',
         herdReasons: ['differentBreed'],
         herds: [{
           herdId: '909bb722-3de1-443e-8304-0bba8fx5922050'
@@ -250,7 +250,7 @@ describe('check-herd-details tests', () => {
       herdVersion: 1,
       herdName: 'Commercial Herd',
       herdCph: '22/333/4444',
-      herdOthersOnSbi: 'no',
+      isOnlyHerdOnSbi: 'no',
       herdReasons: ['differentBreed'],
       previousClaims: [
         { createdAt: '2025-04-01T00:00:00.000Z', data: { typeOfReview: 'R', typeOfLivestock: 'beef' } }

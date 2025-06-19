@@ -24,14 +24,16 @@ const {
     typeOfReview: typeOfReviewKey,
     dateOfVisit: dateOfVisitKey,
     tempHerdId: tempHerdIdKey,
+    unnamedHerdId: unnamedHerdIdKey,
     herds: herdsKey,
     herdId: herdIdKey,
     herdVersion: herdVersionKey,
     herdName: herdNameKey,
     herdCph: herdCphKey,
-    herdOthersOnSbi: herdOthersOnSbiKey,
+    isOnlyHerdOnSbi: isOnlyHerdOnSbiKey,
     herdReasons: herdReasonsKey,
-    herdSame: herdSameKey
+    herdSame: herdSameKey,
+    vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey
   }
 } = sessionKeys
 
@@ -62,10 +64,6 @@ export function clear (request) {
   request.yar.clear(entries.application)
   request.yar.clear(entries.organisation)
   request.yar.clear(entries.tempClaimReference)
-}
-
-export function setClaim (request, key, value) {
-  set(request, entries.claim, key, value)
 }
 
 export function getClaim (request, key) {
@@ -103,31 +101,22 @@ export function removeSessionDataForSelectHerdChange (request) {
   setEndemicsClaim(request, typeOfReviewKey, endemicsClaim?.typeOfReview, { shouldEmitEvent: false })
   setEndemicsClaim(request, dateOfVisitKey, endemicsClaim?.dateOfVisit, { shouldEmitEvent: false })
   setEndemicsClaim(request, tempHerdIdKey, endemicsClaim?.tempHerdId, { shouldEmitEvent: false })
+  setEndemicsClaim(request, unnamedHerdIdKey, endemicsClaim?.unnamedHerdId, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdsKey, endemicsClaim?.herds, { shouldEmitEvent: false })
+
+  setEndemicsClaim(request, vetVisitsReviewTestResultsKey, endemicsClaim?.vetVisitsReviewTestResults, { shouldEmitEvent: false })
+
+  return endemicsClaim
 }
 
 export function removeSessionDataForSameHerdChange (request) {
-  const endemicsClaim = getEndemicsClaim(request)
-
-  request.yar.clear(entries.endemicsClaim)
-
-  setEndemicsClaim(request, organisationKey, endemicsClaim?.organisation, { shouldEmitEvent: false })
-  setEndemicsClaim(request, latestVetVisitApplicationKey, endemicsClaim?.latestVetVisitApplication, { shouldEmitEvent: false })
-  setEndemicsClaim(request, latestEndemicsApplicationKey, endemicsClaim?.latestEndemicsApplication, { shouldEmitEvent: false })
-  setEndemicsClaim(request, previousClaimsKey, endemicsClaim?.previousClaims, { shouldEmitEvent: false })
-  setEndemicsClaim(request, referenceKey, endemicsClaim?.reference, { shouldEmitEvent: false })
-
-  setEndemicsClaim(request, typeOfLivestockKey, endemicsClaim?.typeOfLivestock, { shouldEmitEvent: false })
-  setEndemicsClaim(request, typeOfReviewKey, endemicsClaim?.typeOfReview, { shouldEmitEvent: false })
-  setEndemicsClaim(request, dateOfVisitKey, endemicsClaim?.dateOfVisit, { shouldEmitEvent: false })
-  setEndemicsClaim(request, tempHerdIdKey, endemicsClaim?.tempHerdId, { shouldEmitEvent: false })
-  setEndemicsClaim(request, herdsKey, endemicsClaim?.herds, { shouldEmitEvent: false })
+  const endemicsClaim = removeSessionDataForSelectHerdChange(request)
 
   setEndemicsClaim(request, herdIdKey, endemicsClaim?.herdId, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdVersionKey, endemicsClaim?.herdVersion, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdNameKey, endemicsClaim?.herdName, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdCphKey, endemicsClaim?.herdCph, { shouldEmitEvent: false })
-  setEndemicsClaim(request, herdOthersOnSbiKey, endemicsClaim?.herdOthersOnSbi, { shouldEmitEvent: false })
+  setEndemicsClaim(request, isOnlyHerdOnSbiKey, endemicsClaim?.isOnlyHerdOnSbi, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdReasonsKey, endemicsClaim?.herdReasons, { shouldEmitEvent: false })
 }
 
@@ -136,25 +125,25 @@ export const removeMultipleHerdsSessionData = (request, sessionEndemicsClaim) =>
   sessionEndemicsClaim.herdId && setEndemicsClaim(request, herdIdKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdName && setEndemicsClaim(request, herdNameKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdCph && setEndemicsClaim(request, herdCphKey, undefined, { shouldEmitEvent: false })
-  sessionEndemicsClaim.herdOthersOnSbi && setEndemicsClaim(request, herdOthersOnSbiKey, undefined, { shouldEmitEvent: false })
+  sessionEndemicsClaim.isOnlyHerdOnSbi && setEndemicsClaim(request, isOnlyHerdOnSbiKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdReasons && setEndemicsClaim(request, herdReasonsKey, undefined, { shouldEmitEvent: false })
   sessionEndemicsClaim.herdSame && setEndemicsClaim(request, herdSameKey, undefined, { shouldEmitEvent: false })
 }
 
-export function setTempClaimReference (request, key, value) {
-  set(request, entries.tempClaimReference, key, value)
+export function setTempClaimReference (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.tempClaimReference, key, value, shouldEmitEvent)
 }
 
-export function setToken (request, key, value) {
-  set(request, entries.tokens, key, value)
+export function setToken (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.tokens, key, value, shouldEmitEvent)
 }
 
 export function getToken (request, key) {
   return get(request, entries.tokens, key)
 }
 
-export function setCustomer (request, key, value) {
-  set(request, entries.customer, key, value)
+export function setCustomer (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
+  set(request, entries.customer, key, value, shouldEmitEvent)
 }
 
 export function getCustomer (request, key) {
