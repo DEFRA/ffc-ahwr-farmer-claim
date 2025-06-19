@@ -110,7 +110,7 @@ describe('check-herd-details tests', () => {
         herdName: 'Commercial Herd',
         herdCph: '22/333/4444',
         isOnlyHerdOnSbi: 'yes',
-        herdReasons: ['differentBreed']
+        herdReasons: ['onlyHerd']
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -120,8 +120,8 @@ describe('check-herd-details tests', () => {
       expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/herd-others-on-sbi')
       expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
-      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
       expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeFalsy()
       expectPhaseBanner.ok($)
     })
 
@@ -145,8 +145,8 @@ describe('check-herd-details tests', () => {
       expect($('title').text().trim()).toContain('Check herd details - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-herd-details')
       expect(assertLinkExistsFor($, 'CPH number')).toBeTruthy()
-      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
       expect(assertLinkExistsFor($, 'Only herd associated with SBI')).toBeTruthy()
+      expect(assertLinkExistsFor($, 'herd details')).toBeTruthy()
       expectPhaseBanner.ok($)
     })
 
