@@ -1,11 +1,11 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Choose your livestock - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Choose your livestock - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
         text: "Back",
-        href: backLink
+        href: backLinkf
       }) }}
 {% endblock %}
 

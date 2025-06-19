@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Vet Visits Review Test Results - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Vet Visits Review Test Results - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
