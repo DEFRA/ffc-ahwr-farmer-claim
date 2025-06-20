@@ -254,7 +254,7 @@ describe('select-the-herd tests', () => {
       expect($('h1.govuk-heading-l').text().trim()).toBe('You cannot continue with your claim')
       const link = $('h1.govuk-heading-l').nextAll('p.govuk-body').first().find('a.govuk-link')
       expect(link.attr('href')).toBe('https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups')
-      expect(link.text().trim()).toBe('You must have an approved review claim for this species, before you can claim for a follow-up.')
+      expect(link.text().trim()).toBe('You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.')
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
     })
 
