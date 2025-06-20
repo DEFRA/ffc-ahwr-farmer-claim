@@ -136,7 +136,7 @@ const postHandler = {
           )
 
           return h
-            .view(`${endemicsSameHerdException}`, {
+            .view(endemicsSameHerdException, {
               backLink: pageUrl,
               errorMessage,
               ruralPaymentsAgency: config.ruralPaymentsAgency,
@@ -160,7 +160,7 @@ const postHandler = {
           )
 
           return h
-            .view(`${endemicsSameHerdException}`, {
+            .view(endemicsSameHerdException, {
               backLink: pageUrl,
               errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
               ruralPaymentsAgency: config.ruralPaymentsAgency,
