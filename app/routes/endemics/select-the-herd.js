@@ -187,8 +187,9 @@ const postHandler = {
       const { isReview } = getReviewType(typeOfReview)
 
       if (herdId === tempHerdId && typeOfReview === endemics) {
-        return h.view(endemicsSelectTheHerdException, {
+        return h.view(`${endemicsSelectTheHerdException}`, {
           backLink: pageUrl,
+          ruralPaymentsAgency: config.ruralPaymentsAgency,
           claimForAReviewLink: whichTypeOfReviewPageUrl
         })
           .code(HttpStatus.BAD_REQUEST)
