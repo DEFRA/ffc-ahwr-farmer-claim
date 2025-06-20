@@ -140,7 +140,7 @@ const postHandler = {
               backLink: pageUrl,
               errorMessage,
               ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: 'If you entered the wrong date, you\'ll need to go back and enter the correct date.',
+              backToPageText: `If you entered the wrong date, you'll need to go back and enter the correct date.`,
               backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
               backToPageLink: dateOfVisitPageUrl
             })
@@ -162,10 +162,10 @@ const postHandler = {
           return h
             .view(`${endemicsSameHerdException}`, {
               backLink: pageUrl,
-              errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
+              errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
               ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
-              backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
+              backToPageText: `If you entered the wrong date, you'll need to go back and enter the correct date.`,
+              backToPageMessage: 'Claim for a review',
               backToPageLink: whichTypeOfReviewPageUrl
             })
             .code(HttpStatus.BAD_REQUEST)
