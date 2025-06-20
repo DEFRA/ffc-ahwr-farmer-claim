@@ -164,7 +164,7 @@ const postHandler = {
               backLink: pageUrl,
               errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
               ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: `If you entered the wrong date, you'll need to go back and enter the correct date.`,
+              backToPageText: `If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.`,
               backToPageMessage: 'Claim for a review',
               backToPageLink: whichTypeOfReviewPageUrl
             })
