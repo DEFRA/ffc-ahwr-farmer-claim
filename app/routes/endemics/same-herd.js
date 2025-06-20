@@ -136,7 +136,7 @@ const postHandler = {
           )
 
           return h
-            .view(`${endemicsSameHerdException}`, {
+            .view(endemicsSameHerdException, {
               backLink: pageUrl,
               errorMessage,
               ruralPaymentsAgency: config.ruralPaymentsAgency,
@@ -160,12 +160,12 @@ const postHandler = {
           )
 
           return h
-            .view(`${endemicsSameHerdException}`, {
+            .view(endemicsSameHerdException, {
               backLink: pageUrl,
-              errorMessage: 'You must have an approved review claim for this species, before you can claim for a follow-up.',
+              errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
               ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: 'If you selected the wrong type of claim, you\'ll need to go back and select the correct type of claim.',
-              backToPageMessage: 'Tell us if you are claiming for a review or follow up.',
+              backToPageText: 'If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.',
+              backToPageMessage: 'Claim for a review',
               backToPageLink: whichTypeOfReviewPageUrl
             })
             .code(HttpStatus.BAD_REQUEST)
