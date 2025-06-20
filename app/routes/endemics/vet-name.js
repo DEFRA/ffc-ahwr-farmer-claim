@@ -64,7 +64,7 @@ const postHandler = {
           .view(endemicsVetName, {
             ...request.payload,
             backLink: backLink(request),
-            errorMessage: { text: err.details[0].message, href: `#${vetsNameKey}}` }
+            errorMessage: { text: err.details[0].message, href: `#${vetsNameKey}` }
           })
           .code(400)
           .takeover()

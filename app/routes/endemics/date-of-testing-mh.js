@@ -273,7 +273,7 @@ const postHandler = {
             text: error.details.find(
               (e) => e.context.label === 'whenTestingWasCarriedOut'
             ).message,
-            href: '#when-was-endemic-disease-or-condition-testing-carried-out'
+            href: '#whenTestingWasCarriedOut'
           })
         }
 
@@ -281,7 +281,7 @@ const postHandler = {
           error,
           onAnotherDateInputId,
           'ifTheDateIsIncomplete',
-          '#when-was-endemic-disease-or-condition-testing-carried-out'
+          '#whenTestingWasCarriedOut'
         )
         if (Object.keys(newError).length > 0 && newError.constructor === Object) { errorSummary.push(newError) }
 

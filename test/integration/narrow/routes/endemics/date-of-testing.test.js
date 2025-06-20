@@ -161,7 +161,7 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
     beforeEach(async () => {
       crumb = await getCrumbs(server)
     })
-    const errorSummaryHref = '#when-was-endemic-disease-or-condition-testing-carried-out'
+    const errorSummaryHref = '#whenTestingWasCarriedOut'
     test('when not logged in redirects to defra id', async () => {
       const options = {
         method: 'POST',

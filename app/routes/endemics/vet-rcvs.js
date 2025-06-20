@@ -83,7 +83,7 @@ const postHandler = {
           .view(endemicsVetRCVS, {
             ...request.payload,
             backLink,
-            errorMessage: { text: err.details[0].message, href: `#${vetRCVSNumberKey}}` }
+            errorMessage: { text: err.details[0].message, href: `#${vetRCVSNumberKey}` }
           })
           .code(400)
           .takeover()

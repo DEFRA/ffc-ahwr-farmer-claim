@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}Is this the only {{ speciesGroupText }} associated with this Single Business Identifier (SBI)? - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Is this the only {{ speciesGroupText }} associated with this Single Business Identifier (SBI)? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
