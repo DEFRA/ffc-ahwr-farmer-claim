@@ -73,13 +73,6 @@ const postHandler = {
         return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
 
-      console.log({
-        piHuntEnabledAndVisitDateAfterGoLive,
-        isPositive,
-        isNegative,
-        reviewTestResults,
-        dateOfVisit
-      })
 
       if (piHuntEnabledAndVisitDateAfterGoLive && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
       if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsPIHuntRecommended}`)
