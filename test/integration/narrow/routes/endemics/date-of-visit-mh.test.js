@@ -1713,6 +1713,117 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
   })
+
+  test('should redirect to species-numbers page when follow-up against a pre-MH review, after making post-MH review for another group of animals, and visit date is pre-MH golive', async () => {
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'REBC-CBLH-B9BB',
+            applicationReference: 'IAHW-T1EX-1R33',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2025-05-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2025-05-01',
+              herdId: 'fake-herd-id'
+            }
+          },
+          {
+            reference: 'REBC-CBLH-A9AA',
+            applicationReference: 'IAHW-T1EX-1R33',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'dairy',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-CBLH-C9CC',
+        latestEndemicsApplication,
+        dateOfVisit: '2025-04-30'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '30',
+        [labels.month]: '04',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/species-numbers')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 3, 30))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('should error when trying to follow-up against post-MH review and visit date is pre-MH golive', async () => {
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'REBC-CBLH-B9BB',
+            applicationReference: 'IAHW-T1EX-1R33',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2025-05-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2025-05-01',
+              herdId: 'fake-herd-id'
+            }
+          }
+        ],
+        typeOfLivestock: 'dairy',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-CBLH-C9CC',
+        latestEndemicsApplication,
+        dateOfVisit: '2025-04-30'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '30',
+        [labels.month]: '04',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+    expect(res.statusCode).toBe(400)
+    expect($('.govuk-heading-l').text().trim()).toEqual('You cannot continue with your claim')
+    expect($('.govuk-link').filter(function () { return $(this).text().trim() === 'The follow-up must be after your review' }).length).toBe(1)
+  })
 })
 
 describe('previousPageUrl', () => {
