@@ -1714,7 +1714,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
   })
 
-  test('should redirect to species-numbers page when follow-up against a pre-MH review, after making post-MH review for another group of animals, and visit date is pre-MH golive', async () => {
+  test('should redirect to species-numbers page when making a follow-up claim with visit date of pre-MH golive, against a pre-MH review, and already made post-MH review for another herd', async () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
