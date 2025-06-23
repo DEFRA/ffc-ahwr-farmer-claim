@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{{ typeOfLivestock }} Number - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}{{ typeOfLivestock }} Number - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -18,7 +18,7 @@
         titleText: "There is a problem",
         errorList:[{
             text: errorMessage.text,
-            href: "#terms"
+            href: "#speciesNumbers"
         }]
       }) }}
     {% endif %}
