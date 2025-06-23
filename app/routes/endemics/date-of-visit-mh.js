@@ -16,6 +16,7 @@ import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
+import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-herd.js'
 
 const {
   endemicsClaim: {
@@ -256,11 +257,12 @@ const postHandler = {
         return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
 
-      // all of below only applies when user rejects T&Cs
+      // all of below only applies when user rejects T&Cs or the visit date is pre-MH golive
       removeMultipleHerdsSessionData(request, endemicsClaim)
 
-      const prevLivestockClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
-      const errorMessage = canMakeClaim({ prevClaims: prevLivestockClaims, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
+      const livestockClaimsForFirstHerd = getAllClaimsForFirstHerd(previousClaims, typeOfLivestock)
+
+      const errorMessage = canMakeClaim({ prevClaims: livestockClaimsForFirstHerd, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
       if (errorMessage) {
         raiseInvalidDataEvent(
