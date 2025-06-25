@@ -1822,7 +1822,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
     expect($('.govuk-heading-l').text().trim()).toEqual('You cannot continue with your claim')
-    expect($('.govuk-link').filter(function () { return $(this).text().trim() === 'The follow-up must be after your review' }).length).toBe(1)
+    expect($('.govuk-link').filter(function () { return $(this).text().trim() === 'Tell us if you are claiming for a review or follow up.' }).length).toBe(1)
   })
 })
 
