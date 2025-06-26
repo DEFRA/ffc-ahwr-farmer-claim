@@ -5,6 +5,7 @@ import { config } from '../../config/index.js'
 import { claimConstants } from '../../constants/claim.js'
 import { visitDate } from '../../config/visit-date.js'
 import routes from '../../config/routes.js'
+import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { isValidDate } from '../../lib/date-utils.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getEndemicsClaim, setEndemicsClaim, removeMultipleHerdsSessionData } from '../../session/index.js'
@@ -20,7 +21,7 @@ import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-her
 
 const {
   endemicsClaim: {
-    dateOfVisit: dateOfVisitKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey
+    typeOfReview: typeOfReviewKey, dateOfVisit: dateOfVisitKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey
   }
 } = sessionKeys
 
@@ -32,13 +33,15 @@ const {
   endemicsMultipleSpeciesDateException,
   endemicsDairyFollowUpDateException,
   endemicsSelectTheHerd,
-  endemicsEnterHerdName
+  endemicsEnterHerdName,
+  endemicsWhichTypeOfReviewException
 } = routes
 
 const { claimType, livestockTypes } = claimConstants
 const { labels } = visitDate
 
 const pageUrl = `${config.urlPrefix}/${endemicsDateOfVisit}`
+const whichTypeOfReviewPageUrl = `${config.urlPrefix}/${endemicsWhichTypeOfReview}`
 
 const isMSClaimBeforeMSRelease = (previousClaims, typeOfLivestock, dateOfVisit) => previousClaims?.some(claim => claim.data.typeOfLivestock !== typeOfLivestock) && dateOfVisit < MULTIPLE_SPECIES_RELEASE_DATE
 
@@ -260,9 +263,27 @@ const postHandler = {
       // all of below only applies when user rejects T&Cs or the visit date is pre-MH golive
       removeMultipleHerdsSessionData(request, endemicsClaim)
 
-      const livestockClaimsForFirstHerd = getAllClaimsForFirstHerd(previousClaims, typeOfLivestock)
+      const claimsForFirstHerdIfPreMH = getAllClaimsForFirstHerd(previousClaims, typeOfLivestock)
 
-      const errorMessage = canMakeClaim({ prevClaims: livestockClaimsForFirstHerd, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
+      // duplicated from which-type-of-review-ms
+      // we don't know if postMH claims can be used for follow-up until date entered
+      if (typeOfClaim === 'E' && !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) && claimsForFirstHerdIfPreMH.length === 0) {
+        raiseInvalidDataEvent(
+          request,
+          typeOfReviewKey,
+          'Cannot claim for endemics without a previous review.'
+        )
+
+        return h
+          .view(`${endemicsWhichTypeOfReviewException}-ms`, {
+            backLink: whichTypeOfReviewPageUrl,
+            backToPageMessage: 'Tell us if you are claiming for a review or follow up.'
+          })
+          .code(400)
+          .takeover()
+      }
+
+      const errorMessage = canMakeClaim({ prevClaims: claimsForFirstHerdIfPreMH, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
 
       if (errorMessage) {
         raiseInvalidDataEvent(
