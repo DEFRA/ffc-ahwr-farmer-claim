@@ -143,26 +143,24 @@ const postHandler = {
         }
       }
 
-      if (herdSame === 'no') {
-        if (isEndemicsFollowUp) {
-          raiseInvalidDataEvent(
-            request,
-            typeOfReviewKey,
-            'Cannot claim for endemics without a previous review.'
-          )
+      if (herdSame === 'no' && isEndemicsFollowUp) {
+        raiseInvalidDataEvent(
+          request,
+          typeOfReviewKey,
+          'Cannot claim for endemics without a previous review.'
+        )
 
-          return h
-            .view(endemicsSameHerdException, {
-              backLink: pageUrl,
-              errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
-              ruralPaymentsAgency: config.ruralPaymentsAgency,
-              backToPageText: 'If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.',
-              backToPageMessage: 'Claim for a review',
-              backToPageLink: whichTypeOfReviewPageUrl
-            })
-            .code(HttpStatus.BAD_REQUEST)
-            .takeover()
-        }
+        return h
+          .view(endemicsSameHerdException, {
+            backLink: pageUrl,
+            errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
+            ruralPaymentsAgency: config.ruralPaymentsAgency,
+            backToPageText: 'If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.',
+            backToPageMessage: 'Claim for a review',
+            backToPageLink: whichTypeOfReviewPageUrl
+          })
+          .code(HttpStatus.BAD_REQUEST)
+          .takeover()
       }
 
       return h.redirect(getNextMultipleHerdsPage(request))
