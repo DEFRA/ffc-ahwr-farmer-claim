@@ -355,7 +355,6 @@ const postHandler = {
         previousClaims,
         latestVetVisitApplication,
         herdId,
-        unnamedHerdId,
         tempHerdId
       } = getEndemicsClaim(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
@@ -390,7 +389,7 @@ const postHandler = {
           .takeover()
       }
 
-      const reviewHerdId = getReviewHerdId({ herdId, tempHerdId, unnamedHerdId })
+      const reviewHerdId = getReviewHerdId({ herdId, tempHerdId })
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
         previousClaims,

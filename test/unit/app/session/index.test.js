@@ -193,7 +193,6 @@ describe('session', () => {
       tempHerdId: 'dummy-tempHerdId',
       herds: [{ dummy: 'dummy-herds' }],
       dummy: 'dummy-should-be-removed',
-      unnamedHerdId: 'dummy-unnamedHerdId',
       vetVisitsReviewTestResults: 'dummy-vetVisitsReviewTestResults'
     }
     const yarMock = { get: jest.fn(), set: jest.fn(), clear: jest.fn() }
@@ -205,7 +204,7 @@ describe('session', () => {
     session.removeSessionDataForSelectHerdChange(request)
 
     expect(request.yar.clear).toHaveBeenCalledTimes(1)
-    expect(request.yar.set).toHaveBeenCalledTimes(12)
+    expect(request.yar.set).toHaveBeenCalledTimes(Object.keys(sessionDataBeforeCall).length - 1)
     // verify last call includes only correct keys/values
     expect(yarMock.set.mock.lastCall).toEqual(['endemicsClaim', {
       organisation: sessionDataBeforeCall.organisation,
@@ -218,7 +217,6 @@ describe('session', () => {
       dateOfVisit: sessionDataBeforeCall.dateOfVisit,
       tempHerdId: sessionDataBeforeCall.tempHerdId,
       herds: sessionDataBeforeCall.herds,
-      unnamedHerdId: sessionDataBeforeCall.unnamedHerdId,
       vetVisitsReviewTestResults: sessionDataBeforeCall.vetVisitsReviewTestResults
     }])
   })
@@ -242,7 +240,6 @@ describe('session', () => {
       isOnlyHerdOnSbi: 'dummy-isOnlyHerdOnSbi',
       herdReasons: 'dummy-herdReasons',
       dummy: 'dummy-should-be-removed',
-      unnamedHerdId: 'dummy-unnamedHerdId',
       vetVisitsReviewTestResults: 'dummy-vetVisitsReviewTestResults'
     }
     const yarMock = { get: jest.fn(), set: jest.fn(), clear: jest.fn() }
@@ -254,7 +251,7 @@ describe('session', () => {
     session.removeSessionDataForSameHerdChange(request)
 
     expect(request.yar.clear).toHaveBeenCalledTimes(1)
-    expect(request.yar.set).toHaveBeenCalledTimes(18)
+    expect(request.yar.set).toHaveBeenCalledTimes(Object.keys(sessionDataBeforeCall).length - 1)
     // verify last call includes only correct keys/values
     expect(yarMock.set.mock.lastCall).toEqual(['endemicsClaim', {
       organisation: sessionDataBeforeCall.organisation,
@@ -273,7 +270,6 @@ describe('session', () => {
       herdCph: sessionDataBeforeCall.herdCph,
       isOnlyHerdOnSbi: sessionDataBeforeCall.isOnlyHerdOnSbi,
       herdReasons: sessionDataBeforeCall.herdReasons,
-      unnamedHerdId: sessionDataBeforeCall.unnamedHerdId,
       vetVisitsReviewTestResults: sessionDataBeforeCall.vetVisitsReviewTestResults
     }])
   })

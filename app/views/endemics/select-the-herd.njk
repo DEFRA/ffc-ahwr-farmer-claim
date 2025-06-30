@@ -77,19 +77,19 @@
           }}
           {{ 
             govukRadios({
-              id: "herdId",
-              name: "herdId",
+              id: "herdSelected",
+              name: "herdSelected",
               errorMessage: errorMessage,
               items: [
                 {
                   value: herds[0].herdId,
                   text: "Yes, it's the same",
-                  checked: herdId == herds[0].herdId
+                  checked: herdSelected == herds[0].herdId
                 },
                 {
-                  value: tempHerdId,
+                  value: radioValueNewHerd,
                   text: "No, it's a different " + herdOrFlock,
-                  checked: herdId == tempHerdId
+                  checked: herdSelected == radioValueNewHerd
                 }
               ]
             })
@@ -97,14 +97,14 @@
         {% else %}
           {% set herdOrFlockItems = [] %}
           {% for item in herds %}
-            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.herdId, text: item.herdName, checked: herdId == item.herdId }]) %}
+            {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: item.herdId, text: item.herdName, checked: herdSelected == item.herdId }]) %}
           {% endfor %}
           {% set herdOrFlockItems = herdOrFlockItems.concat([{ divider: "or" }]) %}
-          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: tempHerdId, text: "I am claiming for a different " + herdOrFlock, checked: herdId === tempHerdId }]) %}
+          {% set herdOrFlockItems = herdOrFlockItems.concat([{ value: radioValueNewHerd, text: "I am claiming for a different " + herdOrFlock, checked: herdSelected === radioValueNewHerd }]) %}
           {{ 
             govukRadios({
-              id: "herdId",
-              name: "herdId",
+              id: "herdSelected",
+              name: "herdSelected",
               fieldset: {
                 legend: {
                   isPageHeading: true,

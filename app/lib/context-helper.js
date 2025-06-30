@@ -116,4 +116,4 @@ export const skipOtherHerdsOnSbiPage = (existingHerds, selectedHerdId) => {
   return hasHerds && !hasReasonOnlyHerd
 }
 
-export const getReviewHerdId = ({ herdId, tempHerdId, unnamedHerdId }) => herdId !== unnamedHerdId && herdId !== tempHerdId ? herdId : undefined
+export const getReviewHerdId = ({ herdId, tempHerdId }) => herdId !== tempHerdId ? herdId : undefined
