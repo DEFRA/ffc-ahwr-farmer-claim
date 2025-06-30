@@ -21,7 +21,7 @@ import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-her
 
 const {
   endemicsClaim: {
-    typeOfReview: typeOfReviewKey, dateOfVisit: dateOfVisitKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey
+    typeOfReview: typeOfReviewKey, dateOfVisit: dateOfVisitKey, tempHerdId: tempHerdIdKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey
   }
 } = sessionKeys
 
@@ -178,8 +178,7 @@ const postHandler = {
         organisation,
         reference: tempClaimReference,
         latestEndemicsApplication: newWorldApplication,
-        herdId,
-        herdVersion
+        tempHerdId: tempHerdIdFromSession
       } = endemicsClaim
 
       const { isDairy } = getLivestockTypes(typeOfLivestock)
@@ -246,6 +245,8 @@ const postHandler = {
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
+        const tempHerdId = getTempHerdId(request, tempHerdIdFromSession)
+        setEndemicsClaim(request, tempHerdIdKey, tempHerdId, { shouldEmitEvent: false })
         const herds = await getHerds(newWorldApplication.reference, typeOfLivestock, request.logger)
         setEndemicsClaim(request, herdsKey, herds, { shouldEmitEvent: false })
 
@@ -253,10 +254,8 @@ const postHandler = {
           return h.redirect(`${config.urlPrefix}/${endemicsSelectTheHerd}`)
         }
 
-        setEndemicsClaim(request, herdIdKey, getTempHerdId(request, herdId), { shouldEmitEvent: false })
-        if (!herdVersion) {
-          setEndemicsClaim(request, herdVersionKey, 1, { shouldEmitEvent: false })
-        }
+        setEndemicsClaim(request, herdIdKey, tempHerdId, { shouldEmitEvent: false })
+        setEndemicsClaim(request, herdVersionKey, 1, { shouldEmitEvent: false })
         return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
 

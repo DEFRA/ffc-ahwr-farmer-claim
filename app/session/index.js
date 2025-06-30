@@ -24,7 +24,6 @@ const {
     typeOfReview: typeOfReviewKey,
     dateOfVisit: dateOfVisitKey,
     tempHerdId: tempHerdIdKey,
-    unnamedHerdId: unnamedHerdIdKey,
     herds: herdsKey,
     herdId: herdIdKey,
     herdVersion: herdVersionKey,
@@ -101,7 +100,6 @@ export function removeSessionDataForSelectHerdChange (request) {
   setEndemicsClaim(request, typeOfReviewKey, endemicsClaim?.typeOfReview, { shouldEmitEvent: false })
   setEndemicsClaim(request, dateOfVisitKey, endemicsClaim?.dateOfVisit, { shouldEmitEvent: false })
   setEndemicsClaim(request, tempHerdIdKey, endemicsClaim?.tempHerdId, { shouldEmitEvent: false })
-  setEndemicsClaim(request, unnamedHerdIdKey, endemicsClaim?.unnamedHerdId, { shouldEmitEvent: false })
   setEndemicsClaim(request, herdsKey, endemicsClaim?.herds, { shouldEmitEvent: false })
 
   setEndemicsClaim(request, vetVisitsReviewTestResultsKey, endemicsClaim?.vetVisitsReviewTestResults, { shouldEmitEvent: false })

@@ -52,7 +52,7 @@ export const sessionKeys = {
     piHuntRecommended: 'piHuntRecommended',
     amount: 'amount',
     tempHerdId: 'tempHerdId',
-    unnamedHerdId: 'unnamedHerdId',
+    herdSelected: 'herdSelected',
     herdId: 'herdId',
     herdVersion: 'herdVersion',
     herdName: 'herdName',

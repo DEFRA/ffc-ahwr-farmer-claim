@@ -8,7 +8,6 @@ import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSelectHerdChang
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
-import { getUnnamedHerdId } from '../../../../../app/lib/get-unnamed-herd-id.js'
 
 const { urlPrefix } = config
 const { endemicsSelectTheHerd: pageUnderTest } = links
@@ -17,7 +16,6 @@ jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
 jest.mock('../../../../../app/lib/can-make-claim.js')
 jest.mock('../../../../../app/event/raise-invalid-data-event.js')
-jest.mock('../../../../../app/lib/get-unnamed-herd-id.js')
 
 describe('select-the-herd tests', () => {
   const url = `${urlPrefix}/${pageUnderTest}`
@@ -28,7 +26,8 @@ describe('select-the-herd tests', () => {
   let server
   let crumb
 
-  const fakeHerdId = '909bb722-3de1-443e-8304-0bba8f922050'
+  const fakeTemporaryHerdId = '909bb722-3de1-443e-8304-0bba8f922050'
+  const fakeHerdId = '919bb722-3de1-443e-8304-0bba8f922055'
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
@@ -72,13 +71,14 @@ describe('select-the-herd tests', () => {
 
     test('returns 200 with herd labels when species beef, also selects correct herd', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
         previousClaims: [],
-        herdId: fakeHerdId,
-        tempHerdId: fakeHerdId,
-        herds: []
+        herdSelected: 'NEW_HERD',
+        herdId: fakeTemporaryHerdId,
+        herds: [{ herdId: '100bb722-3de1-443e-8304-0bba8f922050', herdName: 'Barn animals' }]
       })
 
       const res = await server.inject({ method: 'GET', url, auth })
@@ -87,18 +87,19 @@ describe('select-the-herd tests', () => {
       const $ = cheerio.load(res.payload)
       expect($('title').text().trim()).toContain('Is this the same herd you have previously claimed for? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/date-of-visit')
-      expect($('.govuk-radios__input[value="' + fakeHerdId + '"]').is(':checked')).toBeTruthy()
+      expect($('.govuk-radios__input[value="NEW_HERD"]').is(':checked')).toBeTruthy()
       expectPhaseBanner.ok($)
     })
 
     test('returns 200 and displays multiple herds as radios when multiple herds exist', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
         previousClaims: [],
-        herdId: fakeHerdId,
-        tempHerdId: fakeHerdId,
+        herdSelected: 'NEW_HERD',
+        herdId: fakeTemporaryHerdId,
         herds: [
           {
             herdId: '100bb722-3de1-443e-8304-0bba8f922050',
@@ -135,7 +136,7 @@ describe('select-the-herd tests', () => {
       expect(radios.eq(2).find('input').val()).toBe('300bb722-3de1-443e-8304-0bba8f922050')
       expect(radios.eq(2).text()).toContain('Field animals')
 
-      expect(radios.eq(3).find('input').val()).toBe(fakeHerdId)
+      expect(radios.eq(3).find('input').val()).toBe('NEW_HERD')
       expect(radios.eq(3).text()).toContain('I am claiming for a different herd')
       expect(radios.eq(3).find('input').is(':checked')).toBeTruthy()
     })
@@ -163,6 +164,7 @@ describe('select-the-herd tests', () => {
 
     test('displays unnamed herd with most recent claim date without herd when multiple previous claims with and without herd exists', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
@@ -171,8 +173,8 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z' } },
           { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z' } }
         ],
-        herdId: fakeHerdId,
-        tempHerdId: fakeHerdId,
+        herdSelected: 'NEW_HERD',
+        herdId: fakeTemporaryHerdId,
         herds: [
           {
             herdId: '100bb722-3de1-443e-8304-0bba8f922050',
@@ -188,7 +190,6 @@ describe('select-the-herd tests', () => {
           }
         ]
       })
-      getUnnamedHerdId.mockReturnValue('400bb722-3de1-443e-8304-0bba8f922050')
 
       const res = await server.inject({ method: 'GET', url, auth })
 
@@ -210,16 +211,17 @@ describe('select-the-herd tests', () => {
       expect(radios.eq(2).find('input').val()).toBe('300bb722-3de1-443e-8304-0bba8f922050')
       expect(radios.eq(2).text()).toContain('Field animals')
 
-      expect(radios.eq(3).find('input').val()).toBe('400bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(3).find('input').val()).toBe('UNNAMED_HERD')
       expect(radios.eq(3).text().trim()).toEqual('Unnamed herd (Last claim: review visit on the 1 April 2025)')
 
-      expect(radios.eq(4).find('input').val()).toBe(fakeHerdId)
+      expect(radios.eq(4).find('input').val()).toBe('NEW_HERD')
       expect(radios.eq(4).text()).toContain('I am claiming for a different herd')
       expect(radios.eq(4).find('input').is(':checked')).toBeTruthy()
     })
 
     test('displays unnamed herd with most recent follow-up claim date without herd when multiple previous claims with and without herd exists', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'beef',
@@ -228,8 +230,8 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2025-04-01T00:00:00.000Z' } },
           { createdAt: '2025-04-01T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef', dateOfVisit: '2024-04-01T00:00:00.000Z' } }
         ],
-        herdId: fakeHerdId,
-        tempHerdId: fakeHerdId,
+        herdSelected: 'NEW_HERD',
+        herdId: fakeTemporaryHerdId,
         herds: [
           {
             herdId: '100bb722-3de1-443e-8304-0bba8f922050',
@@ -245,7 +247,6 @@ describe('select-the-herd tests', () => {
           }
         ]
       })
-      getUnnamedHerdId.mockReturnValue('400bb722-3de1-443e-8304-0bba8f922050')
 
       const res = await server.inject({ method: 'GET', url, auth })
 
@@ -267,10 +268,10 @@ describe('select-the-herd tests', () => {
       expect(radios.eq(2).find('input').val()).toBe('300bb722-3de1-443e-8304-0bba8f922050')
       expect(radios.eq(2).text()).toContain('Field animals')
 
-      expect(radios.eq(3).find('input').val()).toBe('400bb722-3de1-443e-8304-0bba8f922050')
+      expect(radios.eq(3).find('input').val()).toBe('UNNAMED_HERD')
       expect(radios.eq(3).text().trim()).toEqual('Unnamed herd (Last claim: review visit on the 1 April 2025)')
 
-      expect(radios.eq(4).find('input').val()).toBe(fakeHerdId)
+      expect(radios.eq(4).find('input').val()).toBe('NEW_HERD')
       expect(radios.eq(4).text()).toContain('I am claiming for a different herd')
       expect(radios.eq(4).find('input').is(':checked')).toBeTruthy()
     })
@@ -283,6 +284,7 @@ describe('select-the-herd tests', () => {
 
     test('navigates to enter herd name when herds does not exist', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -292,18 +294,19 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
-        herds: [],
+        herds: [{ herdId: '1' }],
         dateOfVisit: '2025-04-14T00:00:00.000Z',
         organisation: {
           farmerName: 'John Doe'
         }
       })
 
-      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdId: fakeHerdId }, headers: { cookie: `crumb=${crumb}` } })
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdSelected: 'NEW_HERD' }, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSelected', 'NEW_HERD', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeTemporaryHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
       expect(canMakeClaim).toHaveBeenCalledWith({
         dateOfVisit: '2025-04-14T00:00:00.000Z',
@@ -318,6 +321,7 @@ describe('select-the-herd tests', () => {
 
     test('navigates to enter herd name when multiple herds exists and does not match herd id', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -342,12 +346,13 @@ describe('select-the-herd tests', () => {
         dateOfVisit: '2025-04-14T00:00:00.000Z'
       })
 
-      const payload = { crumb, herdId: fakeHerdId }
+      const payload = { crumb, herdSelected: 'NEW_HERD' }
       const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSelected', 'NEW_HERD', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeTemporaryHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'no', { shouldEmitEvent: false })
       expect(canMakeClaim).toHaveBeenCalledWith({
@@ -363,6 +368,7 @@ describe('select-the-herd tests', () => {
 
     test('navigates to enter herd name when herdId is unnamed herd', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -381,20 +387,20 @@ describe('select-the-herd tests', () => {
         }, {
           herdId: '2'
         }],
-        unnamedHerdId: '100bb722-3de1-443e-8304-0bba8f922050',
         dateOfVisit: '2025-04-14T00:00:00.000Z',
         organisation: {
           farmerName: 'John Doe'
         }
       })
 
-      const payload = { crumb, herdId: '100bb722-3de1-443e-8304-0bba8f922050' }
+      const payload = { crumb, herdSelected: 'UNNAMED_HERD' }
       const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
-      expect(setEndemicsClaim).toHaveBeenCalledTimes(4)
-      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', '100bb722-3de1-443e-8304-0bba8f922050', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(5)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSelected', 'UNNAMED_HERD', { shouldEmitEvent: false })
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeTemporaryHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 1, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'isOnlyHerdOnSbi', 'no', { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSame', 'yes', { shouldEmitEvent: false })
@@ -419,6 +425,7 @@ describe('select-the-herd tests', () => {
 
     test('navigates to check herd details when herd exists and matches herd id', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -437,11 +444,12 @@ describe('select-the-herd tests', () => {
         }]
       })
 
-      const payload = { crumb, herdId: fakeHerdId }
+      const payload = { crumb, herdSelected: fakeHerdId }
       const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSelected', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
@@ -452,6 +460,7 @@ describe('select-the-herd tests', () => {
 
     test('navigates to check herd details when multiple herds exists and matches herd id', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -476,12 +485,13 @@ describe('select-the-herd tests', () => {
         dateOfVisit: '2025-04-14T00:00:00.000Z'
       })
 
-      const payload = { crumb, herdId: fakeHerdId }
+      const payload = { crumb, herdSelected: fakeHerdId }
       const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/check-herd-details')
-      expect(setEndemicsClaim).toHaveBeenCalledTimes(6)
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(7)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSelected', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdVersion', 2, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdName', 'Barn animals', { shouldEmitEvent: false })
@@ -497,9 +507,9 @@ describe('select-the-herd tests', () => {
           {
             createdAt: '2025-04-01T00:00:00.000Z',
             data: {
-              claimType: 'R',
+              herdId: fakeHerdId,
               typeOfLivestock: 'sheep',
-              herdId: '909bb722-3de1-443e-8304-0bba8f922050'
+              claimType: 'R'
             }
           },
           {
@@ -519,6 +529,7 @@ describe('select-the-herd tests', () => {
 
     test('display errors when payload invalid', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -541,6 +552,7 @@ describe('select-the-herd tests', () => {
 
     test('display errors when endemics and selects different herd', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'E',
         typeOfLivestock: 'sheep',
@@ -550,11 +562,10 @@ describe('select-the-herd tests', () => {
           { createdAt: '2025-04-28T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'sheep', dateOfVisit: '2025-04-14T00:00:00.000Z' } },
           { createdAt: '2025-04-30T00:00:00.000Z', data: { claimType: 'R', typeOfLivestock: 'beef' } }
         ],
-        herds: [],
-        tempHerdId: fakeHerdId
+        herds: []
       })
 
-      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdId: fakeHerdId }, headers: { cookie: `crumb=${crumb}` } })
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdSelected: 'NEW_HERD' }, headers: { cookie: `crumb=${crumb}` } })
 
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
@@ -566,6 +577,7 @@ describe('select-the-herd tests', () => {
 
     test('display date errors when canMakeClaim returns false', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -580,7 +592,7 @@ describe('select-the-herd tests', () => {
       })
       canMakeClaim.mockReturnValue('Invalid claim message')
 
-      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdId: fakeHerdId }, headers: { cookie: `crumb=${crumb}` } })
+      const res = await server.inject({ method: 'POST', url, auth, payload: { crumb, herdSelected: 'UNNAMED_HERD' }, headers: { cookie: `crumb=${crumb}` } })
 
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
@@ -602,6 +614,7 @@ describe('select-the-herd tests', () => {
 
     test('does call removeSessionDataForSelectHerdChange and sets herdId when herd selection changes', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -613,19 +626,22 @@ describe('select-the-herd tests', () => {
           cph: '22/333/4444',
           herdReasons: ['onlyHerd']
         }],
+        herdSelected: 'previously-selected-herdId',
         herdId: 'previously-selected-herdId'
       })
 
-      const payload = { crumb, herdId: fakeHerdId }
+      const payload = { crumb, herdSelected: fakeHerdId }
       const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)
       expect(removeSessionDataForSelectHerdChange).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdSelected', fakeHerdId, { shouldEmitEvent: false })
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'herdId', fakeHerdId, { shouldEmitEvent: false })
     })
 
     test('does NOT call removeSessionDataForSelectHerdChange when herd selection stays the same', async () => {
       getEndemicsClaim.mockReturnValue({
+        tempHerdId: fakeTemporaryHerdId,
         reference: 'TEMP-6GSE-PIR8',
         typeOfReview: 'R',
         typeOfLivestock: 'sheep',
@@ -637,10 +653,11 @@ describe('select-the-herd tests', () => {
           cph: '22/333/4444',
           herdReasons: ['onlyHerd']
         }],
+        herdSelected: fakeHerdId,
         herdId: fakeHerdId
       })
 
-      const payload = { crumb, herdId: fakeHerdId }
+      const payload = { crumb, herdSelected: fakeHerdId }
       const res = await server.inject({ method: 'POST', url, auth, payload, headers: { cookie: `crumb=${crumb}` } })
 
       expect(res.statusCode).toBe(302)

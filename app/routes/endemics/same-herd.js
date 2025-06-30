@@ -9,8 +9,6 @@ import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
-import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
-import { getUnnamedHerdId } from '../../lib/get-unnamed-herd-id.js'
 
 const { urlPrefix } = config
 const {
@@ -31,8 +29,7 @@ const {
   endemicsClaim: {
     herdSame: herdSameKey,
     dateOfVisit: dateOfVisitKey,
-    typeOfReview: typeOfReviewKey,
-    herdId: herdIdKey
+    typeOfReview: typeOfReviewKey
   }
 } = sessionKeys
 
@@ -117,14 +114,11 @@ const postHandler = {
         dateOfVisit,
         organisation,
         typeOfLivestock,
-        latestVetVisitApplication: oldWorldApplication,
-        unnamedHerdId,
-        tempHerdId
+        latestVetVisitApplication: oldWorldApplication
       } = getEndemicsClaim(request)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
 
       if (herdSame === 'yes') {
-        setEndemicsClaim(request, herdIdKey, getUnnamedHerdId(request, unnamedHerdId), { shouldEmitEvent: false })
         const prevClaims = previousClaims.filter(claim => claim.data.typeOfLivestock === typeOfLivestock)
 
         const errorMessage = canMakeClaim({ prevClaims, typeOfReview, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
@@ -150,8 +144,6 @@ const postHandler = {
       }
 
       if (herdSame === 'no') {
-        setEndemicsClaim(request, herdIdKey, getTempHerdId(request, tempHerdId), { shouldEmitEvent: false })
-
         if (isEndemicsFollowUp) {
           raiseInvalidDataEvent(
             request,

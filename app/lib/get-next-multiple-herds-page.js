@@ -26,15 +26,14 @@ export const getNextMultipleHerdsPage = (request) => {
     reviewTestResults,
     dateOfVisit,
     herdId,
-    tempHerdId,
-    unnamedHerdId
+    tempHerdId
   } = getEndemicsClaim(request)
 
   const { isSheep } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfClaim)
 
   if (isEndemicsFollowUp) {
-    const reviewHerdId = getReviewHerdId({ herdId, tempHerdId, unnamedHerdId })
+    const reviewHerdId = getReviewHerdId({ herdId, tempHerdId })
     const reviewWithinLast10Months = getReviewWithinLast10Months(
       dateOfVisit,
       previousClaims,

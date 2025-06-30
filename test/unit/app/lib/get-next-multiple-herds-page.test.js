@@ -39,8 +39,7 @@ describe('getNextMultipleHerdsPage', () => {
       typeOfLivestock: 'sheep',
       dateOfVisit: '2024-06-01',
       herdId: 'herd123',
-      tempHerdId: 'temp',
-      unnamedHerdId: 'unnamed'
+      tempHerdId: 'temp'
     })
 
     const result = getNextMultipleHerdsPage(mockRequest)
@@ -56,8 +55,7 @@ describe('getNextMultipleHerdsPage', () => {
       typeOfLivestock: 'sheep',
       dateOfVisit: '2024-06-01',
       herdId: 'herd123',
-      tempHerdId: 'temp',
-      unnamedHerdId: 'unnamed'
+      tempHerdId: 'temp'
     })
 
     const result = getNextMultipleHerdsPage(mockRequest)
@@ -73,8 +71,7 @@ describe('getNextMultipleHerdsPage', () => {
       typeOfLivestock: 'pigs',
       dateOfVisit: '2024-06-01',
       herdId: 'herd123',
-      tempHerdId: 'temp',
-      unnamedHerdId: 'unnamed'
+      tempHerdId: 'temp'
     })
 
     const result = getNextMultipleHerdsPage(mockRequest)
@@ -90,8 +87,7 @@ describe('getNextMultipleHerdsPage', () => {
       typeOfLivestock: 'beef',
       dateOfVisit: '2024-06-01',
       herdId: 'herd456',
-      tempHerdId: 'temp',
-      unnamedHerdId: 'unnamed'
+      tempHerdId: 'temp'
     })
     isVisitDateAfterPIHuntAndDairyGoLive.mockReturnValue(false)
     getReviewWithinLast10Months.mockReturnValue({
@@ -128,8 +124,7 @@ describe('getNextMultipleHerdsPage', () => {
       typeOfLivestock: 'beef',
       dateOfVisit: '2024-06-01',
       herdId: 'herd456',
-      tempHerdId: 'temp',
-      unnamedHerdId: 'unnamed'
+      tempHerdId: 'temp'
     })
     isVisitDateAfterPIHuntAndDairyGoLive.mockReturnValue(true)
     getReviewWithinLast10Months.mockReturnValue({
@@ -157,24 +152,6 @@ describe('getNextMultipleHerdsPage', () => {
     expect(result).toBe(`${config.urlPrefix}/${endemicsSpeciesNumbers}`)
   })
 
-  test('returns endemicsDateOfTesting route when follow up and sheep and herd is unnamed', () => {
-    getEndemicsClaim.mockReturnValue({
-      typeOfReview: 'E',
-      previousClaims: [],
-      latestVetVisitApplication: {},
-      typeOfLivestock: 'sheep',
-      dateOfVisit: '2024-06-01',
-      herdId: 'herd123',
-      tempHerdId: 'temp',
-      unnamedHerdId: 'herd123'
-    })
-
-    const result = getNextMultipleHerdsPage(mockRequest)
-
-    expect(result).toBe(`${config.urlPrefix}/${endemicsDateOfTesting}`)
-    expect(getReviewWithinLast10Months).toHaveBeenCalledWith('2024-06-01', [], {}, 'sheep', undefined)
-  })
-
   test('returns endemicsDateOfTesting route when follow up and sheep and herd is tempHerdId', () => {
     getEndemicsClaim.mockReturnValue({
       typeOfReview: 'E',
@@ -183,8 +160,7 @@ describe('getNextMultipleHerdsPage', () => {
       typeOfLivestock: 'sheep',
       dateOfVisit: '2024-06-01',
       herdId: 'herd123',
-      tempHerdId: 'herd123',
-      unnamedHerdId: 'unnamed'
+      tempHerdId: 'herd123'
     })
 
     const result = getNextMultipleHerdsPage(mockRequest)
