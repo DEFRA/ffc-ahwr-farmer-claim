@@ -152,7 +152,7 @@ const postHandler = {
           ...request.payload,
           errorMessage: {
             text: `Select the ${herdOrFlock} you are claiming for`,
-            href: '#herdId'
+            href: '#herdSelected'
           },
           backLink: previousPageUrl,
           pageTitleText: herds.length > 1 ? `Select the ${herdOrFlock} you are claiming for` : `Is this the same ${herdOrFlock} you have previously claimed for?`,
