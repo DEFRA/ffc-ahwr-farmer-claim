@@ -547,7 +547,7 @@ describe('select-the-herd tests', () => {
       const $ = cheerio.load(res.payload)
       expect(res.statusCode).toBe(400)
       expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
-      expect($('a[href="#herdId"]').text()).toContain('Select the flock you are claiming for')
+      expect($('a[href="#herdSelected"]').text()).toContain('Select the flock you are claiming for')
     })
 
     test('display errors when endemics and selects different herd', async () => {
