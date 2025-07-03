@@ -26,7 +26,8 @@ export const signInHandler = {
         request.logger.info('Redirecting user on to dashboard signin-oidc...')
 
         const query = new URLSearchParams(request.query).toString()
-        const redirectUrl = `${authConfig.defraId.dashboardRedirectUri}${query ? `?${query}` : ''}`
+        const queryString = query ? `?${query}` : ''
+        const redirectUrl = `${authConfig.defraId.dashboardRedirectUri}${queryString}`
 
         return h.redirect(redirectUrl)
       } catch (error) {
