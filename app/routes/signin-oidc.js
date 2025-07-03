@@ -1,7 +1,7 @@
 import { authConfig } from '../config/auth.js'
 import { config } from '../config/index.js'
 import { requestAuthorizationCodeUrl } from '../auth/auth-code-grant/request-authorization-code-url.js'
-import { StatusCodes } from "http-status-codes"
+import { StatusCodes } from 'http-status-codes'
 
 export const signInHandler = {
   method: 'GET',
