@@ -25,6 +25,7 @@ const getLivestockText = (typeOfLivestock) => {
   return isBeef ? 'beef' : 'dairy'
 }
 const getQuestionText = (typeOfLivestock) => `Was the PI hunt done on all ${getLivestockText(typeOfLivestock)} cattle in the herd?`
+const hintHtml = 'You can find this on the summary the vet gave you.'
 
 const getHandler = {
   method: 'GET',
@@ -32,9 +33,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-      const questionText = getQuestionText(typeOfLivestock)
-      const hintHtml = 'You can find this on the summary the vet gave you.'
-      const yesOrNoRadios = radios(questionText, 'piHuntAllAnimals', undefined, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+      const yesOrNoRadios = radios(getQuestionText(typeOfLivestock), 'piHuntAllAnimals', undefined, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
       return h.view(endemicsPIHuntAllAnimals, { backLink: backLink(reviewTestResults), ...yesOrNoRadios })
     }
   }
@@ -51,9 +50,7 @@ const postHandler = {
       failAction: async (request, h, _error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
         const errorText = `Select if the PI hunt was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
-        const questionText = getQuestionText(typeOfLivestock)
-        const hintHtml = 'You can find this on the summary the vet gave you.'
-        const yesOrNoRadios = radios(questionText, 'piHuntAllAnimals', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+        const yesOrNoRadios = radios(getQuestionText(typeOfLivestock), 'piHuntAllAnimals', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
 
         return h.view(endemicsPIHuntAllAnimals, {
           ...yesOrNoRadios,

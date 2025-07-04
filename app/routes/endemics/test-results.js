@@ -51,15 +51,15 @@ const pageTitle = (request) => {
   return isEndemicsFollowUp ? 'What was the follow-up test result?' : 'What was the test result?'
 }
 
+const hintHtml = 'You can find this on the summary the vet gave you.'
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     handler: async (request, h) => {
       const { testResults } = getEndemicsClaim(request)
-      const questionText = pageTitle(request)
-      const hintHtml = 'You can find this on the summary the vet gave you.'
-      const positiveNegativeRadios = radios(questionText, 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
+      const positiveNegativeRadios = radios(pageTitle(request), 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
       return h.view(endemicsTestResults, { backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
   }
@@ -75,9 +75,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const questionText = pageTitle(request)
-        const hintHtml = 'You can find this on the summary the vet gave you.'
-        const positiveNegativeRadios = radios(questionText, 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
+        const positiveNegativeRadios = radios(pageTitle(request), 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsTestResults, {
           ...request.payload,
           title: pageTitle(request),
