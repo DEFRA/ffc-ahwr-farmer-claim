@@ -25,13 +25,6 @@ data:
   DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
   DEFRA_ID_DASHBOARD_REDIRECT_URI: {{ quote .Values.container.defraIdDashboardRedirectUri }}
   DEFRA_ID_JWT_ISSUER_ID: {{ quote .Values.container.defraIdJwtIssuerId }}
-  RPA_HOST_NAME: {{ quote .Values.container.rpaHostname }}
-  RPA_GET_PERSON_SUMMARY_URL: {{ quote .Values.container.rpaGetPersonSummaryUrl }}
-  RPA_GET_ORGANISATION_PERMISSIONS_URL: {{ quote .Values.container.rpaGetOrganisationPermissionsUrl }}
-  RPA_GET_ORGANISATION_URL: {{ quote .Values.container.rpaGetOrganisationUrl }}
-  APIM_HOST_NAME: {{ quote .Values.container.apimHostname }}
-  APIM_OAUTH_PATH: {{ quote .Values.container.apimOAuthPath }}
-  APIM_SCOPE: {{ quote .Values.container.apimScope }}
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
   MULTI_HERDS_ENABLED: {{ quote .Values.container.multiHerdsEnabled }}
   MULTI_HERDS_RELEASE_DATE: {{ quote .Values.container.multiHerdsReleaseDate }}

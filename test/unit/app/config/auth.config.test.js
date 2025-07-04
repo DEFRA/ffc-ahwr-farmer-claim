@@ -17,17 +17,7 @@ describe('Auth config', () => {
         clientId: 'dummyclientid',
         clientSecret: 'dummyclientsecret',
         jwtIssuerId: 'dummyissuer',
-        serviceId: 'dummyserviceid',
-        rpaHostname: 'dummy-host-name',
-        rpaGetPersonSummaryUrl: 'dummy-get-person-summary-url',
-        rpaGetOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-        rpaGetOrganisationUrl: 'dummy-get-organisation-url',
-        apimOcpSubscriptionKey: 'dummy-ocp-subscription-key',
-        apimHostname: 'dummy-host-name',
-        apimOAuthPath: 'dummy-oauth-path',
-        apimClientId: 'dummy-client-id',
-        apimClientSecret: 'dummy-client-secret',
-        apimScope: 'dummy-scope'
+        serviceId: 'dummyserviceid'
       },
       config: {
         defraId: {
@@ -41,20 +31,6 @@ describe('Auth config', () => {
           serviceId: 'dummyserviceid',
           tenantName: 'testtenant',
           scope: 'openid dummyclientid offline_access'
-        },
-        ruralPaymentsAgency: {
-          hostname: 'dummy-host-name',
-          getPersonSummaryUrl: 'dummy-get-person-summary-url',
-          getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-          getOrganisationUrl: 'dummy-get-organisation-url'
-        },
-        apim: {
-          ocpSubscriptionKey: 'dummy-ocp-subscription-key',
-          hostname: 'dummy-host-name',
-          oAuthPath: 'dummy-oauth-path',
-          clientId: 'dummy-client-id',
-          clientSecret: 'dummy-client-secret',
-          scope: 'dummy-scope'
         }
       }
     }
@@ -66,16 +42,6 @@ describe('Auth config', () => {
     process.env.DEFRA_ID_CLIENT_SECRET = testCase.processEnv.clientSecret
     process.env.DEFRA_ID_JWT_ISSUER_ID = testCase.processEnv.jwtIssuerId
     process.env.DEFRA_ID_SERVICE_ID = testCase.processEnv.serviceId
-    process.env.RPA_HOST_NAME = testCase.processEnv.rpaHostname
-    process.env.RPA_GET_PERSON_SUMMARY_URL = testCase.processEnv.rpaGetPersonSummaryUrl
-    process.env.RPA_GET_ORGANISATION_PERMISSIONS_URL = testCase.processEnv.rpaGetOrganisationPermissionsUrl
-    process.env.RPA_GET_ORGANISATION_URL = testCase.processEnv.rpaGetOrganisationUrl
-    process.env.APIM_OCP_SUBSCRIPTION_KEY = testCase.processEnv.apimOcpSubscriptionKey
-    process.env.APIM_HOST_NAME = testCase.processEnv.apimHostname
-    process.env.APIM_OAUTH_PATH = testCase.processEnv.apimOAuthPath
-    process.env.APIM_CLIENT_ID = testCase.processEnv.apimClientId
-    process.env.APIM_CLIENT_SECRET = testCase.processEnv.apimClientSecret
-    process.env.APIM_SCOPE = testCase.processEnv.apimScope
 
     const config = getAuthConfig()
 

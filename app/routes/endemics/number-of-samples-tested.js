@@ -26,6 +26,7 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { numberOfSamplesTested } = getEndemicsClaim(request)
+
       return h.view(endemicsNumberOfSamplesTested, {
         numberOfSamplesTested,
         backLink: `${urlPrefix}/${endemicsTestUrn}`
@@ -67,7 +68,9 @@ const postHandler = {
       const lastReviewTestResults = endemicsClaim.vetVisitsReviewTestResults ?? endemicsClaim.relevantReviewForEndemics?.data?.testResults
 
       const threshold = lastReviewTestResults === 'positive' ? positiveReviewNumberOfSamplesTested : negativeReviewNumberOfSamplesTested
+
       if (numberOfSamplesTested !== threshold) {
+        request.logger.info(`Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
         raiseInvalidDataEvent(request, numberOfSamplesTestedKey, `Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
         return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
       }
