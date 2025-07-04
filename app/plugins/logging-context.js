@@ -2,11 +2,14 @@ import { getEndemicsClaim } from '../session/index.js'
 
 function addBindings (request) {
   const endemicsClaim = getEndemicsClaim(request)
+
   request.logger.setBindings({
     sbi: endemicsClaim?.organisation?.sbi,
     crn: endemicsClaim?.organisation?.crn,
     reference: endemicsClaim?.reference,
-    applicationReference: endemicsClaim?.latestEndemicsApplication?.reference
+    applicationReference: endemicsClaim?.latestEndemicsApplication?.reference,
+    typeOfLivestock: endemicsClaim?.typeOfLivestock,
+    typeOfReview: endemicsClaim?.typeOfReview
   })
 }
 
