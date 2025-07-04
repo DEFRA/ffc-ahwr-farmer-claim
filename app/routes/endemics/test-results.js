@@ -59,8 +59,8 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { testResults } = getEndemicsClaim(request)
-      const positiveNegativeRadios = radios('', 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
-      return h.view(endemicsTestResults, { title: pageTitle(request), backLink: previousPageUrl(request), ...positiveNegativeRadios })
+      const positiveNegativeRadios = radios(pageTitle(request), 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
+      return h.view(endemicsTestResults, { backLink: previousPageUrl(request), ...positiveNegativeRadios })
     }
   }
 }
@@ -75,7 +75,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const positiveNegativeRadios = radios('', 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
+        const positiveNegativeRadios = radios(pageTitle(request), 'testResults', 'Select a test result', { hintHtml })([{ value: 'positive', text: 'Positive' }, { value: 'negative', text: 'Negative' }])
         return h.view(endemicsTestResults, {
           ...request.payload,
           title: pageTitle(request),

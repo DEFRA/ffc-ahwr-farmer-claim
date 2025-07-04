@@ -24,14 +24,9 @@
 
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-         <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">
-               {{title}}
-              </h1>
-            </legend>
+
         {{ govukRadios(radios) }}
-        </fieldset>
+
         {{ govukButton({
           text: "Continue",
           attributes: {
