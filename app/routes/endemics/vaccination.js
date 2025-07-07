@@ -18,13 +18,16 @@ const { vaccination } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsVaccination}`
 
+const questionText = 'What is the herd porcine reproductive and respiratory syndrome (PRRS) vaccination status?'
+const hintHtml = 'You can find this on the summary the vet gave you.'
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     handler: async (request, h) => {
       const { vetVisitsReviewTestResults, herdVaccinationStatus } = getEndemicsClaim(request)
-      const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus')([{ value: vaccination.vaccinated, text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
+      const vaccinatedNotVaccinatedRadios = radios(questionText, 'herdVaccinationStatus', undefined, { hintHtml })([{ value: vaccination.vaccinated, text: 'Vaccinated', checked: herdVaccinationStatus === 'vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated', checked: herdVaccinationStatus === 'notVaccinated' }])
       const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
       return h.view(endemicsVaccination, { backLink, ...vaccinatedNotVaccinatedRadios })
     }
@@ -42,7 +45,7 @@ const postHandler = {
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
         const { vetVisitsReviewTestResults } = getEndemicsClaim(request)
-        const vaccinatedNotVaccinatedRadios = radios('', 'herdVaccinationStatus', 'Select a vaccination status')([{ value: vaccination.vaccinated, text: 'Vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated' }])
+        const vaccinatedNotVaccinatedRadios = radios(questionText, 'herdVaccinationStatus', 'Select a vaccination status', { hintHtml })([{ value: vaccination.vaccinated, text: 'Vaccinated' }, { value: vaccination.notVaccinated, text: 'Not vaccinated' }])
         const backLink = vetVisitsReviewTestResults ? `${urlPrefix}/${endemicsTestResults}` : `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsVaccination, {
           ...request.payload,

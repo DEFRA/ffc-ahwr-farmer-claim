@@ -16,13 +16,16 @@ const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
 const backLink = `${urlPrefix}/${endemicsPIHunt}`
 const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
 
+const questionText = 'Was the PI hunt recommended by the vet?'
+const hintHtml = 'You can find this on the summary the vet gave you.'
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     handler: async (request, h) => {
       const { piHuntRecommended } = getEndemicsClaim(request)
-      const yesOrNoRadios = radios('', 'piHuntRecommended', undefined, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
+      const yesOrNoRadios = radios(questionText, 'piHuntRecommended', undefined, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
       return h.view(endemicsPIHuntRecommended, { backLink, ...yesOrNoRadios })
     }
   }
@@ -39,7 +42,7 @@ const postHandler = {
       failAction: async (request, h, _error) => {
         const { piHuntRecommended } = getEndemicsClaim(request)
         const errorText = 'Select if the vet recommended the PI hunt'
-        const yesOrNoRadios = radios('', 'piHuntRecommended', errorText, { inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
+        const yesOrNoRadios = radios(questionText, 'piHuntRecommended', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
         return h.view(endemicsPIHuntRecommended, {
           ...yesOrNoRadios,
           backLink,

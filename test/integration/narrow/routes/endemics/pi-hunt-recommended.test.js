@@ -44,7 +44,7 @@ describe('PI Hunt recommended tests', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(200)
-      expect($('.govuk-heading-l').text().trim()).toEqual('Was the PI hunt recommended by the vet?')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Was the PI hunt recommended by the vet?')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })
@@ -127,7 +127,7 @@ describe('PI Hunt recommended tests', () => {
 
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text().trim()).toEqual('Was the PI hunt recommended by the vet?')
+      expect($('.govuk-fieldset__heading').text().trim()).toEqual('Was the PI hunt recommended by the vet?')
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select if the vet recommended the PI hunt')
     })
   })
