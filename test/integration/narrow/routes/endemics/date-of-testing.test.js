@@ -5,18 +5,11 @@ import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import {
-  isWithIn4MonthsBeforeOrAfterDateOfVisit
-} from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 
 const { labels } = visitDate
-jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
-  ...jest.requireActual('../../../../../app/api-requests/claim-service-api'),
-  isWithIn4MonthsBeforeOrAfterDateOfVisit: jest.fn()
-}))
 
 function expectPageContentOk ($) {
   expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
@@ -322,77 +315,6 @@ describe('Date of testing when Optional PI Hunt is OFF', () => {
       expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
       expect($('#main-content > div > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
     })
-
-    test.each([
-      {
-        typeOfReview: 'R',
-        claimGuidanceLinkText: 'Samples should have been taken no more than 4 months before or after the date of review.'
-      },
-      {
-        typeOfReview: 'E',
-        claimGuidanceLinkText: 'Samples should have been taken no more than 4 months before or after the date of follow-up.'
-      }
-    ])('Redirect to exception screen if type of review is $typeOfReview and claim guidance link text should be $claimGuidanceLinkText', async ({ typeOfReview, claimGuidanceLinkText }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
-        .mockImplementationOnce(() => { return { dateOfVisit: '2024-04-23', typeOfReview } })
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementationOnce(() => { return false })
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-        payload: { crumb, whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview', dateOfVisit: '2024-04-23', dateOfAgreementAccepted: '2022-01-01' }
-      }
-
-      const res = await server.inject(options)
-      const $ = cheerio.load(res.payload)
-
-      expect(res.statusCode).toBe(400)
-      expect($('.govuk-body').text()).toContain(claimGuidanceLinkText)
-      expect(raiseInvalidDataEvent).toHaveBeenCalled()
-    })
-
-    test('Redirect to exception screen if follow up date of testing is more than 4 months after date of visit for relative review', async () => {
-      getEndemicsClaim.mockImplementation(() => {
-        return {
-          dateOfVisit: '2024-04-23',
-          typeOfReview: 'E',
-          typeOfLivestock: 'sheep',
-          previousClaims: [{
-            type: 'R',
-            data: {
-              typeOfLivestock: 'sheep',
-              dateOfVisit: '2024-01-01',
-              testResults: 'negative'
-            }
-          }]
-        }
-      })
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
-
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        headers: { cookie: `crumb=${crumb}` },
-        payload: {
-          crumb,
-          whenTestingWasCarriedOut: 'onAnotherDate',
-          'on-another-date-day': '01',
-          'on-another-date-month': '01',
-          'on-another-date-year': '2023',
-          dateOfVisit: '2024-04-23',
-          dateOfAgreementAccepted: '2022-01-01'
-        }
-      }
-
-      const res = await server.inject(options)
-      const $ = cheerio.load(res.payload)
-
-      expect(res.statusCode).toBe(400)
-      expect(raiseInvalidDataEvent).toHaveBeenCalled()
-      expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
-    })
   })
 })
 
@@ -456,7 +378,6 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
     ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
       getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
         .mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
 
       const options = {
         method: 'POST',
@@ -487,7 +408,6 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
             }
           }]
         }))
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
       const options = {
         method: 'POST',
         url,
@@ -526,7 +446,6 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
             }
           }]
         }))
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
       const options = {
         method: 'POST',
         url,

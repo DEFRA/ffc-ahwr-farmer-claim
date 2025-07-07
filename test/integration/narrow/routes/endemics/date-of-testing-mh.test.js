@@ -4,16 +4,8 @@ import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import {
-  isWithIn4MonthsBeforeOrAfterDateOfVisit
-} from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, skipSameHerdPage } from '../../../../../app/lib/context-helper.js'
-
-jest.mock('../../../../../app/api-requests/claim-service-api', () => ({
-  ...jest.requireActual('../../../../../app/api-requests/claim-service-api'),
-  isWithIn4MonthsBeforeOrAfterDateOfVisit: jest.fn()
-}))
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -88,7 +80,6 @@ describe('Date of testing', () => {
     ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfLivestock }) => {
       getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
         .mockImplementationOnce(() => { return { dateOfVisit, typeOfReview: 'E', typeOfLivestock } })
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
 
       const options = {
         method: 'POST',
@@ -119,7 +110,6 @@ describe('Date of testing', () => {
             }
           }]
         }))
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
       const options = {
         method: 'POST',
         url,
@@ -158,7 +148,7 @@ describe('Date of testing', () => {
             }
           }]
         }))
-      isWithIn4MonthsBeforeOrAfterDateOfVisit.mockImplementation(() => { return true })
+
       const options = {
         method: 'POST',
         url,

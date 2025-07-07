@@ -13,8 +13,7 @@ import { isValidDate } from '../../lib/date-utils.js'
 import { addError } from '../utils/validations.js'
 import {
   getReviewWithinLast10Months,
-  isDateOfTestingLessThanDateOfVisit,
-  isWithIn4MonthsBeforeOrAfterDateOfVisit
+  isDateOfTestingLessThanDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
@@ -358,48 +357,6 @@ const postHandler = {
             request.payload['on-another-date-month'] - 1,
             request.payload['on-another-date-day']
           )
-
-      if (
-        !isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) &&
-        typeOfReview === claimType.review
-      ) {
-        const errorMessage =
-          'Samples should have been taken no more than 4 months before or after the date of review.'
-        raiseInvalidDataEvent(
-          request,
-          dateOfTestingKey,
-          `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`
-        )
-        return h
-          .view(endemicsDateOfTestingException, {
-            backLink: pageUrl,
-            ruralPaymentsAgency,
-            errorMessage
-          })
-          .code(400)
-          .takeover()
-      }
-
-      if (
-        !isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting) &&
-        typeOfReview === claimType.endemics
-      ) {
-        const errorMessage =
-          'Samples should have been taken no more than 4 months before or after the date of follow-up.'
-        raiseInvalidDataEvent(
-          request,
-          dateOfTestingKey,
-          `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`
-        )
-        return h
-          .view(endemicsDateOfTestingException, {
-            backLink: pageUrl,
-            ruralPaymentsAgency,
-            errorMessage
-          })
-          .code(400)
-          .takeover()
-      }
 
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
