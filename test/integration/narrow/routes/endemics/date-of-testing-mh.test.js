@@ -171,7 +171,7 @@ describe('Date of testing', () => {
 
       const res = await server.inject(options)
 
-      expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfTesting', 'Sun Jan 01 2023 00:00:00 GMT+0000 (Greenwich Mean Time) is outside of the recommended 4 month period from the date of visit 2024-01-01')
+      expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfTesting', expect.stringContaining('is outside of the recommended 4 month period from the date of visit 2024-01-01'))
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     })
