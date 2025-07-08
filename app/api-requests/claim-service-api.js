@@ -74,21 +74,6 @@ export async function submitNewClaim (data, logger) {
   }
 }
 
-export const isWithIn4MonthsBeforeOrAfterDateOfVisit = (dateOfVisit, dateOfTesting) => {
-  const startDate = new Date(dateOfVisit)
-  const endDate = new Date(dateOfVisit)
-
-  // -4 months before dateOfVisit
-  startDate.setMonth(startDate.getMonth() - 4)
-  startDate.setHours(0, 0, 0, 0)
-
-  // +4 months from dateOfVisit
-  endDate.setMonth(endDate.getMonth() + 4)
-  endDate.setHours(23, 59, 59, 999)
-
-  return new Date(dateOfTesting) >= startDate && new Date(dateOfTesting) <= endDate
-}
-
 export const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) => {
   return new Date(dateOfTesting) < new Date(dateOfVisit)
 }

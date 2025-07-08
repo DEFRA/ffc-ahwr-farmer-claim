@@ -13,12 +13,12 @@ import { isValidDate } from '../../lib/date-utils.js'
 import { addError } from '../utils/validations.js'
 import {
   getReviewWithinLast10Months,
-  isDateOfTestingLessThanDateOfVisit,
-  isWithIn4MonthsBeforeOrAfterDateOfVisit
+  isDateOfTestingLessThanDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, getReviewHerdId } from '../../lib/context-helper.js'
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
+import { isWithin4MonthsBeforeOrAfterDateOfVisit } from '../../lib/date-of-testing-4-month-check.js'
 
 const { ruralPaymentsAgency, urlPrefix } = config
 const {
@@ -370,23 +370,8 @@ const postHandler = {
             request.payload[`${onAnotherDateInputId}-day`]
           )
 
-      if (!isWithIn4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
-        const claimTypeText = typeOfReview === claimType.review ? 'review' : 'follow-up'
-        const errorMessage = `Samples should have been taken no more than 4 months before or after the date of ${claimTypeText}.`
-
-        raiseInvalidDataEvent(
-          request,
-          dateOfTestingKey,
-          `Value ${dateOfTesting} is invalid. Error: ${errorMessage}`
-        )
-        return h
-          .view(endemicsDateOfTestingException, {
-            backLink: pageUrl,
-            ruralPaymentsAgency,
-            errorMessage
-          })
-          .code(400)
-          .takeover()
+      if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
+        await raiseInvalidDataEvent(request, dateOfTestingKey, `${dateOfTesting} is outside of the recommended 4 month period from the date of visit ${dateOfVisit}`)
       }
 
       const reviewHerdId = getReviewHerdId({ herdId, tempHerdId })
