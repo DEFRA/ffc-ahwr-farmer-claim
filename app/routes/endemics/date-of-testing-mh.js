@@ -18,6 +18,7 @@ import {
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive, isMultipleHerdsUserJourney, getReviewHerdId } from '../../lib/context-helper.js'
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
+import { isWithin4MonthsBeforeOrAfterDateOfVisit } from '../../lib/date-of-testing-4-month-check.js'
 
 const { ruralPaymentsAgency, urlPrefix } = config
 const {
@@ -368,6 +369,10 @@ const postHandler = {
             request.payload[`${onAnotherDateInputId}-month`] - 1,
             request.payload[`${onAnotherDateInputId}-day`]
           )
+
+      if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
+        await raiseInvalidDataEvent(request, dateOfTestingKey, `${dateOfTesting} is outside of the recommended 4 month period from the date of visit ${dateOfVisit}`)
+      }
 
       const reviewHerdId = getReviewHerdId({ herdId, tempHerdId })
       const previousReviewClaim = getReviewWithinLast10Months(

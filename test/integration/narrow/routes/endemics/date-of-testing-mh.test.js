@@ -31,6 +31,10 @@ describe('Date of testing', () => {
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   afterAll(async () => {
     await server.stop()
     jest.resetAllMocks()
@@ -94,7 +98,46 @@ describe('Date of testing', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
 
-    test('should redirect to species number when endemics claim and previous review claim of differet species with date of testing less than date of visit', async () => {
+    test('should redirect to species number when endemics claim and previous review claim of different species with date of testing less than date of visit', async () => {
+      getEndemicsClaim
+        .mockImplementationOnce(() => ({}))
+        .mockImplementationOnce(() => ({
+          dateOfVisit: '2024-01-01',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }]
+        }))
+      const options = {
+        method: 'POST',
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          dateOfVisit: '2024-01-01',
+          dateOfAgreementAccepted: '2022-01-01',
+          'on-another-date-day': '01',
+          'on-another-date-month': '12',
+          'on-another-date-year': '2023'
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+      expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(0)
+    })
+
+    test('should emit an invalid event when the date of visit is over 4 months away from the date of testing', async () => {
       getEndemicsClaim
         .mockImplementationOnce(() => ({}))
         .mockImplementationOnce(() => ({
@@ -128,6 +171,7 @@ describe('Date of testing', () => {
 
       const res = await server.inject(options)
 
+      expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfTesting', 'Sun Jan 01 2023 00:00:00 GMT+0000 (Greenwich Mean Time) is outside of the recommended 4 month period from the date of visit 2024-01-01')
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     })
@@ -158,7 +202,7 @@ describe('Date of testing', () => {
           dateOfVisit: '2024-01-01',
           dateOfAgreementAccepted: '2022-01-01',
           'on-another-date-day': '01',
-          'on-another-date-month': '01',
+          'on-another-date-month': '12',
           'on-another-date-year': '2023'
         },
         auth,
@@ -169,7 +213,7 @@ describe('Date of testing', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(1)
       expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
   })
