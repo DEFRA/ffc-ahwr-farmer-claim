@@ -61,7 +61,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle  on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
-      expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Species Numbers - Get funding to improve animal health and welfare')
       expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
       expect($('.govuk-back-link').attr('href')).toEqual(backLink)
@@ -85,7 +85,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual(`Did you have 11 or more ${typeOfLivestock} cattle in this herd on the date of the ${typeOfReview === claimConstants.claimType.review ? 'review' : 'follow-up'}?`)
-      expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Species Numbers - Get funding to improve animal health and welfare')
       expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
       expect($('.govuk-back-link').attr('href')).toEqual('/claim/endemics/same-herd')
@@ -106,7 +106,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual('Did you have 21 or more sheep in this flock on the date of the review?')
-      expect($('title').text().trim()).toContain('Number - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Species Numbers - Get funding to improve animal health and welfare')
       expect($('.govuk-hint').text().trim()).toEqual('You can find this on the summary the vet gave you.')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)

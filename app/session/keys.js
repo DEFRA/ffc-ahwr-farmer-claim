@@ -60,7 +60,11 @@ export const sessionKeys = {
     isOnlyHerdOnSbi: 'isOnlyHerdOnSbi',
     herdReasons: 'herdReasons',
     herdSame: 'herdSame',
-    herds: 'herds'
+    herds: 'herds',
+    pigsFollowUpTest: 'pigsFollowUpTest',
+    pigsElisaTestResult: 'pigsElisaTestResult',
+    pigsPcrTestResult: 'pigsPcrTestResult',
+    pigsGeneticSequencing: 'pigsGeneticSequencing'
   },
   claim: {
     animalsTested: 'animalsTested',

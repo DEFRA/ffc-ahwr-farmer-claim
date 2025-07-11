@@ -26,7 +26,10 @@ describe('App Insight', () => {
     }
   }
 
-  const consoleLogSpy = jest.spyOn(console, 'log')
+  const mockInfoLogger = jest.fn()
+  const mockLogger = {
+    info: mockInfoLogger
+  }
 
   const appInsightsKey = process.env.APPLICATIONINSIGHTS_CONNECTION_STRING
 
@@ -44,19 +47,19 @@ describe('App Insight', () => {
     process.env.APPINSIGHTS_CLOUDROLE = appName
     process.env.APPLICATIONINSIGHTS_CONNECTION_STRING = 'something'
 
-    insights.setup()
+    insights.setup(mockLogger)
 
     expect(setupMock).toHaveBeenCalledTimes(1)
     expect(startMock).toHaveBeenCalledTimes(1)
     expect(tags[cloudRoleTag]).toEqual(appName)
-    expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-    expect(consoleLogSpy).toHaveBeenCalledWith('App Insights Running')
+    expect(mockInfoLogger).toHaveBeenCalledTimes(1)
+    expect(mockInfoLogger).toHaveBeenCalledWith('App Insights Running')
   })
 
   test('logs not running when env var does not exist', () => {
-    insights.setup()
+    insights.setup(mockLogger)
 
-    expect(consoleLogSpy).toHaveBeenCalledTimes(1)
-    expect(consoleLogSpy).toHaveBeenCalledWith('App Insights Not Running!')
+    expect(mockInfoLogger).toHaveBeenCalledTimes(1)
+    expect(mockInfoLogger).toHaveBeenCalledWith('App Insights Not Running!')
   })
 })

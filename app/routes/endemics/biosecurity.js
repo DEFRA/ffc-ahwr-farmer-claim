@@ -23,7 +23,10 @@ const {
   endemicsVetRCVS,
   endemicsPIHunt,
   endemicsPIHuntRecommended,
-  endemicsPIHuntAllAnimals
+  endemicsPIHuntAllAnimals,
+  endemicsPigsGeneticSequencing,
+  endemicsPigsPcrResult,
+  endemicsPigsElisaResult
 } = links
 const { livestockTypes: { pigs } } = claimConstants
 
@@ -85,21 +88,36 @@ export const getBeefOrDairyPage = (session, isNegative, isPositive) => {
 export const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
   const { isNegative, isPositive } = getTestResult(session?.reviewTestResults)
-  const { isBeef, isDairy, isPigs } = getLivestockTypes(
-    session?.typeOfLivestock
-  )
+  const { isBeef, isDairy, isPigs } = getLivestockTypes(session?.typeOfLivestock)
   const dateOfVisit = getEndemicsClaim(request, dateOfVisitKey)
 
   if ((isBeef || isDairy) && isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit)) {
     return getBeefOrDairyPage(session, isNegative, isPositive)
-  } else {
-    if ((isBeef || isDairy) && isNegative) {
-      return `${urlPrefix}/${endemicsVetRCVS}`
-    }
-    if (isPigs) return `${urlPrefix}/${endemicsDiseaseStatus}`
-
-    return `${urlPrefix}/${endemicsTestResults}`
   }
+
+  if ((isBeef || isDairy) && isNegative) {
+    return `${urlPrefix}/${endemicsVetRCVS}`
+  }
+
+  if (isPigs) {
+    if (config.pigUpdates.enabled) {
+      // This page might have been skipped, if they said the result was negative
+      if (session?.pigsGeneticSequencing) {
+        return `${urlPrefix}/${endemicsPigsGeneticSequencing}`
+      }
+
+      console.log(session?.pigsFollowUpTest)
+      if (session?.pigsFollowUpTest === 'pcr') {
+        return `${urlPrefix}/${endemicsPigsPcrResult}`
+      }
+
+      return `${urlPrefix}/${endemicsPigsElisaResult}`
+    }
+
+    return `${urlPrefix}/${endemicsDiseaseStatus}`
+  }
+
+  return `${urlPrefix}/${endemicsTestResults}`
 }
 
 export const getAssessmentPercentageErrorMessage = (

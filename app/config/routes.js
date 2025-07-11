@@ -54,5 +54,8 @@ export default {
   endemicsSameHerd: 'endemics/same-herd',
   endemicsSelectTheHerdException: 'endemics/select-the-herd-exception',
   endemicsSelectTheHerdDateException: 'endemics/select-the-herd-date-exception',
-  endemicsSameHerdException: 'endemics/same-herd-exception'
+  endemicsSameHerdException: 'endemics/same-herd-exception',
+  endemicsPigsElisaResult: 'endemics/pigs-elisa-result',
+  endemicsPigsPcrResult: 'endemics/pigs-pcr-result',
+  endemicsPigsGeneticSequencing: 'endemics/pigs-genetic-sequencing'
 }
