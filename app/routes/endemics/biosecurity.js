@@ -106,7 +106,6 @@ export const previousPageUrl = (request) => {
         return `${urlPrefix}/${endemicsPigsGeneticSequencing}`
       }
 
-      console.log(session?.pigsFollowUpTest)
       if (session?.pigsFollowUpTest === 'pcr') {
         return `${urlPrefix}/${endemicsPigsPcrResult}`
       }

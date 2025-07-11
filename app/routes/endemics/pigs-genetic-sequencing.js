@@ -49,7 +49,7 @@ const postHandler = {
     validate: {
       payload: Joi.object({
         geneticSequencing: Joi.string()
-          .valid('mlv', 'prrs1', 'prrs1Plus', 'recombOnly', 'prrs2')
+          .valid('mlv', 'prrs1', 'prrs1Plus', 'recomb', 'prrs2')
           .required()
       }),
       failAction: (request, h, _err) => {
