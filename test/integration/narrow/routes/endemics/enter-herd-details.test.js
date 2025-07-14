@@ -7,7 +7,6 @@ import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { ONLY_HERD } from '../../../../../app/constants/constants.js'
-import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 
 const { urlPrefix } = config
 const { endemicsEnterHerdDetails: pageUnderTest } = links
@@ -248,15 +247,5 @@ describe('enter-herd-details tests', () => {
     expect($('h2.govuk-error-summary__title').text()).toContain('There is a problem')
     expect($('a[href="#herdReasons"]').text()).toContain('Select the reasons for this separate flock')
     expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/enter-cph-number')
-  })
-
-  test('TEMP TEST, remove this test and the replace " (e.g. breeding)" code from enter-herd and check-herd once common library pipelines fixed', async () => {
-    const findsTextBeingRemovedSoon = Object.entries(MULTIPLE_HERD_REASONS)
-      .some(([_, description]) => description === 'They are used for another purpose (e.g. breeding)')
-
-    const replacedDescription = MULTIPLE_HERD_REASONS.differentPurpose.replace(' (e.g. breeding)', '')
-
-    expect(findsTextBeingRemovedSoon).toBe(true)
-    expect(replacedDescription).toBe('They are used for another purpose')
   })
 })
