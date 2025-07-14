@@ -12,6 +12,7 @@ describe('routes plugin test', () => {
   test('routes included', async () => {
     config.multiHerds.enabled = false
     config.devLogin.enabled = false
+    config.pigUpdates.enabled = false
     const server = await createServer()
     const routePaths = []
     server.table()
@@ -108,5 +109,19 @@ describe('routes plugin test', () => {
     })
 
     expect(routePaths).toContain('/claim/endemics/dev-sign-in')
+  })
+
+  test('when pigUpdates is true, pig updates included in routes', async () => {
+    config.pigUpdates.enabled = true
+
+    const server = await createServer()
+    const routePaths = []
+    server.table().forEach((element) => {
+      routePaths.push(element.path)
+    })
+
+    expect(routePaths).toContain('/claim/endemics/pigs-elisa-result')
+    expect(routePaths).toContain('/claim/endemics/pigs-pcr-result')
+    expect(routePaths).toContain('/claim/endemics/pigs-genetic-sequencing')
   })
 })

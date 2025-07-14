@@ -58,7 +58,7 @@ const postHandler = {
         return h.redirect(`${urlPrefix}/${endemicsPigsGeneticSequencing}`)
       }
 
-      // Clearing this from the session incase they filled it out, then went back.
+      // Clearing this from the session in-case they filled it out, then went back.
       // Not emitting because its just clearing that part of the session
       setEndemicsClaim(request, pigsGeneticSequencing, undefined, { shouldEmitEvent: false })
 

@@ -5,7 +5,6 @@ import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { getReviewTestResultWithinLast10Months } from '../../api-requests/claim-service-api.js'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -68,6 +67,7 @@ const postHandler = {
       setEndemicsClaim(request, numberOfSamplesTestedKey, numberOfSamplesTested)
 
       const endemicsClaim = getEndemicsClaim(request)
+      // This has always been here - but would question if maybe we should be calling getReviewTestResultWithinLast10Months(request) rather than this.
       const lastReviewTestResults = endemicsClaim.vetVisitsReviewTestResults ?? endemicsClaim.relevantReviewForEndemics?.data?.testResults
 
       const threshold = lastReviewTestResults === 'positive' ? positiveReviewNumberOfSamplesTested : negativeReviewNumberOfSamplesTested
@@ -79,16 +79,14 @@ const postHandler = {
       }
 
       if (config.pigUpdates.enabled) {
-        const { herdVaccinationStatus } = getEndemicsClaim(request)
+        const { herdVaccinationStatus } = endemicsClaim
 
         if (herdVaccinationStatus === 'vaccinated') {
           setEndemicsClaim(request, pigsFollowUpTestKey, 'pcr')
           return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
         }
 
-        const testResult = getReviewTestResultWithinLast10Months(request)
-
-        if (testResult === 'positive') {
+        if (lastReviewTestResults === 'positive') {
           setEndemicsClaim(request, pigsFollowUpTestKey, 'pcr')
           return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
         }

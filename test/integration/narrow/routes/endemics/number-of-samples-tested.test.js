@@ -4,6 +4,7 @@ import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-da
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -98,25 +99,59 @@ describe('Number of samples tested test', () => {
       expect($('#numberOfSamplesTested-error').text()).toMatch('Enter the number of samples tested')
     })
 
-    test.each([
-      { numberOfSamplesTested: '6', lastReviewTestResults: 'positive' },
-      { numberOfSamplesTested: '30', lastReviewTestResults: 'negative' }
-    ])('redirects to next page if $numberOfSamplesTested and $lastReviewTestResults', async ({ numberOfSamplesTested, lastReviewTestResults }) => {
-      getEndemicsClaim.mockImplementation(() => { return { vetVisitsReviewTestResults: lastReviewTestResults } })
+    describe('pig updates feature flag disabled', () => {
+      test.each([
+        { numberOfSamplesTested: '6', lastReviewTestResults: 'positive' },
+        { numberOfSamplesTested: '30', lastReviewTestResults: 'negative' }
+      ])('redirects to next page if $numberOfSamplesTested and $lastReviewTestResults', async ({ numberOfSamplesTested, lastReviewTestResults }) => {
+        config.pigUpdates.enabled = false
+        getEndemicsClaim.mockImplementation(() => { return { vetVisitsReviewTestResults: lastReviewTestResults } })
 
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, numberOfSamplesTested },
-        headers: { cookie: `crumb=${crumb}` }
-      }
+        const options = {
+          method: 'POST',
+          url,
+          auth,
+          payload: { crumb, numberOfSamplesTested },
+          headers: { cookie: `crumb=${crumb}` }
+        }
 
-      const res = await server.inject(options)
+        const res = await server.inject(options)
 
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual('/claim/endemics/disease-status')
-      expect(setEndemicsClaim).toHaveBeenCalled()
+        expect(res.statusCode).toBe(302)
+        expect(res.headers.location.toString()).toEqual('/claim/endemics/disease-status')
+        expect(setEndemicsClaim).toHaveBeenCalled()
+      })
+    })
+
+    describe('pig updates feature flag enabled', () => {
+      beforeEach(() => {
+        config.pigUpdates.enabled = true
+      })
+
+      test.each([
+        { screen: 'PCR', numberOfSamplesTested: '6', lastReviewTestResults: 'positive', vaccinatedValue: 'notvaccinated', expectedLocation: '/claim/endemics/pigs-pcr-result' },
+        { screen: 'ELISA', numberOfSamplesTested: '30', lastReviewTestResults: 'negative', vaccinatedValue: 'notvaccinated', expectedLocation: '/claim/endemics/pigs-elisa-result' },
+        { screen: 'PCR', numberOfSamplesTested: '6', lastReviewTestResults: 'positive', vaccinatedValue: 'vaccinated', expectedLocation: '/claim/endemics/pigs-pcr-result' }
+      ])('redirects to $screen page if valid sample numbers, $vaccinatedValue and $lastReviewTestResults',
+        async ({ screen, numberOfSamplesTested, lastReviewTestResults, vaccinatedValue, expectedLocation }) => {
+          getEndemicsClaim.mockImplementation(() => {
+            return { vetVisitsReviewTestResults: lastReviewTestResults, herdVaccinationStatus: vaccinatedValue }
+          })
+
+          const options = {
+            method: 'POST',
+            url,
+            auth,
+            payload: { crumb, numberOfSamplesTested },
+            headers: { cookie: `crumb=${crumb}` }
+          }
+
+          const res = await server.inject(options)
+
+          expect(res.statusCode).toBe(302)
+          expect(res.headers.location.toString()).toEqual(expectedLocation)
+          expect(setEndemicsClaim).toHaveBeenCalled()
+        })
     })
 
     test.each([
