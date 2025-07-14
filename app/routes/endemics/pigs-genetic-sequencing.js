@@ -41,7 +41,7 @@ const getHandler = {
           {
             ...x,
             text: x.label,
-            checked: pigsGeneticSequencing === x.value,
+            checked: pigsGeneticSequencing === x.value
           }
         )),
         backLink: getBackLink(pigsFollowUpTest)
