@@ -45,33 +45,7 @@
                 text: "You can find this on the summary the vet gave you. Select one option"
               },
               errorMessage: errorMessage,
-              items: [
-                {
-                  value: "mlv",
-                  text: "Modified Live virus (MLV) only",
-                  checked: previousAnswer === "mlv"
-                },
-                {
-                  value: "prrs1",
-                  text: "Wild Type (WT) PRRS 1 only",
-                  checked: previousAnswer === "prrs1"
-                },
-                {
-                  value: "prrs1Plus",
-                  text: "(WT) PRRS 1 plus MLV or recombination",
-                  checked: previousAnswer === "prrs1Plus"
-                },
-                {
-                  value: "recomb",
-                  text: "Recombination only",
-                  checked: previousAnswer === "recomb"
-                },
-                {
-                  value: "prrs2",
-                  text: "Any PRRS 2 (reportable by the laboratory)",
-                  checked: previousAnswer === "prrs2"
-                }
-              ]
+              items: options
             })
           }}
 

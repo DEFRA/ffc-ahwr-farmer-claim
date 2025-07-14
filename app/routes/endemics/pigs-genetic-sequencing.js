@@ -4,6 +4,7 @@ import links from '../../config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import HttpStatus from 'http-status-codes'
+import { PIG_GENETIC_SEQUENCING_VALUES } from 'ffc-ahwr-common-library'
 
 const urlPrefix = config.urlPrefix
 const { endemicsPigsGeneticSequencing, endemicsPigsPcrResult, endemicsPigsElisaResult, endemicsBiosecurity } = links
@@ -36,7 +37,13 @@ const getHandler = {
         getEndemicsClaim(request)
 
       return h.view(endemicsPigsGeneticSequencing, {
-        previousAnswer: pigsGeneticSequencing,
+        options: PIG_GENETIC_SEQUENCING_VALUES.map(x => (
+          {
+            ...x,
+            text: x.label,
+            checked: pigsGeneticSequencing === x.value,
+          }
+        )),
         backLink: getBackLink(pigsFollowUpTest)
       })
     }
@@ -50,7 +57,7 @@ const postHandler = {
     validate: {
       payload: Joi.object({
         geneticSequencing: Joi.string()
-          .valid('mlv', 'prrs1', 'prrs1Plus', 'recomb', 'prrs2')
+          .valid(...PIG_GENETIC_SEQUENCING_VALUES.map(x => x.value))
           .required()
       }),
       failAction: (request, h, _err) => {
