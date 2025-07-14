@@ -100,23 +100,27 @@ export const previousPageUrl = (request) => {
   }
 
   if (isPigs) {
-    if (config.pigUpdates.enabled) {
-      // This page might have been skipped, if they said the result was negative
-      if (session?.pigsGeneticSequencing) {
-        return `${urlPrefix}/${endemicsPigsGeneticSequencing}`
-      }
-
-      if (session?.pigsFollowUpTest === 'pcr') {
-        return `${urlPrefix}/${endemicsPigsPcrResult}`
-      }
-
-      return `${urlPrefix}/${endemicsPigsElisaResult}`
-    }
-
-    return `${urlPrefix}/${endemicsDiseaseStatus}`
+    return getBackPageForPigs(session)
   }
 
   return `${urlPrefix}/${endemicsTestResults}`
+}
+
+const getBackPageForPigs = (session) => {
+  if (config.pigUpdates.enabled) {
+    // This page might have been skipped, if they said the result was negative
+    if (session?.pigsGeneticSequencing) {
+      return `${urlPrefix}/${endemicsPigsGeneticSequencing}`
+    }
+
+    if (session?.pigsFollowUpTest === 'pcr') {
+      return `${urlPrefix}/${endemicsPigsPcrResult}`
+    }
+
+    return `${urlPrefix}/${endemicsPigsElisaResult}`
+  }
+
+  return `${urlPrefix}/${endemicsDiseaseStatus}`
 }
 
 export const getAssessmentPercentageErrorMessage = (

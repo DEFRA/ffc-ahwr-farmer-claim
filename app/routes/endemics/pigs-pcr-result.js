@@ -3,6 +3,7 @@ import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
+import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
 const { endemicsPigsPcrResult, endemicsPigsGeneticSequencing, endemicsNumberOfSamplesTested, endemicsBiosecurity } = links
@@ -15,10 +16,10 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { pigsPcrTestResult } = getEndemicsClaim(request)
+      const { pigsPcrTestResult: testResult } = getEndemicsClaim(request)
 
       return h.view(endemicsPigsPcrResult, {
-        previousAnswer: pigsPcrTestResult,
+        previousAnswer: testResult,
         backLink: `${urlPrefix}/${endemicsNumberOfSamplesTested}`
       })
     }
@@ -41,7 +42,7 @@ const postHandler = {
             errorMessage,
             backLink: `${urlPrefix}/${endemicsNumberOfSamplesTested}`
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
