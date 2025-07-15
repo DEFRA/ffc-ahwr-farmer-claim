@@ -346,7 +346,7 @@ export const expectedEndemicsFollowUpDairy = {
   ]
 }
 
-export const expectedEndemicsFollowUpPigs = {
+export const expectedEndemicsFollowUpPigs = (pigUpdatesEnabled = false) => ({
   rowKeys: [
     ...commonEndemicsFollowUpRowKeys,
     'Date of sampling',
@@ -356,7 +356,7 @@ export const expectedEndemicsFollowUpPigs = {
     'Herd PRRS vaccination status',
     'URN',
     'Number of samples tested',
-    'Disease status category',
+    pigUpdatesEnabled ? 'Test result' : 'Disease status category',
     'Biosecurity assessment'
   ],
   rowContents: [
@@ -372,7 +372,7 @@ export const expectedEndemicsFollowUpPigs = {
     'Vaccinated',
     'laboratoryURN',
     '5',
-    '3',
+    pigUpdatesEnabled ? 'ELISA positive' : '3',
     'Yes, Assessment percentage: 50%'
   ],
   rowActionTexts: [
@@ -384,7 +384,7 @@ export const expectedEndemicsFollowUpPigs = {
     'Change herd PRRS vaccination status',
     'Change URN',
     'Change number of samples tested',
-    'Change disease status category',
+    pigUpdatesEnabled ? 'Change test result' : 'Change disease status category',
     'Change biosecurity assessment'
   ],
   rowLinks: [
@@ -397,10 +397,10 @@ export const expectedEndemicsFollowUpPigs = {
     '/claim/endemics/vaccination',
     '/claim/endemics/test-urn',
     '/claim/endemics/number-of-samples-tested',
-    '/claim/endemics/disease-status',
+    pigUpdatesEnabled ? '/claim/endemics/pigs-elisa-result' : '/claim/endemics/disease-status',
     '/claim/endemics/biosecurity'
   ]
-}
+})
 
 export const expectedEndemicsFollowUpSheep = {
   rowKeys: [

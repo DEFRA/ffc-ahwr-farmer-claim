@@ -42,7 +42,7 @@ const getEnterHerdDetailsViewData = (request, ignoreHerdReasons = false) => {
     .filter(([code, _]) => code !== 'other') // other removed for now, likely to be added phase 2
     .map(([code, description]) => ({
       value: code,
-      text: description.replace(' (e.g. breeding)', ''),
+      text: description,
       hint: {
         text: HINT_TEXT_BY_REASON[code] || ''
       },

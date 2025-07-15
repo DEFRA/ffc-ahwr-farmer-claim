@@ -39,6 +39,9 @@ import { enterHerdDetailsHandlers } from '../routes/endemics/enter-herd-details.
 import { checkHerdDetailsHandlers } from '../routes/endemics/check-herd-details.js'
 import { sameHerdHandlers } from '../routes/endemics/same-herd.js'
 import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
+import { pigsElisaResultHandlers } from '../routes/endemics/pigs-elisa-result.js'
+import { pigsPcrResultHandlers } from '../routes/endemics/pigs-pcr-result.js'
+import { pigsGeneticSequencingHandlers } from '../routes/endemics/pigs-genetic-sequencing.js'
 
 const alwaysOnRouteHandlers = [
   assetsRouteHandlers,
@@ -90,6 +93,12 @@ const endemicsWithMhOnHandlers = [
   sameHerdHandlers
 ].flat()
 
+const pigsUpdatesHandlers = [
+  pigsElisaResultHandlers,
+  pigsPcrResultHandlers,
+  pigsGeneticSequencingHandlers
+].flat()
+
 const mapRoutes = () => {
   let routes = alwaysOnRouteHandlers
   routes = routes.concat(endemicsSpecificRouteHandlers)
@@ -103,6 +112,11 @@ const mapRoutes = () => {
   if (config.devLogin.enabled) {
     routes = routes.concat(devSignInHandlers)
   }
+
+  if (config.pigUpdates.enabled) {
+    routes = routes.concat(pigsUpdatesHandlers)
+  }
+
   return routes
 }
 

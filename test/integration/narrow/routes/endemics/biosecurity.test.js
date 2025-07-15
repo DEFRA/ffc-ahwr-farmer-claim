@@ -114,6 +114,38 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
       expect($('input[name="biosecurity"]:checked').val()).toEqual(biosecurity)
       expect($('.govuk-back-link').text()).toMatch('Back')
     })
+
+    test('back link for pigs when genetic sequencing value set', async () => {
+      config.pigUpdates.enabled = true
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', biosecurity: 'yes', reference: 'TEMP-6GSE-PIR8', pigsGeneticSequencing: 'mlv' })
+
+      const response = await server.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect($('.govuk-back-link').attr().href).toMatch('/claim/endemics/pigs-genetic-sequencing')
+    })
+
+    test('back link for pigs when pcr test value set', async () => {
+      config.pigUpdates.enabled = true
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+
+      getEndemicsClaim.mockReturnValue({ typeOfLivestock: 'pigs', biosecurity: 'yes', reference: 'TEMP-6GSE-PIR8', pigsFollowUpTest: 'pcr' })
+
+      const response = await server.inject(options)
+      const $ = cheerio.load(response.payload)
+
+      expect($('.govuk-back-link').attr().href).toMatch('/claim/endemics/pigs-pcr-result')
+    })
   })
   describe(`POST ${url}`, () => {
     test('show inline Error if continue is pressed and biosecurity answer not selected', async () => {

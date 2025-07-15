@@ -5,16 +5,19 @@ import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { claimConstants } from '../../constants/claim.js'
 
 const urlPrefix = config.urlPrefix
 const {
   endemicsTestUrn,
   endemicsNumberOfSamplesTested,
   endemicsNumberOfSamplesTestedException,
-  endemicsDiseaseStatus
+  endemicsDiseaseStatus,
+  endemicsPigsPcrResult,
+  endemicsPigsElisaResult
 } = links
 const {
-  endemicsClaim: { numberOfSamplesTested: numberOfSamplesTestedKey }
+  endemicsClaim: { numberOfSamplesTested: numberOfSamplesTestedKey, pigsFollowUpTest: pigsFollowUpTestKey }
 } = sessionKeys
 const { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } = thresholds
 
@@ -65,6 +68,7 @@ const postHandler = {
       setEndemicsClaim(request, numberOfSamplesTestedKey, numberOfSamplesTested)
 
       const endemicsClaim = getEndemicsClaim(request)
+      // This has always been here - but would question if maybe we should be calling getReviewTestResultWithinLast10Months(request) rather than this.
       const lastReviewTestResults = endemicsClaim.vetVisitsReviewTestResults ?? endemicsClaim.relevantReviewForEndemics?.data?.testResults
 
       const threshold = lastReviewTestResults === 'positive' ? positiveReviewNumberOfSamplesTested : negativeReviewNumberOfSamplesTested
@@ -73,6 +77,24 @@ const postHandler = {
         request.logger.info(`Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
         raiseInvalidDataEvent(request, numberOfSamplesTestedKey, `Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
         return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+      }
+
+      if (config.pigUpdates.enabled) {
+        const { herdVaccinationStatus } = endemicsClaim
+        const { vaccination: { vaccinated }, pigsFollowUpTest: { pcr, elisa }, result: { positive } } = claimConstants
+
+        if (herdVaccinationStatus === vaccinated) {
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
+          return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
+        }
+
+        if (lastReviewTestResults === positive) {
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
+          return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
+        }
+
+        setEndemicsClaim(request, pigsFollowUpTestKey, elisa)
+        return h.redirect(`${urlPrefix}/${endemicsPigsElisaResult}`)
       }
 
       return h.redirect(`${urlPrefix}/${endemicsDiseaseStatus}`)

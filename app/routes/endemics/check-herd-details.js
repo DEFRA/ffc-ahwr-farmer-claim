@@ -4,7 +4,7 @@ import { ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
-import { skipSameHerdPage, skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
+import { skipOtherHerdsOnSbiPage, skipSameHerdPage } from '../../lib/context-helper.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
 
 const { urlPrefix } = config
@@ -23,7 +23,7 @@ const sameHerdPageUrl = `${urlPrefix}/${endemicsSameHerd}`
 const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
 
 const getHerdReasonsText = (herdReasons) => {
-  return herdReasons?.map(key => MULTIPLE_HERD_REASONS[key].replace(' (e.g. breeding)', '')).join('<br>')
+  return herdReasons?.map(key => MULTIPLE_HERD_REASONS[key]).join('<br>')
 }
 
 const getHandler = {

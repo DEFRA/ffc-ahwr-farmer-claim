@@ -67,6 +67,9 @@ export const getConfig = () => {
     },
     devLogin: {
       enabled: Joi.bool().required()
+    },
+    pigUpdates: {
+      enabled: Joi.bool().required()
     }
   })
 
@@ -133,6 +136,9 @@ export const getConfig = () => {
     },
     devLogin: {
       enabled: process.env.DEV_LOGIN_ENABLED === 'true'
+    },
+    pigUpdates: {
+      enabled: process.env.PIG_UPDATES_ENABLED === 'true'
     }
   }
 

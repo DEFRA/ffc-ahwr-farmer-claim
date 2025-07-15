@@ -13,6 +13,7 @@ import { getReviewType } from '../../lib/get-review-type.js'
 import { sheepPackages, sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
 import { submitNewClaim } from '../../api-requests/claim-service-api.js'
 import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { generatePigStatusAnswerRows } from '../utils/generate-answer-rows.js'
 
 const urlPrefix = config.urlPrefix
 
@@ -315,19 +316,7 @@ const getHandler = {
           ]
         }
       }
-      const diseaseStatusRow = {
-        key: { text: 'Disease status category' }, // Pigs
-        value: { html: sessionData?.diseaseStatus },
-        actions: {
-          items: [
-            {
-              href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`,
-              text: 'Change',
-              visuallyHiddenText: 'disease status category'
-            }
-          ]
-        }
-      }
+
       const samplesTestedRow = {
         key: { text: 'Number of samples tested' }, // Pigs
         value: { html: sessionData?.numberOfSamplesTested },
@@ -422,7 +411,7 @@ const getHandler = {
         oralFluidSamplesRow, // review claim
         testResultsRow,
         samplesTestedRow, // endemics claim
-        diseaseStatusRow,
+        ...generatePigStatusAnswerRows(sessionData),
         isEndemicsFollowUp && biosecurityAssessmentRow
       ]
       const sheepRows = [
@@ -515,6 +504,10 @@ const postHandler = {
         biosecurity,
         herdVaccinationStatus,
         diseaseStatus,
+        pigsFollowUpTest,
+        pigsElisaTestResult,
+        pigsPcrTestResult,
+        pigsGeneticSequencing,
         sheepEndemicsPackage,
         numberOfSamplesTested,
         reference: tempClaimReference,
@@ -553,6 +546,10 @@ const postHandler = {
           biosecurity,
           herdVaccinationStatus,
           diseaseStatus,
+          pigsFollowUpTest,
+          pigsElisaTestResult,
+          pigsPcrTestResult,
+          pigsGeneticSequencing,
           sheepEndemicsPackage,
           numberOfSamplesTested,
           reviewTestResults,

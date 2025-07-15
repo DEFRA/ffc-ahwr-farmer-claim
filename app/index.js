@@ -4,9 +4,9 @@ import { createServer } from './server.js'
 let server
 
 const init = async () => {
-  setup()
   server = await createServer()
   await server.start()
+  setup(server.logger)
 }
 
 process.on('unhandledRejection', async (err) => {

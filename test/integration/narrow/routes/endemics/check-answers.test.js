@@ -164,6 +164,7 @@ describe('Check answers test', () => {
       })
 
       test('for pigs', async () => {
+        config.pigUpdates.enabled = false
         getEndemicsClaim.mockImplementation(() => {
           return pigsReviewClaim
         })
@@ -318,6 +319,7 @@ describe('Check answers test', () => {
       })
 
       test('for pigs', async () => {
+        config.pigUpdates.enabled = false
         getEndemicsClaim.mockImplementation(() => {
           return pigEndemicsFollowUpClaim
         })
@@ -337,10 +339,47 @@ describe('Check answers test', () => {
         const rowActionTexts = getRowActionTexts($)
         const rowLinks = getRowLinks($)
 
-        expect(rowKeys).toEqual(expectedEndemicsFollowUpPigs.rowKeys)
-        expect(rowContents).toEqual(expectedEndemicsFollowUpPigs.rowContents)
-        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpPigs.rowActionTexts)
-        expect(rowLinks).toEqual(expectedEndemicsFollowUpPigs.rowLinks)
+        const expected = expectedEndemicsFollowUpPigs(false)
+
+        expect(rowKeys).toEqual(expected.rowKeys)
+        expect(rowContents).toEqual(expected.rowContents)
+        expect(rowActionTexts).toEqual(expected.rowActionTexts)
+        expect(rowLinks).toEqual(expected.rowLinks)
+
+        expectPhaseBanner.ok($)
+      })
+
+      test('for pigs with pigUpdates enabled', async () => {
+        config.pigUpdates.enabled = true
+        getEndemicsClaim.mockImplementation(() => {
+          return {
+            ...pigEndemicsFollowUpClaim,
+            diseaseStatus: undefined,
+            pigsElisaTestResult: 'positive'
+          }
+        })
+        const options = {
+          method: 'GET',
+          url,
+          auth
+        }
+
+        const res = await server.inject(options)
+
+        expect(res.statusCode).toBe(200)
+        const $ = cheerio.load(res.payload)
+
+        const rowKeys = getRowKeys($)
+        const rowContents = getRowContents($)
+        const rowActionTexts = getRowActionTexts($)
+        const rowLinks = getRowLinks($)
+
+        const expected = expectedEndemicsFollowUpPigs(true)
+
+        expect(rowKeys).toEqual(expected.rowKeys)
+        expect(rowContents).toEqual(expected.rowContents)
+        expect(rowActionTexts).toEqual(expected.rowActionTexts)
+        expect(rowLinks).toEqual(expected.rowLinks)
 
         expectPhaseBanner.ok($)
       })
