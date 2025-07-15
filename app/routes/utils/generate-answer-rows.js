@@ -53,7 +53,9 @@ export const generatePigStatusAnswerRows = (sessionData) => {
 const prefixResultForTestType = (elisaValue, pcrValue) => {
   if (elisaValue) {
     return `ELISA ${elisaValue}`
-  } else if (pcrValue) {
+  }
+
+  if (pcrValue) {
     return `PCR ${pcrValue}`
   }
   return undefined
