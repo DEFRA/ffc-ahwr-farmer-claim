@@ -81,7 +81,7 @@ const postHandler = {
 
       if (config.pigUpdates.enabled) {
         const { herdVaccinationStatus } = endemicsClaim
-        const { vaccination: { vaccinated}, pigsFollowUpTest: { pcr, elisa}, result: { positive }   } = claimConstants
+        const { vaccination: { vaccinated }, pigsFollowUpTest: { pcr, elisa }, result: { positive } } = claimConstants
 
         if (herdVaccinationStatus === vaccinated) {
           setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
