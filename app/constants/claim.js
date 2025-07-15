@@ -25,6 +25,14 @@ export const claimConstants = {
     vaccinated: 'vaccinated',
     notVaccinated: 'notVaccinated'
   },
+  result: {
+    positive: 'positive',
+    negative: 'negative'
+  },
+  pigsFollowUpTest: {
+    pcr: 'pcr',
+    elisa: 'elisa'
+  },
   dateOfVetVisitExceptions: {
     rejectedReview: 'rejected review',
     endemicsWithin10: 'another endemics within 10 months',

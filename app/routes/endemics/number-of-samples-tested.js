@@ -5,6 +5,7 @@ import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import { claimConstants } from '../../constants/claim.js'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -80,18 +81,19 @@ const postHandler = {
 
       if (config.pigUpdates.enabled) {
         const { herdVaccinationStatus } = endemicsClaim
+        const { vaccination: { vaccinated}, pigsFollowUpTest: { pcr, elisa}, result: { positive }   } = claimConstants
 
-        if (herdVaccinationStatus === 'vaccinated') {
-          setEndemicsClaim(request, pigsFollowUpTestKey, 'pcr')
+        if (herdVaccinationStatus === vaccinated) {
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
           return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
         }
 
-        if (lastReviewTestResults === 'positive') {
-          setEndemicsClaim(request, pigsFollowUpTestKey, 'pcr')
+        if (lastReviewTestResults === positive) {
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
           return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
         }
 
-        setEndemicsClaim(request, pigsFollowUpTestKey, 'elisa')
+        setEndemicsClaim(request, pigsFollowUpTestKey, elisa)
         return h.redirect(`${urlPrefix}/${endemicsPigsElisaResult}`)
       }
 

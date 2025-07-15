@@ -55,7 +55,6 @@ const prefixResultForTestType = (elisaValue, pcrValue) => {
     return `ELISA ${elisaValue}`
   } else if (pcrValue) {
     return `PCR ${pcrValue}`
-  } else {
-    return undefined
   }
+  return undefined
 }

@@ -4,10 +4,12 @@ import links from '../../config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import HttpStatus from 'http-status-codes'
+import { claimConstants } from '../../constants/claim.js'
 
 const urlPrefix = config.urlPrefix
 const { endemicsPigsPcrResult, endemicsPigsGeneticSequencing, endemicsNumberOfSamplesTested, endemicsBiosecurity } = links
 const { endemicsClaim: { pigsPcrTestResult, pigsGeneticSequencing } } = sessionKeys
+const { result: { negative, positive } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsPigsPcrResult}`
 
@@ -32,7 +34,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        pcrResult: Joi.string().valid('negative', 'positive').required()
+        pcrResult: Joi.string().valid(negative, positive).required()
       }),
       failAction: (_request, h, _err) => {
         const errorMessage = { text: 'Select the result of the test' }
@@ -55,7 +57,7 @@ const postHandler = {
         pcrResult
       )
 
-      if (pcrResult === 'positive') {
+      if (pcrResult === positive) {
         return h.redirect(`${urlPrefix}/${endemicsPigsGeneticSequencing}`)
       }
 

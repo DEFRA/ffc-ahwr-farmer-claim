@@ -28,7 +28,7 @@ const {
   endemicsPigsPcrResult,
   endemicsPigsElisaResult
 } = links
-const { livestockTypes: { pigs } } = claimConstants
+const { livestockTypes: { pigs }, pigsFollowUpTest: { pcr } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
 
@@ -113,7 +113,7 @@ const getBackPageForPigs = (session) => {
       return `${urlPrefix}/${endemicsPigsGeneticSequencing}`
     }
 
-    if (session?.pigsFollowUpTest === 'pcr') {
+    if (session?.pigsFollowUpTest === pcr) {
       return `${urlPrefix}/${endemicsPigsPcrResult}`
     }
 

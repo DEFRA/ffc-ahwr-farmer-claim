@@ -5,6 +5,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import HttpStatus from 'http-status-codes'
 import { PIG_GENETIC_SEQUENCING_VALUES } from 'ffc-ahwr-common-library'
+import { claimConstants } from '../../constants/claim.js'
 
 const urlPrefix = config.urlPrefix
 const { endemicsPigsGeneticSequencing, endemicsPigsPcrResult, endemicsPigsElisaResult, endemicsBiosecurity } = links
@@ -13,13 +14,14 @@ const {
     pigsGeneticSequencing: pigsGeneticSequencingKey
   }
 } = sessionKeys
+const { pigsFollowUpTest: { elisa } } = claimConstants
 
 const pageUrl = `${urlPrefix}/${endemicsPigsGeneticSequencing}`
 
 const getBackLink = (pigsFollowUpTest) => {
   let backLink = `${urlPrefix}`
 
-  if (pigsFollowUpTest === 'ELISA') {
+  if (pigsFollowUpTest === elisa) {
     backLink = `${backLink}/${endemicsPigsElisaResult}`
   } else {
     backLink = `${backLink}/${endemicsPigsPcrResult}`
