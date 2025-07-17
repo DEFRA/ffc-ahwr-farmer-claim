@@ -43,7 +43,7 @@ describe('pigs elisa result test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('What was the result of the ELISA test?')
-      expect($('title').text()).toContain('ELISA Test Result - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('title').text()).toContain('What was the result of the ELISA test? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
 
       expectPhaseBanner.ok($)
     })

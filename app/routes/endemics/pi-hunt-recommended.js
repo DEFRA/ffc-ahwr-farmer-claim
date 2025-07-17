@@ -7,6 +7,7 @@ import links from '../../config/routes.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { getAmount } from '../../api-requests/claim-service-api.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix, ruralPaymentsAgency } = config
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = links
@@ -26,7 +27,7 @@ const getHandler = {
     handler: async (request, h) => {
       const { piHuntRecommended } = getEndemicsClaim(request)
       const yesOrNoRadios = radios(questionText, 'piHuntRecommended', undefined, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
-      return h.view(endemicsPIHuntRecommended, { backLink, ...yesOrNoRadios })
+      return h.view(endemicsPIHuntRecommended, { backLink, title: questionText, ...yesOrNoRadios })
     }
   }
 }
@@ -46,11 +47,12 @@ const postHandler = {
         return h.view(endemicsPIHuntRecommended, {
           ...yesOrNoRadios,
           backLink,
+          title: questionText,
           errorMessage: {
             text: errorText,
             href: '#piHuntRecommended'
           }
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {

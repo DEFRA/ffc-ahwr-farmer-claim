@@ -9,6 +9,7 @@ import {
   notOtherDiseaseTypeNoResult
 } from '../utils/disease-type-test-result.js'
 import { radios } from '../models/form-component/radios.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 
@@ -53,12 +54,16 @@ const getPageContent = (request, data) => {
   const { diseaseType, result } = sheepTestResults.find((test) => test.isCurrentPage)
   const testResultOptions = sheepTestResultsType[diseaseType]
 
+  let headingText = 'Other condition or disease details'
   if (testResultOptions) {
     const diseaseTypeText = sheepTestTypes[sheepEndemicsPackage].find((test) => test.value === diseaseType).text
-
-    return radios(title(diseaseTypeText), 'testResult', data?.error && 'Select a result', {
-      hintHtml: 'You can find this on the summary the vet gave you.'
-    })(testResultOptions.map((test) => ({ value: test.value, text: test.text, checked: result === test.value })))
+    headingText = title(diseaseTypeText)
+    return {
+      pageTitle: headingText,
+      ...radios(headingText, 'testResult', data?.error && 'Select a result', {
+        hintHtml: 'You can find this on the summary the vet gave you.'
+      })(testResultOptions.map((test) => ({ value: test.value, text: test.text, checked: result === test.value })))
+    }
   }
 
   const inputTexts = [
@@ -73,7 +78,8 @@ const getPageContent = (request, data) => {
   ]
 
   return {
-    title: 'Other condition or disease details',
+    title: headingText,
+    pageTitle: headingText,
     inputTexts,
     result,
     resultLength: result.length,
@@ -295,7 +301,7 @@ const postHandler = {
           ...pageContent,
           backLink: previousPage,
           errorList: getErrorList(diseaseTypeValidationError, testResultValidationError)
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
@@ -330,7 +336,7 @@ const postHandler = {
             newDiseaseTypeErrorMessage?.diseaseType,
             newDiseaseTypeErrorMessage?.testResult
           ]
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       if (payloadData?.submitButton === 'continue') return h.redirect(nextPage)

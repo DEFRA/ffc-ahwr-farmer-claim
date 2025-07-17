@@ -6,6 +6,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { radios } from '../models/form-component/radios.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const {
@@ -60,7 +61,7 @@ const getHandler = {
     handler: async (request, h) => {
       const { testResults } = getEndemicsClaim(request)
       const positiveNegativeRadios = radios(pageTitle(request), 'testResults', undefined, { hintHtml })([{ value: 'positive', text: 'Positive', checked: testResults === 'positive' }, { value: 'negative', text: 'Negative', checked: testResults === 'negative' }])
-      return h.view(endemicsTestResults, { backLink: previousPageUrl(request), ...positiveNegativeRadios })
+      return h.view(endemicsTestResults, { backLink: previousPageUrl(request), title: pageTitle(request), ...positiveNegativeRadios })
     }
   }
 }
@@ -85,7 +86,7 @@ const postHandler = {
             text: 'Select a test result',
             href: '#testResults'
           }
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {

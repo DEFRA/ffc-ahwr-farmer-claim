@@ -16,7 +16,14 @@ import {
   isDateOfTestingLessThanDateOfVisit
 } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import {
+  getReviewHerdId,
+  isMultipleHerdsUserJourney,
+  isVisitDateAfterPIHuntAndDairyGoLive
+} from '../../lib/context-helper.js'
+import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
+import { isWithin4MonthsBeforeOrAfterDateOfVisit } from '../../lib/date-of-testing-4-month-check.js'
+import HttpStatus from 'http-status-codes'
 
 const { ruralPaymentsAgency, urlPrefix } = config
 const {
@@ -34,12 +41,16 @@ const {
 
 const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
 const backLink = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
     return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+  }
+
+  if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
+    return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
   return `${urlPrefix}/${endemicsDateOfVisit}`
@@ -67,6 +78,9 @@ const getTheQuestionAndHintText = (typeOfReview, typeOfLivestock) => {
     questionHintText: `This is the date samples were last taken for this ${reviewOrFollowUpText}. You can find it on the summary the vet gave you.`
   }
 }
+
+const onAnotherDateInputId = 'on-another-date'
+const dateOfSamplingText = 'Date of sampling'
 
 const getHandler = {
   method: 'GET',
@@ -96,9 +110,9 @@ const getHandler = {
         whenTestingWasCarriedOut: dateOfTesting
           ? {
               value:
-                dateOfVisit === dateOfTesting
-                  ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
-                  : 'onAnotherDate',
+              dateOfVisit === dateOfTesting
+                ? 'whenTheVetVisitedTheFarmToCarryOutTheReview'
+                : 'onAnotherDate',
               onAnotherDate: {
                 day: {
                   value: new Date(dateOfTesting).getDate()
@@ -135,13 +149,13 @@ const postHandler = {
             'any.required': 'Enter the date samples were taken'
           }),
 
-        'on-another-date-day': Joi.when('whenTestingWasCarriedOut', {
+        [`${onAnotherDateInputId}-day`]: Joi.when('whenTestingWasCarriedOut', {
           switch: [
             {
               is: 'onAnotherDate',
               then: validateDateInputDay(
-                'on-another-date',
-                'Date of sampling'
+                onAnotherDateInputId,
+                dateOfSamplingText
               ).messages({
                 'dateInputDay.ifNothingIsEntered':
                   'Enter the date samples were taken'
@@ -155,13 +169,13 @@ const postHandler = {
           otherwise: Joi.allow('')
         }),
 
-        'on-another-date-month': Joi.when('whenTestingWasCarriedOut', {
+        [`${onAnotherDateInputId}-month`]: Joi.when('whenTestingWasCarriedOut', {
           switch: [
             {
               is: 'onAnotherDate',
               then: validateDateInputMonth(
-                'on-another-date',
-                'Date of sampling'
+                onAnotherDateInputId,
+                dateOfSamplingText
               )
             },
             {
@@ -172,13 +186,13 @@ const postHandler = {
           otherwise: Joi.allow('')
         }),
 
-        'on-another-date-year': Joi.when('whenTestingWasCarriedOut', {
+        [`${onAnotherDateInputId}-year`]: Joi.when('whenTestingWasCarriedOut', {
           switch: [
             {
               is: 'onAnotherDate',
               then: validateDateInputYear(
-                'on-another-date',
-                'Date of sampling',
+                onAnotherDateInputId,
+                dateOfSamplingText,
                 (value, helpers) => {
                   if (value > 9999 || value < 1000) {
                     return value
@@ -193,18 +207,18 @@ const postHandler = {
 
                   if (
                     !isValidDate(
-                      +helpers.state.ancestors[0]['on-another-date-year'],
-                      +helpers.state.ancestors[0]['on-another-date-month'],
-                      +helpers.state.ancestors[0]['on-another-date-day']
+                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
+                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-month`],
+                      +helpers.state.ancestors[0][`${onAnotherDateInputId}-day`]
                     )
                   ) {
                     return value
                   }
 
                   const dateOfTesting = new Date(
-                    helpers.state.ancestors[0]['on-another-date-year'],
-                    helpers.state.ancestors[0]['on-another-date-month'] - 1,
-                    helpers.state.ancestors[0]['on-another-date-day']
+                    helpers.state.ancestors[0][`${onAnotherDateInputId}-year`],
+                    helpers.state.ancestors[0][`${onAnotherDateInputId}-month`] - 1,
+                    helpers.state.ancestors[0][`${onAnotherDateInputId}-day`]
                   )
 
                   const currentDate = new Date()
@@ -269,7 +283,7 @@ const postHandler = {
 
         const newError = addError(
           error,
-          'on-another-date',
+          onAnotherDateInputId,
           'ifTheDateIsIncomplete',
           '#whenTestingWasCarriedOut'
         )
@@ -297,35 +311,35 @@ const postHandler = {
                 : undefined,
               onAnotherDate: {
                 day: {
-                  value: request.payload['on-another-date-day'],
+                  value: request.payload[`${onAnotherDateInputId}-day`],
                   error: error.details.find(
                     (e) =>
-                      e.context.label === 'on-another-date-day' ||
+                      e.context.label === `${onAnotherDateInputId}-day` ||
                       e.type.startsWith('dateOfTesting')
                   )
                 },
                 month: {
-                  value: request.payload['on-another-date-month'],
+                  value: request.payload[`${onAnotherDateInputId}-month`],
                   error: error.details.find(
                     (e) =>
-                      e.context.label === 'on-another-date-month' ||
+                      e.context.label === `${onAnotherDateInputId}-month` ||
                       e.type.startsWith('dateOfTesting')
                   )
                 },
                 year: {
-                  value: request.payload['on-another-date-year'],
+                  value: request.payload[`${onAnotherDateInputId}-year`],
                   error: error.details.find(
                     (e) =>
-                      e.context.label === 'on-another-date-year' ||
+                      e.context.label === `${onAnotherDateInputId}-year` ||
                       e.type.startsWith('dateOfTesting')
                   )
                 },
                 errorMessage: error.details.find((e) =>
-                  e.context.label.startsWith('on-another-date')
+                  e.context.label.startsWith(onAnotherDateInputId)
                 )
                   ? {
                       text: error.details.find((e) =>
-                        e.context.label.startsWith('on-another-date')
+                        e.context.label.startsWith(onAnotherDateInputId)
                       ).message
                     }
                   : undefined
@@ -333,7 +347,7 @@ const postHandler = {
             },
             backLink: backLink(request)
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -343,32 +357,41 @@ const postHandler = {
         typeOfReview,
         typeOfLivestock,
         previousClaims,
-        latestVetVisitApplication
+        latestVetVisitApplication,
+        herdId,
+        tempHerdId
       } = getEndemicsClaim(request)
       const { isEndemicsFollowUp } = getReviewType(typeOfReview)
       const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
       const dateOfTesting =
         request.payload.whenTestingWasCarriedOut ===
-        'whenTheVetVisitedTheFarmToCarryOutTheReview'
+          'whenTheVetVisitedTheFarmToCarryOutTheReview'
           ? dateOfVisit
           : new Date(
-            request.payload['on-another-date-year'],
-            request.payload['on-another-date-month'] - 1,
-            request.payload['on-another-date-day']
+            request.payload[`${onAnotherDateInputId}-year`],
+            request.payload[`${onAnotherDateInputId}-month`] - 1,
+            request.payload[`${onAnotherDateInputId}-day`]
           )
 
+      if (!isWithin4MonthsBeforeOrAfterDateOfVisit(dateOfVisit, dateOfTesting)) {
+        await raiseInvalidDataEvent(request, dateOfTestingKey, `${dateOfTesting} is outside of the recommended 4 month period from the date of visit ${dateOfVisit}`)
+      }
+
+      const reviewHerdId = getReviewHerdId({ herdId, tempHerdId })
       const previousReviewClaim = getReviewWithinLast10Months(
         dateOfVisit,
         previousClaims,
         latestVetVisitApplication,
-        typeOfLivestock
+        typeOfLivestock,
+        reviewHerdId
       )
+
       if (
         typeOfReview === claimType.endemics &&
         previousReviewClaim &&
         isDateOfTestingLessThanDateOfVisit(
-          previousReviewClaim?.data?.dateOfVisit,
+          previousReviewClaim.data.dateOfVisit,
           dateOfTesting
         )
       ) {
@@ -388,7 +411,7 @@ const postHandler = {
             errorMessage,
             errorLink
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 

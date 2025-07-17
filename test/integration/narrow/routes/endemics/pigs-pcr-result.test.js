@@ -43,7 +43,7 @@ describe('pigs pcr result test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('What was the result of the PCR test?')
-      expect($('title').text()).toContain('PCR Test Result - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('title').text()).toContain('What was the result of the PCR test? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
 
       expectPhaseBanner.ok($)
     })

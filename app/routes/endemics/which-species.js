@@ -5,6 +5,7 @@ import links from '../../config/routes.js'
 import { config } from '../../config/index.js'
 import { claimConstants } from '../../constants/claim.js'
 import { resetEndemicsClaimSession } from '../../lib/context-helper.js'
+import HttpStatus from 'http-status-codes'
 
 const { livestockTypes } = claimConstants
 const {
@@ -17,7 +18,7 @@ const { urlPrefix } = config
 const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
 const backLink = claimDashboard
 const errorMessage = { text: 'Select which species you are claiming for' }
-const view = `${endemicsWhichSpecies}-ms`
+const view = `${endemicsWhichSpecies}`
 
 const getHandler = {
   method: 'GET',
@@ -25,15 +26,13 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const endemicsClaim = getEndemicsClaim(request)
-      // to do - customise the view for MS as it has different content
       return h.view(view, {
         ...(endemicsClaim?.typeOfLivestock && {
           previousAnswer: endemicsClaim.typeOfLivestock
         }),
         backLink
       })
-    },
-    tags: ['ms']
+    }
   }
 }
 
@@ -54,7 +53,7 @@ const postHandler = {
             errorMessage,
             backLink
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -73,4 +72,4 @@ const postHandler = {
   }
 }
 
-export const whichSpeciesMsHandlers = [getHandler, postHandler]
+export const whichSpeciesHandlers = [getHandler, postHandler]

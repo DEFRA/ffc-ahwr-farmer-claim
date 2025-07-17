@@ -52,7 +52,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(title)
-      expect($('title').text()).toContain('Laboratory URN - Get funding to improve animal health and welfare')
+      expect($('title').text()).toContain(`${title} - Get funding to improve animal health and welfare`)
 
       expectPhaseBanner.ok($)
     })

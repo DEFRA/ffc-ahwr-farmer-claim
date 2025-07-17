@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Choose your livestock - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorMessage %}Error: {% endif %}Which species are you claiming for? - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -21,8 +21,6 @@
           }]
         }) }}
       {% endif %}
-      <h1 class="govuk-heading-l">Choose your livestock</h1>
-      <p class="govuk-body"><a class="govuk-link" rel="external noopener noreferrer" target="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups" href="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups" class="govuk-link">All your future reviews and follow-ups must be for the same species you are claiming for</a>.</p>
 
     <form method="POST" autocomplete="off" novalidate="novalidate">
       <input type="hidden" name="crumb" value="{{crumb}}"/>
@@ -30,14 +28,14 @@
       {{ govukRadios({
           id: "typeOfLivestock",
           name: "typeOfLivestock",
-          fieldset: {
-            legend: {
-              text: "Which species are you claiming for?",
-              isPageHeading: true,
-              classes: "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
-            }
-          },
           errorMessage: errorMessage,
+          fieldset: {
+              legend: {
+                text: "Which species are you claiming for?",
+                isPageHeading: true,
+                classes: "govuk-fieldset__legend--l"
+              }
+            },
           items: [
             {
               value: "beef",

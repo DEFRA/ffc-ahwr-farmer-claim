@@ -16,7 +16,6 @@ import { vetRCVSHandlers } from '../routes/endemics/vet-rcvs.js'
 import { checkAnswersHandlers } from '../routes/endemics/check-answers.js'
 import { confirmationHandlers } from '../routes/endemics/confirmation.js'
 import { dateOfTestingHandlers } from '../routes/endemics/date-of-testing.js'
-import { dateOfTestingMhHandlers } from '../routes/endemics/date-of-testing-mh.js'
 import { vaccinationHandlers } from '../routes/endemics/vaccination.js'
 import { diseaseStatusHandlers } from '../routes/endemics/disease-status.js'
 import { sheepEndemicsPackageHandlers } from '../routes/endemics/sheep-endemics-package.js'
@@ -27,10 +26,9 @@ import { vetVisitsReviewTestResultsHandlers } from '../routes/endemics/vet-visit
 import { piHuntHandlers } from '../routes/endemics/pi-hunt.js'
 import { piHuntAllAnimalsHandlers } from '../routes/endemics/pi-hunt-all-animals.js'
 import { piHuntRecommendedHandlers } from '../routes/endemics/pi-hunt-recommended.js'
-import { dateOfVisitMSHandlers } from '../routes/endemics/date-of-visit-ms.js'
-import { whichSpeciesMsHandlers } from '../routes/endemics/which-species-ms.js'
-import { whichReviewMSHandlers } from '../routes/endemics/which-type-of-review-ms.js'
-import { dateOfVisitMhHandlers } from '../routes/endemics/date-of-visit-mh.js'
+import { whichSpeciesHandlers } from '../routes/endemics/which-species.js'
+import { whichReviewHandlers } from '../routes/endemics/which-type-of-review.js'
+import { dateOfVisitHandlers } from '../routes/endemics/date-of-visit.js'
 import { selectTheHerdHandlers } from '../routes/endemics/select-the-herd.js'
 import { enterHerdNameHandlers } from '../routes/endemics/enter-herd-name.js'
 import { enterCphNumberHandlers } from '../routes/endemics/enter-cph-number.js'
@@ -48,9 +46,7 @@ const alwaysOnRouteHandlers = [
   cookiesHandlers,
   healthHandlers,
   entryPointHandlers,
-  signInHandler].flat()
-
-const endemicsSpecificRouteHandlers = [
+  signInHandler,
   indexHandlers,
   testUrnHandlers,
   testResultsHandlers,
@@ -72,26 +68,17 @@ const endemicsSpecificRouteHandlers = [
   piHuntHandlers,
   piHuntAllAnimalsHandlers,
   piHuntRecommendedHandlers,
-  whichReviewMSHandlers,
-  whichSpeciesMsHandlers
-].flat()
-
-const endemicsWithMsOnHandlers = [
-  dateOfVisitMSHandlers,
-  dateOfTestingHandlers
-].flat()
-
-const endemicsWithMhOnHandlers = [
-  dateOfVisitMhHandlers,
-  dateOfTestingMhHandlers,
+  whichReviewHandlers,
+  whichSpeciesHandlers,
+  dateOfVisitHandlers,
+  dateOfTestingHandlers,
   selectTheHerdHandlers,
   enterHerdNameHandlers,
   enterCphNumberHandlers,
   herdOthersOnSbiHandlers,
   enterHerdDetailsHandlers,
   checkHerdDetailsHandlers,
-  sameHerdHandlers
-].flat()
+  sameHerdHandlers].flat()
 
 const pigsUpdatesHandlers = [
   pigsElisaResultHandlers,
@@ -101,13 +88,6 @@ const pigsUpdatesHandlers = [
 
 const mapRoutes = () => {
   let routes = alwaysOnRouteHandlers
-  routes = routes.concat(endemicsSpecificRouteHandlers)
-
-  if (config.multiHerds.enabled) {
-    routes = routes.concat(endemicsWithMhOnHandlers)
-  } else {
-    routes = routes.concat(endemicsWithMsOnHandlers)
-  }
 
   if (config.devLogin.enabled) {
     routes = routes.concat(devSignInHandlers)
