@@ -223,28 +223,9 @@ const postHandler = {
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
       setEndemicsClaim(request, dateOfVisitKey, dateOfVisit)
 
-      let exception
-      let exceptionView
-
-      const claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased = isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
-
-      if (claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased) {
-        exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
-        exceptionView = endemicsDairyFollowUpDateException
-      }
-
-      if (!claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased && isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
-        exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
-        exceptionView = endemicsMultipleSpeciesDateException
-      }
-
-      if (exception) {
-        raiseInvalidDataEvent(request, dateOfVisitKey, exception)
-
-        return h
-          .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover()
+      const timingExceptionRedirect = checkForTimingException(request, h, { dateOfVisit, typeOfLivestock, previousClaims, isDairy, isEndemicsFollowUp })
+      if (timingExceptionRedirect) {
+        return timingExceptionRedirect
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
@@ -269,14 +250,40 @@ const postHandler = {
         typeOfLivestock,
         typeOfClaim,
         dateOfVisit,
-        isReview,
+        reviewOrFollowUpText,
         organisation
       })
     }
   }
 }
 
-const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldApplication, typeOfLivestock, typeOfClaim, dateOfVisit, isReview, organisation }) => {
+const checkForTimingException = (request, h, { dateOfVisit, typeOfLivestock, previousClaims, isDairy, isEndemicsFollowUp }) => {
+  let exception
+  let exceptionView
+
+  const claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased = isDairy && isEndemicsFollowUp && dateOfVisit < PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+
+  if (claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased) {
+    exception = `User is attempting to claim for dairy follow-up with a date of visit of ${dateOfVisit} which is before dairy follow-ups was enabled.`
+    exceptionView = endemicsDairyFollowUpDateException
+  }
+
+  if (!claimIsDairyAndIsFollowUpAndHappenedBeforePIReleased && isMSClaimBeforeMSRelease(previousClaims, typeOfLivestock, dateOfVisit)) {
+    exception = `User is attempting to claim for MS with a date of visit of ${dateOfVisit} which is before MS was enabled.`
+    exceptionView = endemicsMultipleSpeciesDateException
+  }
+
+  if (exception) {
+    raiseInvalidDataEvent(request, dateOfVisitKey, exception)
+
+    return h
+      .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
+      .code(HttpStatus.BAD_REQUEST)
+      .takeover()
+  }
+}
+
+const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldApplication, typeOfLivestock, typeOfClaim, dateOfVisit, reviewOrFollowUpText, organisation }) => {
   // all the below only applies when user rejects T&Cs or the visit date is pre-MH golive
   removeMultipleHerdsSessionData(request, endemicsClaim)
 
@@ -314,7 +321,7 @@ const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldAppli
         backLink: pageUrl,
         errorMessage,
         ruralPaymentsAgency: config.ruralPaymentsAgency,
-        backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`
+        backToPageMessage: `Enter the date the vet last visited your farm for this ${reviewOrFollowUpText}.`
       })
       .code(HttpStatus.BAD_REQUEST)
       .takeover()
