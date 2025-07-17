@@ -281,6 +281,8 @@ const checkForTimingException = (request, h, { dateOfVisit, typeOfLivestock, pre
       .code(HttpStatus.BAD_REQUEST)
       .takeover()
   }
+
+  return undefined
 }
 
 const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldApplication, typeOfLivestock, typeOfClaim, dateOfVisit, reviewOrFollowUpText, organisation }) => {
