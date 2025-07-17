@@ -9,6 +9,7 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getAmount } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix, ruralPaymentsAgency } = config
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = links
@@ -33,8 +34,9 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-      const yesOrNoRadios = radios(getQuestionText(typeOfLivestock), 'piHuntAllAnimals', undefined, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
-      return h.view(endemicsPIHuntAllAnimals, { backLink: backLink(reviewTestResults), ...yesOrNoRadios })
+      const questionText = getQuestionText(typeOfLivestock)
+      const yesOrNoRadios = radios(questionText, 'piHuntAllAnimals', undefined, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+      return h.view(endemicsPIHuntAllAnimals, { backLink: backLink(reviewTestResults), title: questionText, ...yesOrNoRadios })
     }
   }
 }
@@ -50,16 +52,18 @@ const postHandler = {
       failAction: async (request, h, _error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
         const errorText = `Select if the PI hunt was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
-        const yesOrNoRadios = radios(getQuestionText(typeOfLivestock), 'piHuntAllAnimals', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
+        const questionText = getQuestionText(typeOfLivestock)
+        const yesOrNoRadios = radios(questionText, 'piHuntAllAnimals', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
 
         return h.view(endemicsPIHuntAllAnimals, {
           ...yesOrNoRadios,
           backLink: backLink(reviewTestResults),
+          title: questionText,
           errorMessage: {
             text: errorText,
             href: '#piHuntAllAnimals'
           }
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {

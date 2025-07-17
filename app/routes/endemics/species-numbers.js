@@ -12,6 +12,7 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 
@@ -80,10 +81,13 @@ const getHandler = {
       }
       const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
 
+      const questionText = legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication)
+
       return h.view(endemicsSpeciesNumbers, {
         backLink: backLink(request),
+        customisedTitle: questionText,
         ...getYesNoRadios(
-          legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
+          questionText,
           speciesNumbers,
           getEndemicsClaim(request, speciesNumbers),
           undefined,
@@ -120,7 +124,7 @@ const postHandler = {
             radioOptions
           )
         })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },

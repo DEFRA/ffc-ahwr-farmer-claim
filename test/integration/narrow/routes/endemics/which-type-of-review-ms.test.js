@@ -67,7 +67,7 @@ describe('Which type of review test', () => {
 
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
-      expect($('title').text().trim()).toContain('Which type of review - Get funding to improve animal health and welfare')
+      expect($('title').text().trim()).toContain('Are you claiming for a review or follow-up? - Get funding to improve animal health and welfare')
       expect($('.govuk-back-link').attr('href')).toContain('/claim/endemics/which-species')
       expectPhaseBanner.ok($)
     })

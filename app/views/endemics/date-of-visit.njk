@@ -1,6 +1,6 @@
 {% extends './layouts/layout.njk' %}
 
-{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of visit - {{ serviceName }} - GOV.UK{% endblock %}
+{% block pageTitle %}{% if errorSummary.length %}Error: {% endif %}Date of {{ reviewOrFollowUpText }} - {{ serviceName }} - GOV.UK{% endblock %}
 
 {% block beforeContent %}
   {{ govukBackLink({
@@ -11,7 +11,6 @@
     }
   }) }}
 {% endblock %}
-
 {% block content %}
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -23,59 +22,55 @@
       {% endif %}
       <form method="POST">
         <input type="hidden" name="crumb" value="{{crumb}}"/>
-        <input type="hidden" name="dateOfAgreementAccepted" value="{{dateOfAgreementAccepted}}"/>
 
         <div id="when-was-the-vet-visit" class="govuk-form-group {% if dateOfReview.errorMessage %}govuk-form-group--error{% endif %}">
           <fieldset class="govuk-fieldset" aria-describedby="date-of-visit-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">
-                Date of {{ reviewOrFollowUpText }}
-              </h1>
+              <h1 class="govuk-fieldset__heading">Date of {{ reviewOrFollowUpText }}</h1>
             </legend>
-            <p class="govuk-hint">This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
+            <p id="date-of-visit-hint" class="govuk-hint">This is the date the vet last visited the farm for this {{ reviewOrFollowUpText }}.
         You can find it on the summary the vet gave you.</p>
-            {% if dateOfVisit.day.error %}
-              {% set dateOfVisitDay = {
-              name: 'day',
-              value: dateOfVisit.day.value,
-              classes: 'govuk-input--width-2 govuk-input--error'
-            } %}
-            {% else %}
-              {% set dateOfVisitDay = {
-              name: 'day',
-              value: dateOfVisit.day.value,
-              classes: 'govuk-input--width-2'
-            } %}
-            {% endif %}
+                {% if inputsInError.day %}
+                    {% set dateOfVisitDay = {
+                        name: 'day',
+                        value: dateOfVisit.day,
+                        classes: 'govuk-input--width-2 govuk-input--error'
+                    } %}
+                {% else %}
+                    {% set dateOfVisitDay = {
+                        name: 'day',
+                        value: dateOfVisit.day,
+                        classes: 'govuk-input--width-2'
+                    } %}
+                {% endif %}
 
-            {% if dateOfVisit.month.error %}
-              {% set dateOfVisitMonth = {
-              name: 'month',
-              value: dateOfVisit.month.value,
-              classes: 'govuk-input--width-2 govuk-input--error'
-            } %}
-            {% else %}
-              {% set dateOfVisitMonth = {
-              name: 'month',
-              value: dateOfVisit.month.value,
-              classes: 'govuk-input--width-2'
-            } %}
-            {% endif %}
+                {% if inputsInError.month %}
+                    {% set dateOfVisitMonth = {
+                        name: 'month',
+                        value: dateOfVisit.month,
+                        classes: 'govuk-input--width-2 govuk-input--error'
+                    } %}
+                {% else %}
+                    {% set dateOfVisitMonth = {
+                        name: 'month',
+                        value: dateOfVisit.month,
+                        classes: 'govuk-input--width-2'
+                    } %}
+                {% endif %}
 
-            {% if dateOfVisit.year.error %}
-              {% set dateOfVisitYear = {
-              name: 'year',
-              value: dateOfVisit.year.value,
-              classes: 'govuk-input--width-4 govuk-input--error'
-            } %}
-            {% else %}
-              {% set dateOfVisitYear = {
-              name: 'year',
-              value: dateOfVisit.year.value,
-              classes: 'govuk-input--width-4'
-            } %}
-            {% endif %}
-
+                {% if inputsInError.year %}
+                    {% set dateOfVisitYear = {
+                        name: 'year',
+                        value: dateOfVisit.year,
+                        classes: 'govuk-input--width-4 govuk-input--error'
+                    } %}
+                {% else %}
+                {% set dateOfVisitYear = {
+                    name: 'year',
+                    value: dateOfVisit.year,
+                    classes: 'govuk-input--width-4'
+                } %}
+                {% endif %}
             {{ govukDateInput({
             id: "visit-date",
             namePrefix: "visit-date",

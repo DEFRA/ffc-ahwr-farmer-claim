@@ -8,16 +8,17 @@ import routes from '../../config/routes.js'
 import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { isValidDate } from '../../lib/date-utils.js'
 import { getReviewType } from '../../lib/get-review-type.js'
-import { getEndemicsClaim, setEndemicsClaim, removeMultipleHerdsSessionData } from '../../session/index.js'
+import { getEndemicsClaim, removeMultipleHerdsSessionData, setEndemicsClaim } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_SPECIES_RELEASE_DATE } from '../../constants/constants.js'
+import { MULTIPLE_SPECIES_RELEASE_DATE, PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../constants/constants.js'
 import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
 import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-herd.js'
+import HttpStatus from 'http-status-codes'
 
 const {
   endemicsClaim: {
@@ -144,14 +145,13 @@ const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
-    tags: ['mh'],
     handler: async (request, h) => {
       const { dateOfVisit, typeOfReview, latestVetVisitApplication: oldWorldApplication, previousClaims, typeOfLivestock } =
         getEndemicsClaim(request)
       const { isReview } = getReviewType(typeOfReview)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
-      return h.view(`${endemicsDateOfVisit}-mh`, {
+      return h.view(`${endemicsDateOfVisit}`, {
         reviewOrFollowUpText,
         dateOfVisit: {
           day: dateOfVisit ? new Date(dateOfVisit).getDate() : '',
@@ -214,7 +214,7 @@ const postHandler = {
           }
         })
 
-        return h.view(`${endemicsDateOfVisit}-mh`, data).code(400).takeover()
+        return h.view(`${endemicsDateOfVisit}`, data).code(400).takeover()
       }
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
@@ -274,7 +274,7 @@ const postHandler = {
         )
 
         return h
-          .view(`${endemicsWhichTypeOfReviewException}-ms`, {
+          .view(`${endemicsWhichTypeOfReviewException}`, {
             backLink: whichTypeOfReviewPageUrl,
             backToPageMessage: 'Tell us if you are claiming for a review or follow up.'
           })
@@ -292,13 +292,13 @@ const postHandler = {
         )
 
         return h
-          .view(`${endemicsDateOfVisitException}-ms`, {
+          .view(`${endemicsDateOfVisitException}`, {
             backLink: pageUrl,
             errorMessage,
             ruralPaymentsAgency: config.ruralPaymentsAgency,
             backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
@@ -307,4 +307,4 @@ const postHandler = {
   }
 }
 
-export const dateOfVisitMhHandlers = [getHandler, postHandler]
+export const dateOfVisitHandlers = [getHandler, postHandler]

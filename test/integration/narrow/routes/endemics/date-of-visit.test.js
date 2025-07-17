@@ -6,16 +6,16 @@ import { visitDate } from '../../../../../app/config/visit-date.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
-import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit-ms.js'
+import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { setMultiHerds } from '../../../../mocks/config.js'
+import { getHerds } from '../../../../../app/api-requests/application-service-api.js'
 
 const { labels } = visitDate
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
-
 jest.mock('../../../../../app/config/auth', () => {
   const originalModule = jest.requireActual('../../../../../app/config/auth')
   return {
@@ -25,7 +25,7 @@ jest.mock('../../../../../app/config/auth', () => {
         hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
         oAuthAuthorisePath: '/oauth2/v2.0/authorize',
         policy: 'b2c_1a_signupsigninsfi',
-        dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
+        redirectUri: 'http://localhost:3000/apply/signin-oidc',
         clientId: 'dummy_client_id',
         serviceId: 'dummy_service_id',
         scope: 'openid dummy_client_id offline_access'
@@ -39,10 +39,11 @@ jest.mock('../../../../../app/config/auth', () => {
     }
   }
 })
+jest.mock('../../../../../app/api-requests/application-service-api.js')
 
 function expectPageContentOk ($, previousPageUrl) {
   expect($('title').text()).toMatch(
-    'Date of visit - Get funding to improve animal health and welfare'
+    /Date of review|follow-up - Get funding to improve animal health and welfare/i
   )
   expect($('h1').text().trim()).toMatch(/(Date of review | follow-up)/i)
   expect($('p').text()).toMatch(
@@ -84,6 +85,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
+    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockResolvedValue({})
@@ -94,7 +96,6 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
         landingPage
       }
     })
-    setMultiHerds(false)
   })
 
   afterAll(async () => {
@@ -210,6 +211,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
+    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
   })
@@ -420,7 +422,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -459,7 +462,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         latestEndemicsApplication: {
           ...latestEndemicsApplication,
           createdAt: new Date('2025/01/01 14:30:00')
-        }
+        },
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -505,7 +509,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -555,7 +560,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -601,7 +607,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-02-26'
       }
     })
     const options = {
@@ -648,7 +655,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -688,7 +696,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestVetVisitApplication,
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -725,7 +734,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
         latestVetVisitApplication,
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -768,7 +778,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'beef'
           }
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-02'
       }
     })
     const options = {
@@ -815,7 +826,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
             whichReview: 'pigs'
           }
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-02'
       }
     })
     const options = {
@@ -863,7 +875,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -911,7 +924,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-21'
       }
     })
     const options = {
@@ -959,7 +973,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-20'
       }
     })
     const options = {
@@ -1021,7 +1036,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1097,7 +1113,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-02-27'
       }
     })
     const options = {
@@ -1145,7 +1162,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1198,7 +1216,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1251,7 +1270,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1300,7 +1320,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
           },
           statusId: 9
         },
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1348,7 +1369,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1418,7 +1440,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
       payload: {
         crumb,
         [labels.day]: '27',
-        [labels.month]: '3',
+        [labels.month]: '02',
         [labels.year]: '2025'
       },
       auth,
@@ -1428,7 +1450,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+    expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'relevantReviewForEndemics', {
       reference: 'AHWR-C2EA-C718',
       applicationReference: 'AHWR-2470-6BA9',
@@ -1441,7 +1463,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         testResults: 'positive'
       }
     })
-    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/03/27'))
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date('2025/02/27'))
     expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'reviewTestResults', 'positive')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
@@ -1470,7 +1492,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'negative',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-01'
       }
     })
     const options = {
@@ -1519,7 +1542,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-21'
       }
     })
     const options = {
@@ -1545,7 +1569,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
   test(`for an endemics claim, it redirects to endemics date of testing page when claim 
     is for beef or dairy, and the previous review test results are positive 
-    AND visit date pre go live`, async () => {
+    AND optional PI hunt is enabled BUT visit date pre go live`, async () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         typeOfReview: 'E',
@@ -1569,7 +1593,8 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         },
         reviewTestResults: 'positive',
         reference: 'TEMP-6GSE-PIR8',
-        latestEndemicsApplication
+        latestEndemicsApplication,
+        dateOfVisit: '2025-01-20'
       }
     })
     const options = {
@@ -1592,9 +1617,220 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     expect(res.headers.location).toEqual('/claim/endemics/date-of-testing')
     expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
   })
+
+  test('should redirect to select the herd page when there are previous herds and is multi herds journey', async () => {
+    getHerds.mockResolvedValueOnce([{ id: '1', herdName: 'herd one' }])
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication,
+        dateOfVisit: '2025-05-13'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '13',
+        [labels.month]: '05',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/select-the-herd')
+  })
+
+  test('should redirect to enter herd name page when there are not previous herds and is multi herds journey', async () => {
+    getHerds.mockResolvedValueOnce([])
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'AHWR-C2EA-C718',
+            applicationReference: 'AHWR-2470-6BA9',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'beef',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-6GSE-PIR8',
+        latestEndemicsApplication,
+        dateOfVisit: '2025-05-13'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '13',
+        [labels.month]: '05',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toEqual('/claim/endemics/enter-herd-name')
+  })
+
+  test('should redirect to species-numbers page when making a follow-up claim with visit date of pre-MH golive, against a pre-MH review, and already made post-MH review for another herd', async () => {
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'REBC-CBLH-B9BB',
+            applicationReference: 'IAHW-T1EX-1R33',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2025-05-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2025-05-01',
+              herdId: 'fake-herd-id'
+            }
+          },
+          {
+            reference: 'REBC-CBLH-A9AA',
+            applicationReference: 'IAHW-T1EX-1R33',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2024-09-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2024-09-01'
+            }
+          }
+        ],
+        typeOfLivestock: 'dairy',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-CBLH-C9CC',
+        latestEndemicsApplication,
+        dateOfVisit: '2025-04-30'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '30',
+        [labels.month]: '04',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    expect(res.statusCode).toBe(302)
+    expect(res.headers.location).toBe('/claim/endemics/species-numbers')
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'dateOfVisit', new Date(2025, 3, 30))
+    expect(appInsights.defaultClient.trackEvent).not.toHaveBeenCalled()
+  })
+
+  test('should error when trying to follow-up against post-MH review and visit date is pre-MH golive', async () => {
+    getEndemicsClaim.mockImplementation(() => {
+      return {
+        typeOfReview: 'E',
+        previousClaims: [
+          {
+            reference: 'REBC-CBLH-B9BB',
+            applicationReference: 'IAHW-T1EX-1R33',
+            statusId: 9,
+            type: 'R',
+            createdAt: '2025-05-01T10:25:11.318Z',
+            data: {
+              typeOfLivestock: 'dairy',
+              dateOfVisit: '2025-05-01',
+              herdId: 'fake-herd-id'
+            }
+          }
+        ],
+        typeOfLivestock: 'dairy',
+        organisation: {
+          name: 'Farmer Johns',
+          sbi: '12345'
+        },
+        reviewTestResults: 'positive',
+        reference: 'TEMP-CBLH-C9CC',
+        latestEndemicsApplication,
+        dateOfVisit: '2025-04-30'
+      }
+    })
+    const options = {
+      method: 'POST',
+      url,
+      payload: {
+        crumb,
+        [labels.day]: '30',
+        [labels.month]: '04',
+        [labels.year]: '2025'
+      },
+      auth,
+      headers: { cookie: `crumb=${crumb}` }
+    }
+
+    const res = await server.inject(options)
+
+    const $ = cheerio.load(res.payload)
+    expect(res.statusCode).toBe(400)
+    expect($('.govuk-heading-l').text().trim()).toEqual('You cannot continue with your claim')
+    expect($('.govuk-link').filter(function () { return $(this).text().trim() === 'Tell us if you are claiming for a review or follow up.' }).length).toBe(1)
+  })
 })
 
 describe('previousPageUrl', () => {
+  beforeAll(async () => {
+    setMultiHerds(true)
+  })
+
   test('should return url of endemicsVetVisitsReviewTestResults if endemics, old world claim is species of current user journey, and no relevant new world claims', () => {
     const latestVetVisitApplication = {
       data: {
@@ -1625,6 +1861,7 @@ describe('previousPageUrl', () => {
 
   test('should return url of endemicsWhichTypeOfReview if old world review type of livestock is not beef or dairy', () => {
     const latestVetVisitApplication = {
+
       data: {
         whichReview: 'pigs'
       }

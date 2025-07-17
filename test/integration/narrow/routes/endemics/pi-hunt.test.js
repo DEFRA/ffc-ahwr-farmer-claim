@@ -45,7 +45,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
 
       expect(res.statusCode).toBe(200)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual('Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?')
-      expect($('title').text().trim()).toContain('PI Hunt - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
+      expect($('title').text().trim()).toContain('Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd? - Get funding to improve animal health and welfare - GOV.UKGOV.UK')
       expect($('.govuk-radios__item').length).toEqual(2)
       expectPhaseBanner.ok($)
     })

@@ -41,7 +41,7 @@ describe('Number of fluid oral samples test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many oral fluid samples were tested?')
-      expect($('title').text()).toContain('Oral fluid samples - Get funding to improve animal health and welfare')
+      expect($('title').text()).toContain('How many oral fluid samples were tested? - Get funding to improve animal health and welfare')
       expectPhaseBanner.ok($)
     })
 

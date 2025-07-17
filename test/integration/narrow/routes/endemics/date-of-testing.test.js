@@ -3,32 +3,17 @@ import { createServer } from '../../../../../app/server.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
-import { getReviewType } from '../../../../../app/lib/get-review-type.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
-import { visitDate } from '../../../../../app/config/visit-date.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
-
-const { labels } = visitDate
-
-function expectPageContentOk ($) {
-  expect($('label[for=whenTestingWasCarriedOut-2]').text()).toMatch('On another date')
-  expect($('.govuk-button').text()).toMatch('Continue')
-  const backLink = $('.govuk-back-link')
-  expect(backLink.text()).toMatch('Back')
-  expect(backLink.attr('href')).toMatch('/claim/endemics/date-of-visit')
-}
+import {
+  isMultipleHerdsUserJourney,
+  isVisitDateAfterPIHuntAndDairyGoLive,
+  skipSameHerdPage
+} from '../../../../../app/lib/context-helper.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('../../../../../app/lib/context-helper.js')
-
-const latestVetVisitApplication = {
-  reference: 'AHWR-2470-6BA9',
-  createdAt: Date.now(),
-  statusId: 1,
-  type: 'VV'
-}
 
 let crumb
 const today = new Date()
@@ -39,294 +24,19 @@ tomorrow.setDate(tomorrow.getDate() + 1)
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-testing'
 
-describe('Date of testing when Optional PI Hunt is OFF', () => {
+describe('Date of testing', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(false)
-    getEndemicsClaim.mockImplementation(() => { return { latestVetVisitApplication, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' } })
-    setAuthConfig()
-    server = await createServer()
-    await server.initialize()
-    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
-  })
-
-  afterAll(async () => {
-    await server.stop()
-    jest.resetAllMocks()
-  })
-
-  describe(`GET ${url} route`, () => {
-    test('returns 200', async () => {
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expectPageContentOk($)
-      expectPhaseBanner.ok($)
-      expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('This is the date samples were last taken for this review. You can find it on the summary the vet gave you.')
-    })
-
-    test('returns 200', async () => {
-      const endemicsMockInfo = { typeOfReview: 'E', typeOfLivestock: 'sheep', dateOfVisit: yesterday, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } }
-      getEndemicsClaim.mockReturnValueOnce(endemicsMockInfo)
-        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
-        .mockReturnValueOnce(endemicsMockInfo)
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-      expectPageContentOk($)
-      expectPhaseBanner.ok($)
-      expect($('h1').text()).toMatch('When were samples taken or sheep assessed?')
-      expect($('#whenTestingWasCarriedOut-hint').text()).toMatch('This is the last date samples were taken or sheep assessed for this follow-up. You can find it on the summary the vet gave you.')
-    })
-
-    test('when not logged in redirects to defra id', async () => {
-      const options = {
-        method: 'GET',
-        url
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
-    })
-
-    test.each([
-      {
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth() + 1,
-        onAnotherDateYear: today.getFullYear(),
-        dateOfVisit: yesterday,
-        typeOfReview: 'R'
-      },
-      {
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth() + 1,
-        onAnotherDateYear: today.getFullYear(),
-        dateOfVisit: yesterday,
-        typeOfReview: 'E'
-      }
-    ])('Show the date fields if date of testing when not equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit, typeOfReview }) => {
-      const { isReview } = getReviewType(typeOfReview)
-      const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
-      const endemicsMock = { typeOfReview, dateOfVisit, dateOfTesting: today, latestEndemicsApplication: { createdAt: new Date('2022-01-01') } }
-      getEndemicsClaim.mockImplementationOnce(() => { return endemicsMock })
-        .mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
-        .mockImplementationOnce(() => { return endemicsMock })
-      const options = {
-        method: 'GET',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut, dateOfVisit },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-      const $ = cheerio.load(res.payload)
-      expect($('#whenTestingWasCarriedOut-2').val()).toEqual(whenTestingWasCarriedOut)
-      // On other date radio button shouldn't be hidden
-      expect($('.govuk-radios__conditional--hidden').text()).toBeFalsy()
-      expect($('#on-another-date-day').val()).toEqual(today.getDate().toString())
-      expect($('#on-another-date-month').val()).toEqual((today.getMonth() + 1).toString())
-      expect($('#on-another-date-year').val()).toEqual(today.getFullYear().toString())
-      expect($('label[for=whenTestingWasCarriedOut]').text()).toContain(`When the vet last visited the farm for the ${reviewOrFollowUpText}`)
-    })
-  })
-
-  describe(`POST ${url} route`, () => {
-    beforeEach(async () => {
-      crumb = await getCrumbs(server)
-    })
-    const errorSummaryHref = '#whenTestingWasCarriedOut'
-    test('when not logged in redirects to defra id', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb, [labels.day]: 31, [labels.month]: 12, [labels.year]: 2022 },
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
-    })
-    test.each([
-      {
-        description: 'onAnotherDay - year of sampling must include 4 numbers',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth() + 1,
-        onAnotherDateYear: 202,
-        errorMessage: 'Year must include 4 numbers',
-        errorHighlights: ['on-another-date-day'],
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay - must not be in the future',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: tomorrow.getDate(),
-        onAnotherDateMonth: tomorrow.getMonth() + 1,
-        onAnotherDateYear: tomorrow.getFullYear(),
-        errorMessage: 'The date samples were taken must be in the past',
-        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay - must include a day',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: '',
-        onAnotherDateMonth: yesterday.getMonth() + 1,
-        onAnotherDateYear: yesterday.getFullYear(),
-        errorMessage: 'Date of sampling must include a day',
-        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay - must include a month',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: tomorrow.getDate(),
-        onAnotherDateMonth: '',
-        onAnotherDateYear: yesterday.getFullYear(),
-        errorMessage: 'Date of sampling must include a month',
-        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay - must include a year',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: tomorrow.getDate(),
-        onAnotherDateMonth: yesterday.getMonth() + 1,
-        onAnotherDateYear: '',
-        errorMessage: 'Date of sampling must include a year',
-        errorHighlights: ['on-another-date-day', 'on-another-date-month', 'on-another-date-year'],
-        dateOfVisit: today
-      }
-    ])('returns error ($errorMessage) when partial or invalid input is given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, errorMessage, dateOfVisit }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
-        .mockImplementationOnce(() => { return { dateOfVisit } })
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': `${onAnotherDateYear}`, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-
-      const $ = cheerio.load(res.payload)
-      expect(res.statusCode).toBe(400)
-      expect($('#on-another-date-error').text().trim()).toEqual(`Error: ${errorMessage}`)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
-    })
-
-    test.each([
-      {
-        description: 'When vet visited the farm',
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today
-      },
-      {
-        description: 'onAnotherDay',
-        whenTestingWasCarriedOut: 'onAnotherDate',
-        onAnotherDateDay: today.getDate(),
-        onAnotherDateMonth: today.getMonth() + 1,
-        onAnotherDateYear: today.getFullYear(),
-        dateOfVisit: yesterday
-      }
-    ])('returns 302 to next page when acceptable answer given - $description', async ({ whenTestingWasCarriedOut, onAnotherDateDay, onAnotherDateMonth, onAnotherDateYear, dateOfVisit }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
-        .mockImplementationOnce(() => { return { dateOfVisit } })
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut, 'on-another-date-day': onAnotherDateDay, 'on-another-date-month': onAnotherDateMonth, 'on-another-date-year': onAnotherDateYear, dateOfVisit, dateOfAgreementAccepted: '2022-01-01' },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-      expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
-    })
-
-    test.each([
-      {
-        whenTestingWasCarriedOut: 'whenTheVetVisitedTheFarmToCarryOutTheReview',
-        dateOfVisit: today
-      }
-    ])('Hide the date fields if date of testing equal to date of vet visit', async ({ whenTestingWasCarriedOut, dateOfVisit }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
-        .mockImplementationOnce(() => { return { dateOfVisit, dateOfTesting: dateOfVisit } })
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb, whenTestingWasCarriedOut },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-      const $ = cheerio.load(res.payload)
-      expect($('#whenTestingWasCarriedOut').val()).toEqual(whenTestingWasCarriedOut)
-      // On other date radio button should be hidden
-      expect($('.govuk-radios__conditional--hidden').text()).toBeTruthy()
-    })
-
-    test.each([
-      {
-        dateOfVisit: today,
-        errorMessage: 'Enter the date samples were taken'
-      }
-    ])('Show error when no option selected', async ({ dateOfVisit, errorMessage }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { dateOfVisit } })
-        .mockImplementationOnce(() => { return { dateOfVisit } })
-      const options = {
-        method: 'POST',
-        url,
-        payload: { crumb },
-        auth,
-        headers: { cookie: `crumb=${crumb}` }
-      }
-
-      const res = await server.inject(options)
-      const $ = cheerio.load(res.payload)
-      expect(res.statusCode).toBe(400)
-      expect($('#whenTestingWasCarriedOut-error').text().trim()).toEqual(`Error: ${errorMessage}`)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(errorMessage)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').attr('href')).toMatch(errorSummaryHref)
-    })
-  })
-})
-
-describe('Date of testing when Optional PI Hunt is ON', () => {
-  let server
-
-  beforeAll(async () => {
-    setMultiHerds(false)
+    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
     setAuthConfig()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   afterAll(async () => {
@@ -392,7 +102,46 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
 
-    test('should redirect to species number when endemics claim and previous review claim of differet species with date of testing less than date of visit', async () => {
+    test('should redirect to species number when endemics claim and previous review claim of different species with date of testing less than date of visit', async () => {
+      getEndemicsClaim
+        .mockImplementationOnce(() => ({}))
+        .mockImplementationOnce(() => ({
+          dateOfVisit: '2024-01-01',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }]
+        }))
+      const options = {
+        method: 'POST',
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          dateOfVisit: '2024-01-01',
+          dateOfAgreementAccepted: '2022-01-01',
+          'on-another-date-day': '01',
+          'on-another-date-month': '12',
+          'on-another-date-year': '2023'
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
+      expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(0)
+    })
+
+    test('should emit an invalid event when the date of visit is over 4 months away from the date of testing', async () => {
       getEndemicsClaim
         .mockImplementationOnce(() => ({}))
         .mockImplementationOnce(() => ({
@@ -426,6 +175,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
 
       const res = await server.inject(options)
 
+      expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfTesting', expect.stringContaining('is outside of the recommended 4 month period from the date of visit 2024-01-01'))
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     })
@@ -446,6 +196,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
             }
           }]
         }))
+
       const options = {
         method: 'POST',
         url,
@@ -455,7 +206,7 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
           dateOfVisit: '2024-01-01',
           dateOfAgreementAccepted: '2022-01-01',
           'on-another-date-day': '01',
-          'on-another-date-month': '01',
+          'on-another-date-month': '12',
           'on-another-date-year': '2023'
         },
         auth,
@@ -466,8 +217,58 @@ describe('Date of testing when Optional PI Hunt is ON', () => {
       const $ = cheerio.load(res.payload)
 
       expect(res.statusCode).toBe(400)
-      expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(1)
       expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
+  })
+})
+
+describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
+  let server
+
+  beforeAll(async () => {
+    setMultiHerds(true)
+    server = await createServer()
+    await server.initialize()
+    isMultipleHerdsUserJourney.mockImplementation(() => { return true })
+  })
+
+  afterAll(async () => {
+    await server.stop()
+    jest.resetAllMocks()
+  })
+
+  test('returns 200 and correct backlink when skipSameHerdPage=true', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+    skipSameHerdPage.mockImplementation(() => { return true })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/check-herd-details')
+  })
+
+  test('returns 200 and correct backlink when skipSameHerdPage=false', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+    skipSameHerdPage.mockImplementation(() => { return false })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/same-herd')
+  })
+
+  test('returns 200 and correct backlink when beef follow-up post PIHuntAndDairy golive', async () => {
+    getEndemicsClaim.mockReturnValue({ typeOfReview: 'E', typeOfLivestock: 'beef', latestEndemicsApplication: { createdAt: new Date('2025-06-06') }, reference: 'TEMP-6GSE-PIR8' })
+    skipSameHerdPage.mockImplementation(() => { return true })
+    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
+
+    const res = await server.inject({ method: 'GET', url, auth })
+
+    expect(res.statusCode).toBe(200)
+    const $ = cheerio.load(res.payload)
+    expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/pi-hunt-all-animals')
   })
 })

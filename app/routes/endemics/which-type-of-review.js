@@ -6,6 +6,7 @@ import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import HttpStatus from 'http-status-codes'
 
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = sessionKeys
 const { endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichSpecies, endemicsWhichTypeOfReviewException } = links
@@ -27,7 +28,7 @@ const getPreviousAnswer = (typeOfReview) => {
   return undefined
 }
 
-export const whichReviewMSHandlers = [
+export const whichReviewHandlers = [
   {
     method: 'GET',
     path: pageUrl,
@@ -61,7 +62,7 @@ export const whichReviewMSHandlers = [
               errorMessage: { text: 'Select what you are claiming for', href: '#typeOfReview' },
               backLink
             })
-            .code(400)
+            .code(HttpStatus.BAD_REQUEST)
             .takeover()
         }
       },
@@ -86,11 +87,11 @@ export const whichReviewMSHandlers = [
             )
 
             return h
-              .view(`${endemicsWhichTypeOfReviewException}-ms`, {
+              .view(`${endemicsWhichTypeOfReviewException}`, {
                 backLink: pageUrl,
                 backToPageMessage: 'Tell us if you are claiming for a review or follow up.'
               })
-              .code(400)
+              .code(HttpStatus.BAD_REQUEST)
               .takeover()
           }
         }

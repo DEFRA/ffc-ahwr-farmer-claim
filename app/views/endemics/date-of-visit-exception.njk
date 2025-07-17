@@ -16,14 +16,10 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l">You cannot continue with your claim</h1>
-      {% if mainMessage.url %}
+      <br>
         <p class="govuk-body">
-          <a class="govuk-link" rel="external" href={{ mainMessage.url  }}>{{ mainMessage.text  }}</a>
+          <a class="govuk-link" rel="external" href="https://www.gov.uk/guidance/farmers-how-to-apply-for-funding-to-improve-animal-health-and-welfare#timing-of-reviews-and-follow-ups">{{ errorMessage }}</a>
         </p>
-      {% endif %}
-      {% if not mainMessage.url %}
-        <p class="govuk-body">{{ mainMessage.text }}</p>
-      {% endif %}
       <p class="govuk-body">If you entered the wrong date, you'll need to go back and enter the correct date.</p>
       <p class="govuk-body">
         <a class="govuk-link" href={{ backLink }}>{{backToPageMessage}}</a>

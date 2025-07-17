@@ -26,7 +26,7 @@ describe('Test Results test', () => {
 
   describe(`GET ${url} route`, () => {
     test.each([
-      { typeOfReview: 'E', question: 'What was the follow-up test result' },
+      { typeOfReview: 'E', question: 'What was the follow-up test result?' },
       { typeOfReview: 'R', question: 'What was the test result?' }
     ])('returns 200', async ({ typeOfReview, question }) => {
       getEndemicsClaim.mockImplementation(() => { return { typeOfReview, reference: 'TEMP-6GSE-PIR8' } })
@@ -43,7 +43,7 @@ describe('Test Results test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch(question)
       expect($('title').text()).toContain(
-        'Test Results - Get funding to improve animal health and welfare'
+        `${question} - Get funding to improve animal health and welfare`
       )
 
       expectPhaseBanner.ok($)

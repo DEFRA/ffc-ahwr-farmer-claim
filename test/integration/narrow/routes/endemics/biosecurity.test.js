@@ -95,7 +95,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
       const response = await server.inject(options)
 
       const $ = cheerio.load(response.payload)
-      expect($('title').text()).toMatch('Biosecurity - Get funding to improve animal health and welfare')
+      expect($('title').text()).toMatch('Did the vet do a biosecurity assessment? - Get funding to improve animal health and welfare')
       expect($('h1').text()).toMatch('Did the vet do a biosecurity assessment?')
     })
     test("select 'yes' when biosecurity is 'yes'", async () => {

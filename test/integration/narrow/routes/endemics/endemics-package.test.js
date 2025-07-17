@@ -37,7 +37,7 @@ describe('Endemics package test', () => {
       expect(res.statusCode).toBe(200)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('Which sheep health package did you choose?')
-      expect($('title').text()).toContain('Sheep Endemics Package - Get funding to improve animal health and welfare')
+      expect($('title').text()).toContain('Which sheep health package did you choose? - Get funding to improve animal health and welfare')
 
       expectPhaseBanner.ok($)
     })
