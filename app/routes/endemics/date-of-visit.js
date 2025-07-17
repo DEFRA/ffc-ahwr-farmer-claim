@@ -20,6 +20,9 @@ import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page
 import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-herd.js'
 import HttpStatus from 'http-status-codes'
 
+const MAX_POSSIBLE_DAY = 31
+const MAX_POSSIBLE_MONTH = 12
+
 const {
   endemicsClaim: {
     typeOfReview: typeOfReviewKey, dateOfVisit: dateOfVisitKey, tempHerdId: tempHerdIdKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey
@@ -64,8 +67,8 @@ export const previousPageUrl = (latestVetVisitApplication, typeOfReview, previou
 
 const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   const dateSchema = joi.object({
-    'visit-date-day': joi.number().max(31),
-    'visit-date-month': joi.number().max(12),
+    'visit-date-day': joi.number().max(MAX_POSSIBLE_DAY),
+    'visit-date-month': joi.number().max(MAX_POSSIBLE_MONTH),
     'visit-date-year': joi.number()
   }).options({ abortEarly: false }) // needed otherwise it doesnt check other fields if an error is found
 
@@ -204,7 +207,7 @@ const postHandler = {
           name: 'claim-invalid-date-of-visit',
           properties: {
             tempClaimReference,
-            dateOfAgreement: newWorldApplication.createdAt.toLocaleString('en-GB', { year: 'numeric', month: 'numeric', day: 'numeric' })
+            dateOfAgreement: newWorldApplication.createdAt.toLocaleDateString('en-GB')
               .split('/')
               .reverse()
               .join('-'),
@@ -214,7 +217,7 @@ const postHandler = {
           }
         })
 
-        return h.view(`${endemicsDateOfVisit}`, data).code(400).takeover()
+        return h.view(`${endemicsDateOfVisit}`, data).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       const dateOfVisit = new Date(request.payload[labels.year], request.payload[labels.month] - 1, request.payload[labels.day])
@@ -240,7 +243,7 @@ const postHandler = {
 
         return h
           .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
@@ -259,52 +262,64 @@ const postHandler = {
         return h.redirect(`${config.urlPrefix}/${endemicsEnterHerdName}`)
       }
 
-      // all of below only applies when user rejects T&Cs or the visit date is pre-MH golive
-      removeMultipleHerdsSessionData(request, endemicsClaim)
-
-      const claimsForFirstHerdIfPreMH = getAllClaimsForFirstHerd(previousClaims, typeOfLivestock)
-
-      // duplicated from which-type-of-review-ms
-      // we don't know if postMH claims can be used for follow-up until date entered
-      if (typeOfClaim === 'E' && !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) && claimsForFirstHerdIfPreMH.length === 0) {
-        raiseInvalidDataEvent(
-          request,
-          typeOfReviewKey,
-          'Cannot claim for endemics without a previous review.'
-        )
-
-        return h
-          .view(`${endemicsWhichTypeOfReviewException}`, {
-            backLink: whichTypeOfReviewPageUrl,
-            backToPageMessage: 'Tell us if you are claiming for a review or follow up.'
-          })
-          .code(400)
-          .takeover()
-      }
-
-      const errorMessage = canMakeClaim({ prevClaims: claimsForFirstHerdIfPreMH, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
-
-      if (errorMessage) {
-        raiseInvalidDataEvent(
-          request,
-          dateOfVisitKey,
-          `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
-        )
-
-        return h
-          .view(`${endemicsDateOfVisitException}`, {
-            backLink: pageUrl,
-            errorMessage,
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
-            backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`
-          })
-          .code(HttpStatus.BAD_REQUEST)
-          .takeover()
-      }
-
-      return h.redirect(getNextMultipleHerdsPage(request))
+      return nonMhRouting(request, h, {
+        endemicsClaim,
+        previousClaims,
+        oldWorldApplication,
+        typeOfLivestock,
+        typeOfClaim,
+        dateOfVisit,
+        isReview
+      })
     }
   }
+}
+
+const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldApplication, typeOfLivestock, typeOfClaim, dateOfVisit, isReview }) => {
+  // all of below only applies when user rejects T&Cs or the visit date is pre-MH golive
+  removeMultipleHerdsSessionData(request, endemicsClaim)
+
+  const claimsForFirstHerdIfPreMH = getAllClaimsForFirstHerd(previousClaims, typeOfLivestock)
+
+  // duplicated from which-type-of-review-ms
+  // we don't know if postMH claims can be used for follow-up until date entered
+  if (typeOfClaim === 'E' && !getOldWorldClaimFromApplication(oldWorldApplication, typeOfLivestock) && claimsForFirstHerdIfPreMH.length === 0) {
+    raiseInvalidDataEvent(
+      request,
+      typeOfReviewKey,
+      'Cannot claim for endemics without a previous review.'
+    )
+
+    return h
+      .view(`${endemicsWhichTypeOfReviewException}`, {
+        backLink: whichTypeOfReviewPageUrl,
+        backToPageMessage: 'Tell us if you are claiming for a review or follow up.'
+      })
+      .code(HttpStatus.BAD_REQUEST)
+      .takeover()
+  }
+
+  const errorMessage = canMakeClaim({ prevClaims: claimsForFirstHerdIfPreMH, typeOfReview: typeOfClaim, dateOfVisit, organisation, typeOfLivestock, oldWorldApplication })
+
+  if (errorMessage) {
+    raiseInvalidDataEvent(
+      request,
+      dateOfVisitKey,
+      `Value ${dateOfVisit} is invalid. Error: ${errorMessage}`
+    )
+
+    return h
+      .view(`${endemicsDateOfVisitException}`, {
+        backLink: pageUrl,
+        errorMessage,
+        ruralPaymentsAgency: config.ruralPaymentsAgency,
+        backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`
+      })
+      .code(HttpStatus.BAD_REQUEST)
+      .takeover()
+  }
+
+  return h.redirect(getNextMultipleHerdsPage(request))
 }
 
 export const dateOfVisitHandlers = [getHandler, postHandler]
