@@ -269,14 +269,15 @@ const postHandler = {
         typeOfLivestock,
         typeOfClaim,
         dateOfVisit,
-        isReview
+        isReview,
+        organisation
       })
     }
   }
 }
 
-const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldApplication, typeOfLivestock, typeOfClaim, dateOfVisit, isReview }) => {
-  // all of below only applies when user rejects T&Cs or the visit date is pre-MH golive
+const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldApplication, typeOfLivestock, typeOfClaim, dateOfVisit, isReview, organisation }) => {
+  // all the below only applies when user rejects T&Cs or the visit date is pre-MH golive
   removeMultipleHerdsSessionData(request, endemicsClaim)
 
   const claimsForFirstHerdIfPreMH = getAllClaimsForFirstHerd(previousClaims, typeOfLivestock)
