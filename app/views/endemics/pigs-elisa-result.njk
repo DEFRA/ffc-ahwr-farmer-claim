@@ -25,7 +25,6 @@
           }}
           {% endif %}
           <div class="govuk-grid-row">
-            <h1 class="govuk-heading-l">What was the result of the ELISA test?</h1>
     
             <form method="POST" autocomplete="off" novalidate="novalidate">
               <input type="hidden" name="crumb" value="{{ crumb }}" />
@@ -35,8 +34,9 @@
                   name: "elisaResult",
                   fieldset: {
                     legend: {
-                      classes:
-                        "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
+                        text: "What was the result of the ELISA test?",
+                        isPageHeading: true,
+                        classes: "govuk-fieldset__legend--l govuk-!-static-margin-bottom-6"
                     }
                   },
                   hint: {

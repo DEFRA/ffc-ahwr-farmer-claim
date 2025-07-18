@@ -72,6 +72,12 @@ const postHandler = {
         return h
           .view(endemicsPigsGeneticSequencing, {
             errorMessage,
+            options: PIG_GENETIC_SEQUENCING_VALUES.map(x => (
+              {
+                ...x,
+                text: x.label
+              }
+            )),
             backLink: getBackLink(pigsFollowUpTest)
           })
           .code(HttpStatus.BAD_REQUEST)

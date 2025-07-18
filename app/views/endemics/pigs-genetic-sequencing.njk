@@ -25,9 +25,6 @@
       }}
       {% endif %}
       <div class="govuk-grid-row">
-        <h1 class="govuk-heading-l">
-          What was the result of the genetic sequencing?
-        </h1>
 
         <form method="POST" autocomplete="off" novalidate="novalidate">
           <input type="hidden" name="crumb" value="{{ crumb }}" />
@@ -37,8 +34,9 @@
               name: "geneticSequencing",
               fieldset: {
                 legend: {
-                  classes:
-                    "govuk-fieldset__legend--m govuk-!-static-margin-bottom-6"
+                    text: "What was the result of the genetic sequencing?",
+                    isPageHeading: true,
+                    classes: "govuk-fieldset__legend--l govuk-!-static-margin-bottom-6"
                 }
               },
               hint: {
