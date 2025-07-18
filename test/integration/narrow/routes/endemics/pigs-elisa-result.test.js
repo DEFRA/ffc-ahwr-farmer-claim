@@ -113,8 +113,9 @@ describe('pigs elisa result test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual('/claim/endemics/biosecurity')
-      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(2)
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.anything(), 'pigsElisaTestResult', 'negative')
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.anything(), 'pigsGeneticSequencing', undefined, { shouldEmitEvent: false })
     })
 
     test('sets positive result into session and redirects to pigs biosecurity page', async () => {
@@ -130,8 +131,9 @@ describe('pigs elisa result test', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual('/claim/endemics/biosecurity')
-      expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
+      expect(setEndemicsClaim).toHaveBeenCalledTimes(2)
       expect(setEndemicsClaim).toHaveBeenCalledWith(expect.anything(), 'pigsElisaTestResult', 'positive')
+      expect(setEndemicsClaim).toHaveBeenCalledWith(expect.anything(), 'pigsGeneticSequencing', undefined, { shouldEmitEvent: false })
     })
   })
 })
