@@ -1,6 +1,6 @@
 import { config } from '../config/index.js'
 
-const { applyServiceUri, urlPrefix, customerSurvey } = config
+const { applyServiceUri, urlPrefix, customerSurvey, dashboardServiceUri } = config
 
 export const viewContextPlugin = {
   plugin: {
@@ -18,6 +18,7 @@ export const viewContextPlugin = {
           ctx.urlPrefix = path.startsWith('/cookies') ? '/cookies' : urlPrefix
           ctx.applyServiceUri = applyServiceUri
           ctx.customerSurveyUri = customerSurvey.uri
+          ctx.dashboardServiceUri = dashboardServiceUri
 
           response.source.context = ctx
         }
