@@ -1,4 +1,4 @@
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { config } from '../../../../../app/config/index.js'
 import { refreshApplications, resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'

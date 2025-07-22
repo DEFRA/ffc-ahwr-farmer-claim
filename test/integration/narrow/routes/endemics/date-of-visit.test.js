@@ -1,6 +1,6 @@
 import appInsights from 'applicationinsights'
 
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { visitDate } from '../../../../../app/config/visit-date.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'

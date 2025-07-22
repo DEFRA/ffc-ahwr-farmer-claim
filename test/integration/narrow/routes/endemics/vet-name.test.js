@@ -1,4 +1,4 @@
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { sessionKeys } from '../../../../../app/session/keys.js'
 import { errorMessages } from '../../../../../app/lib/error-messages.js'

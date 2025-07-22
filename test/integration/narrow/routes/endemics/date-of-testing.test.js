@@ -1,4 +1,4 @@
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
