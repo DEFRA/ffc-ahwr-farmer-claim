@@ -1,4 +1,4 @@
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import expectPhaseBanner from 'assert'

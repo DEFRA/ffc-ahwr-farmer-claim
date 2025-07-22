@@ -1,7 +1,7 @@
 import Wreck from '@hapi/wreck'
 import appInsights from 'applicationinsights'
 
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { claimConstants } from '../../../../../app/constants/claim.js'
 import {

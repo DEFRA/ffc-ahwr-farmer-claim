@@ -1,7 +1,7 @@
 import { createServer } from '../../.././../app/server.js'
 import { authConfig } from '../../../../app/config/auth.js'
 import HttpStatus from 'http-status-codes'
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 
 describe('DefraID redirection test', () => {
   let server

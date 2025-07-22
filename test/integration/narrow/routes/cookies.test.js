@@ -1,7 +1,6 @@
 import { createServer } from '../../../../app/server.js'
 import expectPhaseBanner from 'assert'
-
-import cheerio from 'cheerio'
+import * as cheerio from 'cheerio'
 
 describe('cookies route', () => {
   let server
