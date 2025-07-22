@@ -20,4 +20,12 @@ describe('Check if the date is with in 4 months', () => {
   test('it returns false for 2 dates which are over 4 months and goes into the next year', () => {
     expect(isWithin4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2023-12-22'))).toBe(false)
   })
+
+  test('it returns false when date of visit is not a valid date', () => {
+    expect(isWithin4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-233'), new Date('2023-12-22'))).toBe(false)
+  })
+
+  test('it returns false when date of testing is not a valid date', () => {
+    expect(isWithin4MonthsBeforeOrAfterDateOfVisit(new Date('2024-04-23'), new Date('2023-12-223'))).toBe(false)
+  })
 })
