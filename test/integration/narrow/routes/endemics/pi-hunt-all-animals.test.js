@@ -161,7 +161,7 @@ describe('PI Hunt recommended tests', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-fieldset__heading').text().trim()).toEqual('Was the PI hunt done on all beef cattle in the herd?')
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select if the PI hunt was done on all beef cattle in the herd')
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select yes if the PI hunt was done on all beef cattle in the herd')
     })
   })
 })

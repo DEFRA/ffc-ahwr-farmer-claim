@@ -14,7 +14,7 @@ const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosec
 
 const backLink = `${urlPrefix}/${endemicsVetRCVS}`
 const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
-const errorMessageText = 'Select if a PI hunt was done'
+const errorMessageText = 'Select yes if a PI hunt was done'
 
 const getHandler = {
   method: 'GET',

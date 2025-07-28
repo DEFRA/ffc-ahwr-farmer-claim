@@ -91,7 +91,7 @@ const postHandler = {
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
-        const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', 'Select a package', options)(sheepRadioOptions)
+        const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', 'Select a sheep health package', options)(sheepRadioOptions)
         const backLink = `${urlPrefix}/${endemicsVetRCVS}`
         return h.view(endemicsSheepEndemicsPackage, {
           ...request.payload,
@@ -99,7 +99,7 @@ const postHandler = {
           pageHeading,
           ...sheepEndemicsPackageRadios,
           errorMessage: {
-            text: 'Select a package',
+            text: 'Select a sheep health package',
             href: '#sheepEndemicsPackage'
           }
         }).code(HttpStatus.BAD_REQUEST).takeover()

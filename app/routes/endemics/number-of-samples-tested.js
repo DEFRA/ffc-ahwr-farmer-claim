@@ -49,7 +49,7 @@ const postHandler = {
             'string.base': 'Enter the number of samples tested',
             'string.empty': 'Enter the number of samples tested',
             'string.max': 'The number of samples tested should not exceed 9999',
-            'string.pattern.base': 'Number of samples tested must only include numbers'
+            'string.pattern.base': 'The amount of samples tested must only include numbers'
           })
       }),
       failAction: async (request, h, error) => {

@@ -260,7 +260,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Enter a date in the boxes below')
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Enter the date of review')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -268,7 +268,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
         dateEntered: '2000-february-second',
-        error: 'Enter a date in the boxes below'
+        error: 'Enter the date of review'
       }
     })
   })
@@ -305,7 +305,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Error: The date of review must be a real date')
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('The date of review must be a real date')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -313,7 +313,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
         dateEntered: '2025-2-31',
-        error: 'Error: The date of review must be a real date'
+        error: 'The date of review must be a real date'
       }
     })
   })
@@ -350,7 +350,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
-    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('Error: The date of review cannot be before the date your agreement began')
+    expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual('The date of review must be the same as or after the date of your agreement')
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
       properties: {
@@ -358,7 +358,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
         dateEntered: '2024-12-1',
-        error: 'Error: The date of review cannot be before the date your agreement began'
+        error: 'The date of review must be the same as or after the date of your agreement'
       }
     })
   })
@@ -396,7 +396,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
     const $ = cheerio.load(res.payload)
     expect(res.statusCode).toBe(400)
     expect($('.govuk-error-summary__list > li > a').text().trim()).toEqual(
-      'Error: The date of review must be in the past'
+      'The date of review must be today or in the past'
     )
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith({
       name: 'claim-invalid-date-of-visit',
@@ -405,7 +405,7 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
         journeyType: 'review',
         dateOfAgreement: '2025-01-01',
         dateEntered: '2040-2-2',
-        error: 'Error: The date of review must be in the past'
+        error: 'The date of review must be today or in the past'
       }
     })
   })

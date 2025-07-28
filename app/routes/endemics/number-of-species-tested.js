@@ -75,11 +75,10 @@ const postHandler = {
           .max(4)
           .required()
           .messages({
-            'string.base': 'Enter the number of animals tested',
-            'string.empty': 'Enter the number of animals tested',
+            'string.base': 'Enter the number of animals tested or assessed',
+            'string.empty': 'Enter the number of animals tested or assessed',
             'string.max': 'The number of animals tested should not exceed 9999',
-            'string.pattern.base':
-              'The number of animals samples were taken from must only include numbers'
+            'string.pattern.base': 'The amount of animals samples were taken from must only include numbers'
           })
       }),
       failAction: async (request, h, error) => {

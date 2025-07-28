@@ -161,7 +161,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
 
       const response = await server.inject(options)
       const $ = cheerio.load(response.payload)
-      const errorMessage = 'Select whether the vet did a biosecurity assessment'
+      const errorMessage = 'Select yes if the vet did a biosecurity assessment'
 
       expect($('li > a').text()).toMatch(errorMessage)
     })
@@ -250,7 +250,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
       const $ = cheerio.load(response.payload)
 
       expect(response.statusCode).toBe(400)
-      expect($('li > a').text()).toContain('Select whether the vet did a biosecurity assessment')
+      expect($('li > a').text()).toContain('Select yes if the vet did a biosecurity assessment')
     })
     test('continue with providing biosecurity and assessmentPercentage', async () => {
       const options = {

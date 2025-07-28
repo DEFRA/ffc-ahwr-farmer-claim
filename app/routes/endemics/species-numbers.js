@@ -60,7 +60,7 @@ const errorMessageText = (typeOfReview, speciesEligibleNumberForDisplay, typeOfL
 
   return isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)
     ? `Select yes if you had ${speciesEligibleNumberForDisplay}${herdText} on the date of the ${claimTypeText}.`
-    : `Select if you had ${speciesEligibleNumberForDisplay} on the date of the ${claimTypeText}.`
+    : `Select yes if you had ${speciesEligibleNumberForDisplay} on the date of the ${claimTypeText}.`
 }
 const legendText = (speciesEligibleNumberForDisplay, typeOfReview, typeOfLivestock, dateOfVisit, latestEndemicsApplication) => {
   const { isReview } = getReviewType(typeOfReview)

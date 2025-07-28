@@ -42,7 +42,7 @@ const postHandler = {
       }),
       failAction: async (request, h, _error) => {
         const { piHuntRecommended } = getEndemicsClaim(request)
-        const errorText = 'Select if the vet recommended the PI hunt'
+        const errorText = 'Select yes if the vet recommended the PI hunt'
         const yesOrNoRadios = radios(questionText, 'piHuntRecommended', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntRecommended === 'yes' }, { value: 'no', text: 'No', checked: piHuntRecommended === 'no' }])
         return h.view(endemicsPIHuntRecommended, {
           ...yesOrNoRadios,

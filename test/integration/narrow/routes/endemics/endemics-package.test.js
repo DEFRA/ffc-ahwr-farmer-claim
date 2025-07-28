@@ -89,9 +89,9 @@ describe('Endemics package test', () => {
     })
 
     test.each([
-      { sheepEndemicsPackage: undefined, errorMessage: 'Select a package' },
-      { sheepEndemicsPackage: null, errorMessage: 'Select a package' },
-      { sheepEndemicsPackage: 'impossible', errorMessage: 'Select a package' }
+      { sheepEndemicsPackage: undefined, errorMessage: 'Select a sheep health package' },
+      { sheepEndemicsPackage: null, errorMessage: 'Select a sheep health package' },
+      { sheepEndemicsPackage: 'impossible', errorMessage: 'Select a sheep health package' }
     ])('returns 400 when payload is invalid - %p', async ({ sheepEndemicsPackage, errorMessage }) => {
       const options = {
         method: 'POST',

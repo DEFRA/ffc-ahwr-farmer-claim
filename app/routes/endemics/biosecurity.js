@@ -162,7 +162,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        biosecurity: Joi.string().valid('yes', 'no').required().messages({ 'any.required': 'Select whether the vet did a biosecurity assessment' }),
+        biosecurity: Joi.string().valid('yes', 'no').required().messages({ 'any.required': 'Select yes if the vet did a biosecurity assessment' }),
         assessmentPercentage: Joi.when('biosecurity', {
           is: Joi.valid('yes'),
           then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
@@ -176,10 +176,10 @@ const postHandler = {
 
         const errorMessage = biosecurity
           ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' }
-          : { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' }
+          : { text: 'Select yes if the vet did a biosecurity assessment', href: '#biosecurity' }
         const errors = {
           errorMessage,
-          radioErrorMessage: biosecurity === undefined ? { text: 'Select whether the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
+          radioErrorMessage: biosecurity === undefined ? { text: 'Select yes if the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
           inputErrorMessage: assessmentPercentageErrorMessage ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : undefined
         }
 

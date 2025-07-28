@@ -92,7 +92,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     const inputNameInError = inputKeysInError[0]
     return {
       errorSummary: [{
-        text: 'Enter a date in the boxes below',
+        text: `Enter the date of ${reviewOrFollowUpText}`,
         href: `#${inputNameInError}`
       }],
       inputsInError
@@ -106,7 +106,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   if (!dateEnteredIsValid) {
     return {
       errorSummary: [{
-        text: 'Error: The date of review must be a real date',
+        text: `The date of ${reviewOrFollowUpText} must be a real date`,
         href: visitDateDayHref
       }],
       inputsInError: { day: true, month: true, year: true }
@@ -119,7 +119,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   if (dateOfVisit > now) {
     return {
       errorSummary: [{
-        text: `Error: The date of ${reviewOrFollowUpText} must be in the past`,
+        text: `The date of ${reviewOrFollowUpText} must be today or in the past`,
         href: visitDateDayHref
       }],
       inputsInError: { day: true, month: true, year: true }
@@ -131,7 +131,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
   if (applicationCreatedTime > dateOfVisit.getTime()) {
     return {
       errorSummary: [{
-        text: `Error: The date of ${reviewOrFollowUpText} cannot be before the date your agreement began`,
+        text: `The date of ${reviewOrFollowUpText} must be the same as or after the date of your agreement`,
         href: visitDateDayHref
       }],
       inputsInError: { day: true, month: true, year: true }
