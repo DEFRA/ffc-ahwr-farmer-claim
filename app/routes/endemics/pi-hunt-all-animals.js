@@ -51,7 +51,7 @@ const postHandler = {
       }),
       failAction: async (request, h, _error) => {
         const { typeOfLivestock, piHuntAllAnimals, reviewTestResults } = getEndemicsClaim(request)
-        const errorText = `Select if the PI hunt was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
+        const errorText = `Select yes if the PI hunt was done on all ${getLivestockText(typeOfLivestock)} cattle in the herd`
         const questionText = getQuestionText(typeOfLivestock)
         const yesOrNoRadios = radios(questionText, 'piHuntAllAnimals', errorText, { hintHtml, inline: true })([{ value: 'yes', text: 'Yes', checked: piHuntAllAnimals === 'yes' }, { value: 'no', text: 'No', checked: piHuntAllAnimals === 'no' }])
 

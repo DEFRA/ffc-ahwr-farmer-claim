@@ -134,7 +134,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('Was a persistently infected (PI) hunt for bovine viral diarrhoea (BVD) done on all animals in the herd?')
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select if a PI hunt was done')
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch('Select yes if a PI hunt was done')
     })
   })
 })

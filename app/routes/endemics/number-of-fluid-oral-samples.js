@@ -45,7 +45,7 @@ const postHandler = {
             'string.base': 'Enter the number of oral fluid samples',
             'string.empty': 'Enter the number of oral fluid samples',
             'string.max': 'The number of oral fluid samples should not exceed 9999',
-            'string.pattern.base': 'The number of oral fluid samples must only include numbers'
+            'string.pattern.base': 'The amount of oral fluid samples must only include numbers'
           })
       }),
       failAction: async (request, h, err) => {

@@ -114,9 +114,9 @@ describe('Number of species tested test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
     test.each([
-      { numberAnimalsTested: '%%%%%%%%%%', error: 'The number of animals samples were taken from must only include numbers' },
+      { numberAnimalsTested: '%%%%%%%%%%', error: 'The amount of animals samples were taken from must only include numbers' },
       { numberAnimalsTested: '6697979779779', error: 'The number of animals tested should not exceed 9999' },
-      { numberAnimalsTested: '', error: 'Enter the number of animals tested' }
+      { numberAnimalsTested: '', error: 'Enter the number of animals tested or assessed' }
     ])('show error message when the number of animals tested is not valid', async ({ numberAnimalsTested, error }) => {
       getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
       const options = {
