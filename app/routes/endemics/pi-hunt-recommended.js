@@ -67,7 +67,9 @@ const postHandler = {
           clearPiHuntSessionOnChange(request, 'piHuntRecommended')
         }
 
-        return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
+        return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
+          .code(HttpStatus.BAD_REQUEST)
+          .takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)

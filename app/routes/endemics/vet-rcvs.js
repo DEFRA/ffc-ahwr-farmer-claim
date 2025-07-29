@@ -9,6 +9,7 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const { rcvs: rcvsErrorMessages } = errorMessages
@@ -85,7 +86,7 @@ const postHandler = {
             backLink,
             errorMessage: { text: err.details[0].message, href: `#${vetRCVSNumberKey}` }
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },

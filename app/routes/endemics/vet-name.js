@@ -6,6 +6,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getReviewType } from '../../lib/get-review-type.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const { name: nameErrorMessages } = errorMessages
@@ -66,7 +67,7 @@ const postHandler = {
             backLink: backLink(request),
             errorMessage: { text: err.details[0].message, href: `#${vetsNameKey}` }
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },

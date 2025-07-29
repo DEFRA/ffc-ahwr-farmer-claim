@@ -6,6 +6,7 @@ import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
+import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -57,7 +58,7 @@ const postHandler = {
             errorMessage: { text: err.details[0].message, href: '#numberOfOralFluidSamples' },
             backLink: `${urlPrefix}/${endemicsTestUrn}`
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -73,7 +74,8 @@ const postHandler = {
             backLink: pageUrl,
             ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             minimumNumberFluidOralSamples
-          }).code(400).takeover()
+          }).code(HttpStatus.BAD_REQUEST)
+          .takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsTestResults}`)

@@ -8,6 +8,7 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import HttpStatus from 'http-status-codes'
 
 const { biosecurity: biosecurityKey, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 const {
@@ -190,7 +191,7 @@ const postHandler = {
             ...errors,
             previousAnswer: biosecurity
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -201,7 +202,7 @@ const postHandler = {
 
       if (biosecurity === 'no') {
         raiseInvalidDataEvent(request, biosecurityKey, `Value ${biosecurity} is not equal to required value yes`)
-        return h.view(endemicsBiosecurityException, { backLink: pageUrl, ruralPaymentsAgency }).code(400).takeover()
+        return h.view(endemicsBiosecurityException, { backLink: pageUrl, ruralPaymentsAgency }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)

@@ -81,7 +81,8 @@ const postHandler = {
           clearPiHuntSessionOnChange(request, 'piHuntAllAnimals')
         }
 
-        return h.view(endemicsPIHuntAllAnimalsException, { reviewTestResults, claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
+        return h.view(endemicsPIHuntAllAnimalsException, { reviewTestResults, claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
+          .code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)

@@ -9,6 +9,7 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
+import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -95,7 +96,7 @@ const postHandler = {
               href: `#${numberAnimalsTestedKey}`
             }
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -130,7 +131,7 @@ const postHandler = {
               href: `#${numberAnimalsTestedKey}`
             }
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
       if (isPigs && isEndemicsFollowUp) {
@@ -145,7 +146,7 @@ const postHandler = {
             continueClaimLink: nextPageURL,
             backLink: pageUrl
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
       if (isSheep) {
@@ -160,7 +161,7 @@ const postHandler = {
             continueClaimLink: nextPageURL,
             backLink: pageUrl
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
@@ -175,7 +176,7 @@ const postHandler = {
           piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)),
           ruralPaymentsAgency: RPA_CONTACT_DETAILS
         })
-        .code(400)
+        .code(HttpStatus.BAD_REQUEST)
         .takeover()
     }
   }

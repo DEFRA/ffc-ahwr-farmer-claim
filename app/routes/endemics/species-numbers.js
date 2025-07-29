@@ -146,7 +146,9 @@ const postHandler = {
       }
 
       raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)
-      return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: RPA_CONTACT_DETAILS, changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview], isReview }).code(400).takeover()
+      return h.view(endemicsSpeciesNumbersException, { backLink: pageUrl, ruralPaymentsAgency: RPA_CONTACT_DETAILS, changeYourAnswerText: sheepNumbersExceptionsText[typeOfReview], isReview })
+        .code(HttpStatus.BAD_REQUEST)
+        .takeover()
     }
   }
 }

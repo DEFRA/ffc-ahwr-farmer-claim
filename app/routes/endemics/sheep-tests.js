@@ -3,6 +3,7 @@ import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sheepTestTypes } from '../../constants/sheep-test-types.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const { sheepTests: sheepTestsKey, sheepTestResults: sheepTestResultsKey } = sessionKeys.endemicsClaim
@@ -47,7 +48,7 @@ const postHandler = {
             text: 'Select a disease or condition',
             href: '#sheepTests'
           }
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       if (sheepTests === 'other') {
@@ -60,7 +61,7 @@ const postHandler = {
             text: 'Select all diseases or conditions tested for in this package',
             href: '#sheepTests'
           }
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       setEndemicsClaim(request, sheepTestResultsKey,

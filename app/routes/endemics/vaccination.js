@@ -5,6 +5,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { claimConstants } from '../../constants/claim.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
+import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
 const {
@@ -55,7 +56,7 @@ const postHandler = {
             text: 'Select a vaccination status',
             href: '#herdVaccinationStatus'
           }
-        }).code(400).takeover()
+        }).code(HttpStatus.BAD_REQUEST).takeover()
       }
     },
     handler: async (request, h) => {
