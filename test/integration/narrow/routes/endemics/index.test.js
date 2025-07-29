@@ -72,27 +72,4 @@ describe('Claim endemics home page test', () => {
     expect($('title').text().trim()).toContain('Claim funding - Get funding to improve animal health and welfare')
     expectPhaseBanner.ok($)
   })
-
-  test('Redirects us to endemicsWhichSpeciesURI if multiple species enabled', async () => {
-    refreshApplications.mockReturnValue({
-      latestEndemicsApplication: {
-        reference: 'AHWR-2470-6BA9',
-        createdAt: Date.now(),
-        statusId: 1,
-        type: 'EE'
-      }
-    })
-    resetEndemicsClaimSession.mockReturnValue([])
-
-    const options = {
-      method: 'GET',
-      url,
-      auth
-    }
-
-    const res = await server.inject(options)
-
-    expect(res.statusCode).toBe(302)
-    expect(res.headers.location).toEqual('/claim/endemics/which-species')
-  })
 })

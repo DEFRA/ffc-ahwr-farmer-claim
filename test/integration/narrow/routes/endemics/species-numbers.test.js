@@ -2,7 +2,6 @@ import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setAuthConfig } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getReviewType } from '../../../../../app/lib/get-review-type.js'
@@ -12,7 +11,6 @@ import {
   isMultipleHerdsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive
 } from '../../../../../app/lib/context-helper.js'
-import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -21,18 +19,13 @@ jest.mock('../../../../../app/lib/context-helper.js')
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/species-numbers'
 
-beforeEach(async () => {
-  config.multiHerds.enabled = false
-})
-
-describe('Species numbers test when Optional PI Hunt is OFF', () => {
+describe('Species numbers page', () => {
   let server
 
   beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
-    setAuthConfig()
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
@@ -51,7 +44,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative', backLink: '/claim/endemics/date-of-visit' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive', backLink: '/claim/endemics/date-of-testing' }
-    ])('returns 200', async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
+    ])('returns 200 for non MH claim for $typeOfLivestock', async ({ typeOfLivestock, typeOfReview, reviewTestResults, backLink }) => {
       getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } } })
       const options = {
         method: 'GET',
@@ -74,7 +67,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
     test.each([
       { typeOfLivestock: 'beef', typeOfReview: 'E', reviewTestResults: 'negative' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R', reviewTestResults: 'positive' }
-    ])('returns 200 when multi herds is enabled', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
+    ])('returns 200 for multi herds claim for $typeOfLivestock', async ({ typeOfLivestock, typeOfReview, reviewTestResults }) => {
       isMultipleHerdsUserJourney.mockReturnValue(true)
       getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock, typeOfReview, reviewTestResults, reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } }))
       const options = {
@@ -95,7 +88,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('returns 200 when multi herds is enabled and species is sheep', async () => {
+    test('returns 200 for multi herds claim for sheep', async () => {
       isMultipleHerdsUserJourney.mockReturnValue(true)
       getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'sheep', typeOfReview: 'R', reviewTestResults: 'negative', reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } }))
       const options = {
@@ -192,7 +185,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
 
-    test('Continue to eligible page if user select yes', async () => {
+    test('Continue to eligible page if user selects yes', async () => {
       const options = {
         method: 'POST',
         payload: { crumb, speciesNumbers: 'yes' },
@@ -209,7 +202,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       expect(res.statusCode).toBe(302)
       expect(res.headers.location).toEqual('/claim/endemics/number-of-species-tested')
     })
-    test('Continue to ineligible page if user select no', async () => {
+    test('Continue to ineligible page if user selects no', async () => {
       const options = {
         method: 'POST',
         payload: { crumb, speciesNumbers: 'no' },
@@ -247,7 +240,7 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       expect($('.govuk-back-link').attr('href')).toEqual('/claim/endemics/date-of-testing')
     })
 
-    test('shows error when payload is invalid and multi herds is enabled', async () => {
+    test('shows error when payload is invalid for multi herds claim', async () => {
       isMultipleHerdsUserJourney.mockReturnValue(true)
       const { isReview } = getReviewType('E')
       getEndemicsClaim.mockImplementation(() => ({ typeOfLivestock: 'beef', reviewTestResults: 'positive', latestEndemicsApplication: { flags: [] } }))
@@ -283,43 +276,6 @@ describe('Species numbers test when Optional PI Hunt is OFF', () => {
       expect(res.statusCode).toBe(404)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch('404 - Not Found')
-    })
-  })
-})
-
-describe('Species numbers test when Optional PI Hunt is ON', () => {
-  let server
-
-  beforeAll(async () => {
-    setAuthConfig({ optionalPIHuntEnabled: true })
-    server = await createServer()
-    await server.initialize()
-    isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
-  })
-
-  afterAll(async () => {
-    jest.resetAllMocks()
-    await server.stop()
-  })
-
-  describe(`GET ${url} route`, () => {
-    test.each([
-      { typeOfLivestock: 'beef' },
-      { typeOfLivestock: 'dairy' }
-    ])('returns 200', async ({ typeOfLivestock }) => {
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview: 'E', reference: 'TEMP-6GSE-PIR8', latestEndemicsApplication: { flags: [] } } })
-      const options = {
-        method: 'GET',
-        auth,
-        url
-      }
-
-      const res = await server.inject(options)
-      const $ = cheerio.load(res.payload)
-
-      expect(res.statusCode).toBe(200)
-      expect($('.govuk-back-link').attr('href')).toContain('endemics/date-of-visit')
-      expectPhaseBanner.ok($)
     })
   })
 })

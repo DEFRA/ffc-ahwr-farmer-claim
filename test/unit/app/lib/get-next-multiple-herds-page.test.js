@@ -116,7 +116,7 @@ describe('getNextMultipleHerdsPage', () => {
     expect(getReviewWithinLast10Months).toHaveBeenCalledWith('2024-06-01', [], {}, 'beef', 'herd456')
   })
 
-  test('returns endemicsSpeciesNumbers route when cows and pi hunt is enabled and visit date after go live', () => {
+  test('returns endemicsSpeciesNumbers route when livestock is cattle and visit date after go live', () => {
     getEndemicsClaim.mockReturnValue({
       typeOfReview: 'E',
       previousClaims: [],

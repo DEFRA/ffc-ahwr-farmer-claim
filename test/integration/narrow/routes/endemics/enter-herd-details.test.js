@@ -5,7 +5,6 @@ import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { ONLY_HERD } from '../../../../../app/constants/constants.js'
 
 const { urlPrefix } = config
@@ -28,8 +27,6 @@ describe('enter-herd-details tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
   })

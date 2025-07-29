@@ -51,39 +51,8 @@ describe('Check answers test', () => {
   let server
 
   beforeAll(async () => {
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        },
-        optionalPIHunt: {
-          enabled: true
-        }
-      }
-    })
-
     server = await createServer()
     await server.initialize()
-  })
-
-  beforeEach(async () => {
-    config.multiHerds.enabled = false
   })
 
   afterAll(async () => {
@@ -220,7 +189,7 @@ describe('Check answers test', () => {
         expectPhaseBanner.ok($)
       })
 
-      test('when multi herds is enabled and species is sheep', async () => {
+      test('when species is sheep, including flock information', async () => {
         getEndemicsClaim.mockImplementation(() => {
           return {
             ...sheepReviewClaim,
@@ -433,7 +402,7 @@ describe('Check answers test', () => {
         expectPhaseBanner.ok($)
       })
 
-      test('when multi herds is enabled', async () => {
+      test('herd information displayed for multi herds claim', async () => {
         getEndemicsClaim.mockImplementation(() => {
           return {
             ...dairyEndemicsFollowUpClaim,

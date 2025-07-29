@@ -2,7 +2,6 @@ import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setAuthConfig } from '../../../../mocks/config.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
@@ -23,7 +22,6 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
   })
 
@@ -146,7 +144,6 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })

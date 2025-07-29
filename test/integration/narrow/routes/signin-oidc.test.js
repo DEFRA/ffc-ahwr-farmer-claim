@@ -7,17 +7,6 @@ describe('DefraID redirection test', () => {
   let server
 
   beforeAll(async () => {
-    jest.mock('../../../../app/config', () => ({
-      ...jest.requireActual('../../../../app/config'),
-      authConfig: {
-        defraId: {
-          enabled: true
-        },
-        ruralPaymentsAgency: {
-          hostname: 'rpaHostname'
-        }
-      }
-    }))
     server = await createServer()
     await server.initialize()
   })

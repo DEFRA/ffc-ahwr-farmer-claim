@@ -1,7 +1,5 @@
 import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-
-import { setAuthConfig } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 import expectPhaseBanner from 'assert'
@@ -24,7 +22,6 @@ describe('PI Hunt recommended tests', () => {
     getEndemicsClaim.mockImplementation(() => { return { reference: 'TEMP-6GSE-PIR8' } })
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
   })
 
   afterAll(async () => {
@@ -58,7 +55,7 @@ describe('PI Hunt recommended tests', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 
@@ -80,7 +77,7 @@ describe('PI Hunt recommended tests', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
     test('Continue to eligible page if user select yes', async () => {
       const options = {

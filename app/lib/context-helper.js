@@ -5,8 +5,11 @@ import { getAllApplicationsBySbi } from '../api-requests/application-service-api
 import { getClaimsByApplicationReference } from '../api-requests/claim-service-api.js'
 import { createTempClaimReference } from './create-temp-claim-reference.js'
 import { claimConstants } from '../constants/claim.js'
-import { config } from '../config/index.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, MULTIPLE_HERDS_RELEASE_DATE, ONLY_HERD } from '../constants/constants.js'
+import {
+  MULTIPLE_HERDS_RELEASE_DATE,
+  ONLY_HERD,
+  PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+} from '../constants/constants.js'
 
 const {
   endemicsClaim: {
@@ -96,7 +99,7 @@ export const isVisitDateAfterPIHuntAndDairyGoLive = (dateOfVisit) => {
 }
 
 export const isMultipleHerdsUserJourney = (dateOfVisit, agreementFlags) => {
-  if (!config.multiHerds.enabled || new Date(dateOfVisit) < MULTIPLE_HERDS_RELEASE_DATE) {
+  if (new Date(dateOfVisit) < MULTIPLE_HERDS_RELEASE_DATE) {
     return false
   }
 

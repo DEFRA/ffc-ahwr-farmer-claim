@@ -21,16 +21,6 @@ describe('Number of species tested test', () => {
     setEndemicsClaim.mockImplementation(() => {})
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
 
-    jest.mock('../../../../../app/config', () => {
-      const originalModule = jest.requireActual('../../../../../app/config')
-      return {
-        ...originalModule,
-        optionalPIHunt: {
-          enabled: true
-        }
-      }
-    })
-
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
