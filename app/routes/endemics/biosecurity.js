@@ -12,8 +12,7 @@ import HttpStatus from 'http-status-codes'
 
 const { biosecurity: biosecurityKey, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
 const {
-  urlPrefix,
-  ruralPaymentsAgency
+  urlPrefix
 } = config
 const {
   endemicsTestResults,
@@ -202,7 +201,7 @@ const postHandler = {
 
       if (biosecurity === 'no') {
         raiseInvalidDataEvent(request, biosecurityKey, `Value ${biosecurity} is not equal to required value yes`)
-        return h.view(endemicsBiosecurityException, { backLink: pageUrl, ruralPaymentsAgency }).code(HttpStatus.BAD_REQUEST).takeover()
+        return h.view(endemicsBiosecurityException, { backLink: pageUrl }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)

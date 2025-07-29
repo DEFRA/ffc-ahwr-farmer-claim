@@ -9,7 +9,6 @@ import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const { urlPrefix } = config
 const {
@@ -134,7 +133,6 @@ const postHandler = {
             .view(endemicsSameHerdException, {
               backLink: pageUrl,
               errorMessage,
-              ruralPaymentsAgency: RPA_CONTACT_DETAILS,
               backToPageText: 'If you entered the wrong date, you\'ll need to go back and enter the correct date.',
               backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
               backToPageLink: dateOfVisitPageUrl
@@ -155,7 +153,6 @@ const postHandler = {
           .view(endemicsSameHerdException, {
             backLink: pageUrl,
             errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
-            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             backToPageText: 'If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.',
             backToPageMessage: 'Claim for a review',
             backToPageLink: whichTypeOfReviewPageUrl

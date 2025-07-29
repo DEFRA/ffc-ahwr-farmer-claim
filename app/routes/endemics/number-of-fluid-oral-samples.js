@@ -5,7 +5,6 @@ import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
@@ -72,7 +71,6 @@ const postHandler = {
           endemicsNumberOfOralFluidSamplesException,
           {
             backLink: pageUrl,
-            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             minimumNumberFluidOralSamples
           }).code(HttpStatus.BAD_REQUEST)
           .takeover()

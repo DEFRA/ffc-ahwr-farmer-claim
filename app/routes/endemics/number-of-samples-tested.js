@@ -6,7 +6,6 @@ import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { claimConstants } from '../../constants/claim.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
@@ -78,7 +77,7 @@ const postHandler = {
       if (numberOfSamplesTested !== threshold) {
         request.logger.info(`Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
         raiseInvalidDataEvent(request, numberOfSamplesTestedKey, `Value ${numberOfSamplesTested} is not equal to required value ${threshold}`)
-        return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl, ruralPaymentsAgency: RPA_CONTACT_DETAILS })
+        return h.view(endemicsNumberOfSamplesTestedException, { backLink: pageUrl })
           .code(HttpStatus.BAD_REQUEST).takeover()
       }
 

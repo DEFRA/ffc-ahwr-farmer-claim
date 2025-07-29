@@ -5,7 +5,6 @@ import { getReviewType } from '../../lib/get-review-type.js'
 
 const {
   urlPrefix,
-  ruralPaymentsAgency,
   customerSurvey
 } = config
 const { endemicsConfirmation, claimDashboard } = links
@@ -30,7 +29,6 @@ const getHandler = {
         claimDashboard,
         reference,
         amount,
-        ruralPaymentsAgency,
         claimSurveyUri: customerSurvey.uri
       })
     }

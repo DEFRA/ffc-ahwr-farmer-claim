@@ -19,7 +19,6 @@ import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
 import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-herd.js'
 import HttpStatus from 'http-status-codes'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const MAX_POSSIBLE_DAY = 31
 const MAX_POSSIBLE_MONTH = 12
@@ -278,7 +277,7 @@ const checkForTimingException = (request, h, { dateOfVisit, typeOfLivestock, pre
     raiseInvalidDataEvent(request, dateOfVisitKey, exception)
 
     return h
-      .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: RPA_CONTACT_DETAILS })
+      .view(exceptionView, { backLink: pageUrl })
       .code(HttpStatus.BAD_REQUEST)
       .takeover()
   }
@@ -323,7 +322,6 @@ const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldAppli
       .view(`${endemicsDateOfVisitException}`, {
         backLink: pageUrl,
         errorMessage,
-        ruralPaymentsAgency: RPA_CONTACT_DETAILS,
         backToPageMessage: `Enter the date the vet last visited your farm for this ${reviewOrFollowUpText}.`
       })
       .code(HttpStatus.BAD_REQUEST)

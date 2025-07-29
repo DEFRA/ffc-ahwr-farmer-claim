@@ -11,7 +11,7 @@ import { isURNUnique } from '../../api-requests/claim-service-api.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
 
-const { urlPrefix, ruralPaymentsAgency } = config
+const { urlPrefix } = config
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
@@ -131,7 +131,7 @@ const postHandler = {
 
       if (!response?.isURNUnique) {
         raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
-        return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(HttpStatus.BAD_REQUEST).takeover()
+        return h.view(endemicsTestUrnException, { backLink: pageUrl, isBeefOrDairyEndemics }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(nextPageUrl(request))

@@ -8,7 +8,6 @@ import { getReviewType } from '../../lib/get-review-type.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
@@ -142,7 +141,6 @@ const postHandler = {
         )
         return h
           .view(endemicsNumberOfSpeciesPigsException, {
-            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             continueClaimLink: nextPageURL,
             backLink: pageUrl
           })
@@ -157,7 +155,6 @@ const postHandler = {
         )
         return h
           .view(endemicsNumberOfSpeciesSheepException, {
-            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             continueClaimLink: nextPageURL,
             backLink: pageUrl
           })
@@ -173,8 +170,7 @@ const postHandler = {
       return h
         .view(endemicsNumberOfSpeciesException, {
           backLink: pageUrl,
-          piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)),
-          ruralPaymentsAgency: RPA_CONTACT_DETAILS
+          piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey))
         })
         .code(HttpStatus.BAD_REQUEST)
         .takeover()

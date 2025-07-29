@@ -10,7 +10,6 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { formatDate, getHerdOrFlock } from '../../lib/display-helpers.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const { endemics } = claimConstants.claimType
 
@@ -196,7 +195,6 @@ const postHandler = {
       if (herdSelected === radioValueNewHerd && typeOfReview === endemics) {
         return h.view(endemicsSelectTheHerdException, {
           backLink: pageUrl,
-          ruralPaymentsAgency: RPA_CONTACT_DETAILS,
           claimForAReviewLink: whichTypeOfReviewPageUrl
         })
           .code(HttpStatus.BAD_REQUEST)
@@ -219,7 +217,6 @@ const postHandler = {
           .view(endemicsSelectTheHerdDateException, {
             backLink: pageUrl,
             errorMessage,
-            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
             backToPageLink: dateOfVisitPageUrl
           })

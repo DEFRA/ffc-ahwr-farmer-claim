@@ -7,7 +7,6 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 import HttpStatus from 'http-status-codes'
 
 const { urlPrefix } = config
@@ -72,7 +71,7 @@ const postHandler = {
 
         if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
 
-        return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: RPA_CONTACT_DETAILS })
+        return h.view(endemicsPIHuntException, { backLink: pageUrl })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }

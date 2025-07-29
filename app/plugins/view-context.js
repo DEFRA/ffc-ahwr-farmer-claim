@@ -1,4 +1,5 @@
 import { config } from '../config/index.js'
+import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const { applyServiceUri, urlPrefix, customerSurvey, dashboardServiceUri } = config
 
@@ -19,6 +20,7 @@ export const viewContextPlugin = {
           ctx.applyServiceUri = applyServiceUri
           ctx.customerSurveyUri = customerSurvey.uri
           ctx.dashboardServiceUri = dashboardServiceUri
+          ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS
 
           response.source.context = ctx
         }

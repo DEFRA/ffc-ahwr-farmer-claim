@@ -25,7 +25,7 @@ import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 import { isWithin4MonthsBeforeOrAfterDateOfVisit } from '../../lib/date-of-testing-4-month-check.js'
 import HttpStatus from 'http-status-codes'
 
-const { ruralPaymentsAgency, urlPrefix } = config
+const { urlPrefix } = config
 const {
   endemicsClaim: { dateOfTesting: dateOfTestingKey, dateOfVisit: dateOfVisitKey }
 } = sessionKeys
@@ -407,7 +407,6 @@ const postHandler = {
         return h
           .view(endemicsDateOfTestingException, {
             backLink: pageUrl,
-            ruralPaymentsAgency,
             errorMessage,
             errorLink
           })

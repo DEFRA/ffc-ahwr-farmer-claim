@@ -5,7 +5,6 @@ import links from '../../config/routes.js'
 import { refreshApplications, resetEndemicsClaimSession } from '../../lib/context-helper.js'
 import { logout } from '../../lib/logout.js'
 import { requestAuthorizationCodeUrl } from '../../auth/auth-code-grant/request-authorization-code-url.js'
-import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const urlPrefix = config.urlPrefix
 const { endemicsIndex, endemicsWhichSpecies } = links
@@ -37,8 +36,7 @@ const getHandler = {
 
       return h.view(loginView, {
         devLogin,
-        defraIdLogin: requestAuthorizationCodeUrl(request),
-        ruralPaymentsAgency: RPA_CONTACT_DETAILS
+        defraIdLogin: requestAuthorizationCodeUrl(request)
       })
     }
   }

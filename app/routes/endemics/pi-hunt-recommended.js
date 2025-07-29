@@ -9,7 +9,7 @@ import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-c
 import { getAmount } from '../../api-requests/claim-service-api.js'
 import HttpStatus from 'http-status-codes'
 
-const { urlPrefix, ruralPaymentsAgency } = config
+const { urlPrefix } = config
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = links
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = sessionKeys
 
@@ -67,7 +67,7 @@ const postHandler = {
           clearPiHuntSessionOnChange(request, 'piHuntRecommended')
         }
 
-        return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
+        return h.view(endemicsPIHuntRecommendedException, { claimPaymentNoPiHunt, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
