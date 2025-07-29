@@ -1,7 +1,7 @@
 import { authConfig } from '../config/auth.js'
-import { config } from '../config/index.js'
 import { requestAuthorizationCodeUrl } from '../auth/auth-code-grant/request-authorization-code-url.js'
 import { StatusCodes } from 'http-status-codes'
+import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 export const signInHandler = {
   method: 'GET',
@@ -37,7 +37,7 @@ export const signInHandler = {
         return h
           .view('verify-login-failed', {
             backLink: requestAuthorizationCodeUrl(request),
-            ruralPaymentsAgency: config.ruralPaymentsAgency
+            ruralPaymentsAgency: RPA_CONTACT_DETAILS
           })
           .code(StatusCodes.BAD_REQUEST)
           .takeover()

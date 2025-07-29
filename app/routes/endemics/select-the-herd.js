@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSelectHerdChange } from '../../session/index.js'
+import { getEndemicsClaim, removeSessionDataForSelectHerdChange, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { claimConstants } from '../../constants/claim.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
@@ -10,6 +10,7 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { formatDate, getHerdOrFlock } from '../../lib/display-helpers.js'
+import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const { endemics } = claimConstants.claimType
 
@@ -195,7 +196,7 @@ const postHandler = {
       if (herdSelected === radioValueNewHerd && typeOfReview === endemics) {
         return h.view(endemicsSelectTheHerdException, {
           backLink: pageUrl,
-          ruralPaymentsAgency: config.ruralPaymentsAgency,
+          ruralPaymentsAgency: RPA_CONTACT_DETAILS,
           claimForAReviewLink: whichTypeOfReviewPageUrl
         })
           .code(HttpStatus.BAD_REQUEST)
@@ -218,7 +219,7 @@ const postHandler = {
           .view(endemicsSelectTheHerdDateException, {
             backLink: pageUrl,
             errorMessage,
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
+            ruralPaymentsAgency: RPA_CONTACT_DETAILS,
             backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
             backToPageLink: dateOfVisitPageUrl
           })

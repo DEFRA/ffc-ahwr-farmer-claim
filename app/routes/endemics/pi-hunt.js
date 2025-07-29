@@ -7,6 +7,7 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import { RPA_CONTACT_DETAILS } from 'ffc-ahwr-common-library'
 
 const { urlPrefix } = config
 const { endemicsClaim: { piHunt: piHuntKey, dateOfVisit: dateOfVisitKey } } = sessionKeys
@@ -70,7 +71,7 @@ const postHandler = {
 
         if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
 
-        return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency }).code(400).takeover()
+        return h.view(endemicsPIHuntException, { backLink: pageUrl, ruralPaymentsAgency: RPA_CONTACT_DETAILS }).code(400).takeover()
       }
 
       if (piHuntEnabledAndVisitDateAfterGoLive && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
