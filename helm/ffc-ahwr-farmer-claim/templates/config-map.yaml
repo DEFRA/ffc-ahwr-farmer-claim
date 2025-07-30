@@ -24,9 +24,7 @@ data:
   DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
   DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
   DEFRA_ID_DASHBOARD_REDIRECT_URI: {{ quote .Values.container.defraIdDashboardRedirectUri }}
-  DEFRA_ID_JWT_ISSUER_ID: {{ quote .Values.container.defraIdJwtIssuerId }}
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
-  MULTI_HERDS_ENABLED: {{ quote .Values.container.multiHerdsEnabled }}
   MULTI_HERDS_RELEASE_DATE: {{ quote .Values.container.multiHerdsReleaseDate }}
   DEV_LOGIN_ENABLED: {{ quote .Values.container.devLoginEnabled }}
   PIG_UPDATES_ENABLED: {{ quote .Values.container.pigUpdatesEnabled }}

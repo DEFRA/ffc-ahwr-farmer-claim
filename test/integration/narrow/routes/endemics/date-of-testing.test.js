@@ -1,6 +1,5 @@
 import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -28,10 +27,8 @@ describe('Date of testing', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
-    setAuthConfig()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })
   })
 
@@ -50,7 +47,13 @@ describe('Date of testing', () => {
       { typeOfLivestock: 'dairy' }
     ])('returns 200', async ({ typeOfLivestock }) => {
       getEndemicsClaim
-        .mockReturnValue({ typeOfReview: 'E', typeOfLivestock, latestEndemicsApplication: { createdAt: new Date('2022-01-01') }, reference: 'TEMP-6GSE-PIR8' })
+        .mockReturnValue({
+          typeOfReview: 'E',
+          typeOfLivestock,
+          latestEndemicsApplication: { createdAt: new Date('2022-01-01') },
+          reference: 'TEMP-6GSE-PIR8',
+          dateOfVisit: '2022-01-01'
+        })
 
       const options = {
         method: 'GET',
@@ -227,7 +230,6 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
     isMultipleHerdsUserJourney.mockImplementation(() => { return true })

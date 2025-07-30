@@ -45,14 +45,7 @@ export const getConfig = () => {
     applyServiceUri: Joi.string().uri(),
     urlPrefix: Joi.string(),
     useRedis: Joi.boolean().required(),
-    eligibilityApiUri: Joi.string().uri(),
     applicationApiUri: Joi.string().uri(),
-    ruralPaymentsAgency: {
-      loginUri: Joi.string().uri().required(),
-      callChargesUri: Joi.string().uri().required(),
-      email: Joi.string().email().required(),
-      telephone: Joi.string().required()
-    },
     customerSurvey: {
       uri: Joi.string().uri().optional()
     },
@@ -62,7 +55,6 @@ export const getConfig = () => {
     claimExpiryTimeMonths: Joi.number(),
     endemicsClaimExpiryTimeMonths: Joi.number(),
     multiHerds: {
-      enabled: Joi.bool().required(),
       releaseDate: Joi.string().required()
     },
     devLogin: {
@@ -114,14 +106,7 @@ export const getConfig = () => {
     applyServiceUri: process.env.APPLY_SERVICE_URI,
     urlPrefix: '/claim',
     useRedis: process.env.NODE_ENV !== 'test',
-    eligibilityApiUri: process.env.ELIGIBILITY_API_URI,
     applicationApiUri: process.env.APPLICATION_API_URI,
-    ruralPaymentsAgency: {
-      loginUri: 'https://www.ruralpayments.service.gov.uk',
-      callChargesUri: 'https://www.gov.uk/call-charges',
-      email: 'ruralpayments@defra.gov.uk',
-      telephone: '03000 200 301'
-    },
     customerSurvey: {
       uri: process.env.CUSTOMER_SURVEY_CLAIM_URI
     },
@@ -131,7 +116,6 @@ export const getConfig = () => {
     claimExpiryTimeMonths: 6,
     endemicsClaimExpiryTimeMonths: 10,
     multiHerds: {
-      enabled: process.env.MULTI_HERDS_ENABLED === 'true',
       releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || '2025-05-01'
     },
     devLogin: {

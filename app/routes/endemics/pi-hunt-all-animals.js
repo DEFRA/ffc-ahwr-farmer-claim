@@ -11,7 +11,7 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import HttpStatus from 'http-status-codes'
 
-const { urlPrefix, ruralPaymentsAgency } = config
+const { urlPrefix } = config
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = links
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = sessionKeys
 
@@ -81,7 +81,8 @@ const postHandler = {
           clearPiHuntSessionOnChange(request, 'piHuntAllAnimals')
         }
 
-        return h.view(endemicsPIHuntAllAnimalsException, { reviewTestResults, claimPaymentNoPiHunt, livestockText, ruralPaymentsAgency, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl }).code(400).takeover()
+        return h.view(endemicsPIHuntAllAnimalsException, { reviewTestResults, claimPaymentNoPiHunt, livestockText, continueClaimLink: continueToBiosecurityURL, backLink: pageUrl })
+          .code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)

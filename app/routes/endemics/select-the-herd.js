@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSelectHerdChange } from '../../session/index.js'
+import { getEndemicsClaim, removeSessionDataForSelectHerdChange, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { claimConstants } from '../../constants/claim.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
@@ -195,7 +195,6 @@ const postHandler = {
       if (herdSelected === radioValueNewHerd && typeOfReview === endemics) {
         return h.view(endemicsSelectTheHerdException, {
           backLink: pageUrl,
-          ruralPaymentsAgency: config.ruralPaymentsAgency,
           claimForAReviewLink: whichTypeOfReviewPageUrl
         })
           .code(HttpStatus.BAD_REQUEST)
@@ -218,7 +217,6 @@ const postHandler = {
           .view(endemicsSelectTheHerdDateException, {
             backLink: pageUrl,
             errorMessage,
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
             backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
             backToPageLink: dateOfVisitPageUrl
           })

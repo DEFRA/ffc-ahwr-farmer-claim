@@ -36,8 +36,7 @@ const getHandler = {
 
       return h.view(loginView, {
         devLogin,
-        defraIdLogin: requestAuthorizationCodeUrl(request),
-        ruralPaymentsAgency: config.ruralPaymentsAgency
+        defraIdLogin: requestAuthorizationCodeUrl(request)
       })
     }
   }

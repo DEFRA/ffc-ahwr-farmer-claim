@@ -4,8 +4,11 @@ import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
-import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSelectHerdChange } from '../../../../../app/session/index.js'
-import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
+import {
+  getEndemicsClaim,
+  removeSessionDataForSelectHerdChange,
+  setEndemicsClaim
+} from '../../../../../app/session/index.js'
 import { canMakeClaim } from '../../../../../app/lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
 
@@ -31,8 +34,6 @@ describe('select-the-herd tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
   })

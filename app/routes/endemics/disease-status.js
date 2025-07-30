@@ -4,6 +4,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { claimConstants } from '../../constants/claim.js'
 import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
+import HttpStatus from 'http-status-codes'
 
 const {
   endemicsDiseaseStatus,
@@ -50,7 +51,7 @@ const postHandler = {
             errorMessage,
             backLink
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },

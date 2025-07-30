@@ -9,8 +9,9 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isURNUnique } from '../../api-requests/claim-service-api.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import HttpStatus from 'http-status-codes'
 
-const { urlPrefix, ruralPaymentsAgency } = config
+const { urlPrefix } = config
 const {
   endemicsVetRCVS,
   endemicsCheckAnswers,
@@ -115,7 +116,7 @@ const postHandler = {
             errorMessage: { text: errorMessage, href: '#laboratoryURN' },
             backLink: previousPageUrl(request)
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -130,7 +131,7 @@ const postHandler = {
 
       if (!response?.isURNUnique) {
         raiseInvalidDataEvent(request, laboratoryURNKey, 'urnReference entered is not unique')
-        return h.view(endemicsTestUrnException, { backLink: pageUrl, ruralPaymentsAgency, isBeefOrDairyEndemics }).code(400).takeover()
+        return h.view(endemicsTestUrnException, { backLink: pageUrl, isBeefOrDairyEndemics }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
       return h.redirect(nextPageUrl(request))

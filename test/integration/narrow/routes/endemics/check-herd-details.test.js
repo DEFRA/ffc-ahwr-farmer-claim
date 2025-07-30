@@ -5,7 +5,6 @@ import expectPhaseBanner from 'assert'
 import { config } from '../../../../../app/config/index.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
-import { setAuthConfig, setMultiHerds } from '../../../../mocks/config.js'
 import { getNextMultipleHerdsPage } from '../../../../../app/lib/get-next-multiple-herds-page.js'
 
 const { urlPrefix } = config
@@ -13,7 +12,7 @@ const { endemicsCheckHerdDetails: pageUnderTest } = links
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/api-requests/claim-service-api')
-jest.mock('.../../../../../app/lib/get-next-multiple-herds-page.js')
+jest.mock('../../../../../app/lib/get-next-multiple-herds-page.js')
 
 const assertLinkExistsFor = ($, spanText) => {
   const link = $('a.govuk-link').filter((_, el) => {
@@ -33,8 +32,6 @@ describe('check-herd-details tests', () => {
 
   beforeAll(async () => {
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
   })

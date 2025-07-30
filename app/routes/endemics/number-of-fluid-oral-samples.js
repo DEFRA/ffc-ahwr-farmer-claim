@@ -5,6 +5,7 @@ import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
+import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -56,7 +57,7 @@ const postHandler = {
             errorMessage: { text: err.details[0].message, href: '#numberOfOralFluidSamples' },
             backLink: `${urlPrefix}/${endemicsTestUrn}`
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -70,9 +71,9 @@ const postHandler = {
           endemicsNumberOfOralFluidSamplesException,
           {
             backLink: pageUrl,
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
             minimumNumberFluidOralSamples
-          }).code(400).takeover()
+          }).code(HttpStatus.BAD_REQUEST)
+          .takeover()
       }
 
       return h.redirect(`${urlPrefix}/${endemicsTestResults}`)

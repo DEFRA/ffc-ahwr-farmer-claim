@@ -2,7 +2,7 @@ import Joi from 'joi'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
-import { getEndemicsClaim, setEndemicsClaim, removeSessionDataForSameHerdChange } from '../../session/index.js'
+import { getEndemicsClaim, removeSessionDataForSameHerdChange, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
@@ -133,7 +133,6 @@ const postHandler = {
             .view(endemicsSameHerdException, {
               backLink: pageUrl,
               errorMessage,
-              ruralPaymentsAgency: config.ruralPaymentsAgency,
               backToPageText: 'If you entered the wrong date, you\'ll need to go back and enter the correct date.',
               backToPageMessage: `Enter the date the vet last visited your farm for this ${isReview ? 'review' : 'follow-up'}.`,
               backToPageLink: dateOfVisitPageUrl
@@ -154,7 +153,6 @@ const postHandler = {
           .view(endemicsSameHerdException, {
             backLink: pageUrl,
             errorMessage: 'You must have an approved review claim for the different herd or flock, before you can claim for a follow-up.',
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
             backToPageText: 'If you have not claimed for the review yet, you will need to submit a claim and have the claim approved first.',
             backToPageMessage: 'Claim for a review',
             backToPageLink: whichTypeOfReviewPageUrl

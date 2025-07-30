@@ -1,5 +1,4 @@
 import { authConfig } from '../config/auth.js'
-import { config } from '../config/index.js'
 import { requestAuthorizationCodeUrl } from '../auth/auth-code-grant/request-authorization-code-url.js'
 import { StatusCodes } from 'http-status-codes'
 
@@ -36,8 +35,7 @@ export const signInHandler = {
 
         return h
           .view('verify-login-failed', {
-            backLink: requestAuthorizationCodeUrl(request),
-            ruralPaymentsAgency: config.ruralPaymentsAgency
+            backLink: requestAuthorizationCodeUrl(request)
           })
           .code(StatusCodes.BAD_REQUEST)
           .takeover()

@@ -1,6 +1,5 @@
 import * as cheerio from 'cheerio'
 import { createServer } from '../../../../../app/server.js'
-import { setAuthConfig } from '../../../../mocks/config.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
@@ -20,7 +19,6 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
@@ -57,7 +55,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('https://tenant.b2clogin.com/tenant.onmicrosoft.com/oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
   })
 
@@ -167,7 +165,6 @@ describe('Vet rcvs test when Optional PI Hunt is ON', () => {
   beforeAll(async () => {
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs' } })
     setEndemicsClaim.mockImplementation(() => { })
-    setAuthConfig()
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return true })

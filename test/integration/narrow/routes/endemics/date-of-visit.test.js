@@ -8,7 +8,6 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import { setMultiHerds } from '../../../../mocks/config.js'
 import { getHerds } from '../../../../../app/api-requests/application-service-api.js'
 
 const { labels } = visitDate
@@ -16,29 +15,7 @@ const { labels } = visitDate
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('applicationinsights', () => ({ defaultClient: { trackException: jest.fn(), trackEvent: jest.fn() }, dispose: jest.fn() }))
-jest.mock('../../../../../app/config/auth', () => {
-  const originalModule = jest.requireActual('../../../../../app/config/auth')
-  return {
-    ...originalModule,
-    authConfig: {
-      defraId: {
-        hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-        oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-        policy: 'b2c_1a_signupsigninsfi',
-        redirectUri: 'http://localhost:3000/apply/signin-oidc',
-        clientId: 'dummy_client_id',
-        serviceId: 'dummy_service_id',
-        scope: 'openid dummy_client_id offline_access'
-      },
-      ruralPaymentsAgency: {
-        hostname: 'dummy-host-name',
-        getPersonSummaryUrl: 'dummy-get-person-summary-url',
-        getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-        getOrganisationUrl: 'dummy-get-organisation-url'
-      }
-    }
-  }
-})
+
 jest.mock('../../../../../app/api-requests/application-service-api.js')
 
 function expectPageContentOk ($, previousPageUrl) {
@@ -85,7 +62,6 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
     raiseInvalidDataEvent.mockResolvedValue({})
@@ -211,7 +187,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
   let server
 
   beforeAll(async () => {
-    setMultiHerds(true)
     server = await createServer()
     await server.initialize()
   })
@@ -1827,10 +1802,6 @@ describe('POST /claim/endemics/date-of-visit handler', () => {
 })
 
 describe('previousPageUrl', () => {
-  beforeAll(async () => {
-    setMultiHerds(true)
-  })
-
   test('should return url of endemicsVetVisitsReviewTestResults if endemics, old world claim is species of current user journey, and no relevant new world claims', () => {
     const latestVetVisitApplication = {
       data: {

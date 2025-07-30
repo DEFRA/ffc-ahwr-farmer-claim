@@ -53,23 +53,9 @@ container:
   applicationApiUri:
   defraIdTenant:
   defraIdDashboardRedirectUri:
-  defraIdRedirectUri:
   defraIdClientId:
-  defraIdClientSecret:
   defraIdServiceId:
   defraIdPolicy:
-  defraIdJwtIssuerId:
-  rpaHostname:
-  rpaGetPersonSummaryUrl:
-  rpaGetOrganisationPermissionsUrl:
-  rpaGetOrganisationUrl:
-  apimOcpSubscriptionKey:
-  apimHostname:
-  apimOAuthPath:
-  apimClientId:
-  apimClientSecret:
-  apimScope:
-  multiHerdsEnabled: 'false'
   multiHerdsReleaseDate: '2025-05-01'
   devLoginEnabled: 'false'
   pigUpdatesEnabled: 'false'

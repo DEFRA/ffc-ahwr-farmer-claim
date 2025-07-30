@@ -277,7 +277,7 @@ const checkForTimingException = (request, h, { dateOfVisit, typeOfLivestock, pre
     raiseInvalidDataEvent(request, dateOfVisitKey, exception)
 
     return h
-      .view(exceptionView, { backLink: pageUrl, ruralPaymentsAgency: config.ruralPaymentsAgency })
+      .view(exceptionView, { backLink: pageUrl })
       .code(HttpStatus.BAD_REQUEST)
       .takeover()
   }
@@ -322,7 +322,6 @@ const nonMhRouting = (request, h, { endemicsClaim, previousClaims, oldWorldAppli
       .view(`${endemicsDateOfVisitException}`, {
         backLink: pageUrl,
         errorMessage,
-        ruralPaymentsAgency: config.ruralPaymentsAgency,
         backToPageMessage: `Enter the date the vet last visited your farm for this ${reviewOrFollowUpText}.`
       })
       .code(HttpStatus.BAD_REQUEST)

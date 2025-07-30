@@ -1,20 +1,19 @@
 import {
   canChangeSpecies,
+  getReviewHerdId,
   getTypeOfLivestockFromLatestClaim,
+  isMultipleHerdsUserJourney,
+  isVisitDateAfterPIHuntAndDairyGoLive,
   refreshApplications,
   refreshClaims,
-  isVisitDateAfterPIHuntAndDairyGoLive,
-  skipSameHerdPage,
   skipOtherHerdsOnSbiPage,
-  isMultipleHerdsUserJourney,
-  getReviewHerdId
+  skipSameHerdPage
 } from '../../../../app/lib/context-helper.js'
-import { config } from '../../../../app/config/index.js'
 import { getClaimsByApplicationReference } from '../../../../app/api-requests/claim-service-api.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../app/session/index.js'
 import { getAllApplicationsBySbi } from '../../../../app/api-requests/application-service-api.js'
 import { isWithin10Months } from '../../../../app/lib/date-utils.js'
-import { PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE, ONLY_HERD } from '../../../../app/constants/constants.js'
+import { ONLY_HERD, PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../../../app/constants/constants.js'
 
 jest.mock('../../../../app/session/index')
 jest.mock('../../../../app/api-requests/claim-service-api')
@@ -204,7 +203,7 @@ describe('context-helper', () => {
   test('isVisitDateAfterPIHuntAndDairyGoLive throws error when visit date provided is not parsable as a date', () => {
     expect(() => { isVisitDateAfterPIHuntAndDairyGoLive('abc123') }).toThrow('dateOfVisit must be parsable as a date, value provided: abc123')
   })
-  test('isVisitDateAfterPIHuntAndDairyGoLive returns false when feature enabled but visit date pre go live', () => {
+  test('isVisitDateAfterPIHuntAndDairyGoLive returns false when visit date pre go live', () => {
     const dayBeforeGoLive = new Date(PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE)
     dayBeforeGoLive.setDate(dayBeforeGoLive.getDate() - 1)
     expect(isVisitDateAfterPIHuntAndDairyGoLive(dayBeforeGoLive.toISOString())).toBe(false)
@@ -284,29 +283,16 @@ describe('context-helper', () => {
     expect(skipSameHerdPage(previousClaims, 'sheep')).toBe(false)
   })
 
-  test('isMultipleHerdsUserJourney, returns false when feature disabled', () => {
-    config.multiHerds.enabled = false
-
-    expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [])).toBe(false)
-  })
   test('isMultipleHerdsUserJourney, returns false when visit date before golive', () => {
-    config.multiHerds.enabled = true
-
     expect(isMultipleHerdsUserJourney('2025-04-30T00:00:00.000Z', [])).toBe(false)
   })
   test('isMultipleHerdsUserJourney, returns false when reject T&Cs flag', () => {
-    config.multiHerds.enabled = true
-
     expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [{ appliesToMh: false }, { appliesToMh: true }])).toBe(false)
   })
-  test('isMultipleHerdsUserJourney, returns true when feature enabled, visit date on/after golive and no flags', () => {
-    config.multiHerds.enabled = true
-
+  test('isMultipleHerdsUserJourney, returns true when visit date on/after golive and no flags', () => {
     expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [])).toBe(true)
   })
-  test('isMultipleHerdsUserJourney, returns true when feature enabled, visit date on/after golive and no reject T&Cs flag', () => {
-    config.multiHerds.enabled = true
-
+  test('isMultipleHerdsUserJourney, returns true when visit date on/after golive and no reject T&Cs flag', () => {
     expect(isMultipleHerdsUserJourney('2025-05-01T00:00:00.000Z', [{ appliesToMh: false }])).toBe(true)
   })
 

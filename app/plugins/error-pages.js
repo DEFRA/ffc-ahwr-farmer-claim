@@ -1,3 +1,5 @@
+import HttpStatus from 'http-status-codes'
+
 export const errorPagesPlugin = {
   plugin: {
     name: 'error-pages',
@@ -8,7 +10,7 @@ export const errorPagesPlugin = {
         if (response.isBoom) {
           const { payload } = response.output
 
-          if (payload.statusCode >= 400 && payload.statusCode < 500) {
+          if (payload.statusCode >= HttpStatus.BAD_REQUEST && payload.statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
             return h.view('error-pages/4xx', { payload }).code(payload.statusCode)
           }
 

@@ -1,8 +1,9 @@
+import HttpStatus from 'http-status-codes'
 
 export const notOtherDiseaseTypeNoResult = (testResult, pageContent, h, errorList, backLink, viewPage) => {
   if (testResult) return
 
-  return h.view(viewPage, { ...pageContent, backLink, errorList }).code(400).takeover()
+  return h.view(viewPage, { ...pageContent, backLink, errorList }).code(HttpStatus.BAD_REQUEST).takeover()
 }
 
 export const getErrorResultString = (payload, validatorFn) => {

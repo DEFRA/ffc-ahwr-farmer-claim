@@ -8,6 +8,7 @@ import { getReviewType } from '../../lib/get-review-type.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import HttpStatus from 'http-status-codes'
 
 const urlPrefix = config.urlPrefix
 const {
@@ -94,7 +95,7 @@ const postHandler = {
               href: `#${numberAnimalsTestedKey}`
             }
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
     },
@@ -129,7 +130,7 @@ const postHandler = {
               href: `#${numberAnimalsTestedKey}`
             }
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
       if (isPigs && isEndemicsFollowUp) {
@@ -140,11 +141,10 @@ const postHandler = {
         )
         return h
           .view(endemicsNumberOfSpeciesPigsException, {
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
             continueClaimLink: nextPageURL,
             backLink: pageUrl
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
       if (isSheep) {
@@ -155,11 +155,10 @@ const postHandler = {
         )
         return h
           .view(endemicsNumberOfSpeciesSheepException, {
-            ruralPaymentsAgency: config.ruralPaymentsAgency,
             continueClaimLink: nextPageURL,
             backLink: pageUrl
           })
-          .code(400)
+          .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
@@ -171,10 +170,9 @@ const postHandler = {
       return h
         .view(endemicsNumberOfSpeciesException, {
           backLink: pageUrl,
-          piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)),
-          ruralPaymentsAgency: config.ruralPaymentsAgency
+          piHuntEnabled: isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey))
         })
-        .code(400)
+        .code(HttpStatus.BAD_REQUEST)
         .takeover()
     }
   }
