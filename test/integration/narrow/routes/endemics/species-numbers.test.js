@@ -236,7 +236,7 @@ describe('Species numbers page', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}?`)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}.`)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)} on the date of the ${isReview ? 'review' : 'follow-up'}`)
       expect($('.govuk-back-link').attr('href')).toEqual('/claim/endemics/date-of-testing')
     })
 
@@ -257,7 +257,7 @@ describe('Species numbers page', () => {
       expect(res.statusCode).toBe(400)
       const $ = cheerio.load(res.payload)
       expect($('h1').text().trim()).toMatch(`Did you have ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)}in this herd on the date of the ${isReview ? 'review' : 'follow-up'}?`)
-      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)}in this herd on the date of the ${isReview ? 'review' : 'follow-up'}.`)
+      expect($('#main-content > div > div > div > div > div > ul > li > a').text()).toMatch(`Select yes if you had ${getSpeciesEligibleNumberForDisplay({ typeOfLivestock: 'beef' }, true)}in this herd on the date of the ${isReview ? 'review' : 'follow-up'}`)
       expect($('.govuk-back-link').attr('href')).toEqual('/claim/endemics/same-herd')
     })
 

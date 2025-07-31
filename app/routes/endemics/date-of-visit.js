@@ -79,9 +79,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     month: false,
     year: false
   }
-
   const inputKeysInError = error?.details?.map(({ context }) => context.key) || []
-
   Object.keys(inputsInError).forEach(input => {
     if (inputKeysInError.includes(`visit-date-${input}`)) {
       inputsInError[input] = true
@@ -203,14 +201,15 @@ const postHandler = {
           inputsInError
         }
 
+        const readableApplicationCreatedDate = new Date(newWorldApplication.createdAt).toLocaleDateString('en-GB').split('/')
+          .reverse()
+          .join('-')
+
         appInsights.defaultClient.trackEvent({
           name: 'claim-invalid-date-of-visit',
           properties: {
             tempClaimReference,
-            dateOfAgreement: newWorldApplication.createdAt.toLocaleDateString('en-GB')
-              .split('/')
-              .reverse()
-              .join('-'),
+            dateOfAgreement: readableApplicationCreatedDate,
             dateEntered: `${data.dateOfVisit.year}-${data.dateOfVisit.month}-${data.dateOfVisit.day}`,
             journeyType: reviewOrFollowUpText,
             error: errorSummary[0].text

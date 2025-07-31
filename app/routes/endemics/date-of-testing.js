@@ -247,7 +247,7 @@ const postHandler = {
                   'dateOfTesting.future':
                     'The date samples were taken must be in the past',
                   'dateOfTesting.beforeAgreementDate':
-                    'The date samples were taken cannot be before the date your agreement began'
+                    'The date samples were taken must be the same as or after the date of your agreement'
                 }
               )
             },
