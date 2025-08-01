@@ -11,70 +11,70 @@ const ONE_YEAR_IN_MS = MILLIS_IN_A_SECOND * SECONDS_IN_AN_HOUR * HOURS_IN_A_DAY 
 const DEFAULT_APP_PORT = 3000
 const DEFAULT_REDIS_PORT = 6379
 
-export const getConfig = () => {
-  const schema = Joi.object({
-    appInsights: Joi.object(),
-    namespace: Joi.string().optional(),
-    cache: {
-      expiresIn: Joi.number().required(),
-      options: {
-        host: Joi.string().required(),
-        partition: Joi.string().required(),
-        password: Joi.string().allow(''),
-        port: Joi.number().required(),
-        tls: Joi.object()
-      }
-    },
-    cookie: {
-      cookieNameCookiePolicy: Joi.string().required(),
-      cookieNameAuth: Joi.string().required(),
-      cookieNameSession: Joi.string().required(),
-      isSameSite: Joi.string().required(),
-      isSecure: Joi.boolean().default(true),
-      password: Joi.string().min(32).required(),
-      ttl: Joi.number().required()
-    },
-    cookiePolicy: {
-      clearInvalid: Joi.bool().required(),
-      encoding: Joi.string().valid('base64json').required(),
-      isSameSite: Joi.string().default('Lax'),
-      isSecure: Joi.bool().required(),
-      password: Joi.string().min(32).required(),
-      path: Joi.string().required(),
-      ttl: Joi.number().required()
-    },
-    env: Joi.string().valid('development', 'test', 'production').default(
-      'development'
-    ),
-    dashboardServiceUri: Joi.string().uri(),
-    googleTagManagerKey: Joi.string().allow(null, ''),
-    isDev: Joi.boolean().required(),
-    port: Joi.number().required(),
-    serviceName: Joi.string().required(),
-    serviceUri: Joi.string().uri(),
-    applyServiceUri: Joi.string().uri(),
-    urlPrefix: Joi.string(),
-    useRedis: Joi.boolean().required(),
-    applicationApiUri: Joi.string().uri(),
-    customerSurvey: {
-      uri: Joi.string().uri().optional()
-    },
-    wreckHttp: {
-      timeoutMilliseconds: Joi.number().required()
-    },
-    claimExpiryTimeMonths: Joi.number(),
-    endemicsClaimExpiryTimeMonths: Joi.number(),
-    multiHerds: {
-      releaseDate: Joi.string().required()
-    },
-    devLogin: {
-      enabled: Joi.bool().required()
-    },
-    pigUpdates: {
-      enabled: Joi.bool().required()
+const schema = Joi.object({
+  appInsights: Joi.object(),
+  namespace: Joi.string().optional(),
+  cache: {
+    expiresIn: Joi.number().required(),
+    options: {
+      host: Joi.string().required(),
+      partition: Joi.string().required(),
+      password: Joi.string().allow(''),
+      port: Joi.number().required(),
+      tls: Joi.object()
     }
-  })
+  },
+  cookie: {
+    cookieNameCookiePolicy: Joi.string().required(),
+    cookieNameAuth: Joi.string().required(),
+    cookieNameSession: Joi.string().required(),
+    isSameSite: Joi.string().required(),
+    isSecure: Joi.boolean().default(true),
+    password: Joi.string().min(32).required(),
+    ttl: Joi.number().required()
+  },
+  cookiePolicy: {
+    clearInvalid: Joi.bool().required(),
+    encoding: Joi.string().valid('base64json').required(),
+    isSameSite: Joi.string().default('Lax'),
+    isSecure: Joi.bool().required(),
+    password: Joi.string().min(32).required(),
+    path: Joi.string().required(),
+    ttl: Joi.number().required()
+  },
+  env: Joi.string().valid('development', 'test', 'production').default(
+    'development'
+  ),
+  dashboardServiceUri: Joi.string().uri(),
+  googleTagManagerKey: Joi.string().allow(null, ''),
+  isDev: Joi.boolean().required(),
+  port: Joi.number().required(),
+  serviceName: Joi.string().required(),
+  serviceUri: Joi.string().uri(),
+  applyServiceUri: Joi.string().uri(),
+  urlPrefix: Joi.string(),
+  useRedis: Joi.boolean().required(),
+  applicationApiUri: Joi.string().uri(),
+  customerSurvey: {
+    uri: Joi.string().uri().optional()
+  },
+  wreckHttp: {
+    timeoutMilliseconds: Joi.number().required()
+  },
+  claimExpiryTimeMonths: Joi.number(),
+  endemicsClaimExpiryTimeMonths: Joi.number(),
+  multiHerds: {
+    releaseDate: Joi.string().required()
+  },
+  devLogin: {
+    enabled: Joi.bool().required()
+  },
+  pigUpdates: {
+    enabled: Joi.bool().required()
+  }
+})
 
+export const getConfig = () => {
   const mainConfig = {
     appInsights,
     namespace: process.env.NAMESPACE,

@@ -51,81 +51,33 @@ const getNoChangeRows = ({ isReview, isPigs, isSheep, typeOfLivestock, dateOfVis
   }
 ]
 const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
-  return {
-    key: { text: 'Biosecurity assessment' }, // Pigs - Beef - Dairy
-    value: {
-      html:
-        isPigs && sessionData?.biosecurity
-          ? upperFirstLetter(
-            `${sessionData?.biosecurity?.biosecurity}, Assessment percentage: ${sessionData?.biosecurity?.assessmentPercentage}%`
-            )
-          : upperFirstLetter(sessionData?.biosecurity)
-    },
-    actions: {
-      items: [
-        {
-          href: prefixUrl(routes.endemicsBiosecurity),
-          text: 'Change',
-          visuallyHiddenText: 'biosecurity assessment'
-        }
-      ]
-    }
-  }
+  return createdHerdRowObject('Biosecurity assessment',
+    isPigs && sessionData.biosecurity
+      ? upperFirstLetter(
+        `${sessionData.biosecurity?.biosecurity}, Assessment percentage: ${sessionData.biosecurity?.assessmentPercentage}%`
+        )
+      : upperFirstLetter(sessionData.biosecurity),
+    routes.endemicsBiosecurity,
+    'biosecurity assessment')
 }
 const getDateOfVisitRow = (isReview, dateOfVisit) => {
-  return {
-    key: { text: isReview ? 'Date of review' : 'Date of follow-up' },
-    value: { html: formatDate(dateOfVisit) },
-    actions: {
-      items: [
-        {
-          href: prefixUrl(routes.endemicsDateOfVisit),
-          text: 'Change',
-          visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}`
-        }
-      ]
-    }
-  }
+  return createdHerdRowObject(isReview ? 'Date of review' : 'Date of follow-up', formatDate(dateOfVisit), routes.endemicsDateOfVisit, `date of ${isReview ? 'review' : 'follow-up'}`)
 }
 const getDateOfSamplingRow = (dateOfTesting) => {
-  return {
-    key: { text: 'Date of sampling' },
-    value: { html: dateOfTesting && formatDate(dateOfTesting) },
-    actions: {
-      items: [
-        {
-          href: prefixUrl(routes.endemicsDateOfTesting),
-          text: 'Change',
-          visuallyHiddenText: 'date of sampling'
-        }
-      ]
-    }
-  }
+  return createdHerdRowObject('Date of sampling', formatDate(dateOfTesting), routes.endemicsDateOfTesting, 'date of sampling')
 }
 const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
-  if (isEndemicsFollowUp && sessionData?.sheepTestResults?.length) {
-    const testList = sessionData?.sheepTestResults
+  if (isEndemicsFollowUp && sessionData.sheepTestResults?.length) {
+    const testList = sessionData.sheepTestResults
       .map(
         (sheepTest) =>
-          `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(
+          `${sheepTestTypes[sessionData.sheepEndemicsPackage].find(
             (test) => test.value === sheepTest.diseaseType
           ).text
           }</br>`
       )
       .join(' ')
-    return {
-      key: { text: 'Diseases or conditions tested for' }, // Sheep
-      value: { html: testList },
-      actions: {
-        items: [
-          {
-            href: prefixUrl(routes.endemicsSheepTests),
-            text: 'Change',
-            visuallyHiddenText: 'diseases or conditions tested for'
-          }
-        ]
-      }
-    }
+    return createdHerdRowObject('Diseases or conditions tested for', testList, routes.endemicsSheepTests, 'diseases or conditions tested for')
   }
   return {}
 }
@@ -133,6 +85,24 @@ const getHerdNameRow = (herdName, typeOfLivestock) => {
   return {
     key: { text: `${typeOfLivestock === 'sheep' ? 'Flock' : 'Herd'} name` },
     value: { html: herdName }
+  }
+}
+
+const createdHerdRowObject = (keyText, htmlValue, href, visuallyHiddenText) => {
+  return {
+    key: { text: keyText },
+    value: {
+      html: htmlValue
+    },
+    actions: {
+      items: [
+        {
+          href: prefixUrl(href),
+          text: 'Change',
+          visuallyHiddenText
+        }
+      ]
+    }
   }
 }
 
@@ -167,201 +137,42 @@ const getHandler = {
 
       const dateOfSamplingRow = getDateOfSamplingRow(dateOfTesting)
 
-      const speciesNumbersRow = {
-        key: { text: getSpeciesEligibleNumberForDisplay(sessionData, true) },
-        value: { html: upperFirstLetter(speciesNumbers) },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsSpeciesNumbers),
-              text: 'Change',
-              visuallyHiddenText: 'number of species'
-            }
-          ]
-        }
-      }
-      const numberOfAnimalsTestedRow = {
-        key: { text: 'Number of samples taken' }, // Pigs, Beef, Sheep
-        value: { html: numberAnimalsTested },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsNumberOfSpeciesTested),
-              text: 'Change',
-              visuallyHiddenText: 'number of samples taken'
-            }
-          ]
-        }
-      }
-      const vetDetailsRows = [
-        {
-          key: { text: "Vet's name" },
-          value: { html: upperFirstLetter(vetsName) },
-          actions: {
-            items: [
-              {
-                href: prefixUrl(routes.endemicsVetName),
-                text: 'Change',
-                visuallyHiddenText: "vet's name"
-              }
-            ]
-          }
-        },
-        {
-          key: { text: "Vet's RCVS number" },
-          value: { html: vetRCVSNumber },
-          actions: {
-            items: [
-              {
-                href: prefixUrl(routes.endemicsVetRCVS),
-                text: 'Change',
-                visuallyHiddenText: "vet's rcvs number"
-              }
-            ]
-          }
-        }
-      ]
-      const piHuntRow = {
-        key: { text: 'PI hunt' },
-        value: { html: upperFirstLetter(sessionData?.piHunt) },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsPIHunt),
-              text: 'Change',
-              visuallyHiddenText: 'the pi hunt'
-            }
-          ]
-        }
-      }
-      const piHuntRecommendedRow = {
-        key: { text: 'Vet recommended PI hunt' },
-        value: { html: upperFirstLetter(sessionData?.piHuntRecommended) },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsPIHuntRecommended),
-              text: 'Change',
-              visuallyHiddenText: 'the pi hunt recommended'
-            }
-          ]
-        }
-      }
-      const piHuntAllAnimalsRow = {
-        key: { text: 'PI hunt done on all cattle in herd' },
-        value: { html: upperFirstLetter(sessionData?.piHuntAllAnimals) },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsPIHuntAllAnimals),
-              text: 'Change',
-              visuallyHiddenText: 'the pi hunt'
-            }
-          ]
-        }
-      }
-      const laboratoryUrnRow = {
-        key: { text: isBeef || isDairy ? 'URN or test certificate' : 'URN' },
-        value: { html: laboratoryURN },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsTestUrn),
-              text: 'Change',
-              visuallyHiddenText: 'URN'
-            }
-          ]
-        }
-      }
-      const oralFluidSamplesRow = {
-        key: { text: 'Number of oral fluid samples taken' }, // Pigs
-        value: { html: sessionData?.numberOfOralFluidSamples },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsNumberOfOralFluidSamples),
-              text: 'Change',
-              visuallyHiddenText: 'number of oral fluid samples taken'
-            }
-          ]
-        }
-      }
-      const testResultsRow = {
-        key: { text: isReview ? 'Test results' : 'Follow-up test result' }, // Pigs, Dairy, Beef
-        value: { html: testResults && upperFirstLetter(testResults) },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsTestResults),
-              text: 'Change',
-              visuallyHiddenText: 'test results'
-            }
-          ]
-        }
-      }
-      const vetVisitsReviewTestResultsRow = {
-        key: { text: 'Review test result' }, // Pigs, Dairy, Beef, when coming from old world agreement
-        value: {
-          html: upperFirstLetter(sessionData?.vetVisitsReviewTestResults)
-        },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsVetVisitsReviewTestResults),
-              text: 'Change',
-              visuallyHiddenText: 'review test results'
-            }
-          ]
-        }
-      }
+      const speciesNumbersRow = createdHerdRowObject(getSpeciesEligibleNumberForDisplay(sessionData, true),
+        upperFirstLetter(speciesNumbers), routes.endemicsSpeciesNumbers, 'number of species')
 
-      const samplesTestedRow = {
-        key: { text: 'Number of samples tested' }, // Pigs
-        value: { html: sessionData?.numberOfSamplesTested },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsNumberOfSamplesTested),
-              text: 'Change',
-              visuallyHiddenText: 'number of samples tested'
-            }
-          ]
-        }
-      }
-      const herdVaccinationStatusRow = {
-        key: { text: 'Herd PRRS vaccination status' }, // Pigs
-        value: {
-          html: getVaccinationStatusForDisplay(
-            sessionData?.herdVaccinationStatus
-          )
-        },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsVaccination),
-              text: 'Change',
-              visuallyHiddenText: 'herd PRRS vaccination status'
-            }
-          ]
-        }
-      }
+      const numberOfAnimalsTestedRow = createdHerdRowObject('Number of samples taken',
+        numberAnimalsTested, routes.endemicsNumberOfSpeciesTested, 'number of samples taken')
+
+      const vetDetailsRows = [
+        createdHerdRowObject("Vet's name", upperFirstLetter(vetsName), routes.endemicsVetName, "vet's name"),
+        createdHerdRowObject("Vet's RCVS number", vetRCVSNumber, routes.endemicsVetRCVS, "vet's rcvs number")
+      ]
+      const piHuntRow = createdHerdRowObject('PI hunt', upperFirstLetter(sessionData.piHunt), routes.endemicsPIHunt, 'the pi hunt')
+
+      const piHuntRecommendedRow = createdHerdRowObject('Vet recommended PI hunt', upperFirstLetter(sessionData.piHuntRecommended), routes.endemicsPIHuntRecommended, 'the pi hunt recommended')
+
+      const piHuntAllAnimalsRow = createdHerdRowObject('PI hunt done on all cattle in herd', upperFirstLetter(sessionData.piHuntAllAnimals), routes.endemicsPIHuntAllAnimals, 'the pi hunt')
+
+      const laboratoryUrnRow = createdHerdRowObject(isBeef || isDairy ? 'URN or test certificate' : 'URN', laboratoryURN, routes.endemicsTestUrn, 'URN')
+
+      const oralFluidSamplesRow = createdHerdRowObject('Number of oral fluid samples taken', sessionData.numberOfOralFluidSamples, routes.endemicsNumberOfOralFluidSamples, 'number of oral fluid samples taken')
+
+      const testResultsRow = createdHerdRowObject(isReview ? 'Test results' : 'Follow-up test result', upperFirstLetter(testResults), routes.endemicsTestResults, 'test results')
+
+      const vetVisitsReviewTestResultsRow = createdHerdRowObject('Review test result', upperFirstLetter(sessionData.vetVisitsReviewTestResults), routes.endemicsVetVisitsReviewTestResults, 'review test results')
+
+      const samplesTestedRow = createdHerdRowObject('Number of samples tested', sessionData.numberOfSamplesTested, routes.endemicsNumberOfSamplesTested, 'number of samples tested')
+
+      const herdVaccinationStatusRow = createdHerdRowObject('Herd PRRS vaccination status', getVaccinationStatusForDisplay(
+        sessionData.herdVaccinationStatus
+      ), routes.endemicsVaccination, 'herd PRRS vaccination status')
+
       const biosecurityAssessmentRow = getBiosecurityAssessmentRow(
         isPigs,
         sessionData
       )
-      const sheepPackageRow = {
-        key: { text: 'Sheep health package' }, // Sheep
-        value: { html: sheepPackages[sessionData?.sheepEndemicsPackage] },
-        actions: {
-          items: [
-            {
-              href: prefixUrl(routes.endemicsSheepEndemicsPackage),
-              text: 'Change',
-              visuallyHiddenText: 'sheep health package'
-            }
-          ]
-        }
-      }
+      const sheepPackageRow = createdHerdRowObject('Sheep health package', sheepPackages[sessionData.sheepEndemicsPackage], routes.endemicsSheepEndemicsPackage, 'sheep health package')
+
       const sheepDiseasesTestedRow = getSheepDiseasesTestedRow(
         isEndemicsFollowUp,
         sessionData
@@ -422,8 +233,8 @@ const getHandler = {
         testResultsRow,
         sheepPackageRow,
         sheepDiseasesTestedRow,
-        ...(isEndemicsFollowUp && sessionData?.sheepTestResults?.length
-          ? (sessionData?.sheepTestResults || []).map((sheepTest, index) => (
+        ...(isEndemicsFollowUp && sessionData.sheepTestResults?.length
+          ? (sessionData.sheepTestResults || []).map((sheepTest, index) => (
               {
                 key: {
                   text: index === 0 ? 'Disease or condition test result' : ''
@@ -431,7 +242,7 @@ const getHandler = {
                 value: {
                   html: typeof sheepTest.result === 'object'
                     ? sheepTest.result.map((testResult) => `${testResult.diseaseType} (${testResult.testResult})</br>`).join(' ')
-                    : `${sheepTestTypes[sessionData?.sheepEndemicsPackage].find(({ value }) => value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find((resultType) => resultType.value === sheepTest.result).text})`
+                    : `${sheepTestTypes[sessionData.sheepEndemicsPackage].find(({ value }) => value === sheepTest.diseaseType).text} (${sheepTestResultsType[sheepTest.diseaseType].find((resultType) => resultType.value === sheepTest.result).text})`
                 },
                 actions: {
                   items: [
