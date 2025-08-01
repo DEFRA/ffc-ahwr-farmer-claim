@@ -21,7 +21,7 @@ export function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
 }
 
 export function upperFirstLetter (str) {
-  if(!str) {
+  if (!str) {
     return undefined
   }
   return str.charAt(0).toUpperCase() + str.slice(1)
