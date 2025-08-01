@@ -2,9 +2,9 @@ import Joi from 'joi'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { claimConstants } from '../../constants/claim.js'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
 const {
   endemicsDiseaseStatus,
@@ -14,9 +14,8 @@ const {
 const { endemicsClaim } = sessionKeys
 const { diseaseStatusTypes } = claimConstants
 
-const urlPrefix = config.urlPrefix
-const pageUrl = `${urlPrefix}/${endemicsDiseaseStatus}`
-const backLink = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
+const pageUrl = prefixUrl(endemicsDiseaseStatus)
+const backLink = prefixUrl(endemicsNumberOfSamplesTested)
 const errorMessage = { text: 'Enter the disease status category' }
 
 const getHandler = {
@@ -59,7 +58,7 @@ const postHandler = {
       const { diseaseStatus } = request.payload
 
       setEndemicsClaim(request, endemicsClaim.diseaseStatus, diseaseStatus)
-      return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+      return h.redirect(prefixUrl(endemicsBiosecurity))
     }
   }
 }

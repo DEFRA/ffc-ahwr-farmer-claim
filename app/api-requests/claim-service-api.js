@@ -4,9 +4,9 @@ import { config } from '../config/index.js'
 import { claimConstants } from '../constants/claim.js'
 import { isWithin10Months } from '../lib/date-utils.js'
 import { getEndemicsClaim } from '../session/index.js'
-import { getReviewType } from '../lib/get-review-type.js'
+import HttpStatus from 'http-status-codes'
 
-const { claimType, livestockTypes, dateOfVetVisitExceptions } = claimConstants
+const { claimType, livestockTypes } = claimConstants
 
 export async function getClaimsByApplicationReference (applicationReference, logger) {
   const endpoint = `${config.applicationApiUri}/claim/get-by-application-reference/${applicationReference}`
@@ -15,7 +15,7 @@ export async function getClaimsByApplicationReference (applicationReference, log
     const { payload } = await wreck.get(endpoint, { json: true })
     return payload
   } catch (err) {
-    if (err.output.statusCode === 404) {
+    if (err.output.statusCode === HttpStatus.NOT_FOUND) {
       return []
     }
     logger.setBindings({ err, endpoint })
@@ -78,7 +78,7 @@ export const isDateOfTestingLessThanDateOfVisit = (dateOfVisit, dateOfTesting) =
   return new Date(dateOfTesting) < new Date(dateOfVisit)
 }
 
-const getPastReviewClaimsForSpeciesAndHerd = (previousClaims = [], dateOfVisit, typeOfLivestock, herdId) => previousClaims.filter(prevClaim =>
+const getPastReviewClaimsForSpeciesAndHerd = (dateOfVisit, typeOfLivestock, herdId, previousClaims = []) => previousClaims.filter(prevClaim =>
   new Date(prevClaim.data.dateOfVisit) <= new Date(dateOfVisit) &&
   prevClaim.type === claimType.review &&
   typeOfLivestock === prevClaim.data.typeOfLivestock &&
@@ -86,7 +86,7 @@ const getPastReviewClaimsForSpeciesAndHerd = (previousClaims = [], dateOfVisit, 
 )
 
 export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisitReview, typeOfLivestock, herdId) => {
-  const pastReviewClaims = getPastReviewClaimsForSpeciesAndHerd(previousClaims, dateOfVisit, typeOfLivestock, herdId)
+  const pastReviewClaims = getPastReviewClaimsForSpeciesAndHerd(dateOfVisit, typeOfLivestock, herdId, previousClaims)
   if (vetVisitReview?.data?.whichReview === typeOfLivestock) {
     pastReviewClaims.push({
       ...vetVisitReview,
@@ -103,30 +103,8 @@ export const getReviewWithinLast10Months = (dateOfVisit, previousClaims, vetVisi
 export const getReviewTestResultWithinLast10Months = (request) => {
   const { dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock } = getEndemicsClaim(request)
   const reviewWithinLast10Months = getReviewWithinLast10Months(dateOfVisit, previousClaims, latestVetVisitApplication, typeOfLivestock)
-  if (!reviewWithinLast10Months) return undefined
 
   return reviewWithinLast10Months?.data?.testResults
-}
-
-export const isAClaimTypeWithin10Months = (typeOfClaim, dateOfVisit, previousClaims, vetVisitReview) => {
-  const allClaimTypeClaims =
-    previousClaims?.filter((prevClaim) => prevClaim.type === typeOfClaim)?.map((prevReviewClaim) => ({ dateOfVisit: prevReviewClaim.data.dateOfVisit })) ?? []
-  if (vetVisitReview && typeOfClaim === claimType.review) {
-    allClaimTypeClaims.push({ dateOfVisit: vetVisitReview?.data?.visitDate })
-  }
-
-  const allClaimTypeClaimsWithin10Months = allClaimTypeClaims?.filter((claim) => isWithin10Months(new Date(dateOfVisit), new Date(claim.dateOfVisit)))
-  return allClaimTypeClaimsWithin10Months.length > 0
-}
-
-export const getDateOfVetVisitException = (claimType) => {
-  const { isReview } = getReviewType(claimType)
-  return isReview ? dateOfVetVisitExceptions.reviewWithin10 : dateOfVetVisitExceptions.endemicsWithin10
-}
-
-export const isValidClaimWithin10Months = (claimType, dateOfVisit, previousClaims, vetVisitReview) => {
-  const isValid = !isAClaimTypeWithin10Months(claimType, dateOfVisit, previousClaims, vetVisitReview)
-  return { isValid, ...(!isValid && { reason: getDateOfVetVisitException(claimType) }) }
 }
 
 export const isCattleEndemicsClaimForOldWorldReview = (request) => {

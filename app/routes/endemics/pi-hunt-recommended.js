@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
 import { sessionKeys } from '../../session/keys.js'
@@ -8,14 +7,14 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { getAmount } from '../../api-requests/claim-service-api.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { endemicsPIHuntRecommended, endemicsPIHunt, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommendedException } = links
 const { endemicsClaim: { piHuntRecommended: piHuntRecommendedKey } } = sessionKeys
 
-const pageUrl = `${urlPrefix}/${endemicsPIHuntRecommended}`
-const backLink = `${urlPrefix}/${endemicsPIHunt}`
-const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
+const pageUrl = prefixUrl(endemicsPIHuntRecommended)
+const backLink = prefixUrl(endemicsPIHunt)
+const continueToBiosecurityURL = prefixUrl(endemicsBiosecurity)
 
 const questionText = 'Was the PI hunt recommended by the vet?'
 const hintHtml = 'You can find this on the summary the vet gave you.'
@@ -72,7 +71,7 @@ const postHandler = {
           .takeover()
       }
 
-      return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
+      return h.redirect(prefixUrl(endemicsPIHuntAllAnimals))
     }
   }
 }

@@ -1,14 +1,12 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
+import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsTestResults,
   endemicsCheckAnswers,
@@ -19,32 +17,36 @@ const {
 } = links
 const { endemicsClaim: { testResults: testResultsKey } } = sessionKeys
 
-const pageUrl = `${urlPrefix}/${endemicsTestResults}`
+const pageUrl = prefixUrl(endemicsTestResults)
 const previousPageUrl = (request) => {
   const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
-  const { isBeef, isDairy, isSheep, isPigs } = getLivestockTypes(typeOfLivestock)
-  const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
+  const { isBeef, isDairy, isSheep, isPigs, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isEndemicsFollowUp) {
-    if (isSheep) return `${urlPrefix}/${endemicsDiseaseStatus}`
-    if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestUrn}`
+    if (isSheep) {
+      return prefixUrl(endemicsDiseaseStatus)
+    }
+    if (isBeef || isDairy) {
+      return prefixUrl(endemicsTestUrn)
+    }
   }
 
-  if (isReview) {
-    if (isPigs) return `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
-    if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestUrn}`
+  if (isPigs) {
+    return prefixUrl(endemicsNumberOfOralFluidSamples)
+  }
+  if (isBeef || isDairy) {
+    return prefixUrl(endemicsTestUrn)
   }
 }
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
-  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
-  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+  const { isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
-  if (isEndemicsFollowUp) {
-    if (isBeef || isDairy) return `${urlPrefix}/${endemicsBiosecurity}`
+  if (isBeefOrDairyEndemics) {
+    return prefixUrl(endemicsBiosecurity)
   }
 
-  return `${urlPrefix}/${endemicsCheckAnswers}`
+  return prefixUrl(endemicsCheckAnswers)
 }
 const pageTitle = (request) => {
   const { typeOfReview } = getEndemicsClaim(request)

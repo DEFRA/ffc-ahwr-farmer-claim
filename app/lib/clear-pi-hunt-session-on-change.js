@@ -9,25 +9,36 @@ const clearTestDetails = (sessionEndemicsClaim, request) => {
   sessionEndemicsClaim.testResults && setEndemicsClaim(request, testResults, undefined)
 }
 
+const clearPiHuntAllAnimals = (sessionEndemicsClaim, request) => {
+  sessionEndemicsClaim.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+}
+const clearPiHuntRecommended = (sessionEndemicsClaim, request) => {
+  sessionEndemicsClaim.piHuntRecommended && setEndemicsClaim(request, piHuntRecommended, undefined)
+}
+
 export function clearPiHuntSessionOnChange (request, piHuntStage) {
   const sessionEndemicsClaim = getEndemicsClaim(request)
   switch (piHuntStage) {
     case 'dateOfVisit':
       sessionEndemicsClaim.piHunt && setEndemicsClaim(request, piHunt, undefined)
-      sessionEndemicsClaim.piHuntRecommended && setEndemicsClaim(request, piHuntRecommended, undefined)
-      sessionEndemicsClaim.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearPiHuntRecommended(sessionEndemicsClaim, request)
+      clearPiHuntAllAnimals(sessionEndemicsClaim, request)
       clearTestDetails(sessionEndemicsClaim, request)
       break
     case 'piHunt':
-      sessionEndemicsClaim.piHuntRecommended && setEndemicsClaim(request, piHuntRecommended, undefined)
-      sessionEndemicsClaim.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearPiHuntRecommended(sessionEndemicsClaim, request)
+      clearPiHuntAllAnimals(sessionEndemicsClaim, request)
       clearTestDetails(sessionEndemicsClaim, request)
       break
     case 'piHuntRecommended':
-      sessionEndemicsClaim.piHuntAllAnimals && setEndemicsClaim(request, piHuntAllAnimals, undefined)
+      clearPiHuntAllAnimals(sessionEndemicsClaim, request)
       clearTestDetails(sessionEndemicsClaim, request)
       break
     case 'piHuntAllAnimals':
       clearTestDetails(sessionEndemicsClaim, request)
+      break
+    default:
+      // No action needed otherwise
+      break
   }
 }

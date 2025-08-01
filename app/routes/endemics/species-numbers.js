@@ -1,6 +1,5 @@
 import Joi from 'joi'
 import boom from '@hapi/boom'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getReviewType } from '../../lib/get-review-type.js'
@@ -13,8 +12,7 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 import HttpStatus from 'http-status-codes'
-
-const { urlPrefix } = config
+import { prefixUrl } from '../utils/page-utils.js'
 
 const {
   endemicsSpeciesNumbers,
@@ -37,13 +35,13 @@ const backLink = (request) => {
   }
 
   if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
-    return `${urlPrefix}/${endemicsDateOfVisit}`
+    return prefixUrl(endemicsDateOfVisit)
   }
-  if ((isDairy || isBeef) && isNegative) return `${urlPrefix}/${endemicsDateOfVisit}`
+  if ((isDairy || isBeef) && isNegative) return prefixUrl(endemicsDateOfVisit)
 
-  return `${urlPrefix}/${endemicsDateOfTesting}`
+  return prefixUrl(endemicsDateOfTesting)
 }
-const pageUrl = `${urlPrefix}/${endemicsSpeciesNumbers}`
+const pageUrl = prefixUrl(endemicsSpeciesNumbers)
 const hintHtml = 'You can find this on the summary the vet gave you.'
 
 const radioOptions = { isPageHeading: true, legendClasses: 'govuk-fieldset__legend--l', inline: true, hintText: hintHtml }
@@ -138,10 +136,10 @@ const postHandler = {
 
       if (answer === 'yes') {
         if (isDairy || (isBeef && isEndemicsFollowUp)) {
-          return h.redirect(`${urlPrefix}/${endemicsVetName}`)
+          return h.redirect(prefixUrl(endemicsVetName))
         }
 
-        return h.redirect(`${urlPrefix}/${endemicsNumberOfSpeciesTested}`)
+        return h.redirect(prefixUrl(endemicsNumberOfSpeciesTested))
       }
 
       raiseInvalidDataEvent(request, speciesNumbers, `Value ${answer} is not equal to required value yes`)

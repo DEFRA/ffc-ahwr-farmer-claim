@@ -2,14 +2,14 @@ import { clearEndemicsClaim, getEndemicsClaim } from '../../session/index.js'
 import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { getReviewType } from '../../lib/get-review-type.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
 const {
-  urlPrefix,
   customerSurvey
 } = config
 const { endemicsConfirmation, claimDashboard } = links
 
-const pageUrl = `${urlPrefix}/${endemicsConfirmation}`
+const pageUrl = prefixUrl(endemicsConfirmation)
 
 const getHandler = {
   method: 'GET',

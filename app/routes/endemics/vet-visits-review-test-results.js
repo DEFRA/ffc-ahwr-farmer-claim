@@ -1,13 +1,12 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsVetRCVS,
   endemicsVaccination,
@@ -17,20 +16,20 @@ const {
 } = links
 const { endemicsClaim: { vetVisitsReviewTestResults: vetVisitsReviewTestResultsKey, reviewTestResults: reviewTestResultsKey } } = sessionKeys
 
-const pageUrl = `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
+const pageUrl = prefixUrl(endemicsVetVisitsReviewTestResults)
 
 const previousPageUrl = (typeOfLivestock) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
-  if (isBeef || isDairy) return `${urlPrefix}/${endemicsWhichTypeOfReview}`
-  return `${urlPrefix}/${endemicsVetRCVS}`
+  if (isBeef || isDairy) return prefixUrl(endemicsWhichTypeOfReview)
+  return prefixUrl(endemicsVetRCVS)
 }
 
 const nextPageURL = (request) => {
   const { typeOfLivestock } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  if (isBeef || isDairy) return `${urlPrefix}/${endemicsDateOfVisit}`
-  return `${urlPrefix}/${endemicsVaccination}`
+  if (isBeef || isDairy) return prefixUrl(endemicsDateOfVisit)
+  return prefixUrl(endemicsVaccination)
 }
 
 const getHandler = {

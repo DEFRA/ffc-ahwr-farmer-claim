@@ -11,13 +11,20 @@ export function getSpeciesEligibleNumberForDisplay (claimData, isEndemicsClaims 
 }
 
 export function getVaccinationStatusForDisplay (vaccinatedNotVaccinated) {
-  if (vaccinatedNotVaccinated === claimConstants.vaccination.vaccinated) return 'Vaccinated'
-  if (vaccinatedNotVaccinated === claimConstants.vaccination.notVaccinated) return 'Not vaccinated'
+  if (vaccinatedNotVaccinated === claimConstants.vaccination.vaccinated) {
+    return 'Vaccinated'
+  }
+  if (vaccinatedNotVaccinated === claimConstants.vaccination.notVaccinated) {
+    return 'Not vaccinated'
+  }
   return undefined
 }
 
 export function upperFirstLetter (str) {
-  if (str && typeof str === 'string' && str !== '') return str?.charAt(0)?.toUpperCase() + str?.slice(1)
+  if(!str) {
+    return undefined
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
 export const formatDate = (date) => (new Date(date)).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })

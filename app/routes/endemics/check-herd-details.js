@@ -1,4 +1,3 @@
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
@@ -6,8 +5,8 @@ import { getEndemicsClaim } from '../../session/index.js'
 import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { skipOtherHerdsOnSbiPage, skipSameHerdPage } from '../../lib/context-helper.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsCheckHerdDetails,
   endemicsEnterHerdDetails,
@@ -16,11 +15,11 @@ const {
   endemicsHerdOthersOnSbi
 } = links
 
-const pageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
-const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
-const sameHerdPageUrl = `${urlPrefix}/${endemicsSameHerd}`
-const herdCphLink = `${urlPrefix}/${endemicsEnterCphNumber}`
+const pageUrl = prefixUrl(endemicsCheckHerdDetails)
+const enterHerdDetailsPageUrl = prefixUrl(endemicsEnterHerdDetails)
+const herdOthersOnSbiPageUrl = prefixUrl(endemicsHerdOthersOnSbi)
+const sameHerdPageUrl = prefixUrl(endemicsSameHerd)
+const herdCphLink = prefixUrl(endemicsEnterCphNumber)
 
 const getHerdReasonsText = (herdReasons) => {
   return herdReasons?.map(key => MULTIPLE_HERD_REASONS[key]).join('<br>')

@@ -1,5 +1,4 @@
 import appInsights from 'applicationinsights'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim, setTempClaimReference } from '../../session/index.js'
 import routes from '../../config/routes.js'
 import {
@@ -14,20 +13,19 @@ import { sheepPackages, sheepTestResultsType, sheepTestTypes } from '../../const
 import { submitNewClaim } from '../../api-requests/claim-service-api.js'
 import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { generatePigStatusAnswerRows } from '../utils/generate-answer-rows.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const urlPrefix = config.urlPrefix
-
-const pageUrl = `${urlPrefix}/${routes.endemicsCheckAnswers}`
+const pageUrl = prefixUrl(routes.endemicsCheckAnswers)
 
 const getBackLink = (isReview, isSheep) => {
   if (isReview) {
     return isSheep
-      ? `${urlPrefix}/${routes.endemicsTestUrn}`
-      : `${urlPrefix}/${routes.endemicsTestResults}`
+      ? prefixUrl(routes.endemicsTestUrn)
+      : prefixUrl(routes.endemicsTestResults)
   }
   return isSheep
-    ? `${urlPrefix}/${routes.endemicsSheepTestResults}`
-    : `${urlPrefix}/${routes.endemicsBiosecurity}`
+    ? prefixUrl(routes.endemicsSheepTestResults)
+    : prefixUrl(routes.endemicsBiosecurity)
 }
 const getNoChangeRows = ({ isReview, isPigs, isSheep, typeOfLivestock, dateOfVisit, organisationName, herdName, agreementFlags }) => [
   {
@@ -66,7 +64,7 @@ const getBiosecurityAssessmentRow = (isPigs, sessionData) => {
     actions: {
       items: [
         {
-          href: `${urlPrefix}/${routes.endemicsBiosecurity}`,
+          href: prefixUrl(routes.endemicsBiosecurity),
           text: 'Change',
           visuallyHiddenText: 'biosecurity assessment'
         }
@@ -81,7 +79,7 @@ const getDateOfVisitRow = (isReview, dateOfVisit) => {
     actions: {
       items: [
         {
-          href: `${urlPrefix}/${routes.endemicsDateOfVisit}`,
+          href: prefixUrl(routes.endemicsDateOfVisit),
           text: 'Change',
           visuallyHiddenText: `date of ${isReview ? 'review' : 'follow-up'}`
         }
@@ -96,7 +94,7 @@ const getDateOfSamplingRow = (dateOfTesting) => {
     actions: {
       items: [
         {
-          href: `${urlPrefix}/${routes.endemicsDateOfTesting}`,
+          href: prefixUrl(routes.endemicsDateOfTesting),
           text: 'Change',
           visuallyHiddenText: 'date of sampling'
         }
@@ -121,7 +119,7 @@ const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
       actions: {
         items: [
           {
-            href: `${urlPrefix}/${routes.endemicsSheepTests}`,
+            href: prefixUrl(routes.endemicsSheepTests),
             text: 'Change',
             visuallyHiddenText: 'diseases or conditions tested for'
           }
@@ -175,7 +173,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsSpeciesNumbers}`,
+              href: prefixUrl(routes.endemicsSpeciesNumbers),
               text: 'Change',
               visuallyHiddenText: 'number of species'
             }
@@ -188,7 +186,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsNumberOfSpeciesTested}`,
+              href: prefixUrl(routes.endemicsNumberOfSpeciesTested),
               text: 'Change',
               visuallyHiddenText: 'number of samples taken'
             }
@@ -202,7 +200,7 @@ const getHandler = {
           actions: {
             items: [
               {
-                href: `${urlPrefix}/${routes.endemicsVetName}`,
+                href: prefixUrl(routes.endemicsVetName),
                 text: 'Change',
                 visuallyHiddenText: "vet's name"
               }
@@ -215,7 +213,7 @@ const getHandler = {
           actions: {
             items: [
               {
-                href: `${urlPrefix}/${routes.endemicsVetRCVS}`,
+                href: prefixUrl(routes.endemicsVetRCVS),
                 text: 'Change',
                 visuallyHiddenText: "vet's rcvs number"
               }
@@ -229,7 +227,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsPIHunt}`,
+              href: prefixUrl(routes.endemicsPIHunt),
               text: 'Change',
               visuallyHiddenText: 'the pi hunt'
             }
@@ -242,7 +240,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsPIHuntRecommended}`,
+              href: prefixUrl(routes.endemicsPIHuntRecommended),
               text: 'Change',
               visuallyHiddenText: 'the pi hunt recommended'
             }
@@ -255,7 +253,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsPIHuntAllAnimals}`,
+              href: prefixUrl(routes.endemicsPIHuntAllAnimals),
               text: 'Change',
               visuallyHiddenText: 'the pi hunt'
             }
@@ -268,7 +266,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsTestUrn}`,
+              href: prefixUrl(routes.endemicsTestUrn),
               text: 'Change',
               visuallyHiddenText: 'URN'
             }
@@ -281,7 +279,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsNumberOfOralFluidSamples}`,
+              href: prefixUrl(routes.endemicsNumberOfOralFluidSamples),
               text: 'Change',
               visuallyHiddenText: 'number of oral fluid samples taken'
             }
@@ -294,7 +292,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsTestResults}`,
+              href: prefixUrl(routes.endemicsTestResults),
               text: 'Change',
               visuallyHiddenText: 'test results'
             }
@@ -309,7 +307,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsVetVisitsReviewTestResults}`,
+              href: prefixUrl(routes.endemicsVetVisitsReviewTestResults),
               text: 'Change',
               visuallyHiddenText: 'review test results'
             }
@@ -323,7 +321,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsNumberOfSamplesTested}`,
+              href: prefixUrl(routes.endemicsNumberOfSamplesTested),
               text: 'Change',
               visuallyHiddenText: 'number of samples tested'
             }
@@ -340,7 +338,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsVaccination}`,
+              href: prefixUrl(routes.endemicsVaccination),
               text: 'Change',
               visuallyHiddenText: 'herd PRRS vaccination status'
             }
@@ -357,7 +355,7 @@ const getHandler = {
         actions: {
           items: [
             {
-              href: `${urlPrefix}/${routes.endemicsSheepEndemicsPackage}`,
+              href: prefixUrl(routes.endemicsSheepEndemicsPackage),
               text: 'Change',
               visuallyHiddenText: 'sheep health package'
             }
@@ -438,7 +436,7 @@ const getHandler = {
                 actions: {
                   items: [
                     {
-                      href: `${urlPrefix}/${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`,
+                      href: prefixUrl(`${routes.endemicsSheepTestResults}?diseaseType=${sheepTest.diseaseType}`),
                       text: 'Change',
                       visuallyHiddenText: `disease type ${sheepTest.diseaseType} and test result`
                     }
@@ -484,40 +482,9 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const {
-        typeOfLivestock,
-        typeOfReview,
-        dateOfVisit,
-        dateOfTesting,
-        speciesNumbers,
-        vetsName,
-        vetRCVSNumber,
-        laboratoryURN,
-        piHunt,
-        piHuntRecommended,
-        piHuntAllAnimals,
-        numberOfOralFluidSamples,
-        numberAnimalsTested,
-        testResults,
-        latestEndemicsApplication,
-        vetVisitsReviewTestResults,
-        sheepTestResults,
-        biosecurity,
-        herdVaccinationStatus,
-        diseaseStatus,
-        pigsFollowUpTest,
-        pigsElisaTestResult,
-        pigsPcrTestResult,
-        pigsGeneticSequencing,
-        sheepEndemicsPackage,
-        numberOfSamplesTested,
-        reference: tempClaimReference,
-        reviewTestResults,
-        herdId,
-        herdVersion,
-        herdName,
-        herdCph,
-        herdReasons,
-        herdSame
+        typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals, numberOfOralFluidSamples,
+        numberAnimalsTested, testResults, latestEndemicsApplication, vetVisitsReviewTestResults, sheepTestResults, biosecurity, herdVaccinationStatus, diseaseStatus, pigsFollowUpTest, pigsElisaTestResult,
+        pigsPcrTestResult, pigsGeneticSequencing, sheepEndemicsPackage, numberOfSamplesTested, reference: tempClaimReference, reviewTestResults, herdId, herdVersion, herdName, herdCph, herdReasons, herdSame
       } = getEndemicsClaim(request)
 
       const { isSheep } = getLivestockTypes(typeOfLivestock)
@@ -529,30 +496,7 @@ const postHandler = {
         type: typeOfReview,
         createdBy: 'admin',
         data: {
-          typeOfLivestock,
-          dateOfVisit,
-          dateOfTesting,
-          speciesNumbers,
-          vetsName,
-          vetRCVSNumber,
-          laboratoryURN,
-          piHunt,
-          piHuntRecommended,
-          piHuntAllAnimals,
-          numberOfOralFluidSamples,
-          numberAnimalsTested,
-          testResults,
-          vetVisitsReviewTestResults,
-          biosecurity,
-          herdVaccinationStatus,
-          diseaseStatus,
-          pigsFollowUpTest,
-          pigsElisaTestResult,
-          pigsPcrTestResult,
-          pigsGeneticSequencing,
-          sheepEndemicsPackage,
-          numberOfSamplesTested,
-          reviewTestResults,
+          typeOfLivestock, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals, numberOfOralFluidSamples, numberAnimalsTested, testResults, vetVisitsReviewTestResults, biosecurity, herdVaccinationStatus, diseaseStatus, pigsFollowUpTest, pigsElisaTestResult, pigsPcrTestResult, pigsGeneticSequencing, sheepEndemicsPackage, numberOfSamplesTested, reviewTestResults,
           ...(isEndemicsFollowUp && isSheep && {
             testResults: sheepTestResults?.map(sheepTest => ({
               diseaseType: sheepTest.diseaseType,
@@ -586,7 +530,7 @@ const postHandler = {
       })
 
       return h.redirect(
-        `${urlPrefix}/${routes.endemicsConfirmation}`
+        prefixUrl(routes.endemicsConfirmation)
       )
     }
   }

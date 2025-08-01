@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
@@ -8,13 +7,13 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { endemicsClaim: { piHunt: piHuntKey, dateOfVisit: dateOfVisitKey } } = sessionKeys
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = links
 
-const backLink = `${urlPrefix}/${endemicsVetRCVS}`
-const pageUrl = `${urlPrefix}/${endemicsPIHunt}`
+const backLink = prefixUrl(endemicsVetRCVS)
+const pageUrl = prefixUrl(endemicsPIHunt)
 const errorMessageText = 'Select yes if a PI hunt was done'
 
 const getHandler = {
@@ -69,17 +68,23 @@ const postHandler = {
           clearPiHuntSessionOnChange(request, 'piHunt')
         }
 
-        if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+        if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) {
+          return h.redirect(prefixUrl(endemicsBiosecurity))
+        }
 
         return h.view(endemicsPIHuntException, { backLink: pageUrl })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
       }
 
-      if (piHuntEnabledAndVisitDateAfterGoLive && isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHuntAllAnimals}`)
-      if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) return h.redirect(`${urlPrefix}/${endemicsPIHuntRecommended}`)
+      if (piHuntEnabledAndVisitDateAfterGoLive && isPositive) {
+        return h.redirect(prefixUrl(endemicsPIHuntAllAnimals))
+      }
+      if (piHuntEnabledAndVisitDateAfterGoLive && isNegative) {
+        return h.redirect(prefixUrl(endemicsPIHuntRecommended))
+      }
 
-      return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
+      return h.redirect(prefixUrl(endemicsTestUrn))
     }
   }
 }
