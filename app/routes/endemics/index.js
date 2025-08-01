@@ -5,16 +5,16 @@ import links from '../../config/routes.js'
 import { refreshApplications, resetEndemicsClaimSession } from '../../lib/context-helper.js'
 import { logout } from '../../lib/logout.js'
 import { requestAuthorizationCodeUrl } from '../../auth/auth-code-grant/request-authorization-code-url.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const urlPrefix = config.urlPrefix
 const { endemicsIndex, endemicsWhichSpecies } = links
 const { endemicsClaim: { landingPage: landingPageKey } } = sessionKeys
 
-const endemicsWhichSpeciesURI = `${urlPrefix}/${endemicsWhichSpecies}`
+const endemicsWhichSpeciesURI = prefixUrl(endemicsWhichSpecies)
 
 const getHandler = {
   method: 'GET',
-  path: `${config.urlPrefix}/${endemicsIndex}`,
+  path: prefixUrl(endemicsIndex),
   options: {
     auth: false,
     handler: async (request, h) => {
@@ -32,7 +32,7 @@ const getHandler = {
       logout()
 
       const loginView = config.devLogin.enabled ? `${endemicsIndex}/devindex` : `${endemicsIndex}/index`
-      const devLogin = config.devLogin.enabled ? `${urlPrefix}/${endemicsIndex}/dev-sign-in` : undefined
+      const devLogin = config.devLogin.enabled ? prefixUrl(`${endemicsIndex}/dev-sign-in`) : undefined
 
       return h.view(loginView, {
         devLogin,

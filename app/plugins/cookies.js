@@ -1,5 +1,6 @@
 import { config } from '../config/index.js'
 import { getCurrentPolicy } from '../cookies.js'
+import { StatusCodes } from 'http-status-codes'
 
 const { cookie: { cookieNameCookiePolicy }, cookiePolicy } = config
 
@@ -13,8 +14,8 @@ export const cookiePlugin = {
         const statusCode = request.response.statusCode
         if (
           request.response.variety === 'view' &&
-          statusCode !== 404 &&
-          statusCode !== 500 &&
+          statusCode !== StatusCodes.NOT_FOUND &&
+          statusCode !== StatusCodes.INTERNAL_SERVER_ERROR &&
           request.response.source.manager._context
         ) {
           request.response.source.manager._context.cookiesPolicy =

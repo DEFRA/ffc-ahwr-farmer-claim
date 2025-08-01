@@ -1,4 +1,4 @@
-import { claimHasExpired } from '../../../../app/lib/claim-has-expired.js'
+import { hasClaimExpired } from '../../../../app/lib/has-claim-expired.js'
 
 describe('Has claim expired test', () => {
   afterEach(() => {
@@ -194,7 +194,7 @@ describe('Has claim expired test', () => {
     jest
       .useFakeTimers()
       .setSystemTime(new Date(testCase.when.currentTime))
-    const result = claimHasExpired(testCase.given.application)
+    const result = hasClaimExpired(testCase.given.application)
     expect(result).toEqual(testCase.expect.hasExpired)
   })
 })

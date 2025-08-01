@@ -1,19 +1,16 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { errorMessages } from '../../lib/error-messages.js'
 import { claimConstants } from '../../constants/claim.js'
 import links from '../../config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getTestResult } from '../../lib/get-test-result.js'
-import { getReviewType } from '../../lib/get-review-type.js'
-import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
+import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { rcvs: rcvsErrorMessages } = errorMessages
-const { claimType, livestockTypes } = claimConstants
+const { claimType } = claimConstants
 
 const {
   endemicsVetName,
@@ -29,22 +26,29 @@ const {
   endemicsClaim: { vetRCVSNumber: vetRCVSNumberKey, dateOfVisit: dateOfVisitKey }
 } = sessionKeys
 
-const pageUrl = `${urlPrefix}/${endemicsVetRCVS}`
-const backLink = `${urlPrefix}/${endemicsVetName}`
+const pageUrl = prefixUrl(endemicsVetRCVS)
+const backLink = prefixUrl(endemicsVetName)
 
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview, relevantReviewForEndemics } = getEndemicsClaim(request)
-  const { isBeef, isDairy, isSheep } = getLivestockTypes(typeOfLivestock)
-  const { isReview, isEndemicsFollowUp } = getReviewType(typeOfReview)
-  if (isReview) return `${urlPrefix}/${endemicsTestUrn}`
+  const { isBeef, isDairy, isPigs, isSheep, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
+
   if (isEndemicsFollowUp) {
-    if (relevantReviewForEndemics.type === claimType.vetVisits && typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVetVisitsReviewTestResults}`
-    if (isSheep) return `${urlPrefix}/${endemicsSheepEndemicsPackage}`
-    if (isBeef || isDairy) return `${urlPrefix}/${endemicsTestUrn}`
-    if (typeOfLivestock === livestockTypes.pigs) return `${urlPrefix}/${endemicsVaccination}`
+    if (relevantReviewForEndemics.type === claimType.vetVisits && isPigs) {
+      return prefixUrl(endemicsVetVisitsReviewTestResults)
+    }
+    if (isSheep) {
+      return prefixUrl(endemicsSheepEndemicsPackage)
+    }
+    if (isBeef || isDairy) {
+      return prefixUrl(endemicsTestUrn)
+    }
+    if (isPigs) {
+      return prefixUrl(endemicsVaccination)
+    }
   }
 
-  return `${urlPrefix}/${endemicsTestUrn}`
+  return prefixUrl(endemicsTestUrn)
 }
 
 const getHandler = {
@@ -93,19 +97,22 @@ const postHandler = {
     handler: async (request, h) => {
       const { vetRCVSNumber } = request.payload
       const { reviewTestResults, typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
-      const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
-      const { isEndemicsFollowUp } = getReviewType(typeOfReview)
+      const { isBeef, isDairy, isBeefOrDairyEndemics } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
       const { isNegative, isPositive } = getTestResult(reviewTestResults)
 
       setEndemicsClaim(request, vetRCVSNumberKey, vetRCVSNumber)
 
-      if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
-        return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
+      if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isBeefOrDairyEndemics) {
+        return h.redirect(prefixUrl(endemicsPIHunt))
       }
 
       if (isBeef || isDairy) {
-        if (isPositive) return h.redirect(`${urlPrefix}/${endemicsPIHunt}`)
-        if (isNegative) return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+        if (isPositive) {
+          return h.redirect(prefixUrl(endemicsPIHunt))
+        }
+        if (isNegative) {
+          return h.redirect(prefixUrl(endemicsBiosecurity))
+        }
       }
 
       return h.redirect(nextPageURL(request))

@@ -33,13 +33,6 @@ export const claimConstants = {
     pcr: 'pcr',
     elisa: 'elisa'
   },
-  dateOfVetVisitExceptions: {
-    rejectedReview: 'rejected review',
-    endemicsWithin10: 'another endemics within 10 months',
-    noReview: 'no review within 10 months past',
-    reviewWithin10: 'another review within 10 months',
-    claimEndemicsBeforeReviewPayment: 'claim endemics before review status is ready to pay'
-  },
   amount: {
     R: {
       beef: '£522',

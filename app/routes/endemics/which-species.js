@@ -2,10 +2,10 @@ import Joi from 'joi'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import links from '../../config/routes.js'
-import { config } from '../../config/index.js'
 import { claimConstants } from '../../constants/claim.js'
 import { resetEndemicsClaimSession } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
 const { livestockTypes } = claimConstants
 const {
@@ -13,9 +13,8 @@ const {
   endemicsWhichSpecies,
   endemicsWhichTypeOfReview
 } = links
-const { urlPrefix } = config
 
-const pageUrl = `${urlPrefix}/${endemicsWhichSpecies}`
+const pageUrl = prefixUrl(endemicsWhichSpecies)
 const backLink = claimDashboard
 const errorMessage = { text: 'Select which species you are claiming for' }
 const view = `${endemicsWhichSpecies}`
@@ -67,7 +66,7 @@ const postHandler = {
 
       setEndemicsClaim(request, sessionKeys.endemicsClaim.typeOfLivestock, typeOfLivestock)
 
-      return h.redirect(`${urlPrefix}/${endemicsWhichTypeOfReview}`)
+      return h.redirect(prefixUrl(endemicsWhichTypeOfReview))
     }
   }
 }

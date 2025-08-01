@@ -75,4 +75,10 @@ describe('clearPiHuntSessionOnChange', () => {
     expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'laboratoryURN', undefined)
     expect(setEndemicsClaim).toHaveBeenCalledWith(request, 'testResults', undefined)
   })
+
+  it('should do nothing for any other stage', () => {
+    clearPiHuntSessionOnChange(request, 'anything')
+
+    expect(setEndemicsClaim).toHaveBeenCalledTimes(0)
+  })
 })

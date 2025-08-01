@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { thresholds } from '../../constants/amounts.js'
 import { sessionKeys } from '../../session/keys.js'
@@ -9,8 +8,8 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const urlPrefix = config.urlPrefix
 const {
   endemicsSpeciesNumbers,
   endemicsNumberOfSpeciesTested,
@@ -23,9 +22,9 @@ const {
   endemicsClaim: { numberAnimalsTested: numberAnimalsTestedKey, dateOfVisit: dateOfVisitKey }
 } = sessionKeys
 const { numberOfSpeciesTested: numberOfSpeciesTestedThreshold } = thresholds
-const pageUrl = `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
-const backLink = `${urlPrefix}/${endemicsSpeciesNumbers}`
-const nextPageURL = `${urlPrefix}/${endemicsVetName}`
+const pageUrl = prefixUrl(endemicsNumberOfSpeciesTested)
+const backLink = prefixUrl(endemicsSpeciesNumbers)
+const nextPageURL = prefixUrl(endemicsVetName)
 
 const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
@@ -38,12 +37,18 @@ const getTheQuestionText = (typeOfLivestock, typeOfReview) => {
     'How many sheep were samples taken from or assessed?'
 
   if (isReview) {
-    if (isDairy) return questionTextTwo
+    if (isDairy) {
+      return questionTextTwo
+    }
     return questionTextOne
   }
 
-  if (isSheep) return questionTextThree
-  if (isPigs) return questionTextOne
+  if (isSheep) {
+    return questionTextThree
+  }
+  if (isPigs) {
+    return questionTextOne
+  }
 
   return questionTextTwo
 }
@@ -118,7 +123,9 @@ const postHandler = {
         numberAnimalsTested
       )
 
-      if (isEligible) return h.redirect(nextPageURL)
+      if (isEligible) {
+        return h.redirect(nextPageURL)
+      }
       if (numberAnimalsTested === '0') {
         return h
           .view(endemicsNumberOfSpeciesTested, {

@@ -1,13 +1,12 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import HttpStatus from 'http-status-codes'
 import { PIG_GENETIC_SEQUENCING_VALUES } from 'ffc-ahwr-common-library'
 import { claimConstants } from '../../constants/claim.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const urlPrefix = config.urlPrefix
 const { endemicsPigsGeneticSequencing, endemicsPigsPcrResult, endemicsPigsElisaResult, endemicsBiosecurity } = links
 const {
   endemicsClaim: {
@@ -16,18 +15,14 @@ const {
 } = sessionKeys
 const { pigsFollowUpTest: { elisa } } = claimConstants
 
-const pageUrl = `${urlPrefix}/${endemicsPigsGeneticSequencing}`
+const pageUrl = prefixUrl(endemicsPigsGeneticSequencing)
 
 const getBackLink = (pigsFollowUpTest) => {
-  let backLink = `${urlPrefix}`
-
   if (pigsFollowUpTest === elisa) {
-    backLink = `${backLink}/${endemicsPigsElisaResult}`
-  } else {
-    backLink = `${backLink}/${endemicsPigsPcrResult}`
+    return prefixUrl(endemicsPigsElisaResult)
   }
 
-  return backLink
+  return prefixUrl(endemicsPigsPcrResult)
 }
 
 const getHandler = {
@@ -93,7 +88,7 @@ const postHandler = {
         geneticSequencing
       )
 
-      return h.redirect(`${urlPrefix}/${endemicsBiosecurity}`)
+      return h.redirect(prefixUrl(endemicsBiosecurity))
     }
   }
 }

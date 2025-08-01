@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
@@ -8,8 +7,8 @@ import { MULTIPLE_HERD_REASONS } from 'ffc-ahwr-common-library'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
 import { skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsEnterHerdDetails,
   endemicsHerdOthersOnSbi,
@@ -17,11 +16,11 @@ const {
   endemicsEnterCphNumber
 } = links
 
-const pageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
-const herdOtherOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
-const enterCphNumberPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
+const pageUrl = prefixUrl(endemicsEnterHerdDetails)
+const herdOtherOnSbiPageUrl = prefixUrl(endemicsHerdOthersOnSbi)
+const enterCphNumberPageUrl = prefixUrl(endemicsEnterCphNumber)
 
-const nextPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
+const nextPageUrl = prefixUrl(endemicsCheckHerdDetails)
 
 const { endemicsClaim: { herdReasons: herdReasonsKey } } = sessionKeys
 

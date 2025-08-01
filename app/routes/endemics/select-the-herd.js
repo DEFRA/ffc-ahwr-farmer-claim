@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, removeSessionDataForSelectHerdChange, setEndemicsClaim } from '../../session/index.js'
@@ -10,10 +9,10 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import { ONLY_HERD, ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { formatDate, getHerdOrFlock } from '../../lib/display-helpers.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
 const { endemics } = claimConstants.claimType
 
-const { urlPrefix } = config
 const {
   endemicsSelectTheHerd,
   endemicsDateOfVisit,
@@ -24,12 +23,12 @@ const {
   endemicsWhichTypeOfReview
 } = links
 
-const pageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
-const previousPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const enterHerdNamePageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
-const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
-const whichTypeOfReviewPageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const dateOfVisitPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
+const pageUrl = prefixUrl(endemicsSelectTheHerd)
+const previousPageUrl = prefixUrl(endemicsDateOfVisit)
+const enterHerdNamePageUrl = prefixUrl(endemicsEnterHerdName)
+const checkHerdDetailsPageUrl = prefixUrl(endemicsCheckHerdDetails)
+const whichTypeOfReviewPageUrl = prefixUrl(endemicsWhichTypeOfReview)
+const dateOfVisitPageUrl = prefixUrl(endemicsDateOfVisit)
 
 const {
   endemicsClaim: {

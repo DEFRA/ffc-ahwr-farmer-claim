@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
@@ -8,8 +7,8 @@ import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
 import { ONLY_HERD_ON_SBI } from '../../constants/constants.js'
 import { skipOtherHerdsOnSbiPage } from '../../lib/context-helper.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsEnterCphNumber,
   endemicsEnterHerdName,
@@ -19,13 +18,13 @@ const {
   endemicsSelectTheHerd
 } = links
 
-const pageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
-const enterHerdNamePageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
-const selectTheHerdPageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
+const pageUrl = prefixUrl(endemicsEnterCphNumber)
+const enterHerdNamePageUrl = prefixUrl(endemicsEnterHerdName)
+const selectTheHerdPageUrl = prefixUrl(endemicsSelectTheHerd)
 
-const herdOthersOnSbiPageUrl = `${urlPrefix}/${endemicsHerdOthersOnSbi}`
-const enterHerdDetailsPageUrl = `${urlPrefix}/${endemicsEnterHerdDetails}`
-const checkHerdDetailsPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
+const herdOthersOnSbiPageUrl = prefixUrl(endemicsHerdOthersOnSbi)
+const enterHerdDetailsPageUrl = prefixUrl(endemicsEnterHerdDetails)
+const checkHerdDetailsPageUrl = prefixUrl(endemicsCheckHerdDetails)
 
 const { endemicsClaim: { herdCph: herdCphKey } } = sessionKeys
 

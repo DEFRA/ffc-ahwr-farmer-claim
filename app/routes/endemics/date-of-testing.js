@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import { claimConstants } from '../../constants/claim.js'
 import links from '../../config/routes.js'
@@ -24,8 +23,8 @@ import {
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 import { isWithin4MonthsBeforeOrAfterDateOfVisit } from '../../lib/date-of-testing-4-month-check.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsClaim: { dateOfTesting: dateOfTestingKey, dateOfVisit: dateOfVisitKey }
 } = sessionKeys
@@ -39,21 +38,21 @@ const {
   endemicsPIHuntAllAnimals
 } = links
 
-const pageUrl = `${urlPrefix}/${endemicsDateOfTesting}`
+const pageUrl = prefixUrl(endemicsDateOfTesting)
 const backLink = (request) => {
   const { typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getEndemicsClaim(request)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
   if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
-    return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+    return prefixUrl(endemicsPIHuntAllAnimals)
   }
 
   if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
     return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
-  return `${urlPrefix}/${endemicsDateOfVisit}`
+  return prefixUrl(endemicsDateOfVisit)
 }
 const optionSameReviewOrFollowUpDateText = (typeOfReview) => {
   const { isReview } = getReviewType(typeOfReview)
@@ -289,6 +288,10 @@ const postHandler = {
         )
         if (Object.keys(newError).length > 0 && newError.constructor === Object) { errorSummary.push(newError) }
 
+        const possibleErrorMessage = (labelStartsWith) => error.details.find(
+          (e) => e.context.label.startsWith(labelStartsWith)
+        )?.map(x => x.message)
+
         return h
           .view(endemicsDateOfTesting, {
             ...request.payload,
@@ -300,15 +303,7 @@ const postHandler = {
               optionSameReviewOrFollowUpDateText(typeOfReview),
             whenTestingWasCarriedOut: {
               value: request.payload.whenTestingWasCarriedOut,
-              errorMessage: error.details.find(
-                (e) => e.context.label === 'whenTestingWasCarriedOut'
-              )
-                ? {
-                    text: error.details.find(
-                      (e) => e.context.label === 'whenTestingWasCarriedOut'
-                    ).message
-                  }
-                : undefined,
+              errorMessage: possibleErrorMessage('whenTestingWasCarriedOut'),
               onAnotherDate: {
                 day: {
                   value: request.payload[`${onAnotherDateInputId}-day`],
@@ -334,15 +329,7 @@ const postHandler = {
                       e.type.startsWith('dateOfTesting')
                   )
                 },
-                errorMessage: error.details.find((e) =>
-                  e.context.label.startsWith(onAnotherDateInputId)
-                )
-                  ? {
-                      text: error.details.find((e) =>
-                        e.context.label.startsWith(onAnotherDateInputId)
-                      ).message
-                    }
-                  : undefined
+                errorMessage: possibleErrorMessage(onAnotherDateInputId)
               }
             },
             backLink: backLink(request)
@@ -417,10 +404,10 @@ const postHandler = {
       setEndemicsClaim(request, dateOfTestingKey, dateOfTesting)
 
       if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
-        return h.redirect(`${urlPrefix}/${endemicsTestUrn}`)
+        return h.redirect(prefixUrl(endemicsTestUrn))
       }
 
-      return h.redirect(`${urlPrefix}/${endemicsSpeciesNumbers}`)
+      return h.redirect(prefixUrl(endemicsSpeciesNumbers))
     }
   }
 }

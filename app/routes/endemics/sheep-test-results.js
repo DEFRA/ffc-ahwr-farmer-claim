@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
@@ -10,12 +9,11 @@ import {
 } from '../utils/disease-type-test-result.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
-
-const { urlPrefix } = config
+import { prefixUrl } from '../utils/page-utils.js'
 
 const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = links
 
-const pageUrl = `${urlPrefix}/${endemicsSheepTestResults}`
+const pageUrl = prefixUrl(endemicsSheepTestResults)
 const routes = (request) => {
   const { sheepTestResults } = getEndemicsClaim(request)
 
@@ -28,11 +26,14 @@ const routes = (request) => {
   const nextPageDiseaseType = nextPageDiseaseTypeIndex <= sheepTestResults.length - 1 && sheepTestResults[nextPageDiseaseTypeIndex]?.diseaseType
 
   return {
-    currentPage: `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${currentDiseaseType}`,
-    nextPage: nextPageDiseaseType ? `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${nextPageDiseaseType}` : `${urlPrefix}/${endemicsCheckAnswers}`,
-    previousPage: previousDiseaseType ? `${urlPrefix}/${endemicsSheepTestResults}?diseaseType=${previousDiseaseType}` : `${urlPrefix}/${endemicsSheepTests}`
+    currentPage: prefixUrl(`${endemicsSheepTestResults}?diseaseType=${currentDiseaseType}`),
+    nextPage: nextPageDiseaseType ? prefixUrl(`${endemicsSheepTestResults}?diseaseType=${nextPageDiseaseType}`) : prefixUrl(endemicsCheckAnswers),
+    previousPage: previousDiseaseType ? prefixUrl(`${endemicsSheepTestResults}?diseaseType=${previousDiseaseType}`) : prefixUrl(endemicsSheepTests)
   }
 }
+
+const TEST_RESULT_ELEMENT_ID = 'testResult'
+const DISEASE_TYPE_ELEMENT_ID = 'diseaseType'
 
 const emptyTestResultErrorMessage = 'Enter the result'
 const duplicatedItemErrorMessage = 'You’ve already included this kind of disease'
@@ -60,16 +61,16 @@ const getPageContent = (request, data) => {
     headingText = title(diseaseTypeText)
     return {
       pageTitle: headingText,
-      ...radios(headingText, 'testResult', data?.error && 'Select a result', {
+      ...radios(headingText, TEST_RESULT_ELEMENT_ID, data?.error && 'Select a result', {
         hintHtml: 'You can find this on the summary the vet gave you.'
       })(testResultOptions.map((test) => ({ value: test.value, text: test.text, checked: result === test.value })))
     }
   }
 
   const inputTexts = [
-    inputText('diseaseType', emptyDiseaseTypeErrorMessage, data?.diseaseType?.value, 'govuk-!-width-two-thirds', data?.diseaseType?.text && { text: data?.diseaseType?.text }),
+    inputText(DISEASE_TYPE_ELEMENT_ID, emptyDiseaseTypeErrorMessage, data?.diseaseType?.value, 'govuk-!-width-two-thirds', data?.diseaseType?.text && { text: data?.diseaseType?.text }),
     inputText(
-      'testResult',
+      TEST_RESULT_ELEMENT_ID,
       emptyTestResultErrorMessage,
       data?.testResult?.value,
       'govuk-!-width-one-half govuk-!-margin-bottom-6',
@@ -101,7 +102,7 @@ const getDuplicatedItemIndexes = (input) => {
     .filter((item) => item.length > 1)
     .map((item) => item.slice(1))
     .flat()
-    .map((item) => ({ [item]: { text: duplicatedItemErrorMessage, href: `#diseaseType-${item}` } }))
+    .map((item) => ({ [item]: { text: duplicatedItemErrorMessage, href: `#${DISEASE_TYPE_ELEMENT_ID}-${item}` } }))
 }
 
 const getInvalidItemIndexes = (input, key) => input.map((item, index) => {
@@ -119,12 +120,12 @@ const newDiseaseTypeErrorMessageAddAnother = (payload, diseaseTypeValidationErro
     diseaseType: {
       value: payload.diseaseType[lastIndex],
       ...((diseaseTypeValidationError
-        ? { text: diseaseTypeValidationError, href: '#diseaseType' }
-        : payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex]) && { text: duplicatedItemErrorMessage, href: '#diseaseType' }) || {})
+        ? { text: diseaseTypeValidationError, href: `#${DISEASE_TYPE_ELEMENT_ID}` }
+        : payload.diseaseType.slice(0, lastIndex).includes(payload.diseaseType[lastIndex]) && { text: duplicatedItemErrorMessage, href: `#${DISEASE_TYPE_ELEMENT_ID}` }) || {})
     },
     testResult: {
       value: payload.testResult[lastIndex],
-      ...(testResultValidationError && { text: testResultValidationError, href: '#testResult' })
+      ...(testResultValidationError && { text: testResultValidationError, href: `#${TEST_RESULT_ELEMENT_ID}` })
     }
   }
 }
@@ -133,11 +134,11 @@ const newDiseaseTypeErrorMessageContinue = (payload, diseaseTypeValidationError,
   return {
     diseaseType: {
       value: payload.diseaseType[lastIndex],
-      ...(diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' })
+      ...(diseaseTypeValidationError && { text: diseaseTypeValidationError, href: `#${DISEASE_TYPE_ELEMENT_ID}` })
     },
     testResult: {
       value: payload.testResult[lastIndex],
-      ...(testResultValidationError && { text: testResultValidationError, href: '#testResult' })
+      ...(testResultValidationError && { text: testResultValidationError, href: `#${TEST_RESULT_ELEMENT_ID}` })
     }
   }
 }
@@ -145,8 +146,8 @@ const newDiseaseInTheListValidation = (payload) => {
   let newDiseaseTypeErrorMessage
   let newPayloadData = payload
   const lastIndex = payload.diseaseType.length - 1
-  const diseaseTypeValidationError = fieldValidator('diseaseType').validate(`${payload.diseaseType[lastIndex]}`)?.error?.details[0]?.message
-  const testResultValidationError = fieldValidator('testResult').validate(`${payload.testResult[lastIndex]}`)?.error?.details[0]?.message
+  const diseaseTypeValidationError = fieldValidator(DISEASE_TYPE_ELEMENT_ID).validate(`${payload.diseaseType[lastIndex]}`)?.error?.details[0]?.message
+  const testResultValidationError = fieldValidator(TEST_RESULT_ELEMENT_ID).validate(`${payload.testResult[lastIndex]}`)?.error?.details[0]?.message
 
   if (diseaseTypeValidationError || testResultValidationError) {
     newPayloadData = { ...payload, diseaseType: payload.diseaseType.slice(0, lastIndex), testResult: payload.testResult.slice(0, lastIndex) }
@@ -162,7 +163,7 @@ const newDiseaseInTheListValidation = (payload) => {
 
     if (!payload?.delete) {
       newDiseaseTypeErrorMessage = {
-        diseaseType: { value: payload.diseaseType[lastIndex], text: duplicatedItemErrorMessage, href: '#diseaseType' },
+        diseaseType: { value: payload.diseaseType[lastIndex], text: duplicatedItemErrorMessage, href: `#${DISEASE_TYPE_ELEMENT_ID}` },
         testResult: { value: payload.testResult[lastIndex] }
       }
     }
@@ -219,8 +220,8 @@ const hasError = (results) => {
 
 const getErrorList = (diseaseTypeValidationError, testResultValidationError) => {
   return [
-    diseaseTypeValidationError && { text: diseaseTypeValidationError, href: '#diseaseType' },
-    testResultValidationError && { text: testResultValidationError, href: '#testResult' }
+    diseaseTypeValidationError && { text: diseaseTypeValidationError, href: `#${DISEASE_TYPE_ELEMENT_ID}` },
+    testResultValidationError && { text: testResultValidationError, href: `#${TEST_RESULT_ELEMENT_ID}` }
   ]
 }
 
@@ -270,7 +271,7 @@ const postHandler = {
       if (diseaseType?.diseaseType !== 'other') {
         const pageContent = getPageContent(request, { error: true })
         const backLink = previousPage
-        const errorList = [{ text: 'Select a result', href: '#testResult' }]
+        const errorList = [{ text: 'Select a result', href: `#${TEST_RESULT_ELEMENT_ID}` }]
 
         if (!payload?.testResult) {
           return notOtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
@@ -309,8 +310,8 @@ const postHandler = {
       const payloadData = newPayloadData || payload
       const newDiseaseTypeErrorMessage = newErrorMessage
 
-      const diseaseTypeEmptyItems = getEmptyItems(payloadData.diseaseType, 'diseaseType')
-      const testResultEmptyItems = getEmptyItems(payloadData.testResult, 'testResult')
+      const diseaseTypeEmptyItems = getEmptyItems(payloadData.diseaseType, DISEASE_TYPE_ELEMENT_ID)
+      const testResultEmptyItems = getEmptyItems(payloadData.testResult, TEST_RESULT_ELEMENT_ID)
       const duplicateItems = isOfTypeObject(payloadData.diseaseType) ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
 
       const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems) || []

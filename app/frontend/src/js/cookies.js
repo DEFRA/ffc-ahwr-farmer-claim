@@ -9,7 +9,7 @@ const cookieContainer = document.querySelector('.js-cookies-container')
 if (cookieContainer) {
   cookieContainer.style.display = 'block'
 
-  function showBanner (banner) {
+  const showBanner = function (banner) {
     questionBanner.setAttribute('hidden', 'hidden')
     banner.removeAttribute('hidden')
     // Shift focus to the banner
@@ -41,7 +41,7 @@ if (cookieContainer) {
     cookieBanner.setAttribute('hidden', 'hidden')
   })
 
-  function submitPreference (accepted) {
+  const submitPreference = function (accepted) {
   const xhr = new XMLHttpRequest() // eslint-disable-line
     xhr.open('POST', '/claim/cookies', true)
     xhr.setRequestHeader('Content-Type', 'application/json')

@@ -1,13 +1,12 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import HttpStatus from 'http-status-codes'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { sendHerdEvent } from '../../event/send-herd-event.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsEnterHerdName,
   endemicsSelectTheHerd,
@@ -15,10 +14,10 @@ const {
   endemicsDateOfVisit
 } = links
 
-const pageUrl = `${urlPrefix}/${endemicsEnterHerdName}`
-const selectTheHerdPageUrl = `${urlPrefix}/${endemicsSelectTheHerd}`
-const dateOfVisitPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const nextPageUrl = `${urlPrefix}/${endemicsEnterCphNumber}`
+const pageUrl = prefixUrl(endemicsEnterHerdName)
+const selectTheHerdPageUrl = prefixUrl(endemicsSelectTheHerd)
+const dateOfVisitPageUrl = prefixUrl(endemicsDateOfVisit)
+const nextPageUrl = prefixUrl(endemicsEnterCphNumber)
 
 const { endemicsClaim: { herdName: herdNameKey } } = sessionKeys
 

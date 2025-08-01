@@ -2,19 +2,18 @@ import Joi from 'joi'
 import { sessionKeys } from '../../session/keys.js'
 import { claimConstants } from '../../constants/claim.js'
 import links from '../../config/routes.js'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getOldWorldClaimFromApplication } from '../../lib/index.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
 const { endemicsClaim: { typeOfReview: typeOfReviewKey } } = sessionKeys
 const { endemicsWhichTypeOfReview, endemicsDateOfVisit, endemicsVetVisitsReviewTestResults, endemicsWhichSpecies, endemicsWhichTypeOfReviewException } = links
-const { urlPrefix } = config
 const { livestockTypes, claimType } = claimConstants
 
-const pageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
-const backLink = `${urlPrefix}/${endemicsWhichSpecies}`
+const pageUrl = prefixUrl(endemicsWhichTypeOfReview)
+const backLink = prefixUrl(endemicsWhichSpecies)
 
 const getPreviousAnswer = (typeOfReview) => {
   if (typeOfReview === claimType.review) {
@@ -103,10 +102,10 @@ export const whichReviewHandlers = [
           typeOfLivestock === oldWorldClaimTypeOfLivestock
 
         if (isCattleEndemicsClaimForOldWorldReview) {
-          return h.redirect(`${urlPrefix}/${endemicsVetVisitsReviewTestResults}`)
+          return h.redirect(prefixUrl(endemicsVetVisitsReviewTestResults))
         }
 
-        return h.redirect(`${urlPrefix}/${endemicsDateOfVisit}`)
+        return h.redirect(prefixUrl(endemicsDateOfVisit))
       }
     }
   }
