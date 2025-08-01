@@ -1,8 +1,13 @@
 import Joi from 'joi'
 import appInsights from 'applicationinsights'
 
-const threeDaysInMs = 1000 * 3600 * 24 * 3
-const oneYearInMs = 1000 * 3600 * 24 * 365
+const MILLIS_IN_A_SECOND = 1000
+const SECONDS_IN_AN_HOUR = 3600
+const HOURS_IN_A_DAY = 24
+const THREE_DAYS = 3
+const ONE_YEAR_IN_DAYS = 365
+const THREE_DAYS_IN_MS = MILLIS_IN_A_SECOND * SECONDS_IN_AN_HOUR * HOURS_IN_A_DAY * THREE_DAYS
+const ONE_YEAR_IN_MS = MILLIS_IN_A_SECOND * SECONDS_IN_AN_HOUR * HOURS_IN_A_DAY * ONE_YEAR_IN_DAYS
 const DEFAULT_APP_PORT = 3000
 const DEFAULT_REDIS_PORT = 6379
 
@@ -74,7 +79,7 @@ export const getConfig = () => {
     appInsights,
     namespace: process.env.NAMESPACE,
     cache: {
-      expiresIn: threeDaysInMs,
+      expiresIn: THREE_DAYS_IN_MS,
       options: {
         host: process.env.REDIS_HOSTNAME || 'redis-hostname.default',
         partition: 'ffc-ahwr-frontend',
@@ -90,7 +95,7 @@ export const getConfig = () => {
       isSameSite: 'Lax',
       isSecure: process.env.NODE_ENV === 'production',
       password: process.env.COOKIE_PASSWORD,
-      ttl: threeDaysInMs
+      ttl: THREE_DAYS_IN_MS
     },
     cookiePolicy: {
       clearInvalid: false,
@@ -99,7 +104,7 @@ export const getConfig = () => {
       isSecure: process.env.NODE_ENV === 'production',
       password: process.env.COOKIE_PASSWORD,
       path: '/',
-      ttl: oneYearInMs
+      ttl: ONE_YEAR_IN_MS
     },
     env: process.env.NODE_ENV,
     dashboardServiceUri: process.env.DASHBOARD_SERVICE_URI,

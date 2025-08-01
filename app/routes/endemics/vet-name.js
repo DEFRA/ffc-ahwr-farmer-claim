@@ -20,7 +20,9 @@ const backLink = (request) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (isDairy || (isBeef && isEndemicsFollowUp)) return prefixUrl(endemicsSpeciesNumbers)
+  if (isDairy || (isBeef && isEndemicsFollowUp)) {
+    return prefixUrl(endemicsSpeciesNumbers)
+  }
 
   return prefixUrl(endemicsNumberOfSpeciesTested)
 }

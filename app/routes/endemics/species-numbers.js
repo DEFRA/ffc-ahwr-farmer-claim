@@ -12,7 +12,7 @@ import { getTestResult } from '../../lib/get-test-result.js'
 import { isMultipleHerdsUserJourney, isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 import HttpStatus from 'http-status-codes'
-import { prefixUrl } from '../utils/page-utils.js'
+import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
 
 const {
   endemicsSpeciesNumbers,
@@ -26,18 +26,19 @@ const { speciesNumbers, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClai
 
 const backLink = (request) => {
   const { reviewTestResults, typeOfLivestock, typeOfReview, dateOfVisit, previousClaims, latestEndemicsApplication } = getEndemicsClaim(request)
-  const { isEndemicsFollowUp } = getReviewType(typeOfReview)
-  const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
+  const { isBeefOrDairyEndemics, isBeef, isDairy } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
   const { isNegative } = getTestResult(reviewTestResults)
 
   if (isMultipleHerdsUserJourney(dateOfVisit, latestEndemicsApplication.flags)) {
     return getHerdBackLink(typeOfLivestock, previousClaims)
   }
 
-  if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isEndemicsFollowUp && (isBeef || isDairy)) {
+  if (isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey)) && isBeefOrDairyEndemics) {
     return prefixUrl(endemicsDateOfVisit)
   }
-  if ((isDairy || isBeef) && isNegative) return prefixUrl(endemicsDateOfVisit)
+  if ((isDairy || isBeef) && isNegative) {
+    return prefixUrl(endemicsDateOfVisit)
+  }
 
   return prefixUrl(endemicsDateOfTesting)
 }

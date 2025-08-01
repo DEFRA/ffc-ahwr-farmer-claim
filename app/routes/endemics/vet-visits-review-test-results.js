@@ -20,7 +20,9 @@ const pageUrl = prefixUrl(endemicsVetVisitsReviewTestResults)
 
 const previousPageUrl = (typeOfLivestock) => {
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
-  if (isBeef || isDairy) return prefixUrl(endemicsWhichTypeOfReview)
+  if (isBeef || isDairy) {
+    return prefixUrl(endemicsWhichTypeOfReview)
+  }
   return prefixUrl(endemicsVetRCVS)
 }
 
@@ -28,7 +30,9 @@ const nextPageURL = (request) => {
   const { typeOfLivestock } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
 
-  if (isBeef || isDairy) return prefixUrl(endemicsDateOfVisit)
+  if (isBeef || isDairy) {
+    return prefixUrl(endemicsDateOfVisit)
+  }
   return prefixUrl(endemicsVaccination)
 }
 
