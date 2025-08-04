@@ -1,5 +1,11 @@
 import Joi from 'joi'
-import { MAX_POSSIBLE_DAY, MAX_POSSIBLE_DAY_SHORT_MONTHS, SHORT_MONTHS } from '../../constants/constants.js'
+import {
+  MAX_POSSIBLE_DAY,
+  MAX_POSSIBLE_DAY_FEB,
+  MAX_POSSIBLE_DAY_FEB_LEAP_YEAR,
+  MAX_POSSIBLE_DAY_SHORT_MONTHS,
+  SHORT_MONTHS
+} from '../../constants/constants.js'
 
 const isYearEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-year`] === ''
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
@@ -28,7 +34,7 @@ export const validateDateInputDay = (namePrefix, dateName) => {
               is: Joi.number().valid(2),
               then: Joi.number().custom((value, helpers) => {
                 const year = helpers.state.ancestors[0][`${namePrefix}-year`]
-                const isValidDay = isLeapYear(year) ? value <= 29 : value <= 28
+                const isValidDay = isLeapYear(year) ? value <= MAX_POSSIBLE_DAY_FEB_LEAP_YEAR : value <= MAX_POSSIBLE_DAY_FEB
                 return isValidDay ? value : helpers.error('dateInputDay.ifTheDateEnteredCannotBeCorrect')
               })
             },
