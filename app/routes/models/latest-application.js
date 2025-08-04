@@ -1,23 +1,26 @@
 import { getLatestApplication } from '../../lib/get-latest-application.js'
 import { getAllApplicationsBySbi } from '../../api-requests/application-service-api.js'
-import { status as applicationStatus } from '../../constants/constants.js'
-import { claimHasExpired } from '../../lib/claim-has-expired.js'
+import {
+  LAST_HOUR_OF_DAY,
+  LAST_MILLISECOND_OF_SECOND,
+  LAST_MINUTE_OF_HOUR,
+  LAST_SECOND_OF_MINUTE,
+  status as applicationStatus
+} from '../../constants/constants.js'
+import { hasClaimExpired } from '../../lib/has-claim-expired.js'
 import { NoApplicationFoundError } from '../../exceptions/no-application-found.js'
 import { ClaimHasAlreadyBeenMadeError } from '../../exceptions/claim-has-already-been-made.js'
 import { ClaimHasExpiredError } from '../../exceptions/claim-has-expired.js'
 import { config } from '../../config/index.js'
+import { formatDate } from '../../lib/display-helpers.js'
 
 const { claimExpiryTimeMonths } = config
-
-function formatDate (date) {
-  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
-}
 
 function claimTimeLimitDates (latestApplication) {
   const start = new Date(latestApplication.createdAt)
   const end = new Date(start)
   end.setMonth(end.getMonth() + claimExpiryTimeMonths)
-  end.setHours(23, 59, 59, 999) // set to midnight of the agreement end day
+  end.setHours(LAST_HOUR_OF_DAY, LAST_MINUTE_OF_HOUR, LAST_SECOND_OF_MINUTE, LAST_MILLISECOND_OF_SECOND) // set to midnight of the agreement end day
   return { startDate: start, endDate: end }
 }
 
@@ -36,7 +39,7 @@ export async function getLatestApplicationForSbi (sbi, name = '') {
   const latestApplication = getLatestApplication(latestApplicationsForSbi)
   switch (latestApplication.statusId) {
     case applicationStatus.AGREED:
-      if (claimHasExpired(latestApplication)) {
+      if (hasClaimExpired(latestApplication)) {
         const dates = claimTimeLimitDates(latestApplication)
         throw new ClaimHasExpiredError(`Claim has expired for reference - ${latestApplication.reference}`,
           {

@@ -9,11 +9,11 @@ import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
+
+const YES_TO_ASSESSMENT_TEXT = 'Select yes if the vet did a biosecurity assessment'
 
 const { biosecurity: biosecurityKey, dateOfVisit: dateOfVisitKey } = sessionKeys.endemicsClaim
-const {
-  urlPrefix
-} = config
 const {
   endemicsTestResults,
   endemicsBiosecurity,
@@ -30,7 +30,7 @@ const {
 } = links
 const { livestockTypes: { pigs }, pigsFollowUpTest: { pcr } } = claimConstants
 
-const pageUrl = `${urlPrefix}/${endemicsBiosecurity}`
+const pageUrl = prefixUrl(endemicsBiosecurity)
 
 export const isPIHuntValidPositive = (isPositive, piHuntDone, piHuntAllAnimals, dateOfVisit) => isPositive && piHuntDone && (isVisitDateAfterPIHuntAndDairyGoLive(dateOfVisit) ? piHuntAllAnimals : true)
 const isPIHuntValidNegative = (
@@ -60,15 +60,19 @@ export const getBeefOrDairyPage = (session, isNegative, isPositive) => {
   const piHuntAllAnimals = session?.piHuntAllAnimals === 'yes'
 
   if (isNegative) {
-    if (!piHuntDone) return `${urlPrefix}/${endemicsPIHunt}`
+    if (!piHuntDone) {
+      return prefixUrl(endemicsPIHunt)
+    }
 
-    if (!piHuntRecommended) return `${urlPrefix}/${endemicsPIHuntRecommended}`
+    if (!piHuntRecommended) {
+      return prefixUrl(endemicsPIHuntRecommended)
+    }
     if (piHuntRecommended && !piHuntAllAnimals) {
-      return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+      return prefixUrl(endemicsPIHuntAllAnimals)
     }
   }
   if (isPositive && piHuntDone && !piHuntAllAnimals) {
-    return `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+    return prefixUrl(endemicsPIHuntAllAnimals)
   }
   if (
     isPIHuntValid(
@@ -80,10 +84,10 @@ export const getBeefOrDairyPage = (session, isNegative, isPositive) => {
       session.dateOfVisit
     )
   ) {
-    return `${urlPrefix}/${endemicsTestResults}`
+    return prefixUrl(endemicsTestResults)
   }
 
-  return `${urlPrefix}/${endemicsTestResults}`
+  return prefixUrl(endemicsTestResults)
 }
 export const previousPageUrl = (request) => {
   const session = getEndemicsClaim(request)
@@ -96,38 +100,40 @@ export const previousPageUrl = (request) => {
   }
 
   if ((isBeef || isDairy) && isNegative) {
-    return `${urlPrefix}/${endemicsVetRCVS}`
+    return prefixUrl(endemicsVetRCVS)
   }
 
   if (isPigs) {
     return getBackPageForPigs(session)
   }
 
-  return `${urlPrefix}/${endemicsTestResults}`
+  return prefixUrl(endemicsTestResults)
 }
 
 const getBackPageForPigs = (session) => {
   if (config.pigUpdates.enabled) {
     // This page might have been skipped, if they said the result was negative
     if (session?.pigsGeneticSequencing) {
-      return `${urlPrefix}/${endemicsPigsGeneticSequencing}`
+      return prefixUrl(endemicsPigsGeneticSequencing)
     }
 
     if (session?.pigsFollowUpTest === pcr) {
-      return `${urlPrefix}/${endemicsPigsPcrResult}`
+      return prefixUrl(endemicsPigsPcrResult)
     }
 
-    return `${urlPrefix}/${endemicsPigsElisaResult}`
+    return prefixUrl(endemicsPigsElisaResult)
   }
 
-  return `${urlPrefix}/${endemicsDiseaseStatus}`
+  return prefixUrl(endemicsDiseaseStatus)
 }
 
 export const getAssessmentPercentageErrorMessage = (
   biosecurity,
   assessmentPercentage
 ) => {
-  if (biosecurity === undefined) return
+  if (biosecurity === undefined) {
+    return undefined
+  }
 
   switch (true) {
     case assessmentPercentage === '':
@@ -162,7 +168,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        biosecurity: Joi.string().valid('yes', 'no').required().messages({ 'any.required': 'Select yes if the vet did a biosecurity assessment' }),
+        biosecurity: Joi.string().valid('yes', 'no').required().messages({ 'any.required': YES_TO_ASSESSMENT_TEXT }),
         assessmentPercentage: Joi.when('biosecurity', {
           is: Joi.valid('yes'),
           then: Joi.string().pattern(/^(?!0$)(100|\d{1,2})$/)
@@ -176,10 +182,10 @@ const postHandler = {
 
         const errorMessage = biosecurity
           ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' }
-          : { text: 'Select yes if the vet did a biosecurity assessment', href: '#biosecurity' }
+          : { text: YES_TO_ASSESSMENT_TEXT, href: '#biosecurity' }
         const errors = {
           errorMessage,
-          radioErrorMessage: biosecurity === undefined ? { text: 'Select yes if the vet did a biosecurity assessment', href: '#biosecurity' } : undefined,
+          radioErrorMessage: biosecurity === undefined ? { text: YES_TO_ASSESSMENT_TEXT, href: '#biosecurity' } : undefined,
           inputErrorMessage: assessmentPercentageErrorMessage ? { text: assessmentPercentageErrorMessage, href: '#assessmentPercentage' } : undefined
         }
 
@@ -204,7 +210,7 @@ const postHandler = {
         return h.view(endemicsBiosecurityException, { backLink: pageUrl }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
-      return h.redirect(`${urlPrefix}/${endemicsCheckAnswers}`)
+      return h.redirect(prefixUrl(endemicsCheckAnswers))
     }
   }
 }

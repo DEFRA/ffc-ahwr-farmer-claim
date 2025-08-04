@@ -1,13 +1,12 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const urlPrefix = config.urlPrefix
 const {
   endemicsTestUrn,
   endemicsNumberOfOralFluidSamples,
@@ -19,7 +18,7 @@ const {
 } = sessionKeys
 const { minimumNumberFluidOralSamples } = thresholds
 
-const pageUrl = `${urlPrefix}/${endemicsNumberOfOralFluidSamples}`
+const pageUrl = prefixUrl(endemicsNumberOfOralFluidSamples)
 
 const getHandler = {
   method: 'GET',
@@ -29,7 +28,7 @@ const getHandler = {
       const { numberOfOralFluidSamples } = getEndemicsClaim(request)
       return h.view(endemicsNumberOfOralFluidSamples, {
         numberOfOralFluidSamples,
-        backLink: `${urlPrefix}/${endemicsTestUrn}`
+        backLink: prefixUrl(endemicsTestUrn)
       })
     }
   }
@@ -55,7 +54,7 @@ const postHandler = {
           .view(endemicsNumberOfOralFluidSamples, {
             ...request.payload,
             errorMessage: { text: err.details[0].message, href: '#numberOfOralFluidSamples' },
-            backLink: `${urlPrefix}/${endemicsTestUrn}`
+            backLink: prefixUrl(endemicsTestUrn)
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
@@ -76,7 +75,7 @@ const postHandler = {
           .takeover()
       }
 
-      return h.redirect(`${urlPrefix}/${endemicsTestResults}`)
+      return h.redirect(prefixUrl(endemicsTestResults))
     }
   }
 }

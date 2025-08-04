@@ -7,8 +7,8 @@ import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { claimConstants } from '../../constants/claim.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const urlPrefix = config.urlPrefix
 const {
   endemicsTestUrn,
   endemicsNumberOfSamplesTested,
@@ -22,7 +22,7 @@ const {
 } = sessionKeys
 const { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } = thresholds
 
-const pageUrl = `${urlPrefix}/${endemicsNumberOfSamplesTested}`
+const pageUrl = prefixUrl(endemicsNumberOfSamplesTested)
 
 const getHandler = {
   method: 'GET',
@@ -33,7 +33,7 @@ const getHandler = {
 
       return h.view(endemicsNumberOfSamplesTested, {
         numberOfSamplesTested,
-        backLink: `${urlPrefix}/${endemicsTestUrn}`
+        backLink: prefixUrl(endemicsTestUrn)
       })
     }
   }
@@ -58,7 +58,7 @@ const postHandler = {
           .view(endemicsNumberOfSamplesTested, {
             ...request.payload,
             errorMessage: { text: error.details[0].message, href: '#numberOfSamplesTested' },
-            backLink: `${urlPrefix}/${endemicsTestUrn}`
+            backLink: prefixUrl(endemicsTestUrn)
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
@@ -87,19 +87,19 @@ const postHandler = {
 
         if (herdVaccinationStatus === vaccinated) {
           setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
-          return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
+          return h.redirect(prefixUrl(endemicsPigsPcrResult))
         }
 
         if (lastReviewTestResults === positive) {
           setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
-          return h.redirect(`${urlPrefix}/${endemicsPigsPcrResult}`)
+          return h.redirect(prefixUrl(endemicsPigsPcrResult))
         }
 
         setEndemicsClaim(request, pigsFollowUpTestKey, elisa)
-        return h.redirect(`${urlPrefix}/${endemicsPigsElisaResult}`)
+        return h.redirect(prefixUrl(endemicsPigsElisaResult))
       }
 
-      return h.redirect(`${urlPrefix}/${endemicsDiseaseStatus}`)
+      return h.redirect(prefixUrl(endemicsDiseaseStatus))
     }
   }
 }

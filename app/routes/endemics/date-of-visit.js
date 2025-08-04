@@ -12,16 +12,18 @@ import { getEndemicsClaim, removeMultipleHerdsSessionData, setEndemicsClaim } fr
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { canMakeClaim } from '../../lib/can-make-claim.js'
-import { MULTIPLE_SPECIES_RELEASE_DATE, PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE } from '../../constants/constants.js'
+import {
+  MAX_POSSIBLE_DAY,
+  MAX_POSSIBLE_MONTH,
+  MULTIPLE_SPECIES_RELEASE_DATE,
+  PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
+} from '../../constants/constants.js'
 import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
 import { getAllClaimsForFirstHerd } from '../../lib/get-all-claims-for-first-herd.js'
 import HttpStatus from 'http-status-codes'
-
-const MAX_POSSIBLE_DAY = 31
-const MAX_POSSIBLE_MONTH = 12
 
 const {
   endemicsClaim: {
@@ -70,7 +72,7 @@ const getInputErrors = (request, reviewOrFollowUpText, newWorldApplication) => {
     'visit-date-day': joi.number().max(MAX_POSSIBLE_DAY),
     'visit-date-month': joi.number().max(MAX_POSSIBLE_MONTH),
     'visit-date-year': joi.number()
-  }).options({ abortEarly: false }) // needed otherwise it doesnt check other fields if an error is found
+  }).options({ abortEarly: false }) // needed otherwise it doesn't check other fields if an error is found
 
   const { error } = dateSchema.validate(request.payload)
 

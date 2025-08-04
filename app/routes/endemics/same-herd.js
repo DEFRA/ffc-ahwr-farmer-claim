@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, removeSessionDataForSameHerdChange, setEndemicsClaim } from '../../session/index.js'
@@ -9,8 +8,8 @@ import { canMakeClaim } from '../../lib/can-make-claim.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { getHerdOrFlock } from '../../lib/display-helpers.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const {
   endemicsSameHerd,
   endemicsCheckHerdDetails,
@@ -19,11 +18,11 @@ const {
   endemicsSameHerdException
 } = links
 
-const dateOfVisitPageUrl = `${urlPrefix}/${endemicsDateOfVisit}`
-const whichTypeOfReviewPageUrl = `${urlPrefix}/${endemicsWhichTypeOfReview}`
+const dateOfVisitPageUrl = prefixUrl(endemicsDateOfVisit)
+const whichTypeOfReviewPageUrl = prefixUrl(endemicsWhichTypeOfReview)
 
-const pageUrl = `${urlPrefix}/${endemicsSameHerd}`
-const previousPageUrl = `${urlPrefix}/${endemicsCheckHerdDetails}`
+const pageUrl = prefixUrl(endemicsSameHerd)
+const previousPageUrl = prefixUrl(endemicsCheckHerdDetails)
 
 const {
   endemicsClaim: {

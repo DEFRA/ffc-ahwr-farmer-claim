@@ -1,16 +1,15 @@
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sheepTestTypes } from '../../constants/sheep-test-types.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { sheepTests: sheepTestsKey, sheepTestResults: sheepTestResultsKey } = sessionKeys.endemicsClaim
 const { endemicsSheepEndemicsPackage, endemicsSheepTests, endemicsSheepTestResults } = links
 
-const pageUrl = `${urlPrefix}/${endemicsSheepTests}`
-const backLink = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
+const pageUrl = prefixUrl(endemicsSheepTests)
+const backLink = prefixUrl(endemicsSheepEndemicsPackage)
 
 const getHandler = {
   method: 'GET',
@@ -67,7 +66,7 @@ const postHandler = {
       setEndemicsClaim(request, sheepTestResultsKey,
         [...(typeof sheepTests === 'object' ? sheepTests : [sheepTests])]
           .map((test, index) => ({ diseaseType: test, result: session?.sheepTestResults?.find(item => item.diseaseType === test)?.result || '', isCurrentPage: index === 0 })))
-      return h.redirect(`${urlPrefix}/${endemicsSheepTestResults}`)
+      return h.redirect(prefixUrl(endemicsSheepTestResults))
     }
   }
 }

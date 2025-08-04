@@ -2,10 +2,10 @@ import { NoApplicationFoundError } from '../../../../../app/exceptions/no-applic
 import { ClaimHasAlreadyBeenMadeError } from '../../../../../app/exceptions/claim-has-already-been-made.js'
 import { ClaimHasExpiredError } from '../../../../../app/exceptions/claim-has-expired.js'
 import { getAllApplicationsBySbi } from '../../../../../app/api-requests/application-service-api.js'
-import { claimHasExpired } from '../../../../../app/lib/claim-has-expired.js'
+import { hasClaimExpired } from '../../../../../app/lib/has-claim-expired.js'
 import { getLatestApplicationForSbi } from '../../../../../app/routes/models/latest-application.js'
 
-jest.mock('../../../../../app/lib/claim-has-expired')
+jest.mock('../../../../../app/lib/has-claim-expired.js')
 jest.mock('../../../../../app/api-requests/application-service-api')
 
 describe('Latest Applications Tests', () => {
@@ -418,7 +418,7 @@ describe('Latest Applications Tests', () => {
     }
   ])('%s', async (testCase) => {
     if (testCase.when.agreementExpired) {
-      claimHasExpired.mockReturnValueOnce(true)
+      hasClaimExpired.mockReturnValueOnce(true)
     }
     getAllApplicationsBySbi.mockResolvedValueOnce(testCase.when.latestApplications)
     if (testCase.expect.error) {

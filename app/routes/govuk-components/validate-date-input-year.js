@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import { MAX_POSSIBLE_YEAR } from '../../constants/constants.js'
 
 const isDayEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-day`] === ''
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
@@ -8,7 +9,7 @@ export const validateDateInputYear = (namePrefix, dateName, customValidation, cu
     switch: [
       {
         is: '',
-        then: Joi.custom((value, helpers) => {
+        then: Joi.custom((_value, helpers) => {
           if (isDayEmpty(helpers, namePrefix) && isMonthEmpty(helpers, namePrefix)) {
             return helpers.error('dateInputYear.ifNothingIsEntered')
           }
@@ -22,7 +23,7 @@ export const validateDateInputYear = (namePrefix, dateName, customValidation, cu
         }),
         otherwise: Joi.number()
           .min(1000)
-          .max(9999)
+          .max(MAX_POSSIBLE_YEAR)
           .required()
           .when(`${namePrefix}-day`, {
             is: Joi.number().required(),

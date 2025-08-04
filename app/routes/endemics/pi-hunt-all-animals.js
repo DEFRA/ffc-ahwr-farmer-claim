@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
 import { sessionKeys } from '../../session/keys.js'
@@ -10,17 +9,17 @@ import { getAmount } from '../../api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-change.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { endemicsPIHuntRecommended, endemicsDateOfTesting, endemicsPIHuntAllAnimals, endemicsPIHunt, endemicsPIHuntAllAnimalsException, endemicsBiosecurity } = links
 const { endemicsClaim: { piHuntAllAnimals: piHuntAllAnimalsKey } } = sessionKeys
 
-const pageUrl = `${urlPrefix}/${endemicsPIHuntAllAnimals}`
+const pageUrl = prefixUrl(endemicsPIHuntAllAnimals)
 const backLink = (reviewTestResults) => {
   const { isPositive } = getTestResult(reviewTestResults)
-  return isPositive ? `${urlPrefix}/${endemicsPIHunt}` : `${urlPrefix}/${endemicsPIHuntRecommended}`
+  return isPositive ? prefixUrl(endemicsPIHunt) : prefixUrl(endemicsPIHuntRecommended)
 }
-const continueToBiosecurityURL = `${urlPrefix}/${endemicsBiosecurity}`
+const continueToBiosecurityURL = prefixUrl(endemicsBiosecurity)
 const getLivestockText = (typeOfLivestock) => {
   const { isBeef } = getLivestockTypes(typeOfLivestock)
   return isBeef ? 'beef' : 'dairy'
@@ -85,7 +84,7 @@ const postHandler = {
           .code(HttpStatus.BAD_REQUEST).takeover()
       }
 
-      return h.redirect(`${urlPrefix}/${endemicsDateOfTesting}`)
+      return h.redirect(prefixUrl(endemicsDateOfTesting))
     }
   }
 }

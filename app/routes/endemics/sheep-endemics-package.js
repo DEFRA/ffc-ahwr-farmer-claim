@@ -1,15 +1,14 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { endemicsSheepEndemicsPackage, endemicsVetRCVS, endemicsSheepTests } = links
 const { endemicsClaim: { sheepEndemicsPackage: sheepEndemicsPackageKey } } = sessionKeys
-const pageUrl = `${urlPrefix}/${endemicsSheepEndemicsPackage}`
+const pageUrl = prefixUrl(endemicsSheepEndemicsPackage)
 const options = {
   hintHtml: 'You can find this on the summary the vet gave you. The diseases the vet might take samples to test for are listed with each package.'
 }
@@ -69,7 +68,7 @@ const getHandler = {
           ...option,
           checked: session?.sheepEndemicsPackage === option.value
         })))
-      const backLink = `${urlPrefix}/${endemicsVetRCVS}`
+      const backLink = prefixUrl(endemicsVetRCVS)
       return h.view(endemicsSheepEndemicsPackage, { backLink, pageHeading, sheepEndemicsPackage: session?.sheepEndemicsPackage, ...sheepEndemicsPackageRadios })
     }
   }
@@ -92,7 +91,7 @@ const postHandler = {
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
         const sheepEndemicsPackageRadios = radios(pageHeading, 'sheepEndemicsPackage', 'Select a sheep health package', options)(sheepRadioOptions)
-        const backLink = `${urlPrefix}/${endemicsVetRCVS}`
+        const backLink = prefixUrl(endemicsVetRCVS)
         return h.view(endemicsSheepEndemicsPackage, {
           ...request.payload,
           backLink,
@@ -115,7 +114,7 @@ const postHandler = {
 
       setEndemicsClaim(request, sheepEndemicsPackageKey, sheepEndemicsPackage)
 
-      return h.redirect(`${urlPrefix}/${endemicsSheepTests}`)
+      return h.redirect(prefixUrl(endemicsSheepTests))
     }
   }
 }

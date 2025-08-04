@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { errorMessages } from '../../lib/error-messages.js'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
@@ -7,23 +6,25 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getLivestockTypes } from '../../lib/get-livestock-types.js'
 import { getReviewType } from '../../lib/get-review-type.js'
 import HttpStatus from 'http-status-codes'
+import { prefixUrl } from '../utils/page-utils.js'
 
-const { urlPrefix } = config
 const { name: nameErrorMessages } = errorMessages
 const { endemicsNumberOfSpeciesTested, endemicsVetName, endemicsVetRCVS, endemicsSpeciesNumbers } = links
 const {
   endemicsClaim: { vetsName: vetsNameKey }
 } = sessionKeys
 
-const pageUrl = `${urlPrefix}/${endemicsVetName}`
+const pageUrl = prefixUrl(endemicsVetName)
 const backLink = (request) => {
   const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
   const { isBeef, isDairy } = getLivestockTypes(typeOfLivestock)
   const { isEndemicsFollowUp } = getReviewType(typeOfReview)
 
-  if (isDairy || (isBeef && isEndemicsFollowUp)) return `${urlPrefix}/${endemicsSpeciesNumbers}`
+  if (isDairy || (isBeef && isEndemicsFollowUp)) {
+    return prefixUrl(endemicsSpeciesNumbers)
+  }
 
-  return `${urlPrefix}/${endemicsNumberOfSpeciesTested}`
+  return prefixUrl(endemicsNumberOfSpeciesTested)
 }
 
 const getHandler = {
@@ -74,7 +75,7 @@ const postHandler = {
     handler: async (request, h) => {
       const { vetsName } = request.payload
       setEndemicsClaim(request, vetsNameKey, vetsName)
-      return h.redirect(`${urlPrefix}/${endemicsVetRCVS}`)
+      return h.redirect(prefixUrl(endemicsVetRCVS))
     }
   }
 }

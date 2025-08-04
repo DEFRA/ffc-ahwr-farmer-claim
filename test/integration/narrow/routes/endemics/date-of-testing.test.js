@@ -17,9 +17,9 @@ jest.mock('../../../../../app/lib/context-helper.js')
 let crumb
 const today = new Date()
 const yesterday = new Date(today)
-yesterday.setDate(yesterday.getDate() - 1)
+yesterday.setDate(today.getDate() - 1)
 const tomorrow = new Date(today)
-tomorrow.setDate(tomorrow.getDate() + 1)
+tomorrow.setDate(today.getDate() + 1)
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-testing'
 
