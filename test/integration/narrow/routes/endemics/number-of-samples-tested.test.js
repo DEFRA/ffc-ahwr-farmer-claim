@@ -19,7 +19,7 @@ describe('Number of samples tested test', () => {
     raiseInvalidDataEvent.mockImplementation(() => {})
     setEndemicsClaim.mockImplementation(() => {})
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
-
+    config.pigUpdates.enabled = false
     server = await createServer()
     await server.initialize()
   })
