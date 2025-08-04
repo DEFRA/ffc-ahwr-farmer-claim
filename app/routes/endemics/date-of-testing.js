@@ -289,8 +289,7 @@ const postHandler = {
         if (Object.keys(newError).length > 0 && newError.constructor === Object) { errorSummary.push(newError) }
 
         const possibleErrorMessage = (labelStartsWith) => error.details.find(
-          (e) => e.context.label.startsWith(labelStartsWith)
-        )?.map(x => x.message)
+          (e) => e.context.label.startsWith(labelStartsWith))?.message
 
         return h
           .view(endemicsDateOfTesting, {

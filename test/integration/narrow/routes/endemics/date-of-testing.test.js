@@ -9,6 +9,7 @@ import {
   isVisitDateAfterPIHuntAndDairyGoLive,
   skipSameHerdPage
 } from '../../../../../app/lib/context-helper.js'
+import HttpStatus from 'http-status-codes'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -22,6 +23,13 @@ const tomorrow = new Date(today)
 tomorrow.setDate(today.getDate() + 1)
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-testing'
+
+const latestEndemicsApplication = {
+  reference: 'AHWR-2470-6BA9',
+  createdAt: new Date('2022-01-01'),
+  statusId: 1,
+  type: 'EE'
+}
 
 describe('Date of testing', () => {
   let server
@@ -50,7 +58,7 @@ describe('Date of testing', () => {
         .mockReturnValue({
           typeOfReview: 'E',
           typeOfLivestock,
-          latestEndemicsApplication: { createdAt: new Date('2022-01-01') },
+          latestEndemicsApplication,
           reference: 'TEMP-6GSE-PIR8',
           dateOfVisit: '2022-01-01'
         })
@@ -63,7 +71,7 @@ describe('Date of testing', () => {
 
       const res = await server.inject(options)
 
-      expect(res.statusCode).toBe(200)
+      expect(res.statusCode).toBe(HttpStatus.OK)
       const $ = cheerio.load(res.payload)
       expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/pi-hunt-all-animals')
       expectPhaseBanner.ok($)
@@ -75,6 +83,83 @@ describe('Date of testing', () => {
     beforeEach(async () => {
       crumb = await getCrumbs(server)
     })
+
+    test('should redirect with an error if the user doesnt enter anything', async () => {
+      getEndemicsClaim
+        .mockImplementationOnce(() => ({}))
+        .mockImplementationOnce(() => ({
+          dateOfVisit: '2024-01-01',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }],
+          latestEndemicsApplication
+        }))
+      const options = {
+        method: 'POST',
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: undefined
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      const $ = cheerio.load(res.payload)
+      const errorMessage = 'Enter the date samples were taken'
+
+      expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST)
+      expect($('li > a').text().trim()).toContain(errorMessage)
+    })
+
+    test('should redirect with an error if the user selects it was a different date, but doesnt enter a date', async () => {
+      getEndemicsClaim
+        .mockImplementationOnce(() => ({}))
+        .mockImplementationOnce(() => ({
+          dateOfVisit: '2024-01-01',
+          typeOfReview: 'E',
+          typeOfLivestock: 'sheep',
+          previousClaims: [{
+            type: 'R',
+            data: {
+              typeOfLivestock: 'beef',
+              dateOfVisit: '2024-01-01',
+              testResults: 'negative'
+            }
+          }],
+          latestEndemicsApplication
+        }))
+      const options = {
+        method: 'POST',
+        url,
+        payload: {
+          crumb,
+          whenTestingWasCarriedOut: 'onAnotherDate',
+          'on-another-date-day': undefined,
+          'on-another-date-month': undefined,
+          'on-another-date-year': undefined
+        },
+        auth,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      const $ = cheerio.load(res.payload)
+
+      expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST)
+      expect($('li > a').text().trim()).toContain('"on-another-date-day" is required')
+    })
+
     test.each([
       {
         description: 'When vet visited the farm',
@@ -101,7 +186,7 @@ describe('Date of testing', () => {
       }
 
       const res = await server.inject(options)
-      expect(res.statusCode).toBe(302)
+      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY)
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
     })
 
@@ -139,7 +224,7 @@ describe('Date of testing', () => {
 
       const res = await server.inject(options)
 
-      expect(res.statusCode).toBe(302)
+      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY)
       expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
       expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(0)
     })
@@ -179,7 +264,7 @@ describe('Date of testing', () => {
       const res = await server.inject(options)
 
       expect(raiseInvalidDataEvent).toHaveBeenCalledWith(expect.any(Object), 'dateOfTesting', expect.stringContaining('is outside of the recommended 4 month period from the date of visit 2024-01-01'))
-      expect(res.statusCode).toBe(302)
+      expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY)
       expect(res.headers.location).toEqual('/claim/endemics/species-numbers')
     })
 
@@ -219,7 +304,7 @@ describe('Date of testing', () => {
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
 
-      expect(res.statusCode).toBe(400)
+      expect(res.statusCode).toBe(HttpStatus.BAD_REQUEST)
       expect(raiseInvalidDataEvent).toHaveBeenCalledTimes(1)
       expect($('.govuk-body').text()).toContain('You must do a review, including sampling, before you do the resulting follow-up.')
     })
@@ -246,7 +331,7 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
 
     const res = await server.inject({ method: 'GET', url, auth })
 
-    expect(res.statusCode).toBe(200)
+    expect(res.statusCode).toBe(HttpStatus.OK)
     const $ = cheerio.load(res.payload)
     expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/check-herd-details')
   })
@@ -257,7 +342,7 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
 
     const res = await server.inject({ method: 'GET', url, auth })
 
-    expect(res.statusCode).toBe(200)
+    expect(res.statusCode).toBe(HttpStatus.OK)
     const $ = cheerio.load(res.payload)
     expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/same-herd')
   })
@@ -269,7 +354,7 @@ describe('Date of testing when isMultipleHerdsUserJourney=true', () => {
 
     const res = await server.inject({ method: 'GET', url, auth })
 
-    expect(res.statusCode).toBe(200)
+    expect(res.statusCode).toBe(HttpStatus.OK)
     const $ = cheerio.load(res.payload)
     expect($('.govuk-back-link').attr('href')).toMatch('/claim/endemics/pi-hunt-all-animals')
   })
