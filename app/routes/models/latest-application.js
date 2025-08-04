@@ -12,12 +12,9 @@ import { NoApplicationFoundError } from '../../exceptions/no-application-found.j
 import { ClaimHasAlreadyBeenMadeError } from '../../exceptions/claim-has-already-been-made.js'
 import { ClaimHasExpiredError } from '../../exceptions/claim-has-expired.js'
 import { config } from '../../config/index.js'
+import { formatDate } from '../../lib/display-helpers.js'
 
 const { claimExpiryTimeMonths } = config
-
-function formatDate (date) {
-  return date.toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
-}
 
 function claimTimeLimitDates (latestApplication) {
   const start = new Date(latestApplication.createdAt)

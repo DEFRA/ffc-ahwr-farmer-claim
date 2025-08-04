@@ -2,11 +2,7 @@ import Joi from 'joi'
 import links from '../../config/routes.js'
 import { sheepTestResultsType, sheepTestTypes } from '../../constants/sheep-test-types.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
-import {
-  getErrorResultObject,
-  getErrorResultString,
-  notOtherDiseaseTypeNoResult
-} from '../utils/disease-type-test-result.js'
+import { getErrorResultObject, getErrorResultString } from '../utils/disease-type-test-result.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
@@ -266,7 +262,7 @@ const postHandler = {
       const { sheepTestResults } = getEndemicsClaim(request)
       const diseaseTypeIndex = sheepTestResults.findIndex((test) => test.isCurrentPage)
       const diseaseType = sheepTestResults[diseaseTypeIndex]
-      const upatedSheepTestResults = [...sheepTestResults]
+      const updatedSheepTestResults = [...sheepTestResults]
 
       if (diseaseType?.diseaseType !== 'other') {
         const pageContent = getPageContent(request, { error: true })
@@ -274,14 +270,14 @@ const postHandler = {
         const errorList = [{ text: 'Select a result', href: `#${TEST_RESULT_ELEMENT_ID}` }]
 
         if (!payload?.testResult) {
-          return notOtherDiseaseTypeNoResult(payload.testResult, pageContent, h, errorList, backLink, endemicsSheepTestResults)
+          return h.view(endemicsSheepTestResults, { ...pageContent, backLink, errorList }).code(HttpStatus.BAD_REQUEST).takeover()
         }
 
         diseaseType.result = payload.testResult
 
-        upatedSheepTestResults[diseaseTypeIndex] = diseaseType
+        updatedSheepTestResults[diseaseTypeIndex] = diseaseType
 
-        setEndemicsClaim(request, 'sheepTestResults', upatedSheepTestResults)
+        setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
 
         return h.redirect(nextPage)
       }
@@ -318,9 +314,9 @@ const postHandler = {
 
       diseaseType.result = updateDiseaseType(diseaseTypeErrorList, testResultEmptyItems, payloadData)
 
-      upatedSheepTestResults[diseaseTypeIndex] = diseaseType
+      updatedSheepTestResults[diseaseTypeIndex] = diseaseType
 
-      setEndemicsClaim(request, 'sheepTestResults', upatedSheepTestResults)
+      setEndemicsClaim(request, 'sheepTestResults', updatedSheepTestResults)
 
       if (hasError([diseaseTypeErrorList.length, testResultEmptyItems.length, newDiseaseTypeErrorMessage])) {
         const pageContent = getPageContent(request, {

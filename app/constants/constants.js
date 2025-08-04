@@ -29,3 +29,9 @@ export const LAST_HOUR_OF_DAY = 23
 export const LAST_MINUTE_OF_HOUR = 59
 export const LAST_SECOND_OF_MINUTE = 59
 export const LAST_MILLISECOND_OF_SECOND = 999
+
+export const MAX_POSSIBLE_YEAR = 9999
+export const MAX_POSSIBLE_DAY = 31
+export const MAX_POSSIBLE_DAY_SHORT_MONTHS = 30
+export const MAX_POSSIBLE_MONTH = 12
+export const SHORT_MONTHS = [4, 6, 9, 11] // April, June, September, November

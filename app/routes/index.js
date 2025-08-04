@@ -6,7 +6,7 @@ export const entryPointHandlers = [{
   path: '/claim',
   options: {
     auth: false,
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       // old world disabled now, just go straight to new world
       return h.redirect(`${config.urlPrefix}/${links.endemicsIndex}`)
     }

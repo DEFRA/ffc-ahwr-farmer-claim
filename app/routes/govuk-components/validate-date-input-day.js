@@ -1,4 +1,5 @@
 import Joi from 'joi'
+import { MAX_POSSIBLE_DAY, MAX_POSSIBLE_DAY_SHORT_MONTHS, SHORT_MONTHS } from '../../constants/constants.js'
 
 const isYearEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-year`] === ''
 const isMonthEmpty = (helpers, namePrefix) => helpers.state.ancestors[0][`${namePrefix}-month`] === ''
@@ -9,7 +10,7 @@ export const validateDateInputDay = (namePrefix, dateName) => {
     switch: [
       {
         is: '',
-        then: Joi.custom((value, helpers) => {
+        then: Joi.custom((_value, helpers) => {
           if (isYearEmpty(helpers, namePrefix) && isMonthEmpty(helpers, namePrefix)) {
             return helpers.error('dateInputDay.ifNothingIsEntered')
           }
@@ -27,17 +28,14 @@ export const validateDateInputDay = (namePrefix, dateName) => {
               is: Joi.number().valid(2),
               then: Joi.number().custom((value, helpers) => {
                 const year = helpers.state.ancestors[0][`${namePrefix}-year`]
-                if (isLeapYear(year)) {
-                  return value <= 29 ? value : helpers.error('dateInputDay.ifTheDateEnteredCannotBeCorrect')
-                } else {
-                  return value <= 28 ? value : helpers.error('dateInputDay.ifTheDateEnteredCannotBeCorrect')
-                }
+                const isValidDay = isLeapYear(year) ? value <= 29 : value <= 28
+                return isValidDay ? value : helpers.error('dateInputDay.ifTheDateEnteredCannotBeCorrect')
               })
             },
             {
-              is: Joi.number().valid(4, 6, 9, 11),
-              then: Joi.number().max(30),
-              otherwise: Joi.number().max(31)
+              is: Joi.number().valid(...SHORT_MONTHS),
+              then: Joi.number().max(MAX_POSSIBLE_DAY_SHORT_MONTHS),
+              otherwise: Joi.number().max(MAX_POSSIBLE_DAY)
             }
           ]
         }).required()
