@@ -31,12 +31,33 @@ const getHandler = {
     handler: async (request, h) => {
       const { numberOfSamplesTested } = getEndemicsClaim(request)
 
+      let hintText = 'You can find this on the summary the vet gave you.'
+
+      if (config.pigUpdates.enabled) {
+        hintText = 'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
+      }
+
       return h.view(endemicsNumberOfSamplesTested, {
         numberOfSamplesTested,
-        backLink: prefixUrl(endemicsTestUrn)
+        backLink: prefixUrl(endemicsTestUrn),
+        hintText
       })
     }
   }
+}
+
+const getUpdatedErrorMessage = (errorMessage) => {
+  if (config.pigUpdates.enabled) {
+    const pigUpdatesErrorMessageMap = {
+      'Enter the number of samples tested': 'Enter how many samples were tested. Use the number of PCR or ELISA test results you got back',
+      'The number of samples tested should not exceed 9999': 'The number of samples tested should not exceed 9999. Use the number of PCR or ELISA test results you got back',
+      'The amount of samples tested must only include numbers': 'The amount of samples tested must only include numbers. Use the number of PCR or ELISA test results you got back'
+    }
+
+    return pigUpdatesErrorMessageMap[errorMessage]
+  }
+
+  return errorMessage
 }
 
 const postHandler = {
@@ -54,10 +75,12 @@ const postHandler = {
           })
       }),
       failAction: async (request, h, error) => {
+        const newErrorMessage = getUpdatedErrorMessage(error.details[0].message)
+
         return h
           .view(endemicsNumberOfSamplesTested, {
             ...request.payload,
-            errorMessage: { text: error.details[0].message, href: '#numberOfSamplesTested' },
+            errorMessage: { text: newErrorMessage, href: '#numberOfSamplesTested' },
             backLink: prefixUrl(endemicsTestUrn)
           })
           .code(HttpStatus.BAD_REQUEST)
