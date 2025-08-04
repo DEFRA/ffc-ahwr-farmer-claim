@@ -1,5 +1,5 @@
-import { config } from '../config/index.js'
 import links from '../config/routes.js'
+import { prefixUrl } from './utils/page-utils.js'
 
 export const entryPointHandlers = [{
   method: 'GET',
@@ -8,7 +8,7 @@ export const entryPointHandlers = [{
     auth: false,
     handler: async (_request, h) => {
       // old world disabled now, just go straight to new world
-      return h.redirect(`${config.urlPrefix}/${links.endemicsIndex}`)
+      return h.redirect(prefixUrl(links.endemicsIndex))
     }
   }
 }]
