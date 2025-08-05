@@ -77,11 +77,18 @@ const postHandler = {
       failAction: async (request, h, error) => {
         const newErrorMessage = getUpdatedErrorMessage(error.details[0].message)
 
+        let hintText = 'You can find this on the summary the vet gave you.'
+
+        if (config.pigUpdates.enabled) {
+          hintText = 'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
+        }
+
         return h
           .view(endemicsNumberOfSamplesTested, {
             ...request.payload,
             errorMessage: { text: newErrorMessage, href: '#numberOfSamplesTested' },
-            backLink: prefixUrl(endemicsTestUrn)
+            backLink: prefixUrl(endemicsTestUrn),
+            hintText
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
