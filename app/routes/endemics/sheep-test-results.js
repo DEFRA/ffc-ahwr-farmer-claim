@@ -7,6 +7,8 @@ import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
 
+const MAX_ALLOWED_CHARS = 500
+const VALIDATOR_PATTERN = /^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,500}$/
 const { endemicsSheepTests, endemicsSheepTestResults, endemicsCheckAnswers } = links
 
 const pageUrl = prefixUrl(endemicsSheepTestResults)
@@ -35,7 +37,7 @@ const emptyTestResultErrorMessage = 'Enter the result'
 const duplicatedItemErrorMessage = 'You’ve already included this kind of disease'
 const emptyDiseaseTypeErrorMessage = 'Enter the condition or disease'
 
-const fieldValidator = (fieldName) => Joi.string().trim().max(500).pattern(/^(?!.*\s{2,})[a-zA-Z0-9\s-]{1,500}$/).required().messages({
+const fieldValidator = (fieldName) => Joi.string().trim().max(MAX_ALLOWED_CHARS).pattern(VALIDATOR_PATTERN).required().messages({
   'any.required': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
   'string.base': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
   'string.empty': fieldName === 'diseaseType' ? emptyDiseaseTypeErrorMessage : emptyTestResultErrorMessage,
@@ -85,6 +87,10 @@ const getPageContent = (request, data) => {
 }
 
 const getDuplicatedItemIndexes = (input) => {
+  if (!isOfTypeObject(input)) {
+    return []
+  }
+
   const duplicates = new Map()
 
   input.map((item) => item.toLowerCase())
@@ -171,16 +177,20 @@ const newDiseaseInTheListValidation = (payload) => {
 const getDiseaseTypeErrorMessage = (diseaseTypeEmptyItems, duplicateItems) => {
   let diseaseTypeErrorList
 
-  if (diseaseTypeEmptyItems?.length && duplicateItems?.length) {
+  if (diseaseTypeEmptyItems?.length && duplicateItems.length) {
     diseaseTypeErrorList = [
       ...diseaseTypeEmptyItems,
-      ...(duplicateItems || []).filter(
+      ...duplicateItems.filter(
         (item) => !diseaseTypeEmptyItems?.length || !diseaseTypeEmptyItems?.find((emptyItem) => Object.keys(emptyItem)[0] === Object.keys(item)[0])
       )
     ]
-  } else if (duplicateItems?.length) {
+  } else if (duplicateItems.length) {
     diseaseTypeErrorList = [...duplicateItems]
-  } else if (diseaseTypeEmptyItems?.length) diseaseTypeErrorList = [...diseaseTypeEmptyItems]
+  } else if (diseaseTypeEmptyItems?.length) {
+    diseaseTypeErrorList = [...diseaseTypeEmptyItems]
+  } else {
+    diseaseTypeErrorList = []
+  }
 
   return diseaseTypeErrorList
 }
@@ -301,16 +311,13 @@ const postHandler = {
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
-      const { newPayloadData, newErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation) || {}
-
-      const payloadData = newPayloadData || payload
-      const newDiseaseTypeErrorMessage = newErrorMessage
+      const { newPayloadData: payloadData, newErrorMessage: newDiseaseTypeErrorMessage } = getErrorResultObject(payload, newDiseaseInTheListValidation)
 
       const diseaseTypeEmptyItems = getEmptyItems(payloadData.diseaseType, DISEASE_TYPE_ELEMENT_ID)
       const testResultEmptyItems = getEmptyItems(payloadData.testResult, TEST_RESULT_ELEMENT_ID)
-      const duplicateItems = isOfTypeObject(payloadData.diseaseType) ? getDuplicatedItemIndexes(payloadData.diseaseType) : []
+      const duplicateItems = getDuplicatedItemIndexes(payloadData.diseaseType)
 
-      const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems) || []
+      const diseaseTypeErrorList = getDiseaseTypeErrorMessage(diseaseTypeEmptyItems, duplicateItems)
 
       diseaseType.result = updateDiseaseType(diseaseTypeErrorList, testResultEmptyItems, payloadData)
 
@@ -336,12 +343,12 @@ const postHandler = {
         }).code(HttpStatus.BAD_REQUEST).takeover()
       }
 
-      if (payloadData?.submitButton === 'continue') return h.redirect(nextPage)
-
-      const pageContent = getPageContent(request)
+      if (payloadData?.submitButton === 'continue') {
+        return h.redirect(nextPage)
+      }
 
       return h.view(endemicsSheepTestResults, {
-        ...pageContent,
+        ...getPageContent(request),
         backLink: previousPage
       })
     }
