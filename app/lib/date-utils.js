@@ -11,5 +11,5 @@ export const isWithin10Months = (a, b) => {
   const [dateA, dateB] = [new Date(a), new Date(b)]
   const [firstDate, secondDate] = dateA < dateB ? [dateA, dateB] : [dateB, dateA]
   const firstDatePlus10Months = firstDate.setMonth(firstDate.getMonth() + 10)
-  return firstDatePlus10Months >= secondDate
+  return firstDatePlus10Months >= secondDate.valueOf()
 }

@@ -44,7 +44,7 @@ const postHandler = {
           .valid(...Object.values(diseaseStatusTypes))
           .required()
       }),
-      failAction: (request, h, _err) => {
+      failAction: (_request, h, _err) => {
         return h
           .view(endemicsDiseaseStatus, {
             errorMessage,

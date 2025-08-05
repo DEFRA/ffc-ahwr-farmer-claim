@@ -13,7 +13,7 @@ export const getAuthConfig = () => {
     }
   })
 
-  const authConfig = {
+  const config = {
     defraId: {
       hostname: `https://${process.env.DEFRA_ID_TENANT}.b2clogin.com/${process.env.DEFRA_ID_TENANT}.onmicrosoft.com`,
       oAuthAuthorisePath: '/oauth2/v2.0/authorize',
@@ -25,7 +25,7 @@ export const getAuthConfig = () => {
     }
   }
 
-  const { error } = authSchema.validate(authConfig, {
+  const { error } = authSchema.validate(config, {
     abortEarly: false
   })
 
@@ -33,7 +33,7 @@ export const getAuthConfig = () => {
     throw new Error(`The auth config is invalid. ${error.message}`)
   }
 
-  return authConfig
+  return config
 }
 
 export const authConfig = getAuthConfig()

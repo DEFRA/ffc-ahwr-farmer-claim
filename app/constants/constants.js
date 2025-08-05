@@ -31,6 +31,7 @@ export const LAST_SECOND_OF_MINUTE = 59
 export const LAST_MILLISECOND_OF_SECOND = 999
 
 export const MAX_POSSIBLE_YEAR = 9999
+export const MIN_POSSIBLE_YEAR = 1000 // there's an argument to be had that this should be 2018 or something more sensible
 export const MAX_POSSIBLE_DAY = 31
 export const MAX_POSSIBLE_DAY_SHORT_MONTHS = 30
 export const MAX_POSSIBLE_DAY_FEB_LEAP_YEAR = 29

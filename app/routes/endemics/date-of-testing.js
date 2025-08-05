@@ -24,6 +24,7 @@ import { getHerdBackLink } from '../../lib/get-herd-back-link.js'
 import { isWithin4MonthsBeforeOrAfterDateOfVisit } from '../../lib/date-of-testing-4-month-check.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
+import { MAX_POSSIBLE_YEAR, MIN_POSSIBLE_YEAR } from '../../constants/constants.js'
 
 const {
   endemicsClaim: { dateOfTesting: dateOfTestingKey, dateOfVisit: dateOfVisitKey }
@@ -193,7 +194,7 @@ const postHandler = {
                 onAnotherDateInputId,
                 dateOfSamplingText,
                 (value, helpers) => {
-                  if (value > 9999 || value < 1000) {
+                  if (value > MAX_POSSIBLE_YEAR || value < MIN_POSSIBLE_YEAR) { // revisit this in the refactor date validation ticket
                     return value
                   }
 

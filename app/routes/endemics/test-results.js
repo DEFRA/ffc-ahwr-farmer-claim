@@ -37,6 +37,8 @@ const previousPageUrl = (request) => {
   if (isBeef || isDairy) {
     return prefixUrl(endemicsTestUrn)
   }
+
+  return undefined // if a review, and is for sheep, what should back page be? Can this ever happen?
 }
 const nextPageURL = (request) => {
   const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)

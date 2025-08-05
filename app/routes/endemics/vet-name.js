@@ -14,6 +14,9 @@ const {
   endemicsClaim: { vetsName: vetsNameKey }
 } = sessionKeys
 
+const MAX_VET_NAME_LENGTH = 50
+const VET_NAME_PATTERN = /^[A-Za-z0-9&,' \-/()]+$/
+
 const pageUrl = prefixUrl(endemicsVetName)
 const backLink = (request) => {
   const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
@@ -49,8 +52,8 @@ const postHandler = {
       payload: Joi.object({
         vetsName: Joi.string()
           .trim()
-          .max(50)
-          .pattern(/^[A-Za-z0-9&,' \-/()]+$/)
+          .max(MAX_VET_NAME_LENGTH)
+          .pattern(VET_NAME_PATTERN)
           .required()
           .messages({
             'any.required': nameErrorMessages.enterName,

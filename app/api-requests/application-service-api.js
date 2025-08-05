@@ -1,6 +1,6 @@
 import Wreck from '@hapi/wreck'
 import { config } from '../config/index.js'
-import HttpStatus from 'http-status-codes'
+import { StatusCodes } from 'http-status-codes'
 
 export async function getAllApplicationsBySbi (sbi, logger) {
   const endpoint = `${config.applicationApiUri}/applications/latest?sbi=${sbi}`
@@ -13,7 +13,7 @@ export async function getAllApplicationsBySbi (sbi, logger) {
 
     return payload
   } catch (err) {
-    if (err.output.statusCode === 404) {
+    if (err.output.statusCode === StatusCodes.NOT_FOUND) {
       return []
     }
     logger.setBindings({ err })
@@ -31,7 +31,7 @@ export const getHerds = async (applicationReference, typeOfLivestock, logger) =>
     )
     return payload
   } catch (err) {
-    if (err.output.statusCode === HttpStatus.NOT_FOUND) {
+    if (err.output.statusCode === StatusCodes.NOT_FOUND) {
       return []
     }
     logger.setBindings({ err })

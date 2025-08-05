@@ -17,7 +17,7 @@ export const getMessageQueueConfig = () => {
     }
   })
 
-  const mqConfig = {
+  const config = {
     messageQueue: {
       host: process.env.MESSAGE_QUEUE_HOST,
       username: process.env.MESSAGE_QUEUE_USER,
@@ -32,7 +32,7 @@ export const getMessageQueueConfig = () => {
     }
   }
 
-  const { error } = mqSchema.validate(mqConfig, {
+  const { error } = mqSchema.validate(config, {
     abortEarly: false
   })
 
@@ -40,7 +40,7 @@ export const getMessageQueueConfig = () => {
     throw new Error(`The message queue config is invalid. ${error.message}`)
   }
 
-  return mqConfig
+  return config
 }
 
 export const mqConfig = getMessageQueueConfig()
