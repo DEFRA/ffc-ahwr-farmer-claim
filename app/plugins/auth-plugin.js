@@ -22,7 +22,7 @@ export const authPlugin = {
         redirectTo: (request) => {
           return requestAuthorizationCodeUrl(request)
         },
-        validateFunc: async (request, _) => ({ valid: Boolean(getEndemicsClaim(request, organisationKey)) })
+        validateFunc: async (request, _unused) => ({ valid: Boolean(getEndemicsClaim(request, organisationKey)) })
       })
       server.auth.default({ strategy: 'session', mode: 'required' })
     }

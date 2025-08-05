@@ -12,7 +12,7 @@ const getHandler = {
   path: pageUrl,
   options: {
     auth: false,
-    handler: async (request, h) => {
+    handler: async (_request, h) => {
       return h.view('endemics/dev-sign-in', { backLink: '/claim/endemics' })
     }
   }

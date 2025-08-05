@@ -14,7 +14,9 @@ export const getErrorResultString = (payload, validatorFn) => {
 }
 
 export const getErrorResultObject = (payload, newDiseaseValidationFn) => {
-  const payloadDataError = {}
+  const payloadDataError = {
+    newPayloadData: payload
+  }
   if (typeof payload.diseaseType === 'object' && payload.diseaseType.length > 1) {
     const { newPayloadData, newDiseaseTypeErrorMessage: newErrorMessage } = newDiseaseValidationFn(payload)
 

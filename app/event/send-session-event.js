@@ -24,6 +24,7 @@ const renameSessionKeysForEventReporting = (key) => {
       key = 'animalsTested'
       break
     }
+    default: break
   }
   return key
 }
