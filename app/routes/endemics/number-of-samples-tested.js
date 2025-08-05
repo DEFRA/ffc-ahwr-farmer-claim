@@ -109,16 +109,16 @@ const postHandler = {
         const { vaccination: { vaccinated }, pigsFollowUpTest: { pcr, elisa }, result: { positive } } = claimConstants
 
         if (herdVaccinationStatus === vaccinated) {
-          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
           return h.redirect(prefixUrl(endemicsPigsPcrResult))
         }
 
         if (lastReviewTestResults === positive) {
-          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
           return h.redirect(prefixUrl(endemicsPigsPcrResult))
         }
 
-        setEndemicsClaim(request, pigsFollowUpTestKey, elisa)
+        setEndemicsClaim(request, pigsFollowUpTestKey, elisa, { shouldEmitEvent: false })
         return h.redirect(prefixUrl(endemicsPigsElisaResult))
       }
 
