@@ -24,6 +24,17 @@ const { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested
 
 const pageUrl = prefixUrl(endemicsNumberOfSamplesTested)
 
+const getHintText = () => {
+  let hintText = 'You can find this on the summary the vet gave you.'
+
+  if (config.pigUpdates.enabled) {
+    hintText =
+      'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
+  }
+
+  return hintText
+}
+
 const getHandler = {
   method: 'GET',
   path: pageUrl,
@@ -31,16 +42,10 @@ const getHandler = {
     handler: async (request, h) => {
       const { numberOfSamplesTested } = getEndemicsClaim(request)
 
-      let hintText = 'You can find this on the summary the vet gave you.'
-
-      if (config.pigUpdates.enabled) {
-        hintText = 'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
-      }
-
       return h.view(endemicsNumberOfSamplesTested, {
         numberOfSamplesTested,
         backLink: prefixUrl(endemicsTestUrn),
-        hintText
+        hintText: getHintText()
       })
     }
   }
@@ -81,7 +86,8 @@ const postHandler = {
           .view(endemicsNumberOfSamplesTested, {
             ...request.payload,
             errorMessage: { text: newErrorMessage, href: '#numberOfSamplesTested' },
-            backLink: prefixUrl(endemicsTestUrn)
+            backLink: prefixUrl(endemicsTestUrn),
+            hintText: getHintText()
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
@@ -109,16 +115,16 @@ const postHandler = {
         const { vaccination: { vaccinated }, pigsFollowUpTest: { pcr, elisa }, result: { positive } } = claimConstants
 
         if (herdVaccinationStatus === vaccinated) {
-          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
           return h.redirect(prefixUrl(endemicsPigsPcrResult))
         }
 
         if (lastReviewTestResults === positive) {
-          setEndemicsClaim(request, pigsFollowUpTestKey, pcr)
+          setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
           return h.redirect(prefixUrl(endemicsPigsPcrResult))
         }
 
-        setEndemicsClaim(request, pigsFollowUpTestKey, elisa)
+        setEndemicsClaim(request, pigsFollowUpTestKey, elisa, { shouldEmitEvent: false })
         return h.redirect(prefixUrl(endemicsPigsElisaResult))
       }
 
