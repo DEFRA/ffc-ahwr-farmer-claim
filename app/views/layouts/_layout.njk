@@ -18,6 +18,7 @@
 {% from "govuk/components/inset-text/macro.njk"          import govukInsetText %}
 {% from "govuk/components/error-summary/macro.njk"       import govukErrorSummary %}
 {% from "govuk/components/textarea/macro.njk"            import govukTextarea %}
+{% from "govuk/components/service-navigation/macro.njk"  import govukServiceNavigation %}
 
 {% from "../macros/search-box.njk"                       import searchBox %}
 {% from "../macros/rpa-contact-details.njk"              import rpaContactDetails %}
@@ -25,8 +26,11 @@
 {% block pageTitle %}{{ serviceName }} - GOV.UK{% endblock %}
 {% set urlPrefix = "<%= htmlWebpackPlugin.options.meta.urlPrefix %>" %}
 {% set assetPath = urlPrefix + "/assets" %}
+{% set govukRebrand = true %}
 
 {% block head %}
+  <link rel="icon" sizes="48x48" href="/claim/assets/rebrand/images/favicon.ico">
+  <link rel="icon" sizes="any" href="/claim/assets/rebrand/images/favicon.svg" type="image/svg+xml">
   {% if cookiesPolicy.analytics %}
     {% include "../tag-manager/_head-content.njk" %}
   {% endif %}
@@ -44,12 +48,21 @@
 
 {% block header %}
   {{ govukHeader({
+    rebrand: true,
     homepageUrl: "https://www.gov.uk/",
-    containerClasses: "govuk-width-container",
-    serviceName: serviceName,
-    serviceUrl: "https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets"
+    containerClasses: "govuk-width-container"
   }) }}
-  <div class="govuk-grid-row govuk-width-container">
+  {{ govukServiceNavigation({
+    serviceName: serviceName,
+    serviceUrl: "https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets",
+    navigation: [
+    {
+      href: dashboardServiceUri + "/vet-visits",
+      text: "Manage your claims"
+    }
+  ]
+  }) }}
+  <div class="govuk-grid-row govuk-width-container no-line-break">
     {{ govukPhaseBanner({
       tag: {
         text: "beta"
@@ -90,6 +103,7 @@
 
 {% block footer %}
   {{ govukFooter({
+    rebrand: true,
     meta: {
       html: footerHtml
     }
