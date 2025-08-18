@@ -35,6 +35,7 @@ describe('App Insight', () => {
 
   beforeEach(() => {
     delete process.env.APPLICATIONINSIGHTS_CONNECTION_STRING
+    delete process.env.APPINSIGHTS_CLOUDROLE
     jest.clearAllMocks()
   })
 
@@ -52,14 +53,22 @@ describe('App Insight', () => {
     expect(setupMock).toHaveBeenCalledTimes(1)
     expect(startMock).toHaveBeenCalledTimes(1)
     expect(tags[cloudRoleTag]).toEqual(appName)
-    expect(mockInfoLogger).toHaveBeenCalledTimes(1)
-    expect(mockInfoLogger).toHaveBeenCalledWith('App Insights Running')
+  })
+
+  test('is started when env var exists, using default role', () => {
+    process.env.APPLICATIONINSIGHTS_CONNECTION_STRING = 'something'
+
+    insights.setup(mockLogger)
+
+    expect(setupMock).toHaveBeenCalledTimes(1)
+    expect(startMock).toHaveBeenCalledTimes(1)
+    expect(tags[cloudRoleTag]).toEqual('ffc-ahwr-farmer-claim')
   })
 
   test('logs not running when env var does not exist', () => {
     insights.setup(mockLogger)
 
-    expect(mockInfoLogger).toHaveBeenCalledTimes(1)
-    expect(mockInfoLogger).toHaveBeenCalledWith('App Insights Not Running!')
+    expect(setupMock).toHaveBeenCalledTimes(0)
+    expect(startMock).toHaveBeenCalledTimes(0)
   })
 })

@@ -4,9 +4,15 @@ import { createServer } from './server.js'
 let server
 
 const init = async () => {
+  const appInsightsInUse = setup()
   server = await createServer()
   await server.start()
-  setup(server.logger)
+
+  if (appInsightsInUse) {
+    server.logger.info('Application Insights running')
+  } else {
+    server.logger.info('Application Insights is not running')
+  }
 }
 
 process.on('unhandledRejection', async (err) => {
