@@ -64,7 +64,7 @@ const getDateOfVisitRow = (isReview, dateOfVisit) => {
   return createdHerdRowObject(isReview ? 'Date of review' : 'Date of follow-up', formatDate(dateOfVisit), routes.endemicsDateOfVisit, `date of ${isReview ? 'review' : 'follow-up'}`)
 }
 const getDateOfSamplingRow = (dateOfTesting) => {
-  return createdHerdRowObject('Date of sampling', formatDate(dateOfTesting), routes.endemicsDateOfTesting, 'date of sampling')
+  return createdHerdRowObject('Date of sampling', dateOfTesting ? formatDate(dateOfTesting) : undefined, routes.endemicsDateOfTesting, 'date of sampling')
 }
 const getSheepDiseasesTestedRow = (isEndemicsFollowUp, sessionData) => {
   if (isEndemicsFollowUp && sessionData.sheepTestResults?.length) {
