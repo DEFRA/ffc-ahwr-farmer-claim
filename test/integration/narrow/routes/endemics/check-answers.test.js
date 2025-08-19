@@ -8,9 +8,11 @@ import {
   beefEndemicsFollowUpClaim,
   beefReviewClaim,
   dairyEndemicsFollowUpClaim,
+  dairyEndemicsFollowUpClaimPiHuntDeclined,
   dairyReviewClaim,
   expectedEndemicsFollowUpBeef,
   expectedEndemicsFollowUpDairy,
+  expectedEndemicsFollowUpDairyPiHuntDeclined,
   expectedEndemicsFollowUpPigs,
   expectedEndemicsFollowUpSheep,
   expectedReviewBeef,
@@ -73,376 +75,400 @@ describe('Check answers test', () => {
       expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
     })
 
-    describe('shows fields for a review claim in the correct order for each species', () => {
-      test('for beef', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return beefReviewClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        expect(rowKeys).toEqual(expectedReviewBeef.rowKeys)
-        expect(rowContents).toEqual(expectedReviewBeef.rowContents)
-        expect(rowActionTexts).toEqual(expectedReviewBeef.rowActionTexts)
-        expect(rowLinks).toEqual(expectedReviewBeef.rowLinks)
-
-        expectPhaseBanner.ok($)
+    test('shows fields for a review claim in the correct order for each species for beef', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return beefReviewClaim
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
 
-      test('for dairy', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return dairyReviewClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
+      const res = await server.inject(options)
 
-        const res = await server.inject(options)
-        const $ = cheerio.load(res.payload)
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
 
-        expect($('h1').text()).toMatch('Check your answers')
-        expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
-        expect(res.statusCode).toBe(200)
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
 
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
+      expect(rowKeys).toEqual(expectedReviewBeef.rowKeys)
+      expect(rowContents).toEqual(expectedReviewBeef.rowContents)
+      expect(rowActionTexts).toEqual(expectedReviewBeef.rowActionTexts)
+      expect(rowLinks).toEqual(expectedReviewBeef.rowLinks)
 
-        expect(rowKeys).toEqual(expectedReviewDairy.rowKeys)
-        expect(rowContents).toEqual(expectedReviewDairy.rowContents)
-        expect(rowActionTexts).toEqual(expectedReviewDairy.rowActionTexts)
-        expect(rowLinks).toEqual(expectedReviewDairy.rowLinks)
-
-        expectPhaseBanner.ok($)
-      })
-
-      test('for pigs', async () => {
-        config.pigUpdates.enabled = false
-        getEndemicsClaim.mockImplementation(() => {
-          return pigsReviewClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        expect(rowKeys).toEqual(expectedReviewPigs.rowKeys)
-        expect(rowContents).toEqual(expectedReviewPigs.rowContents)
-        expect(rowActionTexts).toEqual(expectedReviewPigs.rowActionTexts)
-        expect(rowLinks).toEqual(expectedReviewPigs.rowLinks)
-
-        expectPhaseBanner.ok($)
-      })
-
-      test('for sheep', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return sheepReviewClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        expect(rowKeys).toEqual(expectedReviewSheep.rowKeys)
-        expect(rowContents).toEqual(expectedReviewSheep.rowContents)
-        expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
-        expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
-
-        expectPhaseBanner.ok($)
-      })
-
-      test('when species is sheep, including flock information', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return {
-            ...sheepReviewClaim,
-            herdName: 'Flock one'
-          }
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
-        isMultipleHerdsUserJourney.mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        const multiHerdsRowKeys = [...expectedReviewSheep.rowKeys]
-        multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
-        multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Flock name')
-
-        const multiHerdsRowContents = [...expectedReviewSheep.rowContents]
-        multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Sheep') + 1, 0, 'Flock one')
-
-        expect(rowKeys).toEqual(multiHerdsRowKeys)
-        expect(rowContents).toEqual(multiHerdsRowContents)
-        expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
-        expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
-
-        expectPhaseBanner.ok($)
-      })
+      expectPhaseBanner.ok($)
     })
 
-    describe('shows fields for an endemics claim in the correct order for each species', () => {
-      test('for beef', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return beefEndemicsFollowUpClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        expect(rowKeys).toEqual(expectedEndemicsFollowUpBeef.rowKeys)
-        expect(rowContents).toEqual(expectedEndemicsFollowUpBeef.rowContents)
-        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpBeef.rowActionTexts)
-        expect(rowLinks).toEqual(expectedEndemicsFollowUpBeef.rowLinks)
-
-        expectPhaseBanner.ok($)
+    test('shows fields for a review claim in the correct order for each species for dairy', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return dairyReviewClaim
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
 
-      test('for dairy', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return dairyEndemicsFollowUpClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
+      const res = await server.inject(options)
+      const $ = cheerio.load(res.payload)
 
-        const res = await server.inject(options)
+      expect($('h1').text()).toMatch('Check your answers')
+      expect($('title').text()).toMatch('Check your answers - Get funding to improve animal health and welfare')
+      expect(res.statusCode).toBe(200)
 
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
 
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
+      expect(rowKeys).toEqual(expectedReviewDairy.rowKeys)
+      expect(rowContents).toEqual(expectedReviewDairy.rowContents)
+      expect(rowActionTexts).toEqual(expectedReviewDairy.rowActionTexts)
+      expect(rowLinks).toEqual(expectedReviewDairy.rowLinks)
 
-        expect(rowKeys).toEqual(expectedEndemicsFollowUpDairy.rowKeys)
-        expect(rowContents).toEqual(expectedEndemicsFollowUpDairy.rowContents)
-        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairy.rowActionTexts)
-        expect(rowLinks).toEqual(expectedEndemicsFollowUpDairy.rowLinks)
+      expectPhaseBanner.ok($)
+    })
 
-        expectPhaseBanner.ok($)
+    test('shows fields for a review claim in the correct order for each species for pigs', async () => {
+      config.pigUpdates.enabled = false
+      getEndemicsClaim.mockImplementation(() => {
+        return pigsReviewClaim
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
 
-      test('for pigs', async () => {
-        config.pigUpdates.enabled = false
-        getEndemicsClaim.mockImplementation(() => {
-          return pigEndemicsFollowUpClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
+      const res = await server.inject(options)
 
-        const res = await server.inject(options)
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
 
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
 
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
+      expect(rowKeys).toEqual(expectedReviewPigs.rowKeys)
+      expect(rowContents).toEqual(expectedReviewPigs.rowContents)
+      expect(rowActionTexts).toEqual(expectedReviewPigs.rowActionTexts)
+      expect(rowLinks).toEqual(expectedReviewPigs.rowLinks)
 
-        const expected = expectedEndemicsFollowUpPigs(false)
+      expectPhaseBanner.ok($)
+    })
 
-        expect(rowKeys).toEqual(expected.rowKeys)
-        expect(rowContents).toEqual(expected.rowContents)
-        expect(rowActionTexts).toEqual(expected.rowActionTexts)
-        expect(rowLinks).toEqual(expected.rowLinks)
-
-        expectPhaseBanner.ok($)
+    test('shows fields for a review claim in the correct order for each species for sheep', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return sheepReviewClaim
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
 
-      test('for pigs with pigUpdates enabled', async () => {
-        config.pigUpdates.enabled = true
-        getEndemicsClaim.mockImplementation(() => {
-          return {
-            ...pigEndemicsFollowUpClaim,
-            diseaseStatus: undefined,
-            pigsElisaTestResult: 'positive'
-          }
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      expect(rowKeys).toEqual(expectedReviewSheep.rowKeys)
+      expect(rowContents).toEqual(expectedReviewSheep.rowContents)
+      expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
+      expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for a review claim in the correct order for each species when species is sheep, including flock information', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return {
+          ...sheepReviewClaim,
+          herdName: 'Flock one'
         }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        const expected = expectedEndemicsFollowUpPigs(true)
-
-        expect(rowKeys).toEqual(expected.rowKeys)
-        expect(rowContents).toEqual(expected.rowContents)
-        expect(rowActionTexts).toEqual(expected.rowActionTexts)
-        expect(rowLinks).toEqual(expected.rowLinks)
-
-        expectPhaseBanner.ok($)
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+      isMultipleHerdsUserJourney.mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
 
-      test('for sheep', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return sheepEndemicsFollowUpClaim
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      const multiHerdsRowKeys = [...expectedReviewSheep.rowKeys]
+      multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
+      multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Flock name')
+
+      const multiHerdsRowContents = [...expectedReviewSheep.rowContents]
+      multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Sheep') + 1, 0, 'Flock one')
+
+      expect(rowKeys).toEqual(multiHerdsRowKeys)
+      expect(rowContents).toEqual(multiHerdsRowContents)
+      expect(rowActionTexts).toEqual(expectedReviewSheep.rowActionTexts)
+      expect(rowLinks).toEqual(expectedReviewSheep.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for beef', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return beefEndemicsFollowUpClaim
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      expect(rowKeys).toEqual(expectedEndemicsFollowUpBeef.rowKeys)
+      expect(rowContents).toEqual(expectedEndemicsFollowUpBeef.rowContents)
+      expect(rowActionTexts).toEqual(expectedEndemicsFollowUpBeef.rowActionTexts)
+      expect(rowLinks).toEqual(expectedEndemicsFollowUpBeef.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for dairy', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return dairyEndemicsFollowUpClaim
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      expect(rowKeys).toEqual(expectedEndemicsFollowUpDairy.rowKeys)
+      expect(rowContents).toEqual(expectedEndemicsFollowUpDairy.rowContents)
+      expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairy.rowActionTexts)
+      expect(rowLinks).toEqual(expectedEndemicsFollowUpDairy.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for dairy with no date of testing', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return dairyEndemicsFollowUpClaimPiHuntDeclined
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      expect(rowKeys).toEqual(expectedEndemicsFollowUpDairyPiHuntDeclined.rowKeys)
+      expect(rowContents).toEqual(expectedEndemicsFollowUpDairyPiHuntDeclined.rowContents)
+      expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairyPiHuntDeclined.rowActionTexts)
+      expect(rowLinks).toEqual(expectedEndemicsFollowUpDairyPiHuntDeclined.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for pigs', async () => {
+      config.pigUpdates.enabled = false
+      getEndemicsClaim.mockImplementation(() => {
+        return pigEndemicsFollowUpClaim
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      const expected = expectedEndemicsFollowUpPigs(false)
+
+      expect(rowKeys).toEqual(expected.rowKeys)
+      expect(rowContents).toEqual(expected.rowContents)
+      expect(rowActionTexts).toEqual(expected.rowActionTexts)
+      expect(rowLinks).toEqual(expected.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for pigs with pigUpdates enabled', async () => {
+      config.pigUpdates.enabled = true
+      getEndemicsClaim.mockImplementation(() => {
+        return {
+          ...pigEndemicsFollowUpClaim,
+          diseaseStatus: undefined,
+          pigsElisaTestResult: 'positive'
         }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowKeys = getRowKeys($)
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
-
-        expect(rowKeys).toEqual(expectedEndemicsFollowUpSheep.rowKeys)
-        expect(rowContents).toEqual(expectedEndemicsFollowUpSheep.rowContents)
-        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpSheep.rowActionTexts)
-        expect(rowLinks).toEqual(expectedEndemicsFollowUpSheep.rowLinks)
-
-        expectPhaseBanner.ok($)
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
 
-      test('for unknown species', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return { ...sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      const expected = expectedEndemicsFollowUpPigs(true)
+
+      expect(rowKeys).toEqual(expected.rowKeys)
+      expect(rowContents).toEqual(expected.rowContents)
+      expect(rowActionTexts).toEqual(expected.rowActionTexts)
+      expect(rowLinks).toEqual(expected.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for sheep', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return sheepEndemicsFollowUpClaim
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      expect(rowKeys).toEqual(expectedEndemicsFollowUpSheep.rowKeys)
+      expect(rowContents).toEqual(expectedEndemicsFollowUpSheep.rowContents)
+      expect(rowActionTexts).toEqual(expectedEndemicsFollowUpSheep.rowActionTexts)
+      expect(rowLinks).toEqual(expectedEndemicsFollowUpSheep.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species for unknown species', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return { ...sheepEndemicsFollowUpClaim, typeOfLivestock: 'unknown' }
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowContents = getRowContents($)
+
+      expect(rowContents).toContain('Unknown cattle')
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for an endemics claim in the correct order for each species and herd information displayed for multi herds claim', async () => {
+      getEndemicsClaim.mockImplementation(() => {
+        return {
+          ...dairyEndemicsFollowUpClaim,
+          herdName: 'Herd one'
         }
-
-        const res = await server.inject(options)
-
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
-
-        const rowContents = getRowContents($)
-
-        expect(rowContents).toContain('Unknown cattle')
-        expectPhaseBanner.ok($)
       })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+      isMultipleHerdsUserJourney
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
 
-      test('herd information displayed for multi herds claim', async () => {
-        getEndemicsClaim.mockImplementation(() => {
-          return {
-            ...dairyEndemicsFollowUpClaim,
-            herdName: 'Herd one'
-          }
-        })
-        const options = {
-          method: 'GET',
-          url,
-          auth
-        }
-        isMultipleHerdsUserJourney
-          .mockReturnValueOnce(true)
-          .mockReturnValueOnce(true)
+      const res = await server.inject(options)
 
-        const res = await server.inject(options)
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
 
-        expect(res.statusCode).toBe(200)
-        const $ = cheerio.load(res.payload)
+      const rowKeys = getRowKeys($)
 
-        const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
 
-        const rowContents = getRowContents($)
-        const rowActionTexts = getRowActionTexts($)
-        const rowLinks = getRowLinks($)
+      const multiHerdsRowKeys = [...expectedEndemicsFollowUpDairy.rowKeys]
+      multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
+      multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Herd name')
 
-        const multiHerdsRowKeys = [...expectedEndemicsFollowUpDairy.rowKeys]
-        multiHerdsRowKeys[multiHerdsRowKeys.indexOf('Livestock')] = 'Species'
-        multiHerdsRowKeys.splice(multiHerdsRowKeys.indexOf('Species') + 1, 0, 'Herd name')
+      const multiHerdsRowContents = [...expectedEndemicsFollowUpDairy.rowContents]
+      multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Dairy cattle') + 1, 0, 'Herd one')
 
-        const multiHerdsRowContents = [...expectedEndemicsFollowUpDairy.rowContents]
-        multiHerdsRowContents.splice(multiHerdsRowContents.indexOf('Dairy cattle') + 1, 0, 'Herd one')
+      expect(rowKeys).toEqual(multiHerdsRowKeys)
+      expect(rowContents).toEqual(multiHerdsRowContents)
+      expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairy.rowActionTexts)
+      expect(rowLinks).toEqual(expectedEndemicsFollowUpDairy.rowLinks)
 
-        expect(rowKeys).toEqual(multiHerdsRowKeys)
-        expect(rowContents).toEqual(multiHerdsRowContents)
-        expect(rowActionTexts).toEqual(expectedEndemicsFollowUpDairy.rowActionTexts)
-        expect(rowLinks).toEqual(expectedEndemicsFollowUpDairy.rowLinks)
-
-        expectPhaseBanner.ok($)
-      })
+      expectPhaseBanner.ok($)
     })
 
     test.each([

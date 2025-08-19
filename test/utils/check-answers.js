@@ -253,6 +253,7 @@ export const beefEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfL
 export const dairyEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'dairy', testResults: 'positive', biosecurity: 'yes', latestEndemicsApplication: { flags: [] } }
 export const pigEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfSamplesTested: '5', diseaseStatus: '3', herdVaccinationStatus: 'vaccinated', biosecurity: { biosecurity: 'yes', assessmentPercentage: '50' }, latestEndemicsApplication: { flags: [] } }
 export const sheepEndemicsFollowUpClaim = { ...baseEndemicsFollowUpClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42', sheepEndemicsPackage, sheepTests, sheepTestResults, latestEndemicsApplication: { flags: [] } }
+export const dairyEndemicsFollowUpClaimPiHuntDeclined = { ...dairyEndemicsFollowUpClaim, dateOfTesting: undefined, piHunt: 'no' }
 
 export const expectedEndemicsFollowUpBeef = {
   rowKeys: [
@@ -340,6 +341,50 @@ export const expectedEndemicsFollowUpDairy = {
     '/claim/endemics/vet-name',
     '/claim/endemics/vet-rcvs',
     '/claim/endemics/date-of-testing',
+    '/claim/endemics/test-urn',
+    '/claim/endemics/test-results',
+    '/claim/endemics/biosecurity'
+  ]
+}
+
+export const expectedEndemicsFollowUpDairyPiHuntDeclined = {
+  rowKeys: [
+    ...commonEndemicsFollowUpRowKeys,
+    '11 or more dairy cattle',
+    ...commonVetRowKeys,
+    'PI hunt',
+    'URN or test certificate',
+    'Follow-up test result',
+    'Biosecurity assessment'
+  ],
+  rowContents: [
+    'Business name',
+    'Dairy cattle',
+    'Endemic disease follow-up',
+    '19 December 2023',
+    'Yes',
+    'George',
+    '1234567',
+    'No',
+    'laboratoryURN',
+    'Positive',
+    'Yes'
+  ],
+  rowActionTexts: [
+    'Change date of follow-up',
+    'Change number of species',
+    ...commonVetRowActionTexts,
+    'Change the pi hunt',
+    'Change URN',
+    'Change test results',
+    'Change biosecurity assessment'
+  ],
+  rowLinks: [
+    '/claim/endemics/date-of-visit',
+    '/claim/endemics/species-numbers',
+    '/claim/endemics/vet-name',
+    '/claim/endemics/vet-rcvs',
+    '/claim/endemics/pi-hunt',
     '/claim/endemics/test-urn',
     '/claim/endemics/test-results',
     '/claim/endemics/biosecurity'
