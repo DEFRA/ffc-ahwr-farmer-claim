@@ -52,15 +52,20 @@
     homepageUrl: "https://www.gov.uk/",
     containerClasses: "govuk-width-container"
   }) }}
+
+  {% set nav = [{
+    href: dashboardServiceUri + "/vet-visits",
+    text: "Manage your claims"
+  }] %}
+  
+  {% if userIsSignedIn %}
+    {% set nav = nav.concat([{ href: dashboardServiceUri + "/sign-out", text: 'Sign out' }]) %}
+  {% endif %}
+
   {{ govukServiceNavigation({
     serviceName: serviceName,
     serviceUrl: "https://www.gov.uk/government/collections/funding-to-improve-animal-health-and-welfare-guidance-for-farmers-and-vets",
-    navigation: [
-    {
-      href: dashboardServiceUri + "/vet-visits",
-      text: "Manage your claims"
-    }
-  ]
+    navigation: nav
   }) }}
   <div class="govuk-grid-row govuk-width-container no-line-break">
     {{ govukPhaseBanner({

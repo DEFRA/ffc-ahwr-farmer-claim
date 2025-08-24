@@ -22,7 +22,15 @@ export const authPlugin = {
         redirectTo: (request) => {
           return requestAuthorizationCodeUrl(request)
         },
-        validateFunc: async (request, _unused) => ({ valid: Boolean(getEndemicsClaim(request, organisationKey)) })
+        validateFunc: async (request) => {
+          if (config.devLogin.enabled) {
+            if (getEndemicsClaim(request, organisationKey)) {
+              return { valid: true }
+            }
+          }
+
+          return { valid: request.auth.isAuthenticated }
+        }
       })
       server.auth.default({ strategy: 'session', mode: 'required' })
     }
