@@ -23,10 +23,8 @@ export const authPlugin = {
           return requestAuthorizationCodeUrl(request)
         },
         validateFunc: async (request) => {
-          if (config.devLogin.enabled) {
-            if (getEndemicsClaim(request, organisationKey)) {
-              return { valid: true }
-            }
+          if (config.devLogin.enabled && getEndemicsClaim(request, organisationKey)) {
+            return { valid: true }
           }
 
           return { valid: request.auth.isAuthenticated }
