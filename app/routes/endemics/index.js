@@ -16,7 +16,7 @@ const getHandler = {
   method: 'GET',
   path: prefixUrl(endemicsIndex),
   options: {
-    auth: false,
+    auth: { mode: 'try' },
     handler: async (request, h) => {
       request.logger.setBindings({ sbi: request.query.sbi })
       if (request.query?.from === 'dashboard' && request.query.sbi) {
