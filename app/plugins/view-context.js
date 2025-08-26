@@ -21,6 +21,7 @@ export const viewContextPlugin = {
           ctx.customerSurveyUri = customerSurvey.uri
           ctx.dashboardServiceUri = dashboardServiceUri
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS
+          ctx.userIsSignedIn = request.auth.isAuthenticated
 
           response.source.context = ctx
         }
