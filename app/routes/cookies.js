@@ -10,7 +10,7 @@ const getHandler = {
   method: 'GET',
   path: '/claim/cookies',
   options: {
-    auth: false,
+    auth: { mode: 'try' },
     handler: async (request, h) => {
       return h.view('cookies/cookie-policy', new ViewModel(request.state[cookieNameCookiePolicy], request.query.updated))
     }
