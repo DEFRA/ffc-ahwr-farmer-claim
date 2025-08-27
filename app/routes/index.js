@@ -5,7 +5,7 @@ export const entryPointHandlers = [{
   method: 'GET',
   path: '/claim',
   options: {
-    auth: false,
+    auth: { mode: 'try' },
     handler: async (_request, h) => {
       // old world disabled now, just go straight to new world
       return h.redirect(prefixUrl(links.endemicsIndex))
