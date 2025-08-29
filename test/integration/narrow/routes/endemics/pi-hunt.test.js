@@ -102,7 +102,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
-    test('Continue to ineligible page if user select no and clear PI Hunt data when relevantReviewForEndemics=EE', async () => {
+    test('Continue to ineligible page if user select no and clear PI Hunt data when relevantReviewForEndemics=R', async () => {
       const options = {
         method: 'POST',
         payload: { crumb, piHunt: 'no' },
@@ -110,8 +110,8 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'EE' } } })
-        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'EE' } } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'R' } } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'R' } } })
 
       const res = await server.inject(options)
 

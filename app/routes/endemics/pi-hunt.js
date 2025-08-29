@@ -67,7 +67,7 @@ const postHandler = {
       if (answer === 'no') {
         raiseInvalidDataEvent(request, piHuntKey, `Value ${answer} is not equal to required value yes`)
 
-        if (!isFollowUpOfOldWorldReview(relevantReviewForEndemics) && answer !== previousAnswer) {
+        if (isFollowUpOfNewWorldReview(relevantReviewForEndemics) && answer !== previousAnswer) {
           clearPiHuntSessionOnChange(request, 'piHunt')
         }
 
@@ -92,8 +92,8 @@ const postHandler = {
   }
 }
 
-const isFollowUpOfOldWorldReview = (relevantReviewForEndemics) => {
-  return relevantReviewForEndemics.type === claimType.vetVisits
+const isFollowUpOfNewWorldReview = (relevantReviewForEndemics) => {
+  return relevantReviewForEndemics.type === claimType.review
 }
 
 export const piHuntHandlers = [getHandler, postHandler]
