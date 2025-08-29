@@ -5,10 +5,12 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
+import { clearPiHuntSessionOnChange } from '../../../../../app/lib/clear-pi-hunt-session-on-change.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
 jest.mock('../../../../../app/lib/context-helper.js')
+jest.mock('../../../../../app/lib/clear-pi-hunt-session-on-change')
 
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/pi-hunt'
@@ -99,7 +101,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       expect(res.headers.location).toEqual('/claim/endemics/test-urn')
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
-    test('Continue to ineligible page if user select no', async () => {
+    test('Continue to ineligible page if user select no and clear PI Hunt data when relevantReviewForEndemics=EE', async () => {
       const options = {
         method: 'POST',
         payload: { crumb, piHunt: 'no' },
@@ -107,8 +109,8 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
-        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'EE' } } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'EE' } } })
 
       const res = await server.inject(options)
 
@@ -116,7 +118,29 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('You cannot continue with your claim')
       expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(clearPiHuntSessionOnChange).toHaveBeenCalled()
     })
+
+    test('Continue to ineligible page if user select no and does not clear PI Hunt data when relevantReviewForEndemics=VV', async () => {
+      const options = {
+        method: 'POST',
+        payload: { crumb, piHunt: 'no' },
+        auth,
+        url,
+        headers: { cookie: `crumb=${crumb}` }
+      }
+      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'VV' } } })
+        .mockImplementationOnce(() => { return { typeOfLivestock: 'beef', relevantReviewForEndemics: { type: 'VV' } } })
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(400)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('You cannot continue with your claim')
+      expect(raiseInvalidDataEvent).toHaveBeenCalled()
+      expect(clearPiHuntSessionOnChange).not.toHaveBeenCalled()
+    })
+
     test('shows error when payload is invalid', async () => {
       getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'beef', reviewTestResults: 'positive' } })
       const options = {

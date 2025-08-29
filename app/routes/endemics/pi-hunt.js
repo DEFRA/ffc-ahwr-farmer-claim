@@ -8,6 +8,9 @@ import { clearPiHuntSessionOnChange } from '../../lib/clear-pi-hunt-session-on-c
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
+import { claimConstants } from '../../constants/claim.js'
+
+const { claimType } = claimConstants
 
 const { endemicsClaim: { piHunt: piHuntKey, dateOfVisit: dateOfVisitKey } } = sessionKeys
 const { endemicsVetRCVS, endemicsPIHunt, endemicsPIHuntException, endemicsBiosecurity, endemicsPIHuntAllAnimals, endemicsPIHuntRecommended, endemicsTestUrn } = links
@@ -54,7 +57,7 @@ const postHandler = {
       }
     },
     handler: async (request, h) => {
-      const { reviewTestResults, piHunt: previousAnswer } = getEndemicsClaim(request)
+      const { reviewTestResults, piHunt: previousAnswer, relevantReviewForEndemics } = getEndemicsClaim(request)
       const { isNegative, isPositive } = getTestResult(reviewTestResults)
       const answer = request.payload.piHunt
       const piHuntEnabledAndVisitDateAfterGoLive = isVisitDateAfterPIHuntAndDairyGoLive(getEndemicsClaim(request, dateOfVisitKey))
@@ -64,7 +67,7 @@ const postHandler = {
       if (answer === 'no') {
         raiseInvalidDataEvent(request, piHuntKey, `Value ${answer} is not equal to required value yes`)
 
-        if (answer !== previousAnswer) {
+        if (!isFollowUpOfOldWorldReview(relevantReviewForEndemics) && answer !== previousAnswer) {
           clearPiHuntSessionOnChange(request, 'piHunt')
         }
 
@@ -87,6 +90,10 @@ const postHandler = {
       return h.redirect(prefixUrl(endemicsTestUrn))
     }
   }
+}
+
+const isFollowUpOfOldWorldReview = (relevantReviewForEndemics) => {
+  return relevantReviewForEndemics.type === claimType.vetVisits
 }
 
 export const piHuntHandlers = [getHandler, postHandler]
