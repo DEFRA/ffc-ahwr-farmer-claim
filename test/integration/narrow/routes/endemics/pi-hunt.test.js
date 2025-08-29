@@ -68,6 +68,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
 
     beforeEach(async () => {
       crumb = await getCrumbs(server)
+      jest.resetAllMocks()
     })
 
     test('when not logged in redirects to defra id', async () => {
@@ -212,8 +213,8 @@ describe('PI Hunt tests when Optional PI Hunt is ON', () => {
         url,
         headers: { cookie: `crumb=${crumb}` }
       }
-      getEndemicsClaim.mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
-        .mockImplementationOnce(() => { return { reviewTestResults: 'negative' } })
+      getEndemicsClaim.mockImplementationOnce(() => { return { reviewTestResults: 'negative', relevantReviewForEndemics: { type: 'EE' } } })
+        .mockImplementationOnce(() => { return { reviewTestResults: 'negative', relevantReviewForEndemics: { type: 'EE' } } })
 
       const res = await server.inject(options)
 
