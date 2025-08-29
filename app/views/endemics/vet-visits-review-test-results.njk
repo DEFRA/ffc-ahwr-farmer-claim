@@ -27,13 +27,12 @@
         
         <fieldset class="govuk-fieldset" aria-describedby="vet-visits-review-test-results-hint">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-              <h1 class="govuk-fieldset__heading">Date of {{ reviewOrFollowUpText }}</h1>
+              {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
+                <h1 class="govuk-heading-l">What was the test result of your last animal health and welfare review?</h1>
+              {% elif typeOfLivestock === 'pigs' %}
+                <h1 class="govuk-heading-l">What was the review test result?</h1>
+              {% endif %}
             </legend>
-            {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
-              <h1 class="govuk-heading-l">What was the test result of your last animal health and welfare review?</h1>
-            {% elif typeOfLivestock === 'pigs' %}
-            <h1 class="govuk-heading-l">What was the review test result?</h1>
-            {% endif %}
 
             {% if typeOfLivestock === 'beef' or typeOfLivestock === 'dairy' %}
               <p class="govuk-body">This should have happened within the last 10 months.</p>
