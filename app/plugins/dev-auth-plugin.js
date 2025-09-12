@@ -9,7 +9,7 @@ const { organisation: organisationKey } = sessionKeys.farmerApplyData
 // between the apps locally, as they do not have a shared cache. In deployed environments the real auth plugin will be registered instead
 export const localDevAuthPlugin = {
   plugin: {
-    name: 'auth',
+    name: 'dev-auth',
     register: async (server, _) => {
       server.auth.strategy('session', 'cookie', {
         cookie: {
