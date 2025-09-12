@@ -3,14 +3,17 @@ import { createServer } from '../../../../../app/server.js'
 import { config } from '../../../../../app/config/index.js'
 import { refreshApplications, resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'
 import expectPhaseBanner from 'assert'
+import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
+import { logout } from '../../../../../app/lib/logout.js'
 
 const urlPrefix = config.urlPrefix
 
 jest.mock('../../../../../app/lib/logout')
 jest.mock('../../../../../app/lib/context-helper')
+jest.mock('../../../../../app/session/index')
 
 describe('Claim endemics home page test', () => {
-  const url = `${urlPrefix}/endemics?from=dashboard&sbi=1234567`
+  const url = `${urlPrefix}/endemics`
   const auth = {
     credentials: { reference: '1111', sbi: '111111111' },
     strategy: 'cookie'
@@ -32,7 +35,8 @@ describe('Claim endemics home page test', () => {
     jest.clearAllMocks()
   })
 
-  test('Redirects us to endemicsWhichSpeciesURI if latest VV application is NOT within 10 months', async () => {
+  test('Redirects to endemicsWhichSpeciesURI if organisation found in session', async () => {
+    getEndemicsClaim.mockReturnValue({ organisation: { sbi: '111111111' } })
     refreshApplications.mockReturnValue({
       latestEndemicsApplication: {
         reference: 'AHWR-2470-6BA9',
@@ -53,11 +57,14 @@ describe('Claim endemics home page test', () => {
 
     const res = await server.inject(options)
 
+    expect(resetEndemicsClaimSession).toHaveBeenCalled()
+    expect(setEndemicsClaim).toHaveBeenCalledWith(expect.any(Object), 'landingPage', '/claim/endemics/which-species')
     expect(res.statusCode).toBe(302)
     expect(res.headers.location).toEqual('/claim/endemics/which-species')
   })
 
-  test('Renders index page if no url parameters', async () => {
+  test('Ensures logout called and then renders index page if no organisation found in session', async () => {
+    getEndemicsClaim.mockReturnValue(null)
     const options = {
       method: 'GET',
       url: `${urlPrefix}/endemics`,
@@ -65,6 +72,8 @@ describe('Claim endemics home page test', () => {
     }
 
     const res = await server.inject(options)
+
+    expect(logout).toHaveBeenCalled()
 
     expect(res.statusCode).toBe(200)
     const $ = cheerio.load(res.payload)

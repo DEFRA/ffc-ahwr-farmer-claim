@@ -20,8 +20,8 @@ const {
   }
 } = sessionKeys
 
-export async function refreshApplications (request) {
-  const applications = await getAllApplicationsBySbi(request.query.sbi, request.logger)
+export async function refreshApplications (sbi, request) {
+  const applications = await getAllApplicationsBySbi(sbi, request.logger)
 
   // get latest new world
   const latestEndemicsApplication = applications.find((application) => {

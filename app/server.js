@@ -17,6 +17,7 @@ import { sessionPlugin } from './plugins/session.js'
 import { viewsPlugin } from './plugins/views.js'
 import { viewContextPlugin } from './plugins/view-context.js'
 import { devSignInRedirectPlugin } from './plugins/dev-sign-in-redirect.js'
+import { localDevAuthPlugin } from './plugins/dev-auth-plugin.js'
 
 const catbox = config.useRedis
   ? catboxRedis
@@ -54,7 +55,11 @@ export async function createServer () {
   await server.register(hapiCookiePlugin)
   await server.register(cookiePlugin)
   await server.register(hapiInertPlugin.plugin)
-  await server.register(authPlugin)
+  if (config.isDev) {
+    await server.register(localDevAuthPlugin)
+  } else {
+    await server.register(authPlugin)
+  }
   await server.register(errorPagesPlugin)
   await server.register(loggingPlugin)
   await server.register(loggingContextPlugin)
