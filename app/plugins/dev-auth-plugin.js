@@ -5,8 +5,8 @@ import { sessionKeys } from '../session/keys.js'
 
 const { organisation: organisationKey } = sessionKeys.farmerApplyData
 
-//This plugin will be registered only when running in a local dev environment. It's purpose is to provide a way of passing essential session info
-//between the apps locally, as they do not have a shared cache. In deployed environments the real auth plugin will be registered instead
+// This plugin will be registered only when running in a local dev environment. It's purpose is to provide a way of passing essential session info
+// between the apps locally, as they do not have a shared cache. In deployed environments the real auth plugin will be registered instead
 export const localDevAuthPlugin = {
   plugin: {
     name: 'auth',
