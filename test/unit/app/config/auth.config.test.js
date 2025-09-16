@@ -13,7 +13,6 @@ describe('Auth config', () => {
       processEnv: {
         tenant: 'testtenant',
         policy: 'testpolicy',
-        dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
         clientId: 'dummyclientid',
         serviceId: 'dummyserviceid'
       },
@@ -22,7 +21,6 @@ describe('Auth config', () => {
           hostname: 'https://testtenant.b2clogin.com/testtenant.onmicrosoft.com',
           oAuthAuthorisePath: '/oauth2/v2.0/authorize',
           policy: 'testpolicy',
-          dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
           clientId: 'dummyclientid',
           serviceId: 'dummyserviceid',
           scope: 'openid dummyclientid offline_access'
@@ -32,7 +30,6 @@ describe('Auth config', () => {
   ])('GIVEN $processEnv EXPECT $config', (testCase) => {
     process.env.DEFRA_ID_TENANT = testCase.processEnv.tenant
     process.env.DEFRA_ID_POLICY = testCase.processEnv.policy
-    process.env.DEFRA_ID_DASHBOARD_REDIRECT_URI = testCase.config.defraId.dashboardRedirectUri
     process.env.DEFRA_ID_CLIENT_ID = testCase.processEnv.clientId
     process.env.DEFRA_ID_SERVICE_ID = testCase.processEnv.serviceId
 

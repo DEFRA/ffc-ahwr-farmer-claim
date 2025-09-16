@@ -1,5 +1,4 @@
 import { config } from '../config/index.js'
-import { requestAuthorizationCodeUrl } from '../auth/auth-code-grant/request-authorization-code-url.js'
 import { getEndemicsClaim } from '../session/index.js'
 import { sessionKeys } from '../session/keys.js'
 
@@ -20,7 +19,7 @@ export const authPlugin = {
         },
         keepAlive: true,
         redirectTo: (request) => {
-          return requestAuthorizationCodeUrl(request)
+          return `${config.dashboardServiceUri}/sign-in`
         },
         validateFunc: async (request) => {
           return { valid: Boolean(getEndemicsClaim(request, organisationKey)) }

@@ -3,7 +3,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import links from '../../config/routes.js'
 import { claimConstants } from '../../constants/claim.js'
-import { resetEndemicsClaimSession } from '../../lib/context-helper.js'
+import { refreshApplications, resetEndemicsClaimSession } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
 
@@ -17,15 +17,19 @@ const {
 const pageUrl = prefixUrl(endemicsWhichSpecies)
 const backLink = claimDashboard
 const errorMessage = { text: 'Select which species you are claiming for' }
-const view = `${endemicsWhichSpecies}`
 
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     handler: async (request, h) => {
+      // get it here
+      // fetch latest new world (always) and latest old world (if relevant) application
+      const { latestEndemicsApplication } = await refreshApplications(request)
+
+      await resetEndemicsClaimSession(request, latestEndemicsApplication.reference)
       const endemicsClaim = getEndemicsClaim(request)
-      return h.view(view, {
+      return h.view(endemicsWhichSpecies, {
         ...(endemicsClaim?.typeOfLivestock && {
           previousAnswer: endemicsClaim.typeOfLivestock
         }),

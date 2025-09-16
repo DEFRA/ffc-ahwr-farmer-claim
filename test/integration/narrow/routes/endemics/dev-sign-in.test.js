@@ -78,7 +78,7 @@ describe(`${url} route page`, () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toMatch('dev-sign-in?sbi=12345678&cameFrom=claim')
+      expect(res.headers.location).toMatch('dev-sign-in?sbi=12345678')
     })
 
     test('returns 302 and redirected to dashboard sign in handler including setting session values', async () => {
@@ -98,7 +98,7 @@ describe(`${url} route page`, () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location).toMatch('dev-sign-in?sbi=12345678&cameFrom=claim')
+      expect(res.headers.location).toMatch('dev-sign-in?sbi=12345678')
 
       expect(setEndemicsClaim).toHaveBeenCalledTimes(1)
       expect(setCustomer).toHaveBeenCalledTimes(2)

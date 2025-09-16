@@ -1,7 +1,7 @@
 import { createServer } from '../../.././../app/server.js'
-import { authConfig } from '../../../../app/config/auth.js'
 import HttpStatus from 'http-status-codes'
 import * as cheerio from 'cheerio'
+import { config } from '../../../../app/config/index.js'
 
 describe('DefraID redirection test', () => {
   let server
@@ -34,7 +34,7 @@ describe('DefraID redirection test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(HttpStatus.MOVED_TEMPORARILY)
-      expect(res.headers.location).toEqual(`${authConfig.defraId.dashboardRedirectUri}?code=${code}&state=${state}`)
+      expect(res.headers.location).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
 
     test('returns 302 and redirected to login failed page when an error is thrown', async () => {

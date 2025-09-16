@@ -52,7 +52,6 @@ container:
   dashboardServiceUri:
   applicationApiUri:
   defraIdTenant:
-  defraIdDashboardRedirectUri:
   defraIdClientId:
   defraIdServiceId:
   defraIdPolicy:

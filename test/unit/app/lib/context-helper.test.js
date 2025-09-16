@@ -1,7 +1,6 @@
 import {
   canChangeSpecies,
   getReviewHerdId,
-  getTypeOfLivestockFromLatestClaim,
   isMultipleHerdsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive,
   refreshApplications,
@@ -42,61 +41,6 @@ describe('context-helper', () => {
     })
 
     expect(canChangeSpecies({}, 'review')).toBe(true)
-  })
-
-  test('getTypeOfLivestockFromLatestClaim will return from latest endemics claim', () => {
-    getEndemicsClaim.mockReturnValueOnce({
-      previousClaims: [
-        {
-          data: {
-            typeOfLivestock: 'sheep'
-          }
-        },
-        {
-          data: {
-            typeOfLivestock: 'pigs'
-          }
-        }
-      ]
-    })
-
-    expect(getTypeOfLivestockFromLatestClaim({})).toBe('sheep')
-  })
-
-  test('getTypeOfLivestockFromLatestClaim will return from latest application', () => {
-    getEndemicsClaim.mockReturnValueOnce({
-      latestVetVisitApplication: {
-        data: {
-          whichReview: 'sheep'
-        }
-      }
-    })
-
-    expect(getTypeOfLivestockFromLatestClaim({})).toBe('sheep')
-  })
-
-  test('getTypeOfLivestockFromLatestClaim will return from latest endemics claim if both exist', () => {
-    getEndemicsClaim.mockReturnValueOnce({
-      previousClaims: [
-        {
-          data: {
-            typeOfLivestock: 'sheep'
-          }
-        },
-        {
-          data: {
-            typeOfLivestock: 'pigs'
-          }
-        }
-      ],
-      latestVetVisitApplication: {
-        data: {
-          whichReview: 'dairy'
-        }
-      }
-    })
-
-    expect(getTypeOfLivestockFromLatestClaim({})).toBe('sheep')
   })
 
   test('refreshClaims sets claims returned by API into the session and returns to caller', async () => {

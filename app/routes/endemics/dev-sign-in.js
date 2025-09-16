@@ -47,7 +47,7 @@ const postHandler = {
         request.cookieAuth.set({ email: 'farmer@farm.com', userType: 'farmerApply' })
       }
 
-      return h.redirect(`${sendTo}/dev-sign-in?sbi=${sbi}&cameFrom=claim`)
+      return h.redirect(`${sendTo}/dev-sign-in?sbi=${sbi}`)
     }
   }
 }

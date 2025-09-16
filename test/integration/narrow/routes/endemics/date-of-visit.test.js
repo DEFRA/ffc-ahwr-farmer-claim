@@ -54,7 +54,6 @@ const latestEndemicsApplication = {
   type: 'EE'
 }
 
-const landingPage = '/claim/endemics/which-species'
 const auth = { credentials: {}, strategy: 'cookie' }
 const url = '/claim/endemics/date-of-visit'
 
@@ -69,7 +68,6 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
       return {
         latestVetVisitApplication,
         latestEndemicsApplication,
-        landingPage
       }
     })
   })

@@ -61,23 +61,6 @@ export const resetEndemicsClaimSession = async (request, applicationRef, claimRe
   return refreshClaims(request, applicationRef)
 }
 
-export function getLatestClaimForContext (request) {
-  const { previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
-
-  // When we add the MS code we can layer in here filtering by species
-  // const { typeOfLivestock, previousClaims, latestVetVisitApplication } = getEndemicsClaim(request)
-  // const latestEEClaim = previousClaims.find(claim => claim.data.typeOfLivestock === typeOfLivestock)
-  const latestEEClaim = previousClaims?.find(claim => claim) // for now just latest
-
-  return latestEEClaim ?? latestVetVisitApplication
-}
-
-export function getTypeOfLivestockFromLatestClaim (request) {
-  const claim = getLatestClaimForContext(request)
-
-  return claim.data?.typeOfLivestock ?? claim.data?.whichReview
-}
-
 export function canChangeSpecies (request, typeOfReview) {
   // for now, we obey the following, we can manipulate this to consider MS
   const { previousClaims } = getEndemicsClaim(request)
