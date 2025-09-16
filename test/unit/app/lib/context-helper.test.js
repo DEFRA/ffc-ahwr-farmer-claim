@@ -72,10 +72,10 @@ describe('context-helper', () => {
         type: 'EE'
       }
     ]
-    const mockRequest = { logger: () => {}, query: { sbi: '123' } }
+    const mockRequest = { logger: () => {}, query: { } }
     getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
 
-    const returnedApplication = await refreshApplications(mockRequest)
+    const returnedApplication = await refreshApplications('123', mockRequest)
 
     expect(returnedApplication.latestEndemicsApplication).toEqual({
       name: 'app1',
@@ -97,11 +97,11 @@ describe('context-helper', () => {
         type: 'VV'
       }
     ]
-    const mockRequest = { logger: () => {}, query: { sbi: '123' } }
+    const mockRequest = { logger: () => {}, query: { } }
     getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
     isWithin10Months.mockReturnValueOnce(true)
 
-    const returnedApplication = await refreshApplications(mockRequest)
+    const returnedApplication = await refreshApplications('123', mockRequest)
 
     expect(returnedApplication.latestEndemicsApplication).toEqual({
       name: 'app1',
@@ -126,11 +126,11 @@ describe('context-helper', () => {
         type: 'VV'
       }
     ]
-    const mockRequest = { logger: () => {}, query: { sbi: '123' } }
+    const mockRequest = { logger: () => {}, query: { } }
     getAllApplicationsBySbi.mockReturnValueOnce(mockApplications)
     isWithin10Months.mockReturnValueOnce(false)
 
-    const returnedApplication = await refreshApplications(mockRequest)
+    const returnedApplication = await refreshApplications('123', mockRequest)
 
     expect(returnedApplication.latestEndemicsApplication).toEqual({
       name: 'app1',
