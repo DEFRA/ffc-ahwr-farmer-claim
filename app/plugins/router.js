@@ -2,7 +2,6 @@ import { config } from '../config/index.js'
 import { healthHandlers } from '../routes/health.js'
 import { cookiesHandlers } from '../routes/cookies.js'
 import { assetsRouteHandlers } from '../routes/assets.js'
-import { signInHandler } from '../routes/signin-oidc.js'
 import { testUrnHandlers } from '../routes/endemics/test-urn.js'
 import { testResultsHandlers } from '../routes/endemics/test-results.js'
 import { numberOfOralFluidSamplesHandlers } from '../routes/endemics/number-of-fluid-oral-samples.js'
@@ -43,7 +42,6 @@ const alwaysOnRouteHandlers = [
   assetsRouteHandlers,
   cookiesHandlers,
   healthHandlers,
-  signInHandler,
   testUrnHandlers,
   testResultsHandlers,
   numberOfOralFluidSamplesHandlers,
