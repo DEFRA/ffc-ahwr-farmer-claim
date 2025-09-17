@@ -9,6 +9,7 @@ import expectPhaseBanner from 'assert'
 import { previousPageUrl } from '../../../../../app/routes/endemics/date-of-visit.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getHerds } from '../../../../../app/api-requests/application-service-api.js'
+import { config } from '../../../../../app/config/index.js'
 
 const { labels } = visitDate
 
@@ -67,7 +68,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     getEndemicsClaim.mockImplementation(() => {
       return {
         latestVetVisitApplication,
-        latestEndemicsApplication,
+        latestEndemicsApplication
       }
     })
   })
@@ -173,11 +174,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     const res = await server.inject(options)
 
     expect(res.statusCode).toBe(302)
-    expect(res.headers.location.toString()).toEqual(
-      expect.stringContaining(
-        'oauth2/v2.0/authorize'
-      )
-    )
+    expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
   })
 })
 

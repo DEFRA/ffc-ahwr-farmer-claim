@@ -5,6 +5,7 @@ import { errorMessages } from '../../../../../app/lib/error-messages.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config/index.js'
 
 const { endemicsClaim: { vetsName: vetsNameKey } } = sessionKeys
 const { name: nameErrorMessages } = errorMessages
@@ -59,7 +60,7 @@ describe('Vet name test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 
@@ -81,7 +82,7 @@ describe('Vet name test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
     test.each([
       { vetsName: '', error: nameErrorMessages.enterName },

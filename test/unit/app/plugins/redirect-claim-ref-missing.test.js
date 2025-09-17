@@ -15,7 +15,7 @@ describe('redirect-reference-missing plugin', () => {
     await server.register(redirectWhenClaimRefMissingPlugin)
     server.route({
       method: 'GET',
-      path: '/claim/endemics/which-species',
+      path: '/claim/endemics/which-type-of-review',
       handler: (_, h) => h.response('ok').code(200)
     })
     server.route({
@@ -39,7 +39,7 @@ describe('redirect-reference-missing plugin', () => {
 
     const response = await server.inject({
       method: 'GET',
-      url: '/claim/endemics/which-species'
+      url: '/claim/endemics/which-type-of-review'
     })
 
     expect(response.statusCode).toBe(302)
@@ -51,7 +51,7 @@ describe('redirect-reference-missing plugin', () => {
 
     const response = await server.inject({
       method: 'GET',
-      url: '/claim/endemics/which-species'
+      url: '/claim/endemics/which-type-of-review'
     })
 
     expect(response.statusCode).toBe(200)

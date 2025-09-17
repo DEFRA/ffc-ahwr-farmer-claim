@@ -5,6 +5,7 @@ import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-da
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getAmount } from '../../../../../app/api-requests/claim-service-api.js'
+import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -55,7 +56,7 @@ describe('PI Hunt recommended tests', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 
@@ -77,7 +78,7 @@ describe('PI Hunt recommended tests', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
     test('Continue to eligible page if user select yes', async () => {
       const options = {

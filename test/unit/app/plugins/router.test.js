@@ -20,11 +20,9 @@ describe('routes plugin test', () => {
       })
     const registeredRoutes = Array.from(routePaths.values()).sort()
     const expectedRoutes = [
-      '/claim',
       '/healthy',
       '/healthz',
       '/claim/cookies',
-      '/claim/endemics',
       '/claim/signin-oidc',
       '/claim/assets/{path*}',
       '/claim/endemics/biosecurity',

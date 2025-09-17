@@ -23,15 +23,19 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      // get it here
-      // fetch latest new world (always) and latest old world (if relevant) application
-      const { latestEndemicsApplication } = await refreshApplications(request)
+      // get type of livestock here, before we reset the session
+      const { organisation, typeOfLivestock } = getEndemicsClaim(request)
 
+      // fetch latest new world (always) and latest old world (if relevant) application
+      const { latestEndemicsApplication } = await refreshApplications(organisation.sbi, request)
+
+      // reset the session as this is the entry point - if user goes all the way back
+      // to this point to change species, we cant keep all their answers
       await resetEndemicsClaimSession(request, latestEndemicsApplication.reference)
-      const endemicsClaim = getEndemicsClaim(request)
+
       return h.view(endemicsWhichSpecies, {
-        ...(endemicsClaim?.typeOfLivestock && {
-          previousAnswer: endemicsClaim.typeOfLivestock
+        ...(typeOfLivestock && {
+          previousAnswer: typeOfLivestock
         }),
         backLink
       })
@@ -52,7 +56,7 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         return h
-          .view(view, {
+          .view(endemicsWhichSpecies, {
             errorMessage,
             backLink
           })

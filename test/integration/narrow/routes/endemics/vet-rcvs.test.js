@@ -5,6 +5,7 @@ import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { errorMessages } from '../../../../../app/lib/error-messages.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
+import { config } from '../../../../../app/config/index.js'
 
 const { rcvs: rcvsErrorMessages } = errorMessages
 
@@ -55,7 +56,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 
@@ -77,7 +78,7 @@ describe('Vet rcvs test when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
 
     test.each([

@@ -3,6 +3,7 @@ import { createServer } from '../../../../../app/server.js'
 import links from '../../../../../app/config/routes.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { getEndemicsClaim } from '../../../../../app/session/index.js'
+import { config } from '../../../../../app/config/index.js'
 
 const { endemicsDiseaseStatus } = links
 
@@ -41,7 +42,7 @@ describe('Disease status test', () => {
       const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
-      expect(response.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(response.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
 
     test('Returns 200', async () => {

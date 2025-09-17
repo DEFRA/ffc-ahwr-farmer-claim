@@ -9,7 +9,6 @@ const ONE_YEAR_IN_DAYS = 365
 const THREE_DAYS_IN_MS = MILLIS_IN_A_SECOND * SECONDS_IN_AN_HOUR * HOURS_IN_A_DAY * THREE_DAYS
 const ONE_YEAR_IN_MS = MILLIS_IN_A_SECOND * SECONDS_IN_AN_HOUR * HOURS_IN_A_DAY * ONE_YEAR_IN_DAYS
 const DEFAULT_APP_PORT = 3000
-const DEFAULT_REDIS_PORT = 6379
 
 const schema = Joi.object({
   appInsights: Joi.object(),
@@ -81,10 +80,10 @@ export const getConfig = () => {
     cache: {
       expiresIn: THREE_DAYS_IN_MS,
       options: {
-        host: process.env.REDIS_HOSTNAME || 'redis-hostname.default',
+        host: process.env.REDIS_HOSTNAME ?? 'redis-hostname.default',
         partition: 'ffc-ahwr-frontend',
         password: process.env.REDIS_PASSWORD,
-        port: Number(process.env.REDIS_PORT) || DEFAULT_REDIS_PORT,
+        port: Number.parseInt(process.env.REDIS_PORT ?? '6379', 10),
         tls: process.env.NODE_ENV === 'production' ? {} : undefined
       }
     },
