@@ -18,7 +18,7 @@ export const authPlugin = {
           ttl: config.cookie.ttl
         },
         keepAlive: true,
-        redirectTo: (request) => {
+        redirectTo: (_request) => {
           return `${config.dashboardServiceUri}/sign-in`
         },
         validateFunc: async (request) => {
