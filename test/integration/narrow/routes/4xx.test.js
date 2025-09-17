@@ -24,8 +24,8 @@ describe('4xx error pages', () => {
 
     expect(res.statusCode).toBe(404)
     const $ = cheerio.load(res.payload)
-    expect($('.govuk-heading-l').text()).toEqual('404 - Not Found')
-    expect($('#_404 div p').text()).toEqual('Not Found')
+    expect($('.govuk-heading-l').text()).toEqual('404 - Page not found')
+    expect($('#_404 div p').text()).toEqual('The page you requested was not found.')
     expectPhaseBanner.ok($)
   })
 })

@@ -37,6 +37,7 @@ import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
 import { pigsElisaResultHandlers } from '../routes/endemics/pigs-elisa-result.js'
 import { pigsPcrResultHandlers } from '../routes/endemics/pigs-pcr-result.js'
 import { pigsGeneticSequencingHandlers } from '../routes/endemics/pigs-genetic-sequencing.js'
+import { missingPagesRoutes } from '../routes/missing-routes.js'
 
 const alwaysOnRouteHandlers = [
   assetsRouteHandlers,
@@ -72,7 +73,8 @@ const alwaysOnRouteHandlers = [
   herdOthersOnSbiHandlers,
   enterHerdDetailsHandlers,
   checkHerdDetailsHandlers,
-  sameHerdHandlers].flat()
+  sameHerdHandlers,
+  missingPagesRoutes].flat()
 
 const pigsUpdatesHandlers = [
   pigsElisaResultHandlers,

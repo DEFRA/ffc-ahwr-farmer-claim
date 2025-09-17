@@ -23,7 +23,6 @@ describe('routes plugin test', () => {
       '/healthy',
       '/healthz',
       '/claim/cookies',
-      '/claim/signin-oidc',
       '/claim/assets/{path*}',
       '/claim/endemics/biosecurity',
       '/claim/endemics/check-answers',
@@ -55,7 +54,8 @@ describe('routes plugin test', () => {
       '/claim/endemics/herd-others-on-sbi',
       '/claim/endemics/enter-herd-details',
       '/claim/endemics/check-herd-details',
-      '/claim/endemics/same-herd'
+      '/claim/endemics/same-herd',
+      '/{any*}'
     ].sort()
     expect(registeredRoutes).toEqual(expectedRoutes)
   })
