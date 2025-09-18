@@ -33,7 +33,6 @@ import { herdOthersOnSbiHandlers } from '../routes/endemics/herd-others-on-sbi.j
 import { enterHerdDetailsHandlers } from '../routes/endemics/enter-herd-details.js'
 import { checkHerdDetailsHandlers } from '../routes/endemics/check-herd-details.js'
 import { sameHerdHandlers } from '../routes/endemics/same-herd.js'
-import { devSignInHandlers } from '../routes/endemics/dev-sign-in.js'
 import { pigsElisaResultHandlers } from '../routes/endemics/pigs-elisa-result.js'
 import { pigsPcrResultHandlers } from '../routes/endemics/pigs-pcr-result.js'
 import { pigsGeneticSequencingHandlers } from '../routes/endemics/pigs-genetic-sequencing.js'
@@ -84,10 +83,6 @@ const pigsUpdatesHandlers = [
 
 const mapRoutes = () => {
   let routes = alwaysOnRouteHandlers
-
-  if (config.devLogin.enabled) {
-    routes = routes.concat(devSignInHandlers)
-  }
 
   if (config.pigUpdates.enabled) {
     routes = routes.concat(pigsUpdatesHandlers)

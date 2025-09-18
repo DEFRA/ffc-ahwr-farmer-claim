@@ -65,9 +65,6 @@ const schema = Joi.object({
   multiHerds: {
     releaseDate: Joi.string().required()
   },
-  devLogin: {
-    enabled: Joi.bool().required()
-  },
   pigUpdates: {
     enabled: Joi.bool().required()
   }
@@ -126,9 +123,6 @@ export const getConfig = () => {
     endemicsClaimExpiryTimeMonths: 10,
     multiHerds: {
       releaseDate: process.env.MULTI_HERDS_RELEASE_DATE || '2025-05-01'
-    },
-    devLogin: {
-      enabled: process.env.DEV_LOGIN_ENABLED === 'true'
     },
     pigUpdates: {
       enabled: process.env.PIG_UPDATES_ENABLED === 'true'

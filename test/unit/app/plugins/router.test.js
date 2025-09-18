@@ -10,7 +10,6 @@ describe('routes plugin test', () => {
   })
 
   test('routes included', async () => {
-    config.devLogin.enabled = false
     config.pigUpdates.enabled = false
     const server = await createServer()
     const routePaths = new Set()
@@ -58,18 +57,6 @@ describe('routes plugin test', () => {
       '/{any*}'
     ].sort()
     expect(registeredRoutes).toEqual(expectedRoutes)
-  })
-
-  test('when isDev is true, dev-sign-in included in routes', async () => {
-    config.devLogin.enabled = true
-
-    const server = await createServer()
-    const routePaths = []
-    server.table().forEach((element) => {
-      routePaths.push(element.path)
-    })
-
-    expect(routePaths).toContain('/claim/endemics/dev-sign-in')
   })
 
   test('when pigUpdates is true, pig updates included in routes', async () => {

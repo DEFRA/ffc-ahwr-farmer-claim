@@ -24,10 +24,12 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       // get type of livestock here, before we reset the session
-      const { organisation, typeOfLivestock } = getEndemicsClaim(request)
+      const { organisation: { sbi }, typeOfLivestock } = getEndemicsClaim(request)
+
+      request.logger.setBindings({ sbi })
 
       // fetch latest new world (always) and latest old world (if relevant) application
-      const { latestEndemicsApplication } = await refreshApplications(organisation.sbi, request)
+      const { latestEndemicsApplication } = await refreshApplications(sbi, request)
 
       // reset the session as this is the entry point - if user goes all the way back
       // to this point to change species, we cant keep all their answers

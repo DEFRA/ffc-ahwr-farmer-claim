@@ -20,7 +20,6 @@ data:
   DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
   MULTI_HERDS_RELEASE_DATE: {{ quote .Values.container.multiHerdsReleaseDate }}
-  DEV_LOGIN_ENABLED: {{ quote .Values.container.devLoginEnabled }}
   PIG_UPDATES_ENABLED: {{ quote .Values.container.pigUpdatesEnabled }}
   CUSTOMER_SURVEY_CLAIM_URI: {{ quote .Values.container.customerSurveyClaimUri }}
 {{- end -}}

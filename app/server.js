@@ -16,7 +16,6 @@ import { routerPlugin } from './plugins/router.js'
 import { sessionPlugin } from './plugins/session.js'
 import { viewsPlugin } from './plugins/views.js'
 import { viewContextPlugin } from './plugins/view-context.js'
-import { devSignInRedirectPlugin } from './plugins/dev-sign-in-redirect.js'
 
 const catbox = config.useRedis
   ? catboxRedis
@@ -64,10 +63,6 @@ export async function createServer () {
   await server.register(viewContextPlugin)
   await server.register(viewsPlugin)
   await server.register(headerPlugin)
-
-  if (config.devLogin.enabled) {
-    await server.register(devSignInRedirectPlugin)
-  }
 
   return server
 }
