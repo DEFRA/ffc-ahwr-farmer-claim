@@ -50,10 +50,6 @@ container:
   applyServiceUri:
   dashboardServiceUri:
   applicationApiUri:
-  defraIdTenant:
-  defraIdClientId:
-  defraIdServiceId:
-  defraIdPolicy:
   multiHerdsReleaseDate: '2025-05-01'
   pigUpdatesEnabled: 'false'
   customerSurveyClaimUri: https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u
