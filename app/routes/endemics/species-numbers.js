@@ -75,6 +75,10 @@ const getHandler = {
     handler: async (request, h) => {
       const claim = getEndemicsClaim(request)
 
+      if (!claim) {
+        throw new Error('No claim found in session')
+      }
+
       const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
 
       const questionText = legendText(speciesEligibleNumberForDisplay, claim.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication)
@@ -105,6 +109,11 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         const claim = getEndemicsClaim(request)
+
+        if (!claim) {
+          throw new Error('No claim found in session')
+        }
+
         const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
 
         return h.view(endemicsSpeciesNumbers, {
