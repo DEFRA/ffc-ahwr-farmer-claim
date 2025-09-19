@@ -6,7 +6,12 @@ export const redirectWhenClaimRefMissingPlugin = {
     name: 'redirect-claim-ref-missing',
     register: (server, _) => {
       server.ext('onPreHandler', (request, h) => {
-        if (request.method === 'get' && request.path.includes('/claim/endemics/') && !request.path.includes('dev-sign-in') && !request.path.includes('assets')) {
+        if (request.method === 'get' &&
+          request.path.includes('/claim/endemics/') &&
+          !request.path.includes('dev-sign-in') &&
+          !request.path.includes('assets') &&
+          !request.path.includes('which-species') // entry page of journey
+        ) {
           const claim = getEndemicsClaim(request)
           if (!claim?.reference) {
             return h.redirect(links.claimDashboard).takeover()

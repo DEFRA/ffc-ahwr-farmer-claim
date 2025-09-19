@@ -3,6 +3,7 @@ import { createServer } from '../../../../../app/server.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
+import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
 
@@ -50,7 +51,7 @@ describe('Vaccination test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
 
     test.each([
@@ -90,7 +91,7 @@ describe('Vaccination test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
 
     test.each([

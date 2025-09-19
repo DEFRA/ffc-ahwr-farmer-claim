@@ -55,7 +55,7 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
       const response = await server.inject(options)
 
       expect(response.statusCode).toBe(302)
-      expect(response.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(response.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
     test('Returns 200', async () => {
       const options = {

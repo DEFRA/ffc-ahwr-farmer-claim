@@ -21,7 +21,6 @@ export const sessionKeys = {
   endemicsClaim: {
     biosecurity: 'biosecurity',
     diseaseStatus: 'diseaseStatus',
-    landingPage: 'landingPage',
     reference: 'reference',
     typeOfLivestock: 'typeOfLivestock',
     typeOfReview: 'typeOfReview',

@@ -6,6 +6,7 @@ import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
 import { clearPiHuntSessionOnChange } from '../../../../../app/lib/clear-pi-hunt-session-on-change.js'
+import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -59,7 +60,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 
@@ -82,7 +83,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
     test('Continue to eligible page if user select yes', async () => {
       const options = {

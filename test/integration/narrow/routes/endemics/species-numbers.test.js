@@ -11,6 +11,8 @@ import {
   isMultipleHerdsUserJourney,
   isVisitDateAfterPIHuntAndDairyGoLive
 } from '../../../../../app/lib/context-helper.js'
+import { config } from '../../../../../app/config/index.js'
+import { StatusCodes } from 'http-status-codes'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -108,7 +110,7 @@ describe('Species numbers page', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('returns 404 when there is no claim', async () => {
+    test('returns 500 when there is no claim', async () => {
       getEndemicsClaim.mockReturnValueOnce({})
       getEndemicsClaim.mockReturnValueOnce({ reference: 'TEMP-6GSE-PIR8' })
       getEndemicsClaim.mockReturnValue(undefined)
@@ -120,10 +122,9 @@ describe('Species numbers page', () => {
 
       const res = await server.inject(options)
 
-      expect(res.statusCode).toBe(404)
+      expect(res.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR)
       const $ = cheerio.load(res.payload)
-      expect($('.govuk-heading-l').text()).toEqual('404 - Not Found')
-      expect($('#_404 div p').text()).toEqual('Not Found')
+      expect($('.govuk-heading-l').text()).toEqual('Sorry, there is a problem with the service')
       expectPhaseBanner.ok($)
     })
 
@@ -136,7 +137,7 @@ describe('Species numbers page', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 
@@ -158,7 +159,7 @@ describe('Species numbers page', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
 
     test.each([
@@ -261,7 +262,7 @@ describe('Species numbers page', () => {
       expect($('.govuk-back-link').attr('href')).toEqual('/claim/endemics/same-herd')
     })
 
-    test('redirect the user to 404 page in fail action and no claim object', async () => {
+    test('redirect the user to 500 page in fail action and no claim object', async () => {
       const options = {
         method: 'POST',
         url,
@@ -273,9 +274,9 @@ describe('Species numbers page', () => {
 
       const res = await server.inject(options)
 
-      expect(res.statusCode).toBe(404)
+      expect(res.statusCode).toBe(StatusCodes.INTERNAL_SERVER_ERROR)
       const $ = cheerio.load(res.payload)
-      expect($('h1').text().trim()).toMatch('404 - Not Found')
+      expect($('h1').text().trim()).toMatch('Sorry, there is a problem with the service')
     })
   })
 })

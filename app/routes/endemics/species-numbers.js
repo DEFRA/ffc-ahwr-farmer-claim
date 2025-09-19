@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import boom from '@hapi/boom'
 import links from '../../config/routes.js'
 import { sessionKeys } from '../../session/keys.js'
 import { getReviewType } from '../../lib/get-review-type.js'
@@ -75,12 +74,14 @@ const getHandler = {
   options: {
     handler: async (request, h) => {
       const claim = getEndemicsClaim(request)
+
       if (!claim) {
-        return boom.notFound()
+        throw new Error('No claim found in session')
       }
+
       const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
 
-      const questionText = legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication)
+      const questionText = legendText(speciesEligibleNumberForDisplay, claim.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication)
 
       return h.view(endemicsSpeciesNumbers, {
         backLink: backLink(request),
@@ -108,15 +109,18 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         const claim = getEndemicsClaim(request)
+
         if (!claim) {
-          return boom.notFound()
+          throw new Error('No claim found in session')
         }
+
         const speciesEligibleNumberForDisplay = getSpeciesEligibleNumberForDisplay(claim, isEndemicsClaims)
+
         return h.view(endemicsSpeciesNumbers, {
           backLink: backLink(request),
-          errorMessage: { text: errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication) },
+          errorMessage: { text: errorMessageText(claim.typeOfReview, speciesEligibleNumberForDisplay, claim.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication) },
           ...getYesNoRadios(
-            legendText(speciesEligibleNumberForDisplay, claim?.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
+            legendText(speciesEligibleNumberForDisplay, claim.typeOfReview, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),
             speciesNumbers,
             getEndemicsClaim(request, speciesNumbers),
             errorMessageText(claim?.typeOfReview, speciesEligibleNumberForDisplay, claim?.typeOfLivestock, claim.dateOfVisit, claim.latestEndemicsApplication),

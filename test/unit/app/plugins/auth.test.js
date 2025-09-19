@@ -1,3 +1,4 @@
+import { config } from '../../../../app/config/index.js'
 import { createServer } from '../../../../app/server.js'
 
 describe('Auth plugin test', () => {
@@ -5,30 +6,6 @@ describe('Auth plugin test', () => {
 
   beforeAll(async () => {
     jest.resetAllMocks()
-
-    jest.mock('../../../../app/config/auth', () => {
-      const originalModule = jest.requireActual('../../../../app/config/auth')
-      return {
-        ...originalModule,
-        authConfig: {
-          defraId: {
-            hostname: 'https://tenant.b2clogin.com/tenant.onmicrosoft.com',
-            oAuthAuthorisePath: '/oauth2/v2.0/authorize',
-            policy: 'b2c_1a_signupsigninsfi',
-            dashboardRedirectUri: 'http://localhost:3003/signin-oidc',
-            clientId: 'dummy_client_id',
-            serviceId: 'dummy_service_id',
-            scope: 'openid dummy_client_id offline_access'
-          },
-          ruralPaymentsAgency: {
-            hostname: 'dummy-host-name',
-            getPersonSummaryUrl: 'dummy-get-person-summary-url',
-            getOrganisationPermissionsUrl: 'dummy-get-organisation-permissions-url',
-            getOrganisationUrl: 'dummy-get-organisation-url'
-          }
-        }
-      }
-    })
     jest.mock('../../../../app/session')
 
     server = await createServer()
@@ -55,7 +32,7 @@ describe('Auth plugin test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 })

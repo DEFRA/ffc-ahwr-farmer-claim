@@ -5,6 +5,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/i
 import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
+import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
 jest.mock('../../../../../app/event/raise-invalid-data-event')
@@ -79,7 +80,7 @@ describe('Number of species tested test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
   })
 
@@ -101,7 +102,7 @@ describe('Number of species tested test', () => {
       const res = await server.inject(options)
 
       expect(res.statusCode).toBe(302)
-      expect(res.headers.location.toString()).toEqual(expect.stringContaining('oauth2/v2.0/authorize'))
+      expect(res.headers.location.toString()).toEqual(`${config.dashboardServiceUri}/sign-in`)
     })
     test.each([
       { numberAnimalsTested: '%%%%%%%%%%', error: 'The amount of animals samples were taken from must only include numbers' },

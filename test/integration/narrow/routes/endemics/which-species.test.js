@@ -3,12 +3,15 @@ import { createServer } from '../../../../../app/server.js'
 import links from '../../../../../app/config/routes.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../../../../app/session/index.js'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
-import { resetEndemicsClaimSession } from '../../../../../app/lib/context-helper.js'
+import { resetEndemicsClaimSession, refreshApplications } from '../../../../../app/lib/context-helper.js'
 
 const { endemicsWhichSpecies } = links
 
 jest.mock('../../../../../app/session')
-jest.mock('../../../../../app/lib/context-helper')
+jest.mock('../../../../../app/lib/context-helper', () => ({
+  resetEndemicsClaimSession: jest.fn(),
+  refreshApplications: jest.fn().mockResolvedValue({ latestEndemicsApplication: { reference: 'ABC123' } })
+}))
 
 describe('Endemics which species test', () => {
   setEndemicsClaim.mockImplementation(() => { })
@@ -40,7 +43,7 @@ describe('Endemics which species test', () => {
         auth,
         url
       }
-      getEndemicsClaim.mockReturnValue({ reference: 'TEMP-6GSE-PIR8' })
+      getEndemicsClaim.mockReturnValue({ reference: 'TEMP-6GSE-PIR8', organisation: { sbi: 123456789 } })
 
       const res = await server.inject(options)
       const $ = cheerio.load(res.payload)
@@ -50,6 +53,9 @@ describe('Endemics which species test', () => {
       expect($('h1').text().trim()).toMatch('Which species are you claiming for?')
       expect($('.govuk-radios__item').length).toEqual(4)
       expect($('.govuk-back-link').attr('href')).toContain('vet-visits')
+
+      expect(resetEndemicsClaimSession).toHaveBeenCalled()
+      expect(refreshApplications).toHaveBeenCalled()
     })
   })
 
@@ -65,7 +71,7 @@ describe('Endemics which species test', () => {
       url
     }
 
-    getEndemicsClaim.mockReturnValue({ typeOfLivestock, reference: 'TEMP-6GSE-PIR8' })
+    getEndemicsClaim.mockReturnValue({ typeOfLivestock, reference: 'TEMP-6GSE-PIR8', organisation: { id: 42 } })
 
     const res = await server.inject(options)
 

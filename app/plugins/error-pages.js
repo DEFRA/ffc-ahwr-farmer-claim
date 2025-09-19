@@ -1,4 +1,4 @@
-import HttpStatus from 'http-status-codes'
+import HttpStatus, { StatusCodes } from 'http-status-codes'
 
 export const errorPagesPlugin = {
   plugin: {
@@ -9,18 +9,24 @@ export const errorPagesPlugin = {
 
         if (response.isBoom) {
           const { payload } = response.output
+          const { statusCode, message: payloadMessage } = payload
 
-          if (payload.statusCode >= HttpStatus.BAD_REQUEST && payload.statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
-            return h.view('error-pages/4xx', { payload }).code(payload.statusCode)
+          if (statusCode === StatusCodes.NOT_FOUND) {
+            // handled specifically by a route handler that renders a 404 page for unknown pages
+            return h.continue
+          }
+
+          if (statusCode >= HttpStatus.BAD_REQUEST && statusCode < HttpStatus.INTERNAL_SERVER_ERROR) {
+            return h.view('error-pages/4xx', { payload }).code(statusCode)
           }
 
           request.log('error', {
-            statusCode: payload.statusCode,
-            message: payload.message,
+            statusCode: statusCode,
+            message: payloadMessage,
             stack: response.data ? response.data.stack : response.stack
           })
 
-          return h.view('error-pages/500').code(payload.statusCode)
+          return h.view('error-pages/500').code(statusCode)
         }
 
         return h.continue

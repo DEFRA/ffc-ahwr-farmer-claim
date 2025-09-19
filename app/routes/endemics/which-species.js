@@ -3,7 +3,7 @@ import { sessionKeys } from '../../session/keys.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import links from '../../config/routes.js'
 import { claimConstants } from '../../constants/claim.js'
-import { resetEndemicsClaimSession } from '../../lib/context-helper.js'
+import { refreshApplications, resetEndemicsClaimSession } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
 
@@ -17,17 +17,27 @@ const {
 const pageUrl = prefixUrl(endemicsWhichSpecies)
 const backLink = claimDashboard
 const errorMessage = { text: 'Select which species you are claiming for' }
-const view = `${endemicsWhichSpecies}`
 
 const getHandler = {
   method: 'GET',
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const endemicsClaim = getEndemicsClaim(request)
-      return h.view(view, {
-        ...(endemicsClaim?.typeOfLivestock && {
-          previousAnswer: endemicsClaim.typeOfLivestock
+      // get type of livestock here, before we reset the session
+      const { organisation: { sbi }, typeOfLivestock } = getEndemicsClaim(request)
+
+      request.logger.setBindings({ sbi })
+
+      // fetch latest new world (always) and latest old world (if relevant) application
+      const { latestEndemicsApplication } = await refreshApplications(sbi, request)
+
+      // reset the session as this is the entry point - if user goes all the way back
+      // to this point to change species, we cant keep all their answers
+      await resetEndemicsClaimSession(request, latestEndemicsApplication.reference)
+
+      return h.view(endemicsWhichSpecies, {
+        ...(typeOfLivestock && {
+          previousAnswer: typeOfLivestock
         }),
         backLink
       })
@@ -48,7 +58,7 @@ const postHandler = {
       failAction: (request, h, err) => {
         request.logger.setBindings({ err })
         return h
-          .view(view, {
+          .view(endemicsWhichSpecies, {
             errorMessage,
             backLink
           })

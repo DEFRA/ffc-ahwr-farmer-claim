@@ -11,22 +11,13 @@ data:
   {{- if .Values.container.redisHostname }}
   REDIS_HOSTNAME: {{ quote .Values.container.redisHostname }}
   {{- end }}
-  {{- if .Values.pr }}
-  REDIS_PARTITION: {{ .Values.container.redisPartition }}-{{ .Values.pr }}
-  {{ else }}
-  REDIS_PARTITION: {{ quote .Values.container.redisPartition }}
-  {{- end }}
   REDIS_PORT: {{ quote .Values.container.redisPort }}
   SERVICE_URI: {{ quote .Values.container.serviceUri }}
   APPLY_SERVICE_URI: {{ quote .Values.container.applyServiceUri }}
   DASHBOARD_SERVICE_URI: {{ quote .Values.container.dashboardServiceUri }}
   APPLICATION_API_URI: {{ quote .Values.container.applicationApiUri }}
-  DEFRA_ID_TENANT: {{ quote .Values.container.defraIdTenant }}
-  DEFRA_ID_POLICY: {{ quote .Values.container.defraIdPolicy }}
-  DEFRA_ID_DASHBOARD_REDIRECT_URI: {{ quote .Values.container.defraIdDashboardRedirectUri }}
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
   MULTI_HERDS_RELEASE_DATE: {{ quote .Values.container.multiHerdsReleaseDate }}
-  DEV_LOGIN_ENABLED: {{ quote .Values.container.devLoginEnabled }}
   PIG_UPDATES_ENABLED: {{ quote .Values.container.pigUpdatesEnabled }}
   CUSTOMER_SURVEY_CLAIM_URI: {{ quote .Values.container.customerSurveyClaimUri }}
 {{- end -}}
