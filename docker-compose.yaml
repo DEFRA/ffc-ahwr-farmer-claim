@@ -21,5 +21,4 @@ services:
       APPLY_SERVICE_URI: http://localhost:3000/apply
       DASHBOARD_SERVICE_URI: http://localhost:3003
       APPLICATION_API_URI: http://host.docker.internal:3001/api
-      PIG_UPDATES_ENABLED: ${PIG_UPDATES_ENABLED:-true}
       CUSTOMER_SURVEY_CLAIM_URI: ${CUSTOMER_SURVEY_CLAIM_URI:-https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u}
