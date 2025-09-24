@@ -48,7 +48,7 @@ describe('pigs pcr result test', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
@@ -69,7 +69,7 @@ describe('pigs pcr result test', () => {
       crumb = await getCrumbs(server)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
         url,

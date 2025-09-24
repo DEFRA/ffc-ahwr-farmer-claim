@@ -51,7 +51,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
@@ -72,7 +72,7 @@ describe('PI Hunt tests when Optional PI Hunt is OFF', () => {
       jest.resetAllMocks()
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
         url,

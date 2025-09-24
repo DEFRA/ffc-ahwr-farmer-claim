@@ -165,7 +165,7 @@ describe('GET /claim/endemics/date-of-visit handler', () => {
     expectPhaseBanner.ok($)
   })
 
-  test('when not logged in redirects to defra id', async () => {
+  test('when not logged in redirects to /sign-in', async () => {
     const options = {
       method: 'GET',
       url

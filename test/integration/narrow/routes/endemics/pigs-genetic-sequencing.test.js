@@ -48,7 +48,7 @@ describe('pigs genetic sequencing test', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
@@ -72,7 +72,7 @@ describe('pigs genetic sequencing test', () => {
       jest.resetAllMocks()
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
         url,
