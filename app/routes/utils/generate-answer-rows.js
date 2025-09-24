@@ -5,20 +5,6 @@ import { PIG_GENETIC_SEQUENCING_VALUES } from 'ffc-ahwr-common-library'
 const urlPrefix = config.urlPrefix
 
 export const generatePigStatusAnswerRows = (sessionData) => {
-  const diseaseStatusRow = {
-    key: { text: 'Disease status category' },
-    value: { html: sessionData.diseaseStatus },
-    actions: {
-      items: [
-        {
-          href: `${urlPrefix}/${routes.endemicsDiseaseStatus}`,
-          text: 'Change',
-          visuallyHiddenText: 'disease status category'
-        }
-      ]
-    }
-  }
-
   const testResultRow = {
     key: { text: 'Test result' },
     value: { html: prefixResultForTestType(sessionData.pigsElisaTestResult, sessionData.pigsPcrTestResult) },
@@ -47,7 +33,7 @@ export const generatePigStatusAnswerRows = (sessionData) => {
     }
   }
 
-  return config.pigUpdates.enabled ? [testResultRow, geneticSequencingResultRow] : [diseaseStatusRow]
+  return [testResultRow, geneticSequencingResultRow]
 }
 
 const prefixResultForTestType = (elisaValue, pcrValue) => {

@@ -114,7 +114,6 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
     })
 
     test('back link for pigs when genetic sequencing value set', async () => {
-      config.pigUpdates.enabled = true
       const options = {
         method: 'GET',
         auth,
@@ -130,7 +129,6 @@ describe('Biosecurity test when Optional PI Hunt is OFF', () => {
     })
 
     test('back link for pigs when pcr test value set', async () => {
-      config.pigUpdates.enabled = true
       const options = {
         method: 'GET',
         auth,

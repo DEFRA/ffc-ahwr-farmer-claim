@@ -1,7 +1,6 @@
 import Joi from 'joi'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
-import { config } from '../../config/index.js'
 import links from '../../config/routes.js'
 import { claimConstants } from '../../constants/claim.js'
 import { getTestResult } from '../../lib/get-test-result.js'
@@ -18,7 +17,6 @@ const {
   endemicsTestResults,
   endemicsBiosecurity,
   endemicsCheckAnswers,
-  endemicsDiseaseStatus,
   endemicsBiosecurityException,
   endemicsVetRCVS,
   endemicsPIHunt,
@@ -111,20 +109,16 @@ export const previousPageUrl = (request) => {
 }
 
 const getBackPageForPigs = (session) => {
-  if (config.pigUpdates.enabled) {
-    // This page might have been skipped, if they said the result was negative
-    if (session?.pigsGeneticSequencing) {
-      return prefixUrl(endemicsPigsGeneticSequencing)
-    }
-
-    if (session?.pigsFollowUpTest === pcr) {
-      return prefixUrl(endemicsPigsPcrResult)
-    }
-
-    return prefixUrl(endemicsPigsElisaResult)
+  // This page might have been skipped, if they said the result was negative
+  if (session?.pigsGeneticSequencing) {
+    return prefixUrl(endemicsPigsGeneticSequencing)
   }
 
-  return prefixUrl(endemicsDiseaseStatus)
+  if (session?.pigsFollowUpTest === pcr) {
+    return prefixUrl(endemicsPigsPcrResult)
+  }
+
+  return prefixUrl(endemicsPigsElisaResult)
 }
 
 export const getAssessmentPercentageErrorMessage = (

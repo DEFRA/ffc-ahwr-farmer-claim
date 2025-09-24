@@ -134,7 +134,6 @@ describe('Check answers test', () => {
     })
 
     test('shows fields for a review claim in the correct order for each species for pigs', async () => {
-      config.pigUpdates.enabled = false
       getEndemicsClaim.mockImplementation(() => {
         return pigsReviewClaim
       })
@@ -315,7 +314,6 @@ describe('Check answers test', () => {
     })
 
     test('shows fields for an endemics claim in the correct order for each species for pigs', async () => {
-      config.pigUpdates.enabled = false
       getEndemicsClaim.mockImplementation(() => {
         return pigEndemicsFollowUpClaim
       })
@@ -335,42 +333,7 @@ describe('Check answers test', () => {
       const rowActionTexts = getRowActionTexts($)
       const rowLinks = getRowLinks($)
 
-      const expected = expectedEndemicsFollowUpPigs(false)
-
-      expect(rowKeys).toEqual(expected.rowKeys)
-      expect(rowContents).toEqual(expected.rowContents)
-      expect(rowActionTexts).toEqual(expected.rowActionTexts)
-      expect(rowLinks).toEqual(expected.rowLinks)
-
-      expectPhaseBanner.ok($)
-    })
-
-    test('shows fields for an endemics claim in the correct order for each species for pigs with pigUpdates enabled', async () => {
-      config.pigUpdates.enabled = true
-      getEndemicsClaim.mockImplementation(() => {
-        return {
-          ...pigEndemicsFollowUpClaim,
-          diseaseStatus: undefined,
-          pigsElisaTestResult: 'positive'
-        }
-      })
-      const options = {
-        method: 'GET',
-        url,
-        auth
-      }
-
-      const res = await server.inject(options)
-
-      expect(res.statusCode).toBe(200)
-      const $ = cheerio.load(res.payload)
-
-      const rowKeys = getRowKeys($)
-      const rowContents = getRowContents($)
-      const rowActionTexts = getRowActionTexts($)
-      const rowLinks = getRowLinks($)
-
-      const expected = expectedEndemicsFollowUpPigs(true)
+      const expected = expectedEndemicsFollowUpPigs()
 
       expect(rowKeys).toEqual(expected.rowKeys)
       expect(rowContents).toEqual(expected.rowContents)

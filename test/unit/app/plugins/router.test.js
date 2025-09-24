@@ -1,5 +1,4 @@
 import { createServer } from '../../../../app/server.js'
-import { config } from '../../../../app/config/index.js'
 
 jest.mock('../../../../app/config')
 
@@ -10,7 +9,6 @@ describe('routes plugin test', () => {
   })
 
   test('routes included', async () => {
-    config.pigUpdates.enabled = false
     const server = await createServer()
     const routePaths = new Set()
     server.table()
@@ -54,22 +52,11 @@ describe('routes plugin test', () => {
       '/claim/endemics/enter-herd-details',
       '/claim/endemics/check-herd-details',
       '/claim/endemics/same-herd',
+      '/claim/endemics/pigs-elisa-result',
+      '/claim/endemics/pigs-pcr-result',
+      '/claim/endemics/pigs-genetic-sequencing',
       '/{any*}'
     ].sort()
     expect(registeredRoutes).toEqual(expectedRoutes)
-  })
-
-  test('when pigUpdates is true, pig updates included in routes', async () => {
-    config.pigUpdates.enabled = true
-
-    const server = await createServer()
-    const routePaths = []
-    server.table().forEach((element) => {
-      routePaths.push(element.path)
-    })
-
-    expect(routePaths).toContain('/claim/endemics/pigs-elisa-result')
-    expect(routePaths).toContain('/claim/endemics/pigs-pcr-result')
-    expect(routePaths).toContain('/claim/endemics/pigs-genetic-sequencing')
   })
 })

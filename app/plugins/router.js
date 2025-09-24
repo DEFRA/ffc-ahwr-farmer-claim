@@ -1,4 +1,3 @@
-import { config } from '../config/index.js'
 import { healthHandlers } from '../routes/health.js'
 import { cookiesHandlers } from '../routes/cookies.js'
 import { assetsRouteHandlers } from '../routes/assets.js'
@@ -73,22 +72,13 @@ const alwaysOnRouteHandlers = [
   enterHerdDetailsHandlers,
   checkHerdDetailsHandlers,
   sameHerdHandlers,
-  missingPagesRoutes].flat()
-
-const pigsUpdatesHandlers = [
   pigsElisaResultHandlers,
   pigsPcrResultHandlers,
-  pigsGeneticSequencingHandlers
-].flat()
+  pigsGeneticSequencingHandlers,
+  missingPagesRoutes].flat()
 
 const mapRoutes = () => {
-  let routes = alwaysOnRouteHandlers
-
-  if (config.pigUpdates.enabled) {
-    routes = routes.concat(pigsUpdatesHandlers)
-  }
-
-  return routes
+  return alwaysOnRouteHandlers
 }
 
 export const routerPlugin = {

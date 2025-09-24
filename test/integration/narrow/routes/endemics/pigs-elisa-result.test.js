@@ -16,7 +16,6 @@ describe('pigs elisa result test', () => {
   let server
 
   beforeAll(async () => {
-    config.pigUpdates = { enabled: true }
     raiseInvalidDataEvent.mockImplementation(() => {})
     setEndemicsClaim.mockImplementation(() => {})
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
@@ -69,6 +68,15 @@ describe('pigs elisa result test', () => {
       jest.resetAllMocks()
     })
 
+    const generateOptionsForElseResult = (elisaResult) => (
+      {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, elisaResult },
+        headers: { cookie: `crumb=${crumb}` }
+      })
+
     test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
@@ -84,13 +92,7 @@ describe('pigs elisa result test', () => {
     })
 
     test('shows error when payload is invalid', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, elisaResult: '' },
-        headers: { cookie: `crumb=${crumb}` }
-      }
+      const options = generateOptionsForElseResult('')
 
       const res = await server.inject(options)
 
@@ -101,13 +103,7 @@ describe('pigs elisa result test', () => {
     })
 
     test('sets negative result into session and redirects to pigs biosecurity page', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, elisaResult: 'negative' },
-        headers: { cookie: `crumb=${crumb}` }
-      }
+      const options = generateOptionsForElseResult('negative')
 
       const res = await server.inject(options)
 
@@ -119,13 +115,7 @@ describe('pigs elisa result test', () => {
     })
 
     test('sets positive result into session and redirects to pigs biosecurity page', async () => {
-      const options = {
-        method: 'POST',
-        url,
-        auth,
-        payload: { crumb, elisaResult: 'positive' },
-        headers: { cookie: `crumb=${crumb}` }
-      }
+      const options = generateOptionsForElseResult('positive')
 
       const res = await server.inject(options)
 
