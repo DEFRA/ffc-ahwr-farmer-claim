@@ -63,7 +63,7 @@ describe('Check answers test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
@@ -895,7 +895,7 @@ describe('Check answers test', () => {
       expectAppInsightsEventRaised('tempClaimReference', 'TEMP-6GSE-PIR8')
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
         url,

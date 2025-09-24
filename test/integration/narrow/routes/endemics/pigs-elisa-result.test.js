@@ -47,7 +47,7 @@ describe('pigs elisa result test', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
@@ -77,7 +77,7 @@ describe('pigs elisa result test', () => {
         headers: { cookie: `crumb=${crumb}` }
       })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
         url,

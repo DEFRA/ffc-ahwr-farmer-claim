@@ -80,7 +80,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
@@ -100,7 +100,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       crumb = await getCrumbs(server)
     })
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'POST',
         url,

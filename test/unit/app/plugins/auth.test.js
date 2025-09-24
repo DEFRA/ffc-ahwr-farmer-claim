@@ -20,10 +20,10 @@ describe('Auth plugin test', () => {
     jest.clearAllMocks()
   })
 
-  describe('GET requests to defra id', () => {
+  describe('GET requests to /sign-in', () => {
     const url = '/claim/endemics/date-of-visit'
 
-    test('when not logged in redirects to defra id', async () => {
+    test('when not logged in redirects to /sign-in', async () => {
       const options = {
         method: 'GET',
         url
