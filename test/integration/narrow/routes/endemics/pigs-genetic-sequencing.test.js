@@ -16,7 +16,6 @@ describe('pigs genetic sequencing test', () => {
   let server
 
   beforeAll(async () => {
-    config.pigUpdates = { enabled: true }
     raiseInvalidDataEvent.mockImplementation(() => {})
     setEndemicsClaim.mockImplementation(() => {})
     getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })

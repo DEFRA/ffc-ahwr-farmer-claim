@@ -1,5 +1,4 @@
 import Joi from 'joi'
-import { config } from '../../config/index.js'
 import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
@@ -13,7 +12,6 @@ const {
   endemicsTestUrn,
   endemicsNumberOfSamplesTested,
   endemicsNumberOfSamplesTestedException,
-  endemicsDiseaseStatus,
   endemicsPigsPcrResult,
   endemicsPigsElisaResult
 } = links
@@ -23,17 +21,6 @@ const {
 const { positiveReviewNumberOfSamplesTested, negativeReviewNumberOfSamplesTested } = thresholds
 
 const pageUrl = prefixUrl(endemicsNumberOfSamplesTested)
-
-const getHintText = () => {
-  let hintText = 'You can find this on the summary the vet gave you.'
-
-  if (config.pigUpdates.enabled) {
-    hintText =
-      'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
-  }
-
-  return hintText
-}
 
 const getHandler = {
   method: 'GET',
@@ -45,24 +32,10 @@ const getHandler = {
       return h.view(endemicsNumberOfSamplesTested, {
         numberOfSamplesTested,
         backLink: prefixUrl(endemicsTestUrn),
-        hintText: getHintText()
+        hintText: 'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
       })
     }
   }
-}
-
-const getUpdatedErrorMessage = (errorMessage) => {
-  if (config.pigUpdates.enabled) {
-    const pigUpdatesErrorMessageMap = {
-      'Enter the number of samples tested': 'Enter how many samples were tested. Use the number of PCR or ELISA test results you got back',
-      'The number of samples tested should not exceed 9999': 'The number of samples tested should not exceed 9999. Use the number of PCR or ELISA test results you got back',
-      'The amount of samples tested must only include numbers': 'The amount of samples tested must only include numbers. Use the number of PCR or ELISA test results you got back'
-    }
-
-    return pigUpdatesErrorMessageMap[errorMessage]
-  }
-
-  return errorMessage
 }
 
 const postHandler = {
@@ -73,21 +46,19 @@ const postHandler = {
       payload: Joi.object({
         numberOfSamplesTested: Joi.string().pattern(/^\d+$/).max(4).required()
           .messages({
-            'string.base': 'Enter the number of samples tested',
-            'string.empty': 'Enter the number of samples tested',
-            'string.max': 'The number of samples tested should not exceed 9999',
-            'string.pattern.base': 'The amount of samples tested must only include numbers'
+            'string.base': 'Enter how many samples were tested. Use the number of PCR or ELISA test results you got back',
+            'string.empty': 'Enter how many samples were tested. Use the number of PCR or ELISA test results you got back',
+            'string.max': 'The number of samples tested should not exceed 9999. Use the number of PCR or ELISA test results you got back',
+            'string.pattern.base': 'The amount of samples tested must only include numbers. Use the number of PCR or ELISA test results you got back'
           })
       }),
       failAction: async (request, h, error) => {
-        const newErrorMessage = getUpdatedErrorMessage(error.details[0].message)
-
         return h
           .view(endemicsNumberOfSamplesTested, {
             ...request.payload,
-            errorMessage: { text: newErrorMessage, href: '#numberOfSamplesTested' },
+            errorMessage: { text: error.details[0].message, href: '#numberOfSamplesTested' },
             backLink: prefixUrl(endemicsTestUrn),
-            hintText: getHintText()
+            hintText: 'Enter how many polymerase chain reaction (PCR) and enzyme-linked immunosorbent assay (ELISA) test results you got back. You can find this on the summary the vet gave you.'
           })
           .code(HttpStatus.BAD_REQUEST)
           .takeover()
@@ -110,25 +81,21 @@ const postHandler = {
           .code(HttpStatus.BAD_REQUEST).takeover()
       }
 
-      if (config.pigUpdates.enabled) {
-        const { herdVaccinationStatus } = endemicsClaim
-        const { vaccination: { vaccinated }, pigsFollowUpTest: { pcr, elisa }, result: { positive } } = claimConstants
+      const { herdVaccinationStatus } = endemicsClaim
+      const { vaccination: { vaccinated }, pigsFollowUpTest: { pcr, elisa }, result: { positive } } = claimConstants
 
-        if (herdVaccinationStatus === vaccinated) {
-          setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
-          return h.redirect(prefixUrl(endemicsPigsPcrResult))
-        }
-
-        if (lastReviewTestResults === positive) {
-          setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
-          return h.redirect(prefixUrl(endemicsPigsPcrResult))
-        }
-
-        setEndemicsClaim(request, pigsFollowUpTestKey, elisa, { shouldEmitEvent: false })
-        return h.redirect(prefixUrl(endemicsPigsElisaResult))
+      if (herdVaccinationStatus === vaccinated) {
+        setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
+        return h.redirect(prefixUrl(endemicsPigsPcrResult))
       }
 
-      return h.redirect(prefixUrl(endemicsDiseaseStatus))
+      if (lastReviewTestResults === positive) {
+        setEndemicsClaim(request, pigsFollowUpTestKey, pcr, { shouldEmitEvent: false })
+        return h.redirect(prefixUrl(endemicsPigsPcrResult))
+      }
+
+      setEndemicsClaim(request, pigsFollowUpTestKey, elisa, { shouldEmitEvent: false })
+      return h.redirect(prefixUrl(endemicsPigsElisaResult))
     }
   }
 }
