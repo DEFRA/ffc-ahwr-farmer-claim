@@ -16,6 +16,7 @@ import { routerPlugin } from './plugins/router.js'
 import { sessionPlugin } from './plugins/session.js'
 import { viewsPlugin } from './plugins/views.js'
 import { viewContextPlugin } from './plugins/view-context.js'
+import { redirectAgreementRedactedPlugin } from './plugins/redirect-agreement-redacted.js'
 
 const catbox = config.useRedis
   ? catboxRedis
@@ -58,6 +59,7 @@ export async function createServer () {
   await server.register(loggingPlugin)
   await server.register(loggingContextPlugin)
   await server.register(redirectWhenClaimRefMissingPlugin)
+  await server.register(redirectAgreementRedactedPlugin)
   await server.register(routerPlugin)
   await server.register(sessionPlugin)
   await server.register(viewContextPlugin)

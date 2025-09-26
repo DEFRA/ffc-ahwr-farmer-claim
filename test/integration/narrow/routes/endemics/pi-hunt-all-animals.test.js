@@ -34,9 +34,9 @@ describe('PI Hunt recommended tests', () => {
       { typeOfLivestock: 'beef', reviewTestResults: 'positive', backLink: '/claim/endemics/pi-hunt', expectedQuestion: 'Was the PI hunt done on all beef cattle in the herd?' },
       { typeOfLivestock: 'dairy', reviewTestResults: 'negative', backLink: '/claim/endemics/pi-hunt-recommended', expectedQuestion: 'Was the PI hunt done on all dairy cattle in the herd?' }
     ])('returns 200', async ({ typeOfLivestock, reviewTestResults, backLink, expectedQuestion }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock, reviewTestResults } })
-        .mockImplementationOnce(() => { return { reference: 'TEMP-6GSE-PIR8' } })
-        .mockImplementationOnce(() => { return { typeOfLivestock, reviewTestResults } })
+      getEndemicsClaim.mockImplementation(() => ({
+        reference: 'TEMP-6GSE-PIR8', typeOfLivestock, reviewTestResults, latestEndemicsApplication: {}
+      }))
 
       const options = {
         method: 'GET',

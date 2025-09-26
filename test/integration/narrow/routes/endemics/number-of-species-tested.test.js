@@ -53,9 +53,7 @@ describe('Number of species tested test', () => {
       { typeOfLivestock: 'beef', typeOfReview: 'R' },
       { typeOfLivestock: 'dairy', typeOfReview: 'R' }
     ])('returns 200 for review $typeOfLivestock journey', async ({ typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaim.mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
-        .mockImplementationOnce(() => { return { reference: 'TEMP-6GSE-PIR8' } })
-        .mockImplementationOnce(() => { return { typeOfLivestock, typeOfReview } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, reference: 'TEMP-6GSE-PIR8' } })
 
       const options = {
         method: 'GET',

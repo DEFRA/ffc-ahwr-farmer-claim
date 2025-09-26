@@ -35,6 +35,10 @@ const getHandler = {
       // to this point to change species, we cant keep all their answers
       await resetEndemicsClaimSession(request, latestEndemicsApplication.reference)
 
+      if (latestEndemicsApplication?.applicationRedacts?.length) {
+        return h.redirect(links.claimDashboard).takeover()
+      }
+
       return h.view(endemicsWhichSpecies, {
         ...(typeOfLivestock && {
           previousAnswer: typeOfLivestock
