@@ -2,28 +2,20 @@ import * as session from '../../../../app/session'
 
 describe('session', () => {
   const endemicsClaimKey = 'endemicsClaim'
-  const claimKey = 'claim'
-  const tokensSectionKey = 'tokens'
   const customerSectionKey = 'customer'
-  const pkcecodesSectionKey = 'pkcecodes'
   const tempClaimReferenceKey = 'tempClaimReference'
 
   const value = 'value'
   const objectValue = { key: value }
 
   const getFunctionsToTest = [
-    { func: 'getClaim', expectedSectionKey: claimKey },
     { func: 'getEndemicsClaim', expectedSectionKey: endemicsClaimKey },
-    { func: 'getToken', expectedSectionKey: tokensSectionKey },
-    { func: 'getCustomer', expectedSectionKey: customerSectionKey },
-    { func: 'getPkcecodes', expectedSectionKey: pkcecodesSectionKey }
+    { func: 'getCustomer', expectedSectionKey: customerSectionKey }
   ]
 
   const setFunctionsToTest = [
     { func: 'setEndemicsClaim', expectedSectionKey: endemicsClaimKey },
-    { func: 'setToken', expectedSectionKey: tokensSectionKey },
     { func: 'setCustomer', expectedSectionKey: customerSectionKey },
-    { func: 'setPkcecodes', expectedSectionKey: pkcecodesSectionKey },
     { func: 'setTempClaimReference', expectedSectionKey: tempClaimReferenceKey }
   ]
 
@@ -113,23 +105,6 @@ describe('session', () => {
     expect(requestSetMock.yar.get).toHaveBeenCalledWith(expectedSectionKey)
     expect(requestSetMock.yar.set).toHaveBeenCalledTimes(1)
     expect(requestSetMock.yar.set).toHaveBeenCalledWith(expectedSectionKey, { [key]: objectValue })
-  })
-
-  test('session clear clears correct keys', async () => {
-    const yarMock = {
-      get: jest.fn(),
-      set: jest.fn(),
-      clear: jest.fn()
-    }
-    const requestSetMock = { yar: yarMock, headers: { 'x-forwarded-for': '1.1.1.1' } }
-    session.clear(requestSetMock)
-
-    expect(requestSetMock.yar.clear).toHaveBeenCalledTimes(5)
-    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('claim')
-    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('endemicsClaim')
-    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('application')
-    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('organisation')
-    expect(requestSetMock.yar.clear).toHaveBeenCalledWith('tempClaimReference')
   })
 
   test('session clearEndemicsClaim clears correct keys and keeps correct keys when no MH data', async () => {
