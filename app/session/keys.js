@@ -1,10 +1,4 @@
 export const sessionKeys = {
-  answers: {
-    cattle: 'cattle',
-    cattleType: 'cattleType',
-    pigs: 'pigs',
-    sheep: 'sheep'
-  },
   farmerApplyData: {
     eligibleSpecies: 'eligibleSpecies',
     declaration: 'declaration',
@@ -75,7 +69,6 @@ export const sessionKeys = {
   },
   tokens: {
     accessToken: 'accessToken',
-    tokenExpiry: 'tokenExpiry',
     idToken: 'idToken',
     state: 'state',
     nonce: 'nonce'

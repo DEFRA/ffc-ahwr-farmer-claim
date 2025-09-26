@@ -1,17 +1,9 @@
 import { getIpFromRequest } from '../event/get-ip-from-request.js'
 import { sendSessionEvent } from '../event/send-session-event.js'
 import { sessionKeys } from '../session/keys.js'
+import { SESSION_ENTRIES } from 'ffc-ahwr-common-library'
 
-const entries = {
-  application: 'application',
-  claim: 'claim',
-  endemicsClaim: 'endemicsClaim',
-  organisation: 'organisation',
-  pkcecodes: 'pkcecodes',
-  tokens: 'tokens',
-  customer: 'customer',
-  tempClaimReference: 'tempClaimReference'
-}
+const entries = SESSION_ENTRIES
 
 const {
   endemicsClaim: {
@@ -55,18 +47,6 @@ function set (request, entryKey, key, value, shouldEmitEvent) {
 
 function get (request, entryKey, key) {
   return key ? request.yar?.get(entryKey)?.[key] : request.yar?.get(entryKey)
-}
-
-export function clear (request) {
-  request.yar.clear(entries.claim)
-  request.yar.clear(entries.endemicsClaim)
-  request.yar.clear(entries.application)
-  request.yar.clear(entries.organisation)
-  request.yar.clear(entries.tempClaimReference)
-}
-
-export function getClaim (request, key) {
-  return get(request, entries.claim, key)
 }
 
 export function setEndemicsClaim (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
@@ -132,26 +112,10 @@ export function setTempClaimReference (request, key, value, { shouldEmitEvent } 
   set(request, entries.tempClaimReference, key, value, shouldEmitEvent)
 }
 
-export function setToken (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
-  set(request, entries.tokens, key, value, shouldEmitEvent)
-}
-
-export function getToken (request, key) {
-  return get(request, entries.tokens, key)
-}
-
 export function setCustomer (request, key, value, { shouldEmitEvent } = { shouldEmitEvent: true }) {
   set(request, entries.customer, key, value, shouldEmitEvent)
 }
 
 export function getCustomer (request, key) {
   return get(request, entries.customer, key)
-}
-
-export function setPkcecodes (request, key, value) {
-  set(request, entries.pkcecodes, key, value)
-}
-
-export function getPkcecodes (request, key) {
-  return get(request, entries.pkcecodes, key)
 }
