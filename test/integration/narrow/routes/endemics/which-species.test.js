@@ -57,6 +57,21 @@ describe('Endemics which species test', () => {
       expect(resetEndemicsClaimSession).toHaveBeenCalled()
       expect(refreshApplications).toHaveBeenCalled()
     })
+
+    test('should redirect to dashboard when agreement is redacted', async () => {
+      const options = {
+        method: 'GET',
+        auth,
+        url
+      }
+      getEndemicsClaim.mockReturnValue({ reference: 'TEMP-6GSE-PIR8', organisation: { sbi: 123456789 } })
+      refreshApplications.mockResolvedValueOnce({ latestEndemicsApplication: { applicationRedacts: [{ success: 'Y' }] } })
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location).toBe(links.claimDashboard)
+    })
   })
 
   test.each([
