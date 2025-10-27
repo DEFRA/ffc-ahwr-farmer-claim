@@ -22,6 +22,7 @@ export const viewContextPlugin = {
           ctx.dashboardServiceUri = dashboardServiceUri
           ctx.ruralPaymentsAgency = RPA_CONTACT_DETAILS
           ctx.userIsSignedIn = request.auth.isAuthenticated
+          ctx.dashboardLink = `${dashboardServiceUri}/vet-visits`
 
           response.source.context = ctx
         }
