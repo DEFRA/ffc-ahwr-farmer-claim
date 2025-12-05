@@ -5,7 +5,7 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { getTestResult } from '../../lib/get-test-result.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import { isURNUnique } from '../../api-requests/claim-service-api.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isPigsAndPaymentsUserJourney } from '../../lib/context-helper.js'
 import HttpStatus from 'http-status-codes'
 import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
 
@@ -15,6 +15,7 @@ const {
   endemicsTestUrn,
   endemicsVaccination,
   endemicsTestUrnException,
+  endemicsTypeOfSamplesTaken,
   endemicsNumberOfOralFluidSamples,
   endemicsNumberOfSamplesTested,
   endemicsTestResults,
@@ -67,6 +68,9 @@ const nextPageUrl = (request) => {
   const { isBeef, isDairy, isPigs, isReview, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isPigs && isReview) {
+    if (isPigsAndPaymentsUserJourney(getEndemicsClaim(request, dateOfVisitKey))) {
+      return prefixUrl(endemicsTypeOfSamplesTaken)
+    }
     return prefixUrl(endemicsNumberOfOralFluidSamples)
   }
   if (isPigs && isEndemicsFollowUp) {

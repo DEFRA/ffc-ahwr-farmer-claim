@@ -19,4 +19,5 @@ data:
   WRECK_HTTP_TIMEOUT_MILLISECONDS: {{ quote .Values.wreckHttp.timeoutMilliseconds }}
   MULTI_HERDS_RELEASE_DATE: {{ quote .Values.container.multiHerdsReleaseDate }}
   CUSTOMER_SURVEY_CLAIM_URI: {{ quote .Values.container.customerSurveyClaimUri }}
+  PIGS_AND_PAYMENTS_RELEASE_DATE: {{ quote .Values.container.pigsAndPaymentsReleaseDate }}
 {{- end -}}

@@ -52,6 +52,7 @@ container:
   applicationApiUri:
   multiHerdsReleaseDate: '2025-05-01'
   customerSurveyClaimUri: https://forms.office.com/Pages/ResponsePage.aspx?id=UCQKdycCYkyQx044U38RAsIdAEqqafZCk2LjifrI4h1UOVJKOVRUWlBLMEpFQVdERzA3QVRFWUM2NS4u
+  pigsAndPaymentsReleaseDate: '2026-01-22'
 
 ingress:
   class: nginx
