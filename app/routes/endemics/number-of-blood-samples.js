@@ -7,6 +7,8 @@ import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
 
+const ENTER_NUM_BLOOD_SAMPLES = 'Enter the number of blood samples'
+
 const {
   endemicsTypeOfSamplesTaken,
   endemicsNumberOfBloodSamples,
@@ -16,7 +18,7 @@ const {
 const {
   endemicsClaim: { numberOfBloodSamples: numberOfBloodSamplesKey }
 } = sessionKeys
-const { exactNumberBloodSamples } = thresholds
+const { requiredNumberBloodSamples } = thresholds
 
 const pageUrl = prefixUrl(endemicsNumberOfBloodSamples)
 
@@ -40,12 +42,11 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        numberOfBloodSamples: Joi.string().pattern(/^\d+$/).min(exactNumberBloodSamples).max(exactNumberBloodSamples).required()
+        numberOfBloodSamples: Joi.number().empty('').required()
           .messages({
-            'string.base': 'Enter the number of blood samples',
-            'string.empty': 'Enter the number of blood samples',
-            'string.max': `The number of blood samples should be exactly ${exactNumberBloodSamples}`,
-            'string.pattern.base': 'The amount of blood samples must only include numbers'
+            'any.required': ENTER_NUM_BLOOD_SAMPLES,
+            'number.empty': ENTER_NUM_BLOOD_SAMPLES,
+            'number.base': 'The amount of blood samples must only include numbers'
           })
       }),
       failAction: async (request, h, err) => {
@@ -64,13 +65,13 @@ const postHandler = {
       const { numberOfBloodSamples } = request.payload
       setEndemicsClaim(request, numberOfBloodSamplesKey, numberOfBloodSamples)
 
-      if (numberOfBloodSamples !== exactNumberBloodSamples) {
-        raiseInvalidDataEvent(request, numberOfBloodSamplesKey, `Value ${numberOfBloodSamples} is not exactly ${exactNumberBloodSamples}`)
+      if (numberOfBloodSamples !== requiredNumberBloodSamples) {
+        raiseInvalidDataEvent(request, numberOfBloodSamplesKey, `Value ${numberOfBloodSamples} is not exactly ${requiredNumberBloodSamples}`)
         return h.view(
           endemicsNumberOfBloodSamplesException,
           {
             backLink: pageUrl,
-            exactNumberBloodSamples
+            requiredNumberBloodSamples
           }).code(HttpStatus.BAD_REQUEST)
           .takeover()
       }

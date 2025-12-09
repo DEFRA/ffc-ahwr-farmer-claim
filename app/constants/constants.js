@@ -44,3 +44,8 @@ const JUNE_INDEX = 6
 const SEPTEMBER_INDEX = 9
 const NOVEMBER_INDEX = 11
 export const SHORT_MONTHS = [APRIL_INDEX, JUNE_INDEX, SEPTEMBER_INDEX, NOVEMBER_INDEX]
+
+export const PIGS_SAMPLE_TYPES = {
+  oralFluid: 'oral-fluid',
+  blood: 'blood'
+}

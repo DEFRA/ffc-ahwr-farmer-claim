@@ -6,6 +6,7 @@ import { getReviewType } from '../../lib/get-review-type.js'
 import { radios } from '../models/form-component/radios.js'
 import HttpStatus from 'http-status-codes'
 import { getEndemicsClaimDetails, prefixUrl } from '../utils/page-utils.js'
+import { PIGS_SAMPLE_TYPES } from '../../constants/constants.js'
 
 const {
   endemicsTestResults,
@@ -13,13 +14,14 @@ const {
   endemicsTestUrn,
   endemicsDiseaseStatus,
   endemicsBiosecurity,
-  endemicsNumberOfOralFluidSamples
+  endemicsNumberOfOralFluidSamples,
+  endemicsNumberOfBloodSamples
 } = links
 const { endemicsClaim: { testResults: testResultsKey } } = sessionKeys
 
 const pageUrl = prefixUrl(endemicsTestResults)
 const previousPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, typeOfSamplesTaken } = getEndemicsClaim(request)
   const { isBeef, isDairy, isSheep, isPigs, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isEndemicsFollowUp) {
@@ -32,6 +34,9 @@ const previousPageUrl = (request) => {
   }
 
   if (isPigs) {
+    if (typeOfSamplesTaken === PIGS_SAMPLE_TYPES.blood) {
+      return prefixUrl(endemicsNumberOfBloodSamples)
+    }
     return prefixUrl(endemicsNumberOfOralFluidSamples)
   }
   if (isBeef || isDairy) {

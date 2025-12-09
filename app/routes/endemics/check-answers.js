@@ -155,7 +155,9 @@ const getHandler = {
 
       const laboratoryUrnRow = createdHerdRowObject(isBeef || isDairy ? 'URN or test certificate' : 'URN', laboratoryURN, routes.endemicsTestUrn, 'URN')
 
+      const typeOfSamplesTakenRow = createdHerdRowObject('Type of samples taken', sessionData.typeOfSamplesTaken, routes.endemicsTypeOfSamplesTaken, 'type of samples taken')
       const oralFluidSamplesRow = createdHerdRowObject('Number of oral fluid samples taken', sessionData.numberOfOralFluidSamples, routes.endemicsNumberOfOralFluidSamples, 'number of oral fluid samples taken')
+      const bloodSamplesRow = createdHerdRowObject('Number of blood samples taken', sessionData.numberOfBloodSamples, routes.endemicsNumberOfBloodSamples, 'number of blood samples taken')
 
       const testResultsRow = createdHerdRowObject(isReview ? 'Test results' : 'Follow-up test result', upperFirstLetter(testResults), routes.endemicsTestResults, 'test results')
 
@@ -217,7 +219,9 @@ const getHandler = {
         vetVisitsReviewTestResultsRow,
         herdVaccinationStatusRow,
         laboratoryUrnRow,
+        typeOfSamplesTakenRow, // review claim
         oralFluidSamplesRow, // review claim
+        bloodSamplesRow, // review claim
         testResultsRow,
         samplesTestedRow, // endemics claim
         ...generatePigStatusAnswerRows(sessionData),
@@ -293,7 +297,7 @@ const postHandler = {
   options: {
     handler: async (request, h) => {
       const {
-        typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals, numberOfOralFluidSamples,
+        typeOfLivestock, typeOfReview, dateOfVisit, dateOfTesting, speciesNumbers, vetsName, vetRCVSNumber, laboratoryURN, piHunt, piHuntRecommended, piHuntAllAnimals, typeOfSamplesTaken, numberOfOralFluidSamples, numberOfBloodSamples,
         numberAnimalsTested, testResults, latestEndemicsApplication, vetVisitsReviewTestResults, sheepTestResults, biosecurity, herdVaccinationStatus, diseaseStatus, pigsFollowUpTest, pigsElisaTestResult,
         pigsPcrTestResult, pigsGeneticSequencing, sheepEndemicsPackage, numberOfSamplesTested, reference: tempClaimReference, reviewTestResults, herdId, herdVersion, herdName, herdCph, herdReasons, herdSame
       } = getEndemicsClaim(request)
@@ -317,7 +321,9 @@ const postHandler = {
           piHunt,
           piHuntRecommended,
           piHuntAllAnimals,
+          typeOfSamplesTaken,
           numberOfOralFluidSamples,
+          numberOfBloodSamples,
           numberAnimalsTested,
           testResults,
           vetVisitsReviewTestResults,

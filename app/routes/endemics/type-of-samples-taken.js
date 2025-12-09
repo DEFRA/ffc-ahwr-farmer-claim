@@ -4,8 +4,9 @@ import { getEndemicsClaim, setEndemicsClaim } from '../../session/index.js'
 import { sessionKeys } from '../../session/keys.js'
 import links from '../../config/routes.js'
 import { prefixUrl } from '../utils/page-utils.js'
+import { PIGS_SAMPLE_TYPES } from '../../constants/constants.js'
 
-const oralFluid = 'oral-fluid'; const blood = 'blood'
+const { oralFluid, blood } = PIGS_SAMPLE_TYPES
 
 const {
   endemicsTestUrn,
@@ -44,7 +45,7 @@ const postHandler = {
   options: {
     validate: {
       payload: Joi.object({
-        typeOfSamplesTaken: Joi.string().valid(oralFluid, blood).required()
+        typeOfSamplesTaken: Joi.string().valid(oralFluid, blood).required().messages({ 'any.required': 'Select what type of samples where taken' })
       }),
       failAction: async (request, h, err) => {
         request.logger.setBindings({ err })
