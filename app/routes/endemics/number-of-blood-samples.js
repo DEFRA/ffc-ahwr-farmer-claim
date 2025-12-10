@@ -54,7 +54,7 @@ const postHandler = {
         return h
           .view(endemicsNumberOfBloodSamples, {
             ...request.payload,
-            errorMessage: { text: err.details[0].message, href: '#numberOfBloodSamples' },
+            errorMessage: { text: err.details[0].message, href: `#${numberOfBloodSamplesKey}` },
             backLink: prefixUrl(endemicsTypeOfSamplesTaken)
           })
           .code(HttpStatus.BAD_REQUEST)
