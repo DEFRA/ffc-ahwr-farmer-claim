@@ -18,7 +18,7 @@ describe('Number of fluid oral samples test', () => {
   beforeAll(async () => {
     raiseInvalidDataEvent.mockImplementation(() => { })
     setEndemicsClaim.mockImplementation(() => { })
-    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8' } })
+    getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8', dateOfVisit: '2026-01-21' } })
 
     server = await createServer()
     await server.initialize()
@@ -30,7 +30,7 @@ describe('Number of fluid oral samples test', () => {
   })
 
   describe(`GET ${url} route`, () => {
-    test('returns 200', async () => {
+    it('should return 200 and have back link to endemicsTestUrn when visit before Pigs&Payments golive', async () => {
       const options = {
         method: 'GET',
         url,
@@ -43,6 +43,25 @@ describe('Number of fluid oral samples test', () => {
       const $ = cheerio.load(res.payload)
       expect($('h1').text()).toMatch('How many oral fluid samples were tested?')
       expect($('title').text()).toContain('How many oral fluid samples were tested? - Get funding to improve animal health and welfare')
+      expect($('#back').attr('href')).toBe('/claim/endemics/test-urn')
+      expectPhaseBanner.ok($)
+    })
+
+    it('should return 200 and have back link to endemicsTypeOfSamplesTaken when visit on/after Pigs&Payments golive', async () => {
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', reference: 'TEMP-6GSE-PIR8', dateOfVisit: '2026-01-22' } })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+      expect($('h1').text()).toMatch('How many oral fluid samples were tested?')
+      expect($('title').text()).toContain('How many oral fluid samples were tested? - Get funding to improve animal health and welfare')
+      expect($('#back').attr('href')).toBe('/claim/endemics/type-of-samples-taken')
       expectPhaseBanner.ok($)
     })
 
