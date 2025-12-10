@@ -194,11 +194,7 @@ const postHandler = {
         const data = {
           reviewOrFollowUpText,
           errorSummary,
-          dateOfVisit: {
-            day: request.payload[labels.day],
-            month: request.payload[labels.month],
-            year: request.payload[labels.year]
-          },
+          dateOfVisit: { day: request.payload[labels.day], month: request.payload[labels.month], year: request.payload[labels.year] },
           backLink: previousPageUrl(oldWorldApplication, typeOfClaim, previousClaims, typeOfLivestock),
           inputsInError
         }
