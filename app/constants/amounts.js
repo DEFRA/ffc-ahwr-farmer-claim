@@ -11,6 +11,7 @@ export const amounts = {
 
 export const thresholds = {
   minimumNumberFluidOralSamples: 5,
+  requiredNumberBloodSamples: 30,
   positiveReviewNumberOfSamplesTested: '6',
   negativeReviewNumberOfSamplesTested: '30',
   numberOfSpeciesTested: {

@@ -5,7 +5,7 @@ import expectPhaseBanner from 'assert'
 import { getCrumbs } from '../../../../utils/get-crumbs.js'
 import { isURNUnique } from '../../../../../app/api-requests/claim-service-api.js'
 import { raiseInvalidDataEvent } from '../../../../../app/event/raise-invalid-data-event.js'
-import { isVisitDateAfterPIHuntAndDairyGoLive } from '../../../../../app/lib/context-helper.js'
+import { isVisitDateAfterPIHuntAndDairyGoLive, isPigsAndPaymentsUserJourney } from '../../../../../app/lib/context-helper.js'
 import { config } from '../../../../../app/config/index.js'
 
 jest.mock('../../../../../app/session')
@@ -25,6 +25,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
     server = await createServer()
     await server.initialize()
     isVisitDateAfterPIHuntAndDairyGoLive.mockImplementation(() => { return false })
+    isPigsAndPaymentsUserJourney.mockImplementation(() => { return false })
   })
 
   afterAll(async () => {
@@ -121,7 +122,7 @@ describe('Test URN test when Optional PI Hunt is off', () => {
       { typeOfLivestock: 'pigs', typeOfReview: 'R', nextPageUrl: '/claim/endemics/number-of-fluid-oral-samples' },
       { typeOfLivestock: 'pigs', typeOfReview: 'E', nextPageUrl: '/claim/endemics/number-of-samples-tested' }
     ])('redirects to check answers page when payload is valid for $typeOfLivestock and $typeOfReview', async ({ nextPageUrl, typeOfLivestock, typeOfReview }) => {
-      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' } } })
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock, typeOfReview, laboratoryURN: '12345', organisation: { sbi: '12345678' }, dateOfVisit: '2026-01-21' } })
       isURNUnique.mockImplementation(() => { return { isURNUnique: true } })
       const options = {
         method: 'POST',
@@ -135,6 +136,25 @@ describe('Test URN test when Optional PI Hunt is off', () => {
 
       expect(res.statusCode).toBe(302)
       expect(res.headers.location.toString()).toEqual(expect.stringContaining(nextPageUrl))
+      expect(setEndemicsClaim).toHaveBeenCalled()
+    })
+
+    it('should redirect to endemicsTypeOfSamplesTaken page when pigs review post Pigs&Payments golive', async () => {
+      getEndemicsClaim.mockImplementation(() => { return { typeOfLivestock: 'pigs', typeOfReview: 'R', laboratoryURN: '12345', organisation: { sbi: '12345678' }, dateOfVisit: '2026-01-22' } })
+      isURNUnique.mockImplementation(() => { return { isURNUnique: true } })
+      isPigsAndPaymentsUserJourney.mockImplementation(() => { return true })
+      const options = {
+        method: 'POST',
+        url,
+        auth,
+        payload: { crumb, laboratoryURN: '123' },
+        headers: { cookie: `crumb=${crumb}` }
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(302)
+      expect(res.headers.location.toString()).toEqual(expect.stringContaining('/claim/endemics/type-of-samples-taken'))
       expect(setEndemicsClaim).toHaveBeenCalled()
     })
 

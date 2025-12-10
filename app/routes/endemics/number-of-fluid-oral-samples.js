@@ -6,9 +6,11 @@ import { thresholds } from '../../constants/amounts.js'
 import { raiseInvalidDataEvent } from '../../event/raise-invalid-data-event.js'
 import HttpStatus from 'http-status-codes'
 import { prefixUrl } from '../utils/page-utils.js'
+import { isPigsAndPaymentsUserJourney } from '../../lib/context-helper.js'
 
 const {
   endemicsTestUrn,
+  endemicsTypeOfSamplesTaken,
   endemicsNumberOfOralFluidSamples,
   endemicsNumberOfOralFluidSamplesException,
   endemicsTestResults
@@ -25,10 +27,12 @@ const getHandler = {
   path: pageUrl,
   options: {
     handler: async (request, h) => {
-      const { numberOfOralFluidSamples } = getEndemicsClaim(request)
+      const { numberOfOralFluidSamples, dateOfVisit } = getEndemicsClaim(request)
+      const backLink = isPigsAndPaymentsUserJourney(dateOfVisit) ? prefixUrl(endemicsTypeOfSamplesTaken) : prefixUrl(endemicsTestUrn)
+
       return h.view(endemicsNumberOfOralFluidSamples, {
         numberOfOralFluidSamples,
-        backLink: prefixUrl(endemicsTestUrn)
+        backLink
       })
     }
   }

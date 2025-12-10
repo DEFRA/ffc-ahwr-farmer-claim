@@ -3,7 +3,9 @@ import { cookiesHandlers } from '../routes/cookies.js'
 import { assetsRouteHandlers } from '../routes/assets.js'
 import { testUrnHandlers } from '../routes/endemics/test-urn.js'
 import { testResultsHandlers } from '../routes/endemics/test-results.js'
+import { typeOfSamplesTakenHandlers } from '../routes/endemics/type-of-samples-taken.js'
 import { numberOfOralFluidSamplesHandlers } from '../routes/endemics/number-of-fluid-oral-samples.js'
+import { numberOfBloodSamplesHandlers } from '../routes/endemics/number-of-blood-samples.js'
 import { numberOfSamplesTestedHandlers } from '../routes/endemics/number-of-samples-tested.js'
 import { numberOfSpeciesHandlers } from '../routes/endemics/number-of-species-tested.js'
 import { speciesNumbersHandlers } from '../routes/endemics/species-numbers.js'
@@ -43,7 +45,9 @@ const alwaysOnRouteHandlers = [
   healthHandlers,
   testUrnHandlers,
   testResultsHandlers,
+  typeOfSamplesTakenHandlers,
   numberOfOralFluidSamplesHandlers,
+  numberOfBloodSamplesHandlers,
   numberOfSamplesTestedHandlers,
   speciesNumbersHandlers,
   numberOfSpeciesHandlers,

@@ -10,6 +10,7 @@ services:
     environment:
       USE_PRETTY_PRINT: ${USE_PRETTY_PRINT:-true}
       DEV_LOGIN_ENABLED: ${DEV_LOGIN_ENABLED:-true}
+      PIGS_AND_PAYMENTS_RELEASE_DATE: ${PIGS_AND_PAYMENTS_RELEASE_DATE:-2025-12-01}
     ports:
       - "3004:3000"
       - "9234:9229"

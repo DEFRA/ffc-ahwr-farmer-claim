@@ -51,7 +51,7 @@ export const baseReviewClaim = {
 
 export const beefReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'beef', numberAnimalsTested: '42', testResults: 'positive', latestEndemicsApplication: { flags: [] } }
 export const dairyReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'dairy', testResults: 'positive', latestEndemicsApplication: { flags: [] } }
-export const pigsReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', numberOfOralFluidSamples: '10', testResults: 'positive', latestEndemicsApplication: { flags: [] } }
+export const pigsReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'pigs', numberAnimalsTested: '42', typeOfSamplesTaken: 'blood', numberOfBloodSamples: 30, testResults: 'positive', latestEndemicsApplication: { flags: [] } }
 export const sheepReviewClaim = { ...baseReviewClaim, typeOfLivestock: 'sheep', numberAnimalsTested: '42', latestEndemicsApplication: { flags: [] } }
 
 export const expectedReviewBeef = {
@@ -136,7 +136,7 @@ export const expectedReviewDairy = {
   ]
 }
 
-export const expectedReviewPigs = {
+export const expectedReviewPigsPrePigsAndPaymentsGolive = {
   rowKeys: [
     ...commonReviewRowKeys,
     '51 or more pigs',
@@ -179,6 +179,57 @@ export const expectedReviewPigs = {
     '/claim/endemics/vet-rcvs',
     '/claim/endemics/test-urn',
     '/claim/endemics/number-of-fluid-oral-samples',
+    '/claim/endemics/test-results'
+  ]
+}
+
+export const expectedReviewPigs = {
+  rowKeys: [
+    ...commonReviewRowKeys,
+    '51 or more pigs',
+    'Number of samples taken',
+    ...commonVetRowKeys,
+    'URN',
+    'Type of samples taken',
+    'Number of blood samples taken',
+    'Test results'
+  ],
+  rowContents: [
+    'Business name',
+    'Pigs',
+    'Animal health and welfare review',
+    '19 December 2023',
+    '19 December 2023',
+    'Yes',
+    '42',
+    'George',
+    '1234567',
+    'laboratoryURN',
+    'Blood samples',
+    '30',
+    'Positive'
+  ],
+  rowActionTexts: [
+    'Change date of review',
+    'Change date of sampling',
+    'Change number of species',
+    'Change number of samples taken',
+    ...commonVetRowActionTexts,
+    'Change URN',
+    'Change type of samples taken',
+    'Change number of blood samples taken',
+    'Change test results'
+  ],
+  rowLinks: [
+    '/claim/endemics/date-of-visit',
+    '/claim/endemics/date-of-testing',
+    '/claim/endemics/species-numbers',
+    '/claim/endemics/number-of-species-tested',
+    '/claim/endemics/vet-name',
+    '/claim/endemics/vet-rcvs',
+    '/claim/endemics/test-urn',
+    '/claim/endemics/type-of-samples-taken',
+    '/claim/endemics/number-of-blood-samples',
     '/claim/endemics/test-results'
   ]
 }
