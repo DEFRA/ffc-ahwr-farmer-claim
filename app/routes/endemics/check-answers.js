@@ -155,7 +155,11 @@ const getHandler = {
 
       const laboratoryUrnRow = createdHerdRowObject(isBeef || isDairy ? 'URN or test certificate' : 'URN', laboratoryURN, routes.endemicsTestUrn, 'URN')
 
-      const typeOfSamplesTakenRow = createdHerdRowObject('Type of samples taken', sessionData.typeOfSamplesTaken, routes.endemicsTypeOfSamplesTaken, 'type of samples taken')
+      let typeOfSamplesDisplayValue
+      if (sessionData.typeOfSamplesTaken) {
+        typeOfSamplesDisplayValue = (sessionData.typeOfSamplesTaken === 'blood') ? 'Blood samples' : 'Oral fluid samples'
+      }
+      const typeOfSamplesTakenRow = createdHerdRowObject('Type of samples taken', typeOfSamplesDisplayValue, routes.endemicsTypeOfSamplesTaken, 'type of samples taken')
       const oralFluidSamplesRow = createdHerdRowObject('Number of oral fluid samples taken', sessionData.numberOfOralFluidSamples, routes.endemicsNumberOfOralFluidSamples, 'number of oral fluid samples taken')
       const bloodSamplesRow = createdHerdRowObject('Number of blood samples taken', sessionData.numberOfBloodSamples, routes.endemicsNumberOfBloodSamples, 'number of blood samples taken')
 

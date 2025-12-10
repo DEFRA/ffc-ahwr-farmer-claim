@@ -18,6 +18,7 @@ import {
   expectedReviewBeef,
   expectedReviewDairy,
   expectedReviewPigs,
+  expectedReviewPigsPrePigsAndPaymentsGolive,
   expectedReviewSheep,
   getRowActionTexts,
   getRowContents,
@@ -133,7 +134,41 @@ describe('Check answers test', () => {
       expectPhaseBanner.ok($)
     })
 
-    test('shows fields for a review claim in the correct order for each species for pigs', async () => {
+    test('shows fields for a review claim in the correct order for each species for pigs, pre Pigs&Payments golive', async () => {
+      const pigsReviewClaimPreGolive = {
+        ...pigsReviewClaim,
+        numberOfOralFluidSamples: '10'
+      }
+      delete pigsReviewClaimPreGolive.typeOfSamplesTaken
+      delete pigsReviewClaimPreGolive.numberOfBloodSamples
+      getEndemicsClaim.mockImplementation(() => {
+        return pigsReviewClaimPreGolive
+      })
+      const options = {
+        method: 'GET',
+        url,
+        auth
+      }
+
+      const res = await server.inject(options)
+
+      expect(res.statusCode).toBe(200)
+      const $ = cheerio.load(res.payload)
+
+      const rowKeys = getRowKeys($)
+      const rowContents = getRowContents($)
+      const rowActionTexts = getRowActionTexts($)
+      const rowLinks = getRowLinks($)
+
+      expect(rowKeys).toEqual(expectedReviewPigsPrePigsAndPaymentsGolive.rowKeys)
+      expect(rowContents).toEqual(expectedReviewPigsPrePigsAndPaymentsGolive.rowContents)
+      expect(rowActionTexts).toEqual(expectedReviewPigsPrePigsAndPaymentsGolive.rowActionTexts)
+      expect(rowLinks).toEqual(expectedReviewPigsPrePigsAndPaymentsGolive.rowLinks)
+
+      expectPhaseBanner.ok($)
+    })
+
+    test('shows fields for a review claim in the correct order for each species for pigs, post Pigs&Payments golive', async () => {
       getEndemicsClaim.mockImplementation(() => {
         return pigsReviewClaim
       })

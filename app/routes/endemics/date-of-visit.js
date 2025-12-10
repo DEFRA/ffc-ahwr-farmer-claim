@@ -18,7 +18,7 @@ import {
   MULTIPLE_SPECIES_RELEASE_DATE,
   PI_HUNT_AND_DAIRY_FOLLOW_UP_RELEASE_DATE
 } from '../../constants/constants.js'
-import { isMultipleHerdsUserJourney } from '../../lib/context-helper.js'
+import { isMultipleHerdsUserJourney, isPigsAndPaymentsUserJourney } from '../../lib/context-helper.js'
 import { getHerds } from '../../api-requests/application-service-api.js'
 import { getTempHerdId } from '../../lib/get-temp-herd-id.js'
 import { getNextMultipleHerdsPage } from '../../lib/get-next-multiple-herds-page.js'
@@ -27,7 +27,7 @@ import HttpStatus from 'http-status-codes'
 
 const {
   endemicsClaim: {
-    typeOfReview: typeOfReviewKey, dateOfVisit: dateOfVisitKey, tempHerdId: tempHerdIdKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey
+    typeOfReview: typeOfReviewKey, dateOfVisit: dateOfVisitKey, tempHerdId: tempHerdIdKey, herds: herdsKey, herdVersion: herdVersionKey, herdId: herdIdKey, typeOfSamplesTaken: typeOfSamplesTakenKey, numberOfBloodSamples: numberOfBloodSamplesKey
   }
 } = sessionKeys
 
@@ -184,7 +184,7 @@ const postHandler = {
         tempHerdId: tempHerdIdFromSession
       } = endemicsClaim
 
-      const { isDairy } = getLivestockTypes(typeOfLivestock)
+      const { isDairy, isPigs } = getLivestockTypes(typeOfLivestock)
       const { isReview, isEndemicsFollowUp } = getReviewType(typeOfClaim)
       const reviewOrFollowUpText = isReview ? 'review' : 'follow-up'
 
@@ -227,6 +227,12 @@ const postHandler = {
       const timingExceptionRedirect = checkForTimingException(request, h, { dateOfVisit, typeOfLivestock, previousClaims, isDairy, isEndemicsFollowUp })
       if (timingExceptionRedirect) {
         return timingExceptionRedirect
+      }
+
+      if (isPigs && !isPigsAndPaymentsUserJourney(dateOfVisit)) {
+        // clear pig updates data from session
+        setEndemicsClaim(request, typeOfSamplesTakenKey, undefined, { shouldEmitEvent: false })
+        setEndemicsClaim(request, numberOfBloodSamplesKey, undefined, { shouldEmitEvent: false })
       }
 
       if (isMultipleHerdsUserJourney(dateOfVisit, newWorldApplication.flags)) {
