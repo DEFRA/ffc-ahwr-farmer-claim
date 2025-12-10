@@ -64,11 +64,11 @@ const previousPageUrl = (request) => {
 }
 
 const nextPageUrl = (request) => {
-  const { typeOfLivestock, typeOfReview } = getEndemicsClaim(request)
+  const { typeOfLivestock, typeOfReview, dateOfVisit } = getEndemicsClaim(request)
   const { isBeef, isDairy, isPigs, isReview, isEndemicsFollowUp } = getEndemicsClaimDetails(typeOfLivestock, typeOfReview)
 
   if (isPigs && isReview) {
-    if (isPigsAndPaymentsUserJourney(getEndemicsClaim(request, dateOfVisitKey))) {
+    if (isPigsAndPaymentsUserJourney(dateOfVisit)) {
       return prefixUrl(endemicsTypeOfSamplesTaken)
     }
     return prefixUrl(endemicsNumberOfOralFluidSamples)
