@@ -230,7 +230,6 @@ const postHandler = {
       }
 
       if (isPigs && !isPigsAndPaymentsUserJourney(dateOfVisit)) {
-        // clear pig updates data from session
         setEndemicsClaim(request, typeOfSamplesTakenKey, undefined, { shouldEmitEvent: false })
         setEndemicsClaim(request, numberOfBloodSamplesKey, undefined, { shouldEmitEvent: false })
       }
